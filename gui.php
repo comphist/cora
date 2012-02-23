@@ -1,0 +1,98 @@
+<?php
+/** @file gui.php
+ * Display the graphical user interface.
+ */
+
+?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+	<head>
+		<title><?php echo TITLE . " (" . LONGTITLE . ") " . VERSION; ?></title>
+		<meta name="description" content="<?php echo DESCRIPTION; ?>" />
+		<meta name="keywords" content="<?php echo KEYWORDS; ?>" />
+		<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
+
+		<!-- Main stylesheets on top --> 
+		<link rel="stylesheet" type="text/css" href="gui/css/screen.css" media="all" />
+		<link rel="stylesheet" type="text/css" href="gui/css/myCss.css" media="all" />
+		<link rel="stylesheet" type="text/css" href="gui/css/imagezoom.css" media="all" />
+        <link rel="stylesheet" href="gui/js/cerabox/style/cerabox.css" media="screen" />        
+        <link rel="stylesheet" href="gui/css/baseBox.css" type="text/css" media="screen" />
+         
+
+		<!-- Print only, on bottom --> 
+		<link rel="stylesheet" type="text/css" href="gui/css/print.css" media="print" />
+		
+<!--	script src="gui/js/mootools-1.2.3-core-yc.js" type="text/javascript" charset="utf-8"></script>
+		<script src="gui/js/mootools-1.2.3.1-more.js" type="text/javascript" charset="utf-8"></script>
+-->
+		<script src="gui/js/mootools-core-1.4.1-full.js" type="text/javascript" charset="utf-8"></script>
+		<script src="gui/js/mootools-more-1.4.0.1.js" type="text/javascript" charset="utf-8"></script>
+        <script src="gui/js/cerabox/cerabox.min.js"></script>
+		<script src="gui/js/baseBox.js"></script>
+		<script src="gui/js/iFrameFormRequest.js"></script>
+
+		<!-- JavaScript -->
+		<script type="text/javascript">
+			// Makes variables from PHP accessible to JS
+            var default_tab = "<?php echo $menu->getDefaultItem(); ?>";
+            var lang_strings = <?php echo json_encode($lang); ?>;
+			var userdata = { 	name: "<?php echo $_SESSION['user']; ?>" , 
+								admin: "<?php echo $_SESSION['admin']; ?>" ,
+								currentFileId: "<?php echo $_SESSION['currentFileId']; ?>",
+								currentName: "<?php echo $_SESSION['currentName']; ?>"
+						   };
+									
+		</script>
+
+		<script src="gui/js/navigation.js" type="text/javascript" charset="utf-8"></script>
+		<?php if($_SESSION['admin']): ?>
+			<script src="gui/js/admin.js" type="text/javascript" charset="utf-8"></script>
+		<?php endif; ?>
+
+		<?php foreach($menu->getItems() as $item): ?>
+			<?php $js = $menu->getItemJSFile($item); if(!empty($js)): ?>
+		         <script src="<?php echo $js; ?>" type="text/javascript" charset="utf-8"></script>
+			<?php endif; ?>
+		<?php endforeach; ?>
+
+		<style type="text/css">
+			<!--
+			#main {
+				max-width : 95%; //haupt css wert ueberschreiben
+			}
+			-->
+		</style>
+		
+	</head>
+	<body onload="onLoad();" onbeforeunload="onBeforeUnload();">
+<!--		<div id="tools" class="no-print">
+			$$toolsLinks$$
+		</div>
+-->
+		<div id="main" class="no-print">
+			<div id="header">
+				<div id="controls" style="right: 5px">
+				  <?php if($_SESSION["loggedIn"]): ?>
+				  <a href="index.php?do=logout"><img src="gui/images/logout.png" alt="Logout" width="60" height="30" /></a>
+				  <?php endif; ?>
+				  <a href="index.php?lang=<?php echo $sh->getInactiveLanguage(); ?>"><img src="gui/images/lang_de_en.png" alt="Change Language" width="60" height="30" /></a>
+<!--					<a href="#"><img id="HelpMe" src="gui/images/help.png" height="30" alt="Help" class="tipz" title="Help::Click here to toggle help mode."  /></a>
+-->
+				</div>
+				<div id="titelzeile">
+					<span id="otto"><object><h1><?php echo TITLE; ?></h1><h2><?php echo VERSION; ?></h2></object></span>
+					<span id="currentfile"><?php if(isset($_SESSION['currentName']) && !empty($_SESSION['currentName'])) echo $_SESSION['currentName']; ?></span>
+
+				</div>
+			</div><!-- end Header -->
+			<?php include( "gui/menu.php" ); ?>
+			<?php foreach ($menu->getItems() as $item) {
+			         include( $menu->getItemFile($item) );
+			      } ?>
+			<div id="footer">
+			</div>
+		</div><!-- end main -->
+	</body>
+</html>

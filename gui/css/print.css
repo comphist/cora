@@ -1,0 +1,11 @@
+/* Printed Output */
+
+.no-print { display:none; }
+
+.imagezoom { 
+	border: none;
+	font-size: 12pt;
+	position: absolute;
+	left: 0;
+	top: 0;
+}

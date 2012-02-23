@@ -1,0 +1,255 @@
+* {
+	margin : 0;
+	padding : 0;
+}
+
+a {
+	color : #437fda;
+	text-decoration : none;
+}
+a:visited {
+	color : #437fda;
+	text-decoration : none;
+}
+a:hover {
+	color : #ba8f43;
+}
+
+h2 {
+	color : #343434;
+	font : italic 200% sans-serif;
+}
+h3 {
+	color : #343434;
+	font : italic 160% sans-serif;
+}
+h4 {
+	color : #343434;
+	font : bold 110% sans-serif;
+	padding : 1em 1em 0 1em;
+}
+
+html {
+	color : #565656;
+	font : 60% sans-serif;
+	text-align : justify;
+	font-family: Helvetica, arial, sans-serif;
+}
+
+img.left {
+	float : left;
+	margin : 1em 1em 0 0;
+}
+img.right {
+	float : right;
+	margin : 1em 0 0 1em;
+}
+
+blockquote {
+	font-style : italic;
+	margin : 1em 1em 0 1em;
+	padding : 0 0 1em 0;
+}
+blockquote span {
+	font-size : 200%;
+	line-height : 1%;
+	margin : 0 0.15em;
+	position : relative;
+	top : 0.25em;
+}
+
+p.text input2 {
+	background : #ffffff;
+	border : 1px solid #cfcfcf;
+	padding : 0.5em;
+	margin : 0.25em 1em 0 1em;
+	
+}
+
+input.button {
+	float: left;
+	border: 0;
+	display: inline-block;
+	padding: 5px 10px 6px;
+	color: #fff;
+	text-decoration: none;
+	font-weight: bold;
+	line-height: 1;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-webkit-box-shadow: 0 1px 3px #999;
+	text-shadow: 0 -1px 1px #222;
+	border-bottom: 1px solid #222;
+	position: relative;
+	cursor: pointer;
+	-webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+	text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
+	border-bottom: 1px solid rgba(0,0,0,0.25);
+	background-color: #2daebf;
+ 
+}
+
+
+p.editor {
+	background : #ffffff;
+	border : 1px solid #cfcfcf;
+	padding : 0.25em;
+	margin : 0.25em 1em 0 1em;
+}
+
+
+p.editor textarea {
+	padding: 0px;
+	margin: 0px;
+}
+
+
+form textarea {
+
+	width:500px;
+}
+form p.button {
+	text-align : right;
+}
+
+p {
+	padding : 1em 1em 0 1em;
+}
+
+ul,
+ol {
+	padding : 1em 1em 0 3em;
+}
+
+#main {
+	margin : auto;
+	max-width : 100%; //65em;
+	min-width : 40em;
+	width : auto !important;
+	//width : 65em;
+}
+
+#header {
+	position: relative;
+	background : #2b548c url('../images/header_bg.png') repeat-x bottom left;
+	padding : 6em 4em 1em 4em;
+	height : 40px;
+}
+#header h1 {
+	color : #ffffff;
+	font : italic 200% sans-serif;
+}
+
+#header h2 {
+	color : #ffffff;
+	font : italic 200% sans-serif;
+}
+
+
+#menu {
+	font-family: "Trebuchet MS", sans-serif;
+	font-size: 1em;
+	background : #437fda;
+	border-bottom : 1px solid #2b548c;
+}
+
+#menu ul {
+	padding : 0.75em 4em;
+}
+#menu li {
+	display : inline;
+}
+#menu li a {
+	color : #ffffff;
+	padding : 0.75em 1.5em;
+	cursor : pointer;
+}
+#menu li a:hover {
+	background : #2b548c;
+}
+#menu li[active=true] a {
+	background : #ffffff;
+	border : 1px solid #2b548c;
+	border-bottom : 1px solid #ffffff;
+	color : #437fda;
+}
+#menu li[active=true] a:hover {
+	background : #ffffff;
+	color : #ba8f43;
+}
+
+.content {
+	height : auto !important;
+	height : 1%;
+	overflow : hidden;
+	padding : 2em 0 0 0;
+}
+/* conflicts with the editor layout
+.content div {
+	padding : 0 4em 2em 4em;
+}
+*/
+.panel_old {
+	
+	background : #efefef;
+	border : 1px solid #dfdfdf;
+	border-bottom : 1px solid #cfcfcf;
+	height : auto !important;
+	height : 1%;
+	overflow : hidden;
+	padding : 2em 5em 2em 5em;
+	margin:  10px;
+}
+
+.panel .panel{
+	background : #efefef;
+	padding: 5px;
+}
+
+.panel {
+	height : auto !important;
+	height : 1%;
+	overflow : hidden;
+	border: 1px solid #d1d1d1;
+	padding : 2em 5em 2em 5em;
+	background: #f8f8f8;
+	margin: 10px;
+
+	clear: both;
+	
+	/* --
+	I'm using CSS3 styles to speed this up without comprimising looks
+	This isn't valid for older browsers, proceed with caution!
+	-- */
+
+	-moz-border-radius: 10px;
+	-moz-box-shadow: #e1e1e1 0px 0px 10px;
+	-webkit-border-radius: 10px;
+	-webkit-box-shadow: 25px 25px  25px  25px #000;
+}
+
+/* Modified this and have no idea why --MB */
+.panel div.clappable {
+	padding : 0em 0 1em 0;
+}
+
+div.left {
+	left : -1em;
+	float : left;
+	position : relative;
+	width : 50%;
+}
+div.right {
+	left : 1em;
+	float : left;
+	position : relative;
+	width : 50%;
+}
+
+#footer {
+	font-size : 85%;
+	margin : auto;
+	padding : 1em 0 3em 0;
+	text-align : center;
+	width : 65%;
+}
