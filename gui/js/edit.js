@@ -57,7 +57,7 @@ var edit = {
     		    
                 $$('#editTable tr[class!=editHeadLine]').destroy();
 
-                $each(lineArray,function(line){
+                lineArray.each(function(line){
                     var tr = new Element('tr',{id: 'line_'+line.line_id});
                     var progressChk = (parseInt(line.line_id) <= ref.data.lastEditedRow) ? true : false;
                     tr.adopt(new Element('td',{'class': 'editTable_progress'}).adopt( ref.renderCheckbox('Progress',progressChk )));
@@ -168,7 +168,7 @@ var edit = {
 
         
         menu.grab(new Element('option',{html: "-----------"}),'top');
-        $each(data.reverse(), function(opt){ 
+        data.reverse().each(function(opt){ 
             menu.grab(new Element('option',{html: opt.tag_name+"\t"+opt.tag_probability}),'top');
         });
         menu.grab(new Element('option',{html: fav, selected: 'selected'}),'top');

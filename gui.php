@@ -27,7 +27,7 @@
 <!--	script src="gui/js/mootools-1.2.3-core-yc.js" type="text/javascript" charset="utf-8"></script>
 		<script src="gui/js/mootools-1.2.3.1-more.js" type="text/javascript" charset="utf-8"></script>
 -->
-		<script src="gui/js/mootools-core-1.4.1-full.js" type="text/javascript" charset="utf-8"></script>
+		<script src="gui/js/mootools-core-1.4.3-full.js" type="text/javascript" charset="utf-8"></script>
 		<script src="gui/js/mootools-more-1.4.0.1.js" type="text/javascript" charset="utf-8"></script>
         <script src="gui/js/cerabox/cerabox.min.js"></script>
 		<script src="gui/js/baseBox.js"></script>

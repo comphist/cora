@@ -167,7 +167,7 @@ var file = {
             url: "request.php",
             onComplete: function(response){ 
                 tagset_editor.highestId = response;
-                $each(file.unmatchedTags,function(tag){ tagset_editor.addNewTag(tag.shortname); });
+                file.unmatchedTags.each(function(tag){ tagset_editor.addNewTag(tag.shortname); });
                 tagset_editor.render();
             }
         }).get({'do':'getHighestTagId','tagset': ref.tagsetName});
