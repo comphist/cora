@@ -69,7 +69,7 @@ var CoreTag = new Class({
 	    "name": this.id + "Id",
 	    "value": this.shortname,
 	    "size": 10,
-	    "maxlength": 10
+	    "maxlength": 255
 	});
 	this.tagBox.addEvent('change', this.onTagChange.bind(this));
 	this.tagBox.addEvent('blur', this.onTagBlur.bind(this));

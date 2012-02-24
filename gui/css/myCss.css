@@ -610,6 +610,13 @@ table#editTable td.editTable_progress {
     padding: 0;
 }
 
+table#editTable td.editTable_POS select {
+    width: 10em;
+}
+
+table#editTable td.editTable_Morph select {
+    width: 15em;
+}
 
 .editTable_token {
 }

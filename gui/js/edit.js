@@ -17,7 +17,7 @@ var edit = {
                 ref.getLines()
             },
             onFailure: function(){
-                alert('Eroor occuried while saving');
+                alert('Error occured while saving');
             }
         })
     },
