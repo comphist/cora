@@ -30,9 +30,9 @@ class SessionHandler {
     $this->db = new DBInterface();
 
     $defaults = array( "lang"        => DEFAULT_LANGUAGE,
-		       "loggedIn"    => "false",
-		       "admin"       => "false",
-		       "failedLogin" => "false" );
+		       "loggedIn"    => false,
+		       "admin"       => false,
+		       "failedLogin" => false );
 
     foreach($defaults as $key => $default) {
       if(!array_key_exists($key, $_SESSION)) {
@@ -166,8 +166,16 @@ class SessionHandler {
 		return $ans;
 	}
 	
+	/** Calculate the page on which a given line appears.
+	 * 
+	 * @param int $line The line number
+	 *
+	 * @return The page number where the line appears, taking
+	 * 	   into consideration the current user settings,
+	 *	   or 0 if it's the first page?!
+	 */
 	public function calculateEditorPage($line){
-		if($line>$_SESSION['noPageLines'])
+		if($line>$_SESSION['noPageLines']) // if there are more lines than fit on a single page ...
 			$page = @ceil(($line - $_SESSION['contextLines'])/($_SESSION['noPageLines']-$_SESSION['contextLines']));
 		else
 			$page = 0;
@@ -211,6 +219,7 @@ class SessionHandler {
 		return $this->db->getToken($fileid);
 	}
 	
+	/** Get the total number of pages for the currently open document. */
 	public function getMaxLinesNo(){
 		$anz = $this->db->getMaxLinesNo($_SESSION['currentFileId']);
 		return $this->calculateEditorPage($anz);

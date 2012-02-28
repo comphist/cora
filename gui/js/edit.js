@@ -1,5 +1,7 @@
 var edit = {
     
+    maxPageNum: 0,
+
     data: {
         lastEditedRow: 0
     },
@@ -22,33 +24,96 @@ var edit = {
         })
     },
     
+    changePage: function(pageNum){
+	if(pageNum>0 && pageNum<=this.maxPageNum) {
+	    $('pageSelector').set('value', pageNum);
+	    edit.getLines(pageNum);
+	}
+    },
+
     renderPagesPanel: function(activePage){
-        $$('pagePanel a').dispose();        
+        $$('#pagePanel a').dispose();
+	$$('#pagePanel select').dispose();
 
         new Request({
             url: 'request.php',
             onComplete: function(maxPage){
-                // $('pagePanel').adopt(new Element('a',{href: 'back', text: '<'}));
+		this.maxPageNum = maxPage;
+
+                $('pagePanel').adopt(new Element('a',{
+		    href: 'first', text: '|<<',
+		    events: {
+			click: function(e) {
+			    e.stop();
+			    this.changePage(1);
+			}.bind(this)
+		    },
+		}));
+		
+                $('pagePanel').adopt(new Element('a',{
+		    href: 'back', text: '<',
+		    events: {
+			click: function(e) {
+			    e.stop();
+			    this.changePage($('pageSelector').value.toInt() - 1);
+			}.bind(this)
+		    },
+		}));
+
+		var dropdown = new Element('select', {
+		    id: 'pageSelector',
+		    name: 'pages',
+		    size: 1,
+		    events: {
+			change: function(e) {
+			    e.stop();
+			    edit.getLines(this.value);
+			}
+		    }
+		});
                 for (var i=1; i <= maxPage; i++) {
-                    $('pagePanel').adopt(new Element('a',{href: i, text: i,
-                    events: {
-                        click: function(e){
-                            e.stop();
-                            $$('#pagePanel a[class=currentPage]').removeClass('currentPage');
-                            this.addClass('currentPage');
-                            edit.getLines(this.get('href'));} }}));
+		    dropdown.adopt(new Element('option', {
+			text: i,
+		    }));
+                    // $('pagePanel').adopt(new Element('a',{href: i, text: i,
+                    // events: {
+                    //    click: function(e){
+                    //        e.stop();
+                    //        $$('#pagePanel a[class=currentPage]').removeClass('currentPage');
+                    //        this.addClass('currentPage');
+                    //        edit.getLines(this.get('href'));} }}));
                 };
-                // $('pagePanel').adopt(new Element('a',{href: 'forward', text: '>'}));
-                
-                if(activePage != null){
-                    $$('#pagePanel a[href='+activePage+']').addClass('currentPage');
-                }
-            }            
+		$('pagePanel').adopt(dropdown);
+
+                $('pagePanel').adopt(new Element('a',{
+		    href: 'forward', text: '>',
+		    events: {
+			click: function(e) {
+			    e.stop();
+			    this.changePage($('pageSelector').value.toInt() + 1);
+			}.bind(this)
+		    },
+		}));
+
+                $('pagePanel').adopt(new Element('a',{
+		    href: 'last', text: '>>|',
+		    events: {
+			click: function(e) {
+			    e.stop();
+			    this.changePage(this.maxPageNum);
+			}.bind(this)
+		    },
+		}));
+
+                // if(activePage != null){
+                //    $$('#pagePanel a[href='+activePage+']').addClass('currentPage');
+                // }
+            }.bind(this)
             
-        }).get({'do': 'getMaxLinesNo'})
+        }).get({'do': 'getMaxLinesNo'});
 
     },
-    
+
     getLines: function(page){
         var ref = this;
         var lines = new Request.JSON({
@@ -57,7 +122,7 @@ var edit = {
     		    
                 $$('#editTable tr[class!=editHeadLine]').destroy();
 
-                lineArray.each(function(line){
+                Object.each(lineArray, function(line){
                     var tr = new Element('tr',{id: 'line_'+line.line_id});
                     var progressChk = (parseInt(line.line_id) <= ref.data.lastEditedRow) ? true : false;
                     tr.adopt(new Element('td',{'class': 'editTable_progress'}).adopt( ref.renderCheckbox('Progress',progressChk )));
@@ -223,14 +288,14 @@ var edit = {
 
 window.addEvent('domready',function(){
     edit.initialize();
-    $$('#pagePanel a').each(function(link){
-        link.addEvent('click',function(e){
-            e.stop();
-            $$('#pagePanel a[class=currentPage]').removeClass('currentPage');
-            link.addClass('currentPage');
-            edit.getLines(this.get('href'));
-        });
-    })
+//    $$('#pagePanel a').each(function(link){
+//        link.addEvent('click',function(e){
+//            e.stop();
+//            $$('#pagePanel a[class=currentPage]').removeClass('currentPage');
+//            link.addClass('currentPage');
+//            edit.getLines(this.get('href'));
+//        });
+//    })
     
 
     

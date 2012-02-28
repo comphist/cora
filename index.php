@@ -27,9 +27,9 @@ require_once( "lib/sessionHandler.php" );
 
 
 /* Globals */
-define( "TITLE",              "Ancor"                  );
-define( "VERSION",            "pre-alpha"                 );
-define( "LONGTITLE",          "Annotation Correction Tool");
+define( "TITLE",              "CorA"	                  );
+define( "VERSION",            "alpha"			  );
+define( "LONGTITLE",          "Corpus Annotator"          );
 define( "DESCRIPTION",        "An annotation tool."       );
 define( "KEYWORDS",           "annotation"                );
 define( "DEFAULT_LANGUAGE",   "de"                        );

@@ -28,7 +28,7 @@
 </div>	
 
 
-<div class="panel">
+<div id="editPanelDiv" class="panel" style="display: none;">
 
 <div id="pagePanel">
 	<span>Seite: </span>

@@ -270,6 +270,7 @@ var file = {
                              edit.data.lastEditedRow = fileData.lastEditedRow;
             		         edit.getLines(fileData.lastPage);
                              edit.renderPagesPanel(fileData.lastPage);
+                             $('editPanelDiv').show();
                              changeTab('edit');
                          }
         		     }
@@ -294,6 +295,7 @@ var file = {
                 if(data){
                     edit.data.lastEditedRow = null;
                     ref.listFiles();
+		    $('editPanelDiv').hide();
                 }
             }
         }).get({'do': 'unlockFile', 'fileid': fileid});

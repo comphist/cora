@@ -726,6 +726,12 @@ class DBInterface extends DBConnector {
 		return $this->query($qs);
 	}
 	
+	/** Return the total number of lines of a given file.
+	 *
+	 * @param string $fileid the ID of the file
+	 *
+	 * @return The number of lines for the given file
+	 */
 	public function getMaxLinesNo($fileid){
 		$qs = "SELECT COUNT(line_id) FROM {$this->db}.files_data WHERE file_id='{$fileid}'";
 		if($query = $this->query($qs)){
