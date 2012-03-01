@@ -71,7 +71,7 @@
 			$$toolsLinks$$
 		</div>
 -->
-		<div id="main" class="no-print">
+		<div id="topbar" class="no-print">
 			<div id="header">
 				<div id="controls" style="right: 5px">
 				  <?php if($_SESSION["loggedIn"]): ?>
@@ -88,6 +88,9 @@
 				</div>
 			</div><!-- end Header -->
 			<?php include( "gui/menu.php" ); ?>
+		</div>
+
+		<div id="main" class="no-print">
 			<?php foreach ($menu->getItems() as $item) {
 			         include( $menu->getItemFile($item) );
 			      } ?>

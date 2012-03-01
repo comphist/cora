@@ -663,7 +663,11 @@ class DBInterface extends DBConnector {
 	}
 	
 	public function unlockFile($fileid) {
-	    $qs = "DELETE FROM {$this->db}.files_locked WHERE file_id='{$fileid}' AND locked_by='{$_SESSION['user']}'";
+	    if ($_SESSION["admin"]) { // admins can unlock any file
+	        $qs = "DELETE FROM {$this->db}.files_locked WHERE file_id='{$fileid}'";
+	    } else {
+	        $qs = "DELETE FROM {$this->db}.files_locked WHERE file_id='{$fileid}' AND locked_by='{$_SESSION['user']}'";
+	    }
 	    return $this->query($qs);
 	}
 	
