@@ -183,13 +183,12 @@ var edit = {
             value: val,
             events: {
                 blur: function(){
-                    var el = this;
                     var req = new Request({
                         url: 'request.php?do=saveTag',
                         onComplete: function(){
                             if(type != 'comment')
-                                edit.markProgress(el);
-                        },
+                                edit.markProgress(this);
+                        }.bind(this),
                         onError: function(){
                             var msg = lang_strings.dialog_file_locked_error +
                                          ": " + data.lock.locked_by + ", " +
@@ -197,7 +196,7 @@ var edit = {
                                       alert(msg);
                         }
                     
-                    }).post({'tag_name': type, 'tag_value': el.get('value'), 'lineid': this.getParent('tr').get('id').substr(5)});
+                    }).post({'tag_name': type, 'tag_value': this.get('value'), 'lineid': this.getParent('tr').get('id').substr(5)});
                 }
             } })
     },
@@ -213,8 +212,8 @@ var edit = {
             var req = new Request({
                 url: 'request.php?do=saveTag',
                 onComplete: function(){
-                    edit.markProgress(el);
-                },
+                    edit.markProgress(this);
+                }.bind(this),
                 onError: function(){
                     var msg = lang_strings.dialog_file_locked_error +
                                  ": " + data.lock.locked_by + ", " +
@@ -222,7 +221,8 @@ var edit = {
                               alert(msg);
                 }
                 
-            }).post({'tag_name': type, 'tag_value': menu.getSelected()[0].get('html').replace(/[\s|\d]+/g,""), 'lineid': lineId});
+            }).post({'tag_name': type, 'tag_value': menu.getSelected()[0].get('html').replace(/\s[\d\.]+/g,""), 'lineid': lineId});
+	    // replace regexp in previous line is used to cut off a potential probability score after a tag
         } }});
         
         if(type=='tag_morph'){

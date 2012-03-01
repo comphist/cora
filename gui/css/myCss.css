@@ -694,8 +694,12 @@ div.editTableProgress {
     font-size: 1.5em;
 }
 
-#pagePanel a{
-    padding-right: 10px;
+#pagePanel span {
+    text-align: center;
+}
+
+#pagePanel a {
+    padding: 0 6px;
 }
 
 #pagePanel .currentPage{

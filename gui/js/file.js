@@ -248,31 +248,52 @@ var file = {
         		         if(fileData.success){
         		             
         		             // load Tagset
-        		             var req = new Request({
+				     var reqPOS;
+				     var reqMorph;
+				     
+        		             var afterLoadTagset = function() {
+					 // code that depends on the tagsets being fully loaded
+            				 edit.getLines(fileData.lastPage);
+					 edit.renderPagesPanel(fileData.lastPage);
+					 $('editPanelDiv').show();
+					 changeTab('edit');
+				     };
+
+				     // two requests are sent asynchronously; whichever request
+				     // finishes last will trigger continuation of the script
+        		             reqPOS = new Request({
         		                 url: "request.php",
         		                 async: true,
+					 method: 'get',
+					 data: {'do':'getTagsetTags','tagset':'STTS.pos'},
         		                 onComplete: function(response){
         		                     fileTagset.pos = response;
+					     if (!reqMorph.isRunning()) {
+						 afterLoadTagset();
+					     }
         		                 }
-        		             }).get({'do':'getTagsetTags','tagset':'STTS.pos'})
+        		             });
 
-        		             req = new Request({
+        		             reqMorph = new Request({
         		                 url: "request.php",
         		                 async: true,
+					 method: 'get',
+					 data: {'do':'getTagsetTags','tagset':'STTS.morph'},
         		                 onComplete: function(response){
         		                     fileTagset.morph = response;
+					     if (!reqPOS.isRunning()) {
+						 afterLoadTagset();
+					     }
         		                 }
-        		             }).get({'do':'getTagsetTags','tagset':'STTS.morph'})
+        		             });
         		             
-        		             
-                             $('currentfile').set('text',fileData.data.file_name);
-                             ref.listFiles();
-                             edit.data.lastEditedRow = fileData.lastEditedRow;
-            		         edit.getLines(fileData.lastPage);
-                             edit.renderPagesPanel(fileData.lastPage);
-                             $('editPanelDiv').show();
-                             changeTab('edit');
-                         }
+				     reqPOS.send();
+				     reqMorph.send();
+
+				     $('currentfile').set('text',fileData.data.file_name);
+				     ref.listFiles();
+				     edit.data.lastEditedRow = fileData.lastEditedRow;
+				 }
         		     }
         		 }).get({'do': 'openFile', 'fileid': fileid});
     	     } else {
