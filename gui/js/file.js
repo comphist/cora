@@ -330,7 +330,7 @@ var file = {
                 url:'request.php',
         		onSuccess: function(filesArray, text) {        		    
         		    var file = filesArray[0];
-                    $('fileList').adopt(ref.renderTableLine(file));
+			    $('fileList').adopt(ref.renderTableLine(file));
                 }
         }).get({'do': 'getLastImportedFile'})
     },
@@ -361,11 +361,13 @@ var file = {
     renderTableLine: function(file){
         var opened = file.opened ? 'opened' : '';
         var tr = new Element('tr',{id: 'file_'+file.file_id, 'class': opened});
-        var delTD = new Element('td',{ html: '<img src="gui/images/proxal/delete.ico" />' });
-        if(file.byUser == userdata.name || userdata.admin){
+        if((file.byUser == userdata.name) || userdata.admin){
+            var delTD = new Element('td',{ html: '<img src="gui/images/proxal/delete.ico" />' });
             delTD.addEvent('click', function(){ ref.deleteFile(file.file_id); } );
-        }
-        tr.adopt(delTD);
+            tr.adopt(delTD);
+        } else {
+	    tr.adopt(new Element('td'));
+	}
         var addData = (file.opened) ? '-' : '<span class="addData{type}">Hinzufügen</span>';
         var chkImg = '<img src="gui/images/chk_on.png" />';
         tr.adopt(new Element('td',{'class': 'filename'}).adopt(new Element('a',{ html: file.file_name }).addEvent('click',function(){ ref.openFile(file.file_id); })));
@@ -378,7 +380,9 @@ var file = {
         tr.adopt(new Element('td',{ html: file.byUser }));
         if((file.opened == userdata.name ) || (opened && userdata.admin)){
             tr.adopt(new Element('td').adopt(new Element('a',{ html: 'close', 'class': 'closeFileLink' }).addEvent('click', function(){ ref.closeFile(file.file_id); } )));
-        }
+        } else {
+	    tr.adopt(new Element('td'));
+	}
         return tr;
     },
     
