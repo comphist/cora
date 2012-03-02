@@ -27,7 +27,7 @@
 <!--	script src="gui/js/mootools-1.2.3-core-yc.js" type="text/javascript" charset="utf-8"></script>
 		<script src="gui/js/mootools-1.2.3.1-more.js" type="text/javascript" charset="utf-8"></script>
 -->
-		<script src="gui/js/mootools-core-1.4.3-full.js" type="text/javascript" charset="utf-8"></script>
+		<script src="gui/js/mootools-core-1.4.5.js" type="text/javascript" charset="utf-8"></script>
 		<script src="gui/js/mootools-more-1.4.0.1.js" type="text/javascript" charset="utf-8"></script>
         <script src="gui/js/cerabox/cerabox.min.js"></script>
 		<script src="gui/js/baseBox.js"></script>
@@ -77,7 +77,8 @@
 				  <?php if($_SESSION["loggedIn"]): ?>
 				  <a href="index.php?do=logout"><img src="gui/images/logout.png" alt="Logout" width="60" height="30" /></a>
 				  <?php endif; ?>
-				  <a href="index.php?lang=<?php echo $sh->getInactiveLanguage(); ?>"><img src="gui/images/lang_de_en.png" alt="Change Language" width="60" height="30" /></a>
+<!--				  <a href="index.php?lang=<?php echo $sh->getInactiveLanguage(); ?>"><img src="gui/images/lang_de_en.png" alt="Change Language" width="60" height="30" /></a>
+-->
 <!--					<a href="#"><img id="HelpMe" src="gui/images/help.png" height="30" alt="Help" class="tipz" title="Help::Click here to toggle help mode."  /></a>
 -->
 				</div>
