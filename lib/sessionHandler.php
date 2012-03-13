@@ -30,9 +30,9 @@ class SessionHandler {
     $this->db = new DBInterface();
 
     $defaults = array( "lang"        => DEFAULT_LANGUAGE,
-		       "loggedIn"    => false,
-		       "admin"       => false,
-		       "failedLogin" => false );
+		       "loggedIn"    => "false",
+		       "admin"       => "false",
+		       "failedLogin" => "false" );
 
     foreach($defaults as $key => $default) {
       if(!array_key_exists($key, $_SESSION)) {
@@ -141,22 +141,27 @@ class SessionHandler {
     return $this->db->toggleAdminStatus($username);
   }
 
+  	/** Wraps DBInterface::saveNewFile() */
 	public function saveNewFile( $name, $user, $pos_tagged, $morph_tagged, $norm, $tagset, &$data ) {
 		return $this->db->saveNewFile( $name, $user, $pos_tagged, $morph_tagged, $norm, $tagset, $data );
 	}
-	
+  	
+	/** Wraps DBInterface::saveAddData() */	
 	public function saveAddData( $id, $tagType, &$data ) {
 		return $this->db->saveAddData( $id, $tagType, $data );
 	}
-		
+	
+  	/** Wraps DBInterface::deleteFile() */	
 	public function deleteFile($fileid){
 		return $this->db->deleteFile($fileid);
 	}
-	
+
+  	/** Wraps DBInterface::lockFile() */	
 	public function lockFile( $fileid ) {
 	    return $this->db->lockFile( $fileid , $_SESSION['user']);
 	  }
 
+    /** Wraps DBInterface::unlockFile(), unset the session data of the file */ 
 	public function unlockFile( $fileid ) {
 	    if($ans = $this->db->unlockFile( $fileid )){
 			unset($_SESSION['currentName']);
@@ -166,14 +171,13 @@ class SessionHandler {
 		return $ans;
 	}
 	
-	/** Calculate the page on which a given line appears.
-	 * 
+	/** Calculate the page number on which a given line appears.
+     *
 	 * @param int $line The line number
-	 *
 	 * @return The page number where the line appears, taking
 	 * 	   into consideration the current user settings,
-	 *	   or 0 if it's the first page?!
-	 */
+	 *	   or 0 if there is only one page at all
+     */  
 	public function calculateEditorPage($line){
 		if($line>$_SESSION['noPageLines']) // if there are more lines than fit on a single page ...
 			$page = @ceil(($line - $_SESSION['contextLines'])/($_SESSION['noPageLines']-$_SESSION['contextLines']));
@@ -182,7 +186,7 @@ class SessionHandler {
 		return $page;
 	}
 	  
-    
+  /** Wraps DBInterface::openFile(), set the session data for the file */    
 	public function openFile( $fileid ){
 		$lock = $this->db->openFile($fileid);
 		if($lock['success']){
@@ -194,27 +198,28 @@ class SessionHandler {
 		return $lock;		
 	}
 	
+	/** Wraps DBInterface::getFiles() */
 	public function getFiles(){
 		return $this->db->getFiles();
 	}
 	
+	/** Wraps DBInterface::getLastImportedFile() */
 	public function getLastImportedFile(){
 		return $this->db->getLastImportedFile($_SESSION['user']);
 	}
 	
+	/** Wraps DBInterface::getLines(), calculating start line and limit first */
 	public function getLines($page){
 		if($page==0) $page++;
-		// if($page){
-			$end = $page*($_SESSION['noPageLines']-$_SESSION['contextLines'])+$_SESSION['contextLines'];
-			$start = $end - $_SESSION['noPageLines'];
-			$lim = $_SESSION['noPageLines'];
-		// } else {
-		// 	$start = 0;
-		// 	$lim = 0;
-		// }
+
+		$end = $page*($_SESSION['noPageLines']-$_SESSION['contextLines'])+$_SESSION['contextLines'];
+		$start = $end - $_SESSION['noPageLines'];
+		$lim = $_SESSION['noPageLines'];
+
 		return $this->db->getLines($_SESSION['currentFileId'],$start,$lim);
 	}
 	
+	/** Wraps DBInterface::getToken() */
 	public function getToken($fileid){
 		return $this->db->getToken($fileid);
 	}
@@ -225,26 +230,32 @@ class SessionHandler {
 		return $this->calculateEditorPage($anz);
 	}
 	
+	/** Wraps DBInterface::saveTag() */
 	public function saveTag($tagvalue,$tagname,$fileid,$lineid){
 		return $this->db->saveTag($tagvalue,$tagname,$fileid,$lineid);
 	}		
 	
+	/** Wraps DBInterface::highlightError() */
 	public function highlightError($line){		
 		return $this->db->highlightError($_SESSION['currentFileId'],$line,$_SESSION['user']);
 	}
 
+	/** Wraps DBInterface::unhighlightError() */
 	public function unhighlightError($line){		
 		return $this->db->unhighlightError($_SESSION['currentFileId'],$line,$_SESSION['user']);
 	}
 	
+	/** Wraps DBInterface::markLastPosition() */
 	public function markLastPosition($line){
 		return $this->db->markLastPosition($_SESSION['currentFileId'],$line,$_SESSION['user']);
 	}
 	
+	/** Wraps DBInterface::undoLastEdit() */
 	public function undoLastEdit(){
 		return $this->db->undoLastEdit($_SESSION['currentFileId'],$_SESSION['user']);
 	}
 	
+	/** Wraps DBInterface::getHighestTagId() */
 	public function getHighestTagId($tagset){
 		return $this->db->getHighestTagId($tagset);
 	}
