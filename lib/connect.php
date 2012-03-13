@@ -136,7 +136,13 @@ class DBInterface extends DBConnector {
     $query = $this->query( $qs );
     return @mysql_fetch_array( $query );
   }
-
+  
+  /** Return editor settings for the current user. 
+   *
+   * @param string $user Username
+   *
+   * @return An array with the database entries from the table 'editor_settings' for the given user.
+   */
   public function getUserEditorSettings($user){
 	$qs = "SELECT * FROM {$this->db}.editor_settings WHERE username='{$user}'";
 	return @mysql_fetch_assoc( $this->query( $qs ) );
@@ -367,6 +373,18 @@ class DBInterface extends DBConnector {
     return true;
   }
 
+  /** Copy a tagset
+   *
+   * This function copies all database entries in all concerned tables for a given tagset
+   * 
+   * @todo extend function for the possibility to add new data directly to the 'new' copied tagset
+   *
+   * @param array $data array containing additional tags for the copied tagset  (not yet implemented)
+   * @param string $originTagset name of the original tagset
+   * @param string $newTagset name of the new created (copied) tagset
+   * @param string $lang language code (@c de or @c en)
+   *
+   */
   public function saveCopyTagset($data,$originTagset,$newTagset,$lang){
 	$lock = $this->lockTagset($newTagset);
     if (!$lock['success']) {
@@ -508,6 +526,21 @@ class DBInterface extends DBConnector {
     return $this->query($qs);
   }
 
+  /** Save new file
+   *
+   * This function writes the metadata for the new file into the database and
+   * calls the @c insertData function for importing the file content.
+   *
+   * @param string $name the filename
+   * @param string $user the user who imported the file
+   * @param string $pos_tagged POS tagged state constant (@c true or @c false)
+   * @param string $morph_tagged Morph tagged state constant (@c true or @c false)
+   * @param string $norm Normalized state constant (@c true or @c false)
+   * @param string $tagset used tagset for this file
+   * @param array reference $data the file content (passed to the @c insertData function)
+   *
+   * @return bool result of the mysql query and @ insertData function
+   */
 	public function saveNewFile($name,$user,$pos_tagged,$morph_tagged,$norm,$tagset,&$data){
 
     	$qs = "INSERT INTO {$this->db}.files_metadata (file_name, POS_tagged, morph_tagged, norm, byUser, created) "
@@ -521,6 +554,18 @@ class DBInterface extends DBConnector {
 		return false;
 	}
 	
+	
+  /** Save new data to an existing file
+   *
+   * This function updates the metadata for the given file in the database and
+   * calls the @c updateData function for adding the new content.
+   *
+   * @param string $file_id file_id
+   * @param string $tagType annotate data type of the file content (@c morph or @c pos or @c norm)
+   * @param array reference $data file content (passed to the @c updateData function)
+   *
+   * @return @return bool result of the mysql query and @ insertData function
+   */	
 	public function saveAddData($file_id,$tagType,&$data){
 
 		if(strtolower($tagType) == 'morph') {$tagname = "morph_tagged";}
@@ -537,7 +582,20 @@ class DBInterface extends DBConnector {
 		return false;
 		
 	}
-		
+	
+	
+  /** Insert data to a new created file
+   *
+   * This function writes each line of the file content into the database, splitting the line according to the given tag type.
+   *
+   * @param string $file_id file_id
+   * @param array $data an array with an entry for each text line 
+   * @param string $pos_tagged POS tagged state constant (@c true or @c false)
+   * @param string $morph_tagged Morph tagged state constant (@c true or @c false)
+   * @param string $norm Normalized state constant (@c true or @c false)
+   *
+   * @return @return bool result of the mysql queryies
+   */			
  	public function insertData($file_id,$data,$pos_tagged,$morph_tagged,$norm){
 		foreach($data as $lineIndex=>$line){
 			$max = 0;
@@ -591,7 +649,17 @@ class DBInterface extends DBConnector {
 			
 		return true;
 	}
-	  
+
+  /** Add data to an existing file
+   *
+   * This function adds the information from each line of the file content to the database, splitting the line according to the given tag type. For each entry the token is compared to ensure the correct alignment.
+   *
+   * @param string $file_id file_id
+   * @param string $tagType annotate data type of the file content (@c morph or @c pos or @c norm)
+   * @param array $data an array with an entry for each text line 
+   *
+   * @return @return bool result of the mysql queryies
+   */			
  	public function updateData($file_id,$tagType,$data){
 		foreach($data as $lineIndex=>$line){
 			$max = 0;
@@ -637,7 +705,25 @@ class DBInterface extends DBConnector {
 		return true;
 	}	
 	
-	  
+  /** Lock a file for editing.
+   *
+   * This function insures restricted access when editing file data. In detail this is done by
+   * a lock table where first all entries for the given user are deleted and then tries to insert
+   * a new entry for the given file id. Note that if the file is already locked by another user,
+   * the operation will fail und it is unpossible to lock the file at the moment.
+   *
+   * Should be called before editing any database entries concerning the file content.
+   *
+   * $locksCount indicates the number of file which were locked by the given user and are unlocked now.
+   *
+   * @param string $fileid file id
+   * @param string $user username
+   *
+   * @return An @em array which minimally contains the key @c success,
+   * which is set to @c true if the lock was successful. If set to @c
+   * false, a key named @c lock contains further information about the
+   * already-existing, conflicting lock.
+   */	  
 	public function lockFile($fileid,$user) {
 	    // first, delete all locks by the current user
 	    $qs = "DELETE FROM {$this->db}.files_locked WHERE locked_by='{$user}'";
@@ -654,14 +740,32 @@ class DBInterface extends DBConnector {
 	    }
 	    return array("success" => true, "lockCounts" => (string) $locksCount);
 	  }
-	
+
+	/** Get locked file for given user.
+	*
+	* Retrieves the lock entry for a given user from the file lock table.
+	*
+	* @param string $user username
+	*
+	* @return An @em array with file id and file name of the locked file
+  	*/	
 	public function getLockedFiles($user){
 		$qs = "	SELECT a.file_id, b.file_name FROM {$this->db}.files_locked a, {$this->db}.files_metadata b 
 				WHERE locked_by='{$user}' AND a.file_id=b.file_id 
 				LIMIT 1";
 		return @mysql_fetch_row($this->query( $qs ));
 	}
-	
+
+	/** Unlock a file for the current user.
+	*
+	* Deletes the lock entry for the current user from the file lock table.
+	*
+	* @todo move SESSION data out of this function
+	*
+	* @param string $fileid file id
+	*
+	* @return @em array result of the mysql query
+  	*/		
 	public function unlockFile($fileid) {
 	    if ($_SESSION["admin"]) { // admins can unlock any file
 	        $qs = "DELETE FROM {$this->db}.files_locked WHERE file_id='{$fileid}'";
@@ -670,7 +774,17 @@ class DBInterface extends DBConnector {
 	    }
 	    return $this->query($qs);
 	}
-	
+
+	/** Open a file.
+	*
+	* Retrieves metadata and users progress data for the given file.
+	*
+	* @todo move SESSION data out of this function
+	*
+	* @param string $fileid file id
+	*
+	* @return an @em array with at least the file meta data. If exists, the user's last edited row is also transmitted.
+  	*/		
 	public function openFile($fileid){
 		$qs = "SELECT * FROM {$this->db}.files_metadata WHERE file_id='{$fileid}'";
 		if($query = $this->query($qs)){
@@ -689,7 +803,15 @@ class DBInterface extends DBConnector {
 
 		return $lock;		
 	}
-	
+
+	/** Delete a file.
+	*
+	* Deletes ALL database entries linked with the given file id.
+	*
+	* @param string $fileid file id
+	*
+	* @return bool @c true 
+  	*/	
 	public function deleteFile($fileid){
 		$qs = "	DELETE FROM files_metadata WHERE file_id='{$fileid}'";							 
 		$this->query($qs);
@@ -709,7 +831,13 @@ class DBInterface extends DBConnector {
 		
 	    return true;
 	}
-	
+
+	/** Get a list of all files.
+	*
+	* Retrieves meta information such as filename, created by user, locked by user, etc for all files.
+	*
+	* @return an two-dimensional @em array with the meta data
+  	*/		
 	public function getFiles(){
 		$qs = "SELECT a.*,b.locked_by as opened FROM files_metadata a LEFT JOIN files_locked b ON a.file_id=b.file_id ORDER BY lastMod DESC";
 	    $query = $this->query($qs); 
@@ -720,11 +848,26 @@ class DBInterface extends DBConnector {
 		return $files;
 	}
 	
+	/** Get meta data of the last imported file.
+	*
+	* This function is supposed to be called from JavaScript after import for refreshing the file list.
+	*
+	* @return an two-dimensional @em array with the meta data
+  	*/		
 	public function getLastImportedFile($user){
 		$qs = "SELECT a.*, b.locked_by as opened FROM files_metadata a LEFT JOIN files_locked b ON a.file_id=b.file_id WHERE a.byUser='{$user}' ORDER BY lastMod DESC LIMIT 1";
 		return mysql_fetch_assoc($this->query($qs));
 	}
 	
+	
+	/** Save editor settings for given user.
+	*
+	* @param string $user username
+	* @param string $lpp number of lines per page
+	* @param string $cl number of context lines
+	*
+	* @return bool result of the mysql query
+  	*/			
 	public function setUserEditorSettings($user,$lpp,$cl){
 		$qs = "INSERT INTO editor_settings (username,noPageLines,contextLines) VALUES ('{$user}','{$lpp}','{$cl}') ON DUPLICATE KEY update noPageLines='{$lpp}',contextLines='{$cl}'";
 		return $this->query($qs);
@@ -746,6 +889,14 @@ class DBInterface extends DBConnector {
 		return 0;
 	}
 	
+	/** Retrieve all tokens from a file.
+	*
+	* This function is called from the @c addData function.
+	*
+	* @param string $fileid the file id
+	*
+	* @return an @em array containing all tokens
+ 	*/	
 	public function getToken($fileid){
 		$qs = "SELECT token FROM {$this->db}.files_data WHERE file_id='{$fileid}'";
 		$query = $this->query($qs);
@@ -757,6 +908,14 @@ class DBInterface extends DBConnector {
 		
 	}
 	
+	/** Retrieves a specified number of lines from a file.
+	*
+	* @param string $fileid the file id
+	* @param string $start line id of the first line to be retrieved
+	* @param string $lim numbers of lines to be retrieved
+	*
+	* @return an @em array containing the lines
+ 	*/ 	
 	public function getLines($fileid,$start,$lim){		
 		// $qs = "SELECT * FROM {$this->db}.files_data WHERE file_id='{$fileid}'";
 		$qs = "	SELECT a.*, IF(b.line_id+1,true,false) AS 'errorChk'
@@ -794,27 +953,95 @@ class DBInterface extends DBConnector {
 		return $data;
 	    
 	}
-	
+
+	/** Saves a changed tag.
+	*
+	* This function is called from Java Script when changing a tag in the editor.
+	* 
+	* @param string $tagvalue the new tag content
+	* @param string $tagname the tag type of the change
+	* @param string $fileid the file id
+	* @param string $lineid the line id
+	*
+	* @return an @em array containing the lines
+ 	*/ 		
 	public function saveTag($tagvalue,$tagname,$fileid,$lineid){
 		$qs = "INSERT INTO files_data (file_id,line_id,{$tagname}) VALUES ('{$fileid}','{$lineid}','{$tagvalue}') ON DUPLICATE KEY update {$tagname}='{$tagvalue}'"; 
 		return $this->query( $qs );
 	}
-	
+
+	/** Highlight an error.
+	*
+	* Each error marker is represented by an entry in a special database table and is 
+	* depending on the user.
+	*
+	* This function is called from Java Script when checking the error box.
+	* 
+	* @param string $file the file id
+	* @param string $line the line id
+	* @param string $user the username
+	*
+	* @return bool the result of the mysql query
+ 	*/ 			
 	public function highlightError($file,$line,$user){
 		$qs = "INSERT INTO files_errors (file_id,line_id,user) VALUES ('{$file}','{$line}','{$user}')";
 		return $this->query( $qs );
 	}
 
+	/** Remove an error marker.
+	*
+	* Removes the corresponding database entry for the given user.
+	*
+	* This function is called from Java Script when unchecking the error box.
+	* 
+	* @param string $file the file id
+	* @param string $line the line id
+	* @param string $user the username
+	*
+	* @return bool the result of the mysql query
+ 	*/ 			
 	public function unhighlightError($file,$line,$user){
 		$qs = "DELETE FROM files_errors WHERE file_id='{$file}' AND line_id='{$line}' AND user='{$user}'";
 		return $this->query( $qs );
 	}
-
+    
+	/** Save user progress on the given file.
+	*
+	* User progress is shown by a green bar at the left side of the editor. If the user 
+	* make changes on a line with higher line id this function is called and updates the 
+	* last editor position for the given user.
+	*
+	* This function is called from Java Script when a user edits a line.
+	* 
+	* @param string $file the file id
+	* @param string $line the line id
+	* @param string $user the username
+	*
+	* @return bool the result of the mysql query
+ 	*/
 	public function markLastPosition($file,$line,$user){
 		$qs = "INSERT INTO files_progress (file_id,new_line_id,user) VALUES ('{$file}','{$line}','{$user}') ON DUPLICATE KEY UPDATE old_line_id=new_line_id,new_line_id='{$line}'";
 		return $this->query( $qs );
 	}
 	
+	/** Undo last edit.
+	*
+	* The idea for this feature was following szenario: a user sees an error and corrects it
+	* immediataly then goes back to the linear controlling order, line by line. In this case,
+	* the progress is _not_ at the point of the out of sequence edit. So, when not editing the
+	* next one in line there must be a possibility to undo this.
+	* The progress table has a new_line_id and a old_line_id column. When saving a the progress,
+	* the old_line_id is updated with the former new_line_id and the new progress becomes the new
+	* new_line_id.
+	* So, all undo is doing is to restore the new_line_id with the old_line_id.
+	* 
+	* @todo undo is not enabled at the moment. Need to be implemented in a nice way in the editor.
+	* 
+	* @param string $file the file id
+	* @param string $user the username
+	*
+	* @return bool the result of the mysql query
+ 	*/
 	public function undoLastEdit($file,$user){
 		$qs = "UPDATE files_progress SET new_line_id=old_line_id WHERE file_id='{$file}' AND user='{$user}'";
 		if($this->query( $qs )){
@@ -824,8 +1051,19 @@ class DBInterface extends DBConnector {
 		}
 		
 
-	}
+	}	
 	
+	/** Get the highest tag id from an given tagset.
+	*
+	* Retrieves the maximal id of stored tags from a given tagset.
+	*
+	* This function is called from Java Script when a user adds tags to an tagset
+	* after tag unmatches at a file import.
+	* 
+	* @param string $tagset the tagset
+	*
+	* @return string the maximal tag id
+ 	*/
 	public function getHighestTagId($tagset){
 		$qs = "SELECT max(id) FROM tagset_tags WHERE tagset='{$tagset}'";
 		$row = @mysql_fetch_array($this->query($qs));
