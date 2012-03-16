@@ -1,6 +1,6 @@
 <?php
 
-/** @file contentModel.php
+/** @file fileModel.php
  * Define classes related to file import.
  *
  * @author Lara Kresse
