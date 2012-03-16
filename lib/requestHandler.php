@@ -129,15 +129,43 @@ class RequestHandler {
    * of the request is sent via GET or POST.
    *
    * Supports the following GET requests (as values of @c do):
+   * @arg @c getHighestTagId - Retrieve maximal tag id from specified tagset
    * @arg @c lockTagset - Lock the tagset specified in @c name
    * @arg @c unlockTagset - Unlock the tagset specified in @c name
    * @arg @c fetchTagset - Retrieve the tagset specified in @c name
+   * @arg @c getTagsetTags - Return string with tagset tags as html <option> objects
    * @arg @c saveTagset - Save modifications to a tagset; expects the
    * data as a JSON string via POST.
+   * @arg @c saveCopyTagset - Copy a specified tagset and saves changes to the copy;
+   * expects the data as a JSON string.
    * @arg @c createUser - Create a new user.
    * @arg @c deleteUser - Delete a user.
    * @arg @c toggleAdmin - Toggle administrator status of a user.
    * @arg @c changePassword - Change the password a user.
+   * @arg @c listFiles - List all saved files.
+   * @arg @c getLastImportedFile - Return information about the last imported file.
+   * @arg @c lockFile - Lock the file specified in @c fileid.
+   * @arg @c unlockFile - Unlock the file specified in @c fileid.
+   * @arg @c openFile - Open the file specified in @c fileid.
+   * @arg @c deleteFile - Delete the file specified in @c fileid.
+   * @arg @c getLines - Retrieve all lines for the page specified in @c page.
+   * @arg @c getMaxLinesNo - Return the total number of lines for the current opened file.
+   * @arg @c copyTagset - @c not @c implemented @c yet
+   * @arg @c importFile - @c not @c used; was moved to POST requests
+   * @arg @c saveEditorUserSettings - Save user settings specified in
+   * @c noPageLines (number of lines per page) and @c contextLines
+   * (number of lines to show the context) to the database.
+   * @arg @c highlightError - Save an error marker specified by the @c line id to the database.
+   * @arg @c unhighlightError - Remove an error marker specified by the @c line id from the database.
+   * @arg @c markLastPosition - Save user progress indicated by the @line id for the current opened file.
+   * @arg @c undoLastEdit - Undo last progress change.
+   *
+   * Supports the following POST requests (as values of @c action):
+   * @arg @c importFile - Import a new file specified by @c textName. Annotation type is indicated by the 
+   * three arguments @c tagPOSStatus, @c tagMorphStatus and @c tagNormStatus. The linked tagset is specified
+   * in @c tagset, fiel content is submitted with the @c data item of the array.
+   * @arg @c addFileData - Add annotation data to an existing file specified in @fileID. Annotation type is given in @tagType by one
+   * one of the following values: morph, pos, norm. 
    * 
    * @return Depending on the type of request, either:
    * @li a @em string in JavaScript Object Notation (JSON);
@@ -148,18 +176,28 @@ class RequestHandler {
 	if (array_key_exists("action", $post)) {
 		switch( $post["action"]) {
 			case "importFile":	$data = file_get_contents($_FILES['textFile']['tmp_name']);
+								// if no name was submitted, use original file name
 								$name = empty($post['textName']) ? str_replace(".txt","",$_FILES['textFile']['name']) : $post['textName'];
+
+								// set annotation type
 								$pos_tagged = isset($post['tagPOSStatus']) ? 1 : 0;
 								$morph_tagged = isset($post['tagMorphStatus']) ? 1 : 0;
 								$norm = isset($post['tagNormStatus']) ? 1 : 0;
+
+								// import File
 								$fM = new FileModel($this->sh);
 								$importStatus = $fM->importFile($post['tagset'],$pos_tagged,$morph_tagged,$norm,$data);
+
+								// save file to database
 								if($importStatus['status']){										$this->sh->saveNewFile($name,$_SESSION['user'],$pos_tagged,$morph_tagged,$norm,$post['tagset'],self::escapeSQL($importStatus['data']));
 									echo json_encode(array("status"=>true));
-								} else {
+								}
+								// return tags which do not match with the tagset
+								else {
 									// look if tagset is locked, if not lock it!
 									$lock = $this->sh->lockTagset(self::escapeSQL($post["tagset"]));
 									if(!$lock['success'])
+										// return lock information
 										echo json_encode(array_merge($importStatus,array('locked'=>true,'byuser'=>$lock['lock'][0],'since'=>$lock['lock'][1])));
 									else {
 										echo json_encode($importStatus);
@@ -168,20 +206,28 @@ class RequestHandler {
 								
 								exit; 
 			case "addFileData": $data = file_get_contents($_FILES['textFile']['tmp_name']);
-								 $pos_tagged = false; $morph_tagged = false; $norm = false;
+								
+								// set annotation type
+								$pos_tagged = false; $morph_tagged = false; $norm = false;
 								if(strtolower($post['tagType']) == 'morph') {$morph_tagged = true;}
 								if(strtolower($post['tagType']) == 'pos') {$pos_tagged = true;}
 								if(strtolower($post['tagType']) == 'norm') {$norm = true;}
 								
-								 $fM = new FileModel($this->sh);
-								 $importStatus = $fM->addData($post['fileID'],$post['tagset'],$pos_tagged,$morph_tagged,$norm,$data);
-								 if($importStatus['status']){
+								// extract annotionen data
+								$fM = new FileModel($this->sh);
+								$importStatus = $fM->addData($post['fileID'],$post['tagset'],$pos_tagged,$morph_tagged,$norm,$data);
+								
+								// save extra data to database
+								if($importStatus['status']){
 									$this->sh->saveAddData($post['fileID'],$post['tagType'],self::escapeSQL($importStatus['data']));
 									echo json_encode(array("status"=>true));
-								} else {
+								}
+								// return tags which do not match with the tagset
+								else {
 									// look if tagset is locked, if not lock it!
 									$lock = $this->sh->lockTagset(self::escapeSQL($post["tagset"]));
 									if(!$lock['success'])
+										// return lock information
 										echo json_encode(array_merge($importStatus,array('locked'=>true,'byuser'=>$lock['lock'][0],'since'=>$lock['lock'][1])));
 									else {
 										echo json_encode($importStatus);
@@ -211,8 +257,7 @@ class RequestHandler {
 							  foreach($data['tags'] as $tag){
 								echo "<option>".trim($tag['shortname'])."</option>";
 							  }
-							  // echo json_encode($data['tags']);
-							 exit;
+							  exit;
 
         case "saveTagset":    if ($_SESSION["admin"]) {
 	  							$data = json_decode(file_get_contents("php://input"), true);
