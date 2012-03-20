@@ -253,9 +253,11 @@ var file = {
 				     
         		             var afterLoadTagset = function() {
 					 // code that depends on the tagsets being fully loaded
-            				 edit.getLines(fileData.lastPage);
-					 edit.renderPagesPanel(fileData.lastPage);
+					 edit.editorModel = new EditorModel(fileid, fileData.maxLinesNo, fileData.lastEditedRow, fileData.lastPage);
+//					 edit.renderPagesPanel(fileData.lastPage);
+//            				 edit.getLines(fileData.lastPage);
 					 $('editPanelDiv').show();
+					 default_tab = 'edit';
 					 changeTab('edit');
 				     };
 
@@ -292,7 +294,6 @@ var file = {
 
 				     $('currentfile').set('text',fileData.data.file_name);
 				     ref.listFiles();
-				     edit.data.lastEditedRow = fileData.lastEditedRow;
 				 }
         		     }
         		 }).get({'do': 'openFile', 'fileid': fileid});
@@ -309,17 +310,42 @@ var file = {
     
     closeFile: function(fileid){        
         var ref = this;
+	var emf = (edit.editorModel!=null && edit.editorModel.fileId==fileid);
 
-        var req = new Request({
-            url:"request.php",
-            onSuccess: function(data){
-                if(data){
-                    edit.data.lastEditedRow = null;
-                    ref.listFiles();
-		    $('editPanelDiv').hide();
-                }
-            }
-        }).get({'do': 'unlockFile', 'fileid': fileid});
+	if (emf) {
+	    if (edit.editorModel.confirmClose()) {
+		$('overlay').show();
+		new Request({
+		    url: "request.php",
+		    onSuccess: function(data) {
+			if (!data) {
+			    console.log("Error closing file?");
+			}
+			ref.listFiles();
+			edit.editorModel = null;
+			default_tab = 'file';
+			changeTab(default_tab);
+			$('menuRight').hide();
+			$('editTable').hide();
+			$('editPanelDiv').hide();
+			$('currentfile').set('text','');
+			$('overlay').hide();
+		    }
+		}).get({'do': 'unlockFile', 'fileid': fileid});
+	    }
+	} else {
+	    var doit = confirm("Sie sind dabei, eine Datei zu schließen, die aktuell nicht von Ihnen bearbeitet wird. Falls jemand anderes diese Datei zur Zeit bearbeitet, könnten Datenverluste auftreten.");
+	    if (doit) {
+		new Request({
+		    url:"request.php",
+		    onSuccess: function(data){
+			if(data){
+			    ref.listFiles();
+			}
+		    }
+		}).get({'do': 'unlockFile', 'fileid': fileid});
+	    }
+	}
     },
     
     addFileToList: function(){

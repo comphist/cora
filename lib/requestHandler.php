@@ -324,26 +324,21 @@ class RequestHandler {
 		case "getLines":   $data = $this->sh->getLines(self::escapeSQL($get['page']));
 						   echo json_encode($data);
 						   exit;
+		case "getLinesById":   $data = $this->sh->getLinesById(self::escapeSQL($get['start_id']),self::escapeSQL($get['end_id']));
+						   echo json_encode($data);
+						   exit;
 		case "getMaxLinesNo": echo $this->sh->getMaxLinesNo(); exit;
 						
-	    case "saveTag":	   return $this->sh->saveTag(self::escapeSQL($post['tag_value']),self::escapeSQL($post['tag_name']),$_SESSION['currentFileId'],$post['lineid']);
-						   exit;
-						
+
+		case "saveData":	$this->sh->saveData(self::escapeSQL($get['lastEditedRow']), self::escapeSQL(json_decode(file_get_contents("php://input"), true)));
+		     			exit;
+
 	    case "copyTagset":	exit;
 						
 		case "importFile": $f = new FileModel($this->sh); $f->importFile();
 		
 		case "saveEditorUserSettings": return $this->sh->setUserEditorSettings($get['noPageLines'],$get['contextLines']); exit;
-		
-		case "highlightError": return $this->sh->highlightError($get['line']); exit;
-		
-		case "unhighlightError": return $this->sh->unhighlightError($get['line']); exit;
-		
-		case "markLastPosition": return $this->sh->markLastPosition($get['line']); exit;
-		
-		case "undoLastEdit": $row = $this->sh->undoLastEdit(); echo $row['new_line_id']; exit;
-		
-		
+
 
         default:           self::returnError(400, "Unknown request: " + $get["do"]);
      }

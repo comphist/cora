@@ -171,8 +171,8 @@ class SessionHandler {
 		return $ans;
 	}
 	
-	/** Calculate the page number on which a given line appears.
-     *
+ 	/** Calculate the page number on which a given line appears.
+	 *
 	 * @param int $line The line number
 	 * @return The page number where the line appears, taking
 	 * 	   into consideration the current user settings,
@@ -193,6 +193,7 @@ class SessionHandler {
 			$_SESSION['currentFileId'] = $lock['data']['file_id'];
 			$_SESSION['currentName'] = $lock['data']['file_name'];
 			$lock['lastPage'] = $this->calculateEditorPage($lock['lastEditedRow']);
+			$lock['maxLinesNo'] = $this->getMaxLinesNo();
 		}
 		
 		return $lock;		
@@ -218,43 +219,49 @@ class SessionHandler {
 
 		return $this->db->getLines($_SESSION['currentFileId'],$start,$lim);
 	}
+
+	/** Wraps DBInterface::getLines(), given a start and end line */
+	public function getLinesById($start,$end) {
+	       $lim = $end - $start;
+	       return $this->db->getLines($_SESSION['currentFileId'],$start,$lim);
+	}
 	
 	/** Wraps DBInterface::getToken() */
 	public function getToken($fileid){
 		return $this->db->getToken($fileid);
 	}
 	
-	/** Get the total number of pages for the currently open document. */
+	/** Get the total number of lines for the currently open document. */
 	public function getMaxLinesNo(){
 		$anz = $this->db->getMaxLinesNo($_SESSION['currentFileId']);
-		return $this->calculateEditorPage($anz);
+		return $anz;
+		// was: return $this->calculateEditorPage($anz);
 	}
 	
-	/** Wraps DBInterface::saveTag() */
-	public function saveTag($tagvalue,$tagname,$fileid,$lineid){
-		return $this->db->saveTag($tagvalue,$tagname,$fileid,$lineid);
-	}		
-	
-	/** Wraps DBInterface::highlightError() */
-	public function highlightError($line){		
-		return $this->db->highlightError($_SESSION['currentFileId'],$line,$_SESSION['user']);
+	/** Save file data to the database.
+	 *
+	 * Calls DBInterface::saveLine(), DBInterface::highlightError(), DBInterface::unhighlightError(), and DBInterface::markLastPosition().
+	 *
+	 * @param string $lasteditedrow Line number of the last edited row
+	 * @param array  $data		Array of lines to be saved
+	 */
+	public function saveData($lasteditedrow,$data){
+	       $fileid = $_SESSION['currentFileId'];
+	       $user = $_SESSION['user'];
+	       foreach ($data as $line) {
+	       	       $result = $this->db->saveLine($fileid,$line["line_id"],$line["lemma"],$line["tag_POS"],$line["tag_morph"],$line["tag_norm"],$line["comment"]);
+		       if (!$result) { die(mysql_error()); }
+		       if ($line["errorChk"]=="0") {
+		       		       $result = $this->db->unhighlightError($fileid,$line["line_id"],$user);
+			} else {
+				       $result = $this->db->highlightError($fileid,$line["line_id"],$user);	       
+			}
+	       }
+	       $result = $this->db->markLastPosition($fileid,$lasteditedrow,$user);
+	       if (!$result) { die(mysql_error()); }
+	       return;
 	}
 
-	/** Wraps DBInterface::unhighlightError() */
-	public function unhighlightError($line){		
-		return $this->db->unhighlightError($_SESSION['currentFileId'],$line,$_SESSION['user']);
-	}
-	
-	/** Wraps DBInterface::markLastPosition() */
-	public function markLastPosition($line){
-		return $this->db->markLastPosition($_SESSION['currentFileId'],$line,$_SESSION['user']);
-	}
-	
-	/** Wraps DBInterface::undoLastEdit() */
-	public function undoLastEdit(){
-		return $this->db->undoLastEdit($_SESSION['currentFileId'],$_SESSION['user']);
-	}
-	
 	/** Wraps DBInterface::getHighestTagId() */
 	public function getHighestTagId($tagset){
 		return $this->db->getHighestTagId($tagset);

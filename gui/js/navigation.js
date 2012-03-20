@@ -16,6 +16,19 @@ function onLoad() {
     changeTab(default_tab);
 }
 
+function onBeforeUnload() {
+    if (edit!==null && edit.editorModel!==null) {
+	var chl = edit.editorModel.changedLines.length;
+	if (chl>0) {
+	    var zeile = (chl>1) ? "Zeilen" : "Zeile";
+	    // Meldung wird von Firefox ignoriert... steht aber
+	    // trotzdem hier, falls ein anderer Browser das anders
+	    // macht
+	    return ("Warnung: Sie sind im Begriff, diese Seite zu verlassen. Im geöffneten Dokument gibt es noch ungespeicherte Änderungen in "+chl+" "+zeile+", die verloren gehen, wenn Sie fortfahren.");
+	}
+   }
+}
+
 /** Select a new tab.  Shows the content @c div corresponding to the
  * selected menu item, while hiding all others and highlighting the
  * correct menu button.

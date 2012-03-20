@@ -23,4 +23,16 @@ MENUITEM;
 ?>
 
     </ul>
+
+</div>
+
+<div id="menuRight" style="display:none;">
+    <ul>
+      <li id="saveButton" title="Speichert die aktuelle Datei" active="false">
+         <a><img src="gui/images/proxal/file.ico"> Datei speichern</a>
+      </li>
+      <li id="closeButton" title="Schließt die aktuelle Datei" active="false">
+         <a>Datei schließen</a>
+      </li>
+    </ul>
 </div>

@@ -10,7 +10,6 @@
  * web server directory!
  */
 
-
 /** The database settings. */
 require_once 'globals.php';
 
@@ -788,7 +787,7 @@ class DBInterface extends DBConnector {
 	public function openFile($fileid){
 		$qs = "SELECT * FROM {$this->db}.files_metadata WHERE file_id='{$fileid}'";
 		if($query = $this->query($qs)){
-			$qs = "SELECT new_line_id FROM files_progress WHERE file_id='{$fileid}' AND user='{$_SESSION['user']}'";
+			$qs = "SELECT new_line_id FROM {$this->db}.files_progress WHERE file_id='{$fileid}' AND user='@@global@@'";
 			if($q = $this->query($qs)){
 				$row = @mysql_fetch_row($q,$this->dbobj);
 				$lock['lastEditedRow'] = $row[0];
@@ -813,19 +812,19 @@ class DBInterface extends DBConnector {
 	* @return bool @c true 
   	*/	
 	public function deleteFile($fileid){
-		$qs = "	DELETE FROM files_metadata WHERE file_id='{$fileid}'";							 
+		$qs = "	DELETE FROM {$this->db}.files_metadata WHERE file_id='{$fileid}'";							 
 		$this->query($qs);
 
-		$qs = "	DELETE FROM files_tags_suggestion WHERE file_id='{$fileid}'";							 
+		$qs = "	DELETE FROM {$this->db}.files_tags_suggestion WHERE file_id='{$fileid}'";							 
 		$this->query($qs);
 
-		$qs = "	DELETE FROM files_data WHERE file_id='{$fileid}'";
+		$qs = "	DELETE FROM {$this->db}.files_data WHERE file_id='{$fileid}'";
 		$this->query($qs);
 		
-		$qs = "DELETE FROM files_errors WHERE file_id='{$fileid}'";
+		$qs = "DELETE FROM {$this->db}.files_errors WHERE file_id='{$fileid}'";
 		$this->query($qs);
 
-		$qs = "DELETE FROM files_progress WHERE file_id='{$fileid}'";
+		$qs = "DELETE FROM {$this->db}.files_progress WHERE file_id='{$fileid}'";
 		$this->query($qs);
 		
 		
@@ -839,7 +838,7 @@ class DBInterface extends DBConnector {
 	* @return an two-dimensional @em array with the meta data
   	*/		
 	public function getFiles(){
-		$qs = "SELECT a.*,b.locked_by as opened FROM files_metadata a LEFT JOIN files_locked b ON a.file_id=b.file_id ORDER BY lastMod DESC";
+		$qs = "SELECT a.*,b.locked_by as opened FROM {$this->db}.files_metadata a LEFT JOIN {$this->db}.files_locked b ON a.file_id=b.file_id ORDER BY lastMod DESC";
 	    $query = $this->query($qs); 
 		$files = array();
 	    while ( @$row = mysql_fetch_array( $query, $this->dbobj ) ) {
@@ -855,7 +854,7 @@ class DBInterface extends DBConnector {
 	* @return an two-dimensional @em array with the meta data
   	*/		
 	public function getLastImportedFile($user){
-		$qs = "SELECT a.*, b.locked_by as opened FROM files_metadata a LEFT JOIN files_locked b ON a.file_id=b.file_id WHERE a.byUser='{$user}' ORDER BY lastMod DESC LIMIT 1";
+		$qs = "SELECT a.*, b.locked_by as opened FROM {$this->db}.files_metadata a LEFT JOIN {$this->db}.files_locked b ON a.file_id=b.file_id WHERE a.byUser='{$user}' ORDER BY lastMod DESC LIMIT 1";
 		return mysql_fetch_assoc($this->query($qs));
 	}
 	
@@ -869,7 +868,7 @@ class DBInterface extends DBConnector {
 	* @return bool result of the mysql query
   	*/			
 	public function setUserEditorSettings($user,$lpp,$cl){
-		$qs = "INSERT INTO editor_settings (username,noPageLines,contextLines) VALUES ('{$user}','{$lpp}','{$cl}') ON DUPLICATE KEY update noPageLines='{$lpp}',contextLines='{$cl}'";
+		$qs = "INSERT INTO {$this->db}.editor_settings (username,noPageLines,contextLines) VALUES ('{$user}','{$lpp}','{$cl}') ON DUPLICATE KEY update noPageLines='{$lpp}',contextLines='{$cl}'";
 		return $this->query($qs);
 	}
 	
@@ -919,7 +918,7 @@ class DBInterface extends DBConnector {
 	public function getLines($fileid,$start,$lim){		
 		// $qs = "SELECT * FROM {$this->db}.files_data WHERE file_id='{$fileid}'";
 		$qs = "	SELECT a.*, IF(b.line_id+1,true,false) AS 'errorChk'
-				FROM {$this->db}.files_data a LEFT JOIN {$this->db}.files_errors b ON (a.line_id=b.line_id)
+				FROM {$this->db}.files_data a LEFT JOIN {$this->db}.files_errors b ON (a.line_id=b.line_id AND a.file_id=b.file_id)
 				WHERE a.file_id='{$fileid}'";
 		// if($lim != 0)
 		$qs .= " LIMIT {$start},{$lim}";
@@ -929,7 +928,7 @@ class DBInterface extends DBConnector {
 		$query = $this->query($qs); 		
 		while($line = @mysql_fetch_array($query)){			
 			$qs = "	SELECT tag_name,tag_probability,tag_suggestion_id FROM {$this->db}.files_tags_suggestion
-					WHERE file_id='{$fileid}' AND line_id='{$line['line_id']}' AND tagtype='pos'";
+					WHERE file_id='{$fileid}' AND line_id='{$line['line_id']}' AND tagtype='pos' ORDER BY tag_probability";
 			$q = $this->query($qs);
 
 			$tag_suggestions_pos = array();
@@ -938,7 +937,7 @@ class DBInterface extends DBConnector {
 			}
 
 			$qs = "	SELECT tag_name,tag_probability,tag_suggestion_id FROM {$this->db}.files_tags_suggestion
-					WHERE file_id='{$fileid}' AND line_id='{$line['line_id']}' AND tagtype='morph'";
+					WHERE file_id='{$fileid}' AND line_id='{$line['line_id']}' AND tagtype='morph' ORDER BY tag_probability";
 			$q = $this->query($qs);
 
 			$tag_suggestions_morph = array();
@@ -954,105 +953,86 @@ class DBInterface extends DBConnector {
 	    
 	}
 
-	/** Saves a changed tag.
+	/** Save a changed line.
 	*
-	* This function is called from Java Script when changing a tag in the editor.
+	* This function is called from the session handler during the saving process.
 	* 
-	* @param string $tagvalue the new tag content
-	* @param string $tagname the tag type of the change
 	* @param string $fileid the file id
 	* @param string $lineid the line id
+	* @param string $lemma  the lemma
+	* @param string $pos    the POS tag
+	* @param string $morph  the morph tag
+	* @param string $norm   the normalization
+	* @param string $comment the comment field
 	*
-	* @return an @em array containing the lines
+	* @return @bool the result of the mysql query
  	*/ 		
-	public function saveTag($tagvalue,$tagname,$fileid,$lineid){
-		$qs = "INSERT INTO files_data (file_id,line_id,{$tagname}) VALUES ('{$fileid}','{$lineid}','{$tagvalue}') ON DUPLICATE KEY update {$tagname}='{$tagvalue}'"; 
-		return $this->query( $qs );
+	public function saveLine($fileid,$lineid,$lemma,$pos,$morph,$norm,$comment){
+	       $qs = "UPDATE {$this->db}.files_data SET lemma='{$lemma}', ";
+	       $qs .= "tag_POS='{$pos}', tag_morph='{$morph}', ";
+	       $qs .= "tag_norm='{$norm}', comment='$comment' ";
+	       $qs .= "WHERE file_id='{$fileid}' AND line_id='{$lineid}'";
+	       return $this->query( $qs );
 	}
 
 	/** Highlight an error.
 	*
-	* Each error marker is represented by an entry in a special database table and is 
-	* depending on the user.
+	* Each error marker is represented by an entry in a special database table. CAUTION: It is no longer depending on the user, but rather saved on a per-file basis. This can be changed back later if desired, though.
 	*
-	* This function is called from Java Script when checking the error box.
+	* This function is called by the session handler during the saving process.
 	* 
 	* @param string $file the file id
 	* @param string $line the line id
-	* @param string $user the username
+	* @param string $user the username (currently not used)
 	*
 	* @return bool the result of the mysql query
  	*/ 			
 	public function highlightError($file,$line,$user){
-		$qs = "INSERT INTO files_errors (file_id,line_id,user) VALUES ('{$file}','{$line}','{$user}')";
+	// !!IMPORTANT!! there is a bug in getLines() that messes
+	// up line requests if there are multiple entries in
+	// files_errors for the same line (as would be the case
+	// with per-user-based saving)
+		$qs = "INSERT INTO {$this->db}.files_errors (file_id,line_id,user) VALUES ('{$file}','{$line}','@@global@@')";
 		return $this->query( $qs );
 	}
 
 	/** Remove an error marker.
 	*
-	* Removes the corresponding database entry for the given user.
+	* Removes the corresponding database entry.
 	*
-	* This function is called from Java Script when unchecking the error box.
+	* This function is called during the saving process.
 	* 
 	* @param string $file the file id
 	* @param string $line the line id
-	* @param string $user the username
+	* @param string $user the username (currently not used)
 	*
 	* @return bool the result of the mysql query
  	*/ 			
 	public function unhighlightError($file,$line,$user){
-		$qs = "DELETE FROM files_errors WHERE file_id='{$file}' AND line_id='{$line}' AND user='{$user}'";
+	// changed: errors are no longer saved on a per-user basis
+		$qs = "DELETE FROM {$this->db}.files_errors WHERE file_id='{$file}' AND line_id='{$line}'";
 		return $this->query( $qs );
 	}
     
-	/** Save user progress on the given file.
+	/** Save progress on the given file.
 	*
-	* User progress is shown by a green bar at the left side of the editor. If the user 
-	* make changes on a line with higher line id this function is called and updates the 
-	* last editor position for the given user.
+	* Progress is shown by a green bar at the left side of the editor and indicates the last line for which changes have been made.
 	*
-	* This function is called from Java Script when a user edits a line.
+	* CAUTION: This no longer works on a per-user, but rather on a per-file basis.
+	*
+	* This function is called by the session handler during the saving process.
 	* 
 	* @param string $file the file id
 	* @param string $line the line id
-	* @param string $user the username
+	* @param string $user the username (currently not used)
 	*
 	* @return bool the result of the mysql query
  	*/
 	public function markLastPosition($file,$line,$user){
-		$qs = "INSERT INTO files_progress (file_id,new_line_id,user) VALUES ('{$file}','{$line}','{$user}') ON DUPLICATE KEY UPDATE old_line_id=new_line_id,new_line_id='{$line}'";
+		$qs = "INSERT INTO {$this->db}.files_progress (file_id,new_line_id,user) VALUES ('{$file}','{$line}','@@global@@') ON DUPLICATE KEY UPDATE old_line_id=new_line_id,new_line_id='{$line}'";
 		return $this->query( $qs );
 	}
-	
-	/** Undo last edit.
-	*
-	* The idea for this feature was following szenario: a user sees an error and corrects it
-	* immediataly then goes back to the linear controlling order, line by line. In this case,
-	* the progress is _not_ at the point of the out of sequence edit. So, when not editing the
-	* next one in line there must be a possibility to undo this.
-	* The progress table has a new_line_id and a old_line_id column. When saving a the progress,
-	* the old_line_id is updated with the former new_line_id and the new progress becomes the new
-	* new_line_id.
-	* So, all undo is doing is to restore the new_line_id with the old_line_id.
-	* 
-	* @todo undo is not enabled at the moment. Need to be implemented in a nice way in the editor.
-	* 
-	* @param string $file the file id
-	* @param string $user the username
-	*
-	* @return bool the result of the mysql query
- 	*/
-	public function undoLastEdit($file,$user){
-		$qs = "UPDATE files_progress SET new_line_id=old_line_id WHERE file_id='{$file}' AND user='{$user}'";
-		if($this->query( $qs )){
-			$qs = "SELECT new_line_id FROM files_progress WHERE file_id='{$file}' AND user='{$user}'";
-			$query = $this->query( $qs );
-			return @mysql_fetch_row($query,$thos->dbobj);
-		}
-		
 
-	}	
-	
 	/** Get the highest tag id from an given tagset.
 	*
 	* Retrieves the maximal id of stored tags from a given tagset.
@@ -1065,7 +1045,7 @@ class DBInterface extends DBConnector {
 	* @return string the maximal tag id
  	*/
 	public function getHighestTagId($tagset){
-		$qs = "SELECT max(id) FROM tagset_tags WHERE tagset='{$tagset}'";
+		$qs = "SELECT max(id) FROM {$this->db}.tagset_tags WHERE tagset='{$tagset}'";
 		$row = @mysql_fetch_array($this->query($qs));
 		return $row[0];
 	}

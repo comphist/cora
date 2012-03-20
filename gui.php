@@ -24,12 +24,9 @@
 		<!-- Print only, on bottom --> 
 		<link rel="stylesheet" type="text/css" href="gui/css/print.css" media="print" />
 		
-<!--	script src="gui/js/mootools-1.2.3-core-yc.js" type="text/javascript" charset="utf-8"></script>
-		<script src="gui/js/mootools-1.2.3.1-more.js" type="text/javascript" charset="utf-8"></script>
--->
 		<script src="gui/js/mootools-core-1.4.5.js" type="text/javascript" charset="utf-8"></script>
 		<script src="gui/js/mootools-more-1.4.0.1.js" type="text/javascript" charset="utf-8"></script>
-        <script src="gui/js/cerabox/cerabox.min.js"></script>
+		<script src="gui/js/cerabox/cerabox.min.js"></script>
 		<script src="gui/js/baseBox.js"></script>
 		<script src="gui/js/iFrameFormRequest.js"></script>
 
@@ -39,6 +36,10 @@
             var default_tab = "<?php echo $menu->getDefaultItem(); ?>";
             var lang_strings = <?php echo json_encode($lang); ?>;
 			var userdata = { 	name: "<?php echo $_SESSION['user']; ?>" , 
+<?php if($_SESSION['loggedIn']): ?>
+								noPageLines: <?php echo $_SESSION['noPageLines']; ?>,
+								contextLines: <?php echo $_SESSION['contextLines']; ?>,
+<?php endif; ?>
 								admin: "<?php echo $_SESSION['admin']; ?>" ,
 								currentFileId: "<?php echo $_SESSION['currentFileId']; ?>",
 								currentName: "<?php echo $_SESSION['currentName']; ?>"
@@ -66,7 +67,9 @@
 		</style>
 		
 	</head>
-	<body onload="onLoad();" onbeforeunload="onBeforeUnload();">
+	<body onload="onLoad();" onbeforeunload="return onBeforeUnload();">
+	        <div id="overlay"></div>
+
 <!--		<div id="tools" class="no-print">
 			$$toolsLinks$$
 		</div>

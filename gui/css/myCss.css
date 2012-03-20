@@ -505,6 +505,8 @@ input.error {
 .spinner-msg {
 	text-align: center;
 	font-weight: bold;
+	font-size: 2em;
+	padding: 1.5em;
 }
 
 .spinner-img {
@@ -512,6 +514,18 @@ input.error {
 	width: 24px;
 	height: 24px;
 	margin: 0 auto;
+}
+
+div#overlay {
+    z-index:1000;
+    position:fixed;
+    top:0;
+    bottom:0;
+    left:0;
+    height:100%;
+    width:100%;
+    background:none;
+    display:none;
 }
 
 .panel {
@@ -670,13 +684,23 @@ table#editTable td.editTable_Morph select {
     width: 8px;
     height: 8px;
     padding: 1px;
+    background-color: white;
 }
 
 div.editTableProgress {
 /*    border: '0.5px solid black';*/
     width: 8px;
     height: 2em;
+    background-color: white;
 /*    padding: '1px';*/
+}
+
+div.editTableProgressChecked {
+    background-color: green !important;
+}
+
+div.editTableErrorChecked {
+    background-color: red !important;
 }
 
 .fileViewRefresh h3 {

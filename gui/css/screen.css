@@ -154,7 +154,7 @@ ol {
 
 #menu {
 	font-family: "Trebuchet MS", sans-serif;
-	font-size: 1em;
+	font-size: 1.1em;
 	background : #437fda;
 	border-bottom : 1px solid #2b548c;
 }
@@ -182,6 +182,46 @@ ol {
 #menu li[active=true] a:hover {
 	background : #ffffff;
 	color : #ba8f43;
+}
+
+#menuRight {
+    font-family: "Trebuchet MS", sans-serif;
+    font-size: 1.1em;
+    position: absolute;
+    right: 2em;
+    bottom: 1.5em;
+}
+
+#menuRight li {
+    display: inline;
+    padding-left: 0.75em;
+}
+
+#menuRight li a {
+    color: #ffffff;
+    padding: 0.75em 0.75em 0.6em 0.75em;
+    cursor: pointer;
+    background: #147;
+    border: 2px solid #154575;
+    border-top: 2px solid #258;
+    border-left: 2px solid #258;
+}
+
+#menuRight li a img {
+    padding-right: 0.5em;
+    top: 0.25em;
+    position: relative;
+}
+
+#menuRight li a:hover {
+    background : #2b548c;
+}
+
+#menuRight li a:active {
+    background : #0f335f;
+    border: 2px solid #052050;
+    border-bottom: 2px solid #154575;
+    border-right: 2px solid #154575;
 }
 
 .content {
