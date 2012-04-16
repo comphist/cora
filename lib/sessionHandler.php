@@ -30,9 +30,9 @@ class SessionHandler {
     $this->db = new DBInterface();
 
     $defaults = array( "lang"        => DEFAULT_LANGUAGE,
-		       "loggedIn"    => "false",
-		       "admin"       => "false",
-		       "failedLogin" => "false" );
+		       "loggedIn"    => false,
+		       "admin"       => false,
+		       "failedLogin" => false );
 
     foreach($defaults as $key => $default) {
       if(!array_key_exists($key, $_SESSION)) {

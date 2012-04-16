@@ -71,7 +71,7 @@
 			    <input type="text" size="10" value="" />
 			</td>
 			<td class="editTable_Comment">
-			    <input type="text" size="10" value="" />
+			    <input type="text" size="30" value="" />
 			</td>
 		</tr>
      </table>

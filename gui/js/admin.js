@@ -267,11 +267,11 @@ var TagsetEditor = new Class({
     // console.log(ha);
 	ha.each(function (tag, id) {
 	    var tagobj = new Tag(id, tag.shortname, tag.desc);
-	    if(tag.linl){
+	    if(tag.link){
 	        tag.link.each(function (link) {
-		        tagobj.addLink(link);
+		    tagobj.addLink(link);
 	        });
-        }	    
+            }
 	    this.tags.push(tagobj);
 	    if (id > this.highestId) {
 		this.highestId = id;
