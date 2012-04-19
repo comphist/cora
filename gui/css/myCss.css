@@ -621,7 +621,7 @@ table#editTable td, table#editTable th {
 }
 
 table#editTable td.editTable_progress {
-    padding: 0;
+    padding: 0px 12px;
 }
 
 table#editTable td.editTable_POS select {
@@ -680,7 +680,7 @@ table#editTable td.editTable_Morph select {
 }
 
 .editTableError {
-    border: 0.5px solid black;
+    border: 1px solid black;
     width: 8px;
     height: 8px;
     padding: 1px;
@@ -691,7 +691,8 @@ div.editTableProgress {
 /*    border: '0.5px solid black';*/
     width: 8px;
     height: 2em;
-    background-color: white;
+    background-color: lightgray;
+    margin-bottom: 2px;
 /*    padding: '1px';*/
 }
 

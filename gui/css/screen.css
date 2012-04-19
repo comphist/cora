@@ -271,7 +271,7 @@ ol {
 	-moz-border-radius: 10px;
 	-moz-box-shadow: #e1e1e1 0px 0px 10px;
 	-webkit-border-radius: 10px;
-	-webkit-box-shadow: 25px 25px  25px  25px #000;
+	-webkit-box-shadow: 0px 0px 10px #E1E1E1;
 }
 
 /* Modified this and have no idea why --MB */
