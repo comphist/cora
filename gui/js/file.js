@@ -4,7 +4,9 @@
 
 var fileTagset = {
     pos: null,
-    morph: null
+    morph: null,
+    posHTML: "",
+    morphHTML: {}
 };
 
 // ***********************************************************************
@@ -234,6 +236,70 @@ var file = {
         $$('#main > div[class!=importErrorPopup]').setStyle('opacity',0.5);
         
     },
+
+    /* Function: preprocessTagset
+
+       Parses tagset data and builds HTML code for drop-down boxes.
+    */
+    preprocessTagset: function(data) {
+	var posHTML = "";
+	var tags = $H(data.tags);
+	var attribs = $H(data.attribs);
+
+	fileTagset.pos = tags;
+	fileTagset.attribs = attribs;
+	fileTagset.morph = {};
+
+	tags.each(function(tag, id) {
+	    posHTML += "<option>";
+	    posHTML += tag.shortname;
+	    posHTML += "</option>";
+
+	    if (tag.link && tag.link.length > 0) {
+		var combinations = null;
+		// ensure the correct order of morphology tags
+		tag.link.sort(function(link_a,link_b) {
+		    var a = attribs[link_a].shortname;
+		    var b = attribs[link_b].shortname;
+		    return a < b ? -1 : a > b ? 1 : 0;
+		});
+		// build all valid combinations of morphology tags
+		tag.link.each(function(link) {
+		    if (!combinations) {
+			combinations = attribs[link].val;
+		    } else {
+			var updated = new Array();
+			attribs[link].val.each(function(val) {
+			    combinations.each(function(text) {
+				/* stars are replaced for the sort to
+				 * put them after alphabetic entities */
+				updated.push((text + "." + val).replace(/\*/g,"ZZZ@"));
+			    });
+			});
+			combinations = updated;
+		    }
+		});
+		
+		// build HTML tags
+		fileTagset.morph[tag.shortname] = new Array();
+		var morphHTML = "<option>-----------</option>";
+		combinations.sort();
+		combinations.each(function(combi) {
+		    combi = combi.replace(/ZZZ@/g, "*");
+		    fileTagset.morph[tag.shortname].push(combi);
+		    morphHTML += "<option>";
+		    morphHTML += combi;
+		    morphHTML += "</option>";
+		});
+
+		fileTagset.morphHTML[tag.shortname] = morphHTML;
+	    } else {
+		fileTagset.morph[tag.shortname] = new Array();
+		fileTagset.morphHTML[tag.shortname] = "<option>--</option>";
+	    }
+	});
+	fileTagset.posHTML = posHTML;
+    },
     
     openFile: function(fileid) {
         var ref = this;
@@ -241,69 +307,43 @@ var file = {
         var lock = new Request.JSON({
             url:'request.php',
     	    onSuccess: function(data, text) {
-    	     if(data.success) {
-        		 var request = new Request.JSON({
-        		     url: 'request.php',
-        		     onComplete: function(fileData) {        		         
-        		         if(fileData.success){
-        		             
-        		             // load Tagset
-				     var reqPOS;
-				     var reqMorph;
-				     
-        		             var afterLoadTagset = function() {
-					 // code that depends on the tagsets being fully loaded
-					 edit.editorModel = new EditorModel(fileid, fileData.maxLinesNo, fileData.lastEditedRow, fileData.lastPage);
-//					 edit.renderPagesPanel(fileData.lastPage);
-//            				 edit.getLines(fileData.lastPage);
-					 $('editPanelDiv').show();
-					 default_tab = 'edit';
-					 changeTab('edit');
-				     };
-
-				     // two requests are sent asynchronously; whichever request
-				     // finishes last will trigger continuation of the script
-        		             reqPOS = new Request({
-        		                 url: "request.php",
-        		                 async: true,
-					 method: 'get',
-					 data: {'do':'getTagsetTags','tagset':'STTS.pos'},
-        		                 onComplete: function(response){
-        		                     fileTagset.pos = response;
-					     if (!reqMorph.isRunning()) {
-						 afterLoadTagset();
-					     }
-        		                 }
-        		             });
-
-        		             reqMorph = new Request({
-        		                 url: "request.php",
-        		                 async: true,
-					 method: 'get',
-					 data: {'do':'getTagsetTags','tagset':'STTS.morph'},
-        		                 onComplete: function(response){
-        		                     fileTagset.morph = response;
-					     if (!reqPOS.isRunning()) {
-						 afterLoadTagset();
-					     }
-        		                 }
-        		             });
-        		             
-				     reqPOS.send();
-				     reqMorph.send();
-
-				     $('currentfile').set('text',fileData.data.file_name);
-				     ref.listFiles();
-				 }
-        		     }
-        		 }).get({'do': 'openFile', 'fileid': fileid});
-    	     } else {
-    		     var msg = lang_strings.dialog_file_locked_error +
+    		if(data.success) {
+        	    var request = new Request.JSON({
+        		url: 'request.php',
+        		onComplete: function(fileData) {        		         
+        		    if(fileData.success){
+       				// load tagset
+        		        var afterLoadTagset = function() {
+				    // code that depends on the tagsets being fully loaded
+				    edit.editorModel = new EditorModel(fileid, fileData.maxLinesNo, fileData.lastEditedRow, fileData.lastPage);
+				    $('editPanelDiv').show();
+				    default_tab = 'edit';
+				    changeTab('edit');
+				};
+				
+        		        new Request.JSON({
+        		            url: "request.php",
+        		            async: true,
+				    method: 'get',
+				    data: {'do':'fetchTagset','name':fileData.data.tagset},
+        		            onComplete: function(response){
+					ref.preprocessTagset(response);
+					afterLoadTagset();
+        		            }
+        		        }).send();
+				
+				$('currentfile').set('text',fileData.data.file_name);
+				ref.listFiles();
+			    }
+        		}
+        	    }).get({'do': 'openFile', 'fileid': fileid});
+    		} else {
+    		    var msg = lang_strings.dialog_file_locked_error +
     		        ": " + data.lock.locked_by + ", " +
-    		     data.lock.locked_since;
-    		     alert(msg);
-    	     }
-    	 }
+    			data.lock.locked_since;
+    		    alert(msg);
+    		}
+    	    }
     	});
         lock.get({'do': 'lockFile', 'fileid': fileid});
     },

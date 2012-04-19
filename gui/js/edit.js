@@ -38,13 +38,15 @@ var EditorModel = new Class({
 
 	/* set up the line template */
 	elem = $('line_template').clone();
-	// fill tagset <select>s
-	spos = new Element('select', {'html': fileTagset.pos});
+	
+	spos = new Element('select', {'html': fileTagset.posHTML});
 	spos.grab(new Element('option',{html:"-----------"}),'top');
 	elem.getElement('td.editTable_POS').adopt(spos);
-	smorph = new Element('select', {'html': fileTagset.morph});
+	
+	smorph = new Element('select');
 	smorph.grab(new Element('option',{html:"-----------"}),'top');
 	elem.getElement('td.editTable_Morph').adopt(smorph);
+	
 
 	this.lineTemplate = elem;
 
@@ -73,6 +75,7 @@ var EditorModel = new Class({
 		var new_value = target.getSelected()[0].get('html');
 		if (parent.hasClass("editTable_POS")) {
 		    ref.updateData(this_id, 'tag_POS', new_value);
+		    ref.renderMorphOptions(this_id, target.getParent('tr'), new_value);
 		} else if (parent.hasClass("editTable_Morph")) {
 		    ref.updateData(this_id, 'tag_morph', new_value);
 		}
@@ -109,9 +112,7 @@ var EditorModel = new Class({
 	btn.removeEvents();
 	btn.addEvent('click', function(e) {
 	    e.stop();
-	    if (ref.confirmClose()) {
-		file.closeFile(ref.fileId); // breaks OO...
-	    }		
+	    file.closeFile(ref.fileId); // breaks OO...
 	});
 	mr.show();
 
@@ -121,6 +122,46 @@ var EditorModel = new Class({
 	this.renderPagesPanel(start_page);
 	this.displayPage(start_page);
 	this.activePage = start_page;
+    },
+
+    /* Function: renderMorphOptions
+
+       Re-render the morphology tag drop-down box when POS tag
+       changes.
+
+       For performance reasons, this function is currently only called
+       when the POS tag changes.  The functionality is replicated in
+       displayPage() where it is used during page rendering.
+    
+       Parameters:
+        id - line ID
+	tr - table row object of that line
+	postag - the new POS tag
+    */
+    renderMorphOptions: function(id, tr, postag) {
+	var morphopt;
+	var oldmorphopt = tr.getElement('.editTable_Morph select');
+	var line = this.data[id]
+
+	if (postag) {
+	    morphopt = new Element('select', {html:fileTagset.morphHTML[postag.replace(/\s[\d\.]+/g,"")]});
+	} else {
+	    morphopt = new Element('select');
+	}
+	
+	line.suggestions_morph.each(function(opt){
+	    morphopt.grab(new Element('option',{
+		html: opt.tag_name+"\t"+opt.tag_probability,
+		'class': 'lineSuggestedTag'
+	    }),'top');
+        });
+	morphopt.grab(new Element('option',{
+	    html: line.tag_morph,
+	    selected: 'selected',
+	    'class': 'lineSuggestedTag'
+	}),'top');
+	
+	morphopt.replaces(oldmorphopt);	
     },
 
     /* Function: renderPagesPanel
@@ -318,7 +359,8 @@ var EditorModel = new Class({
 	var data = this.data;
 	var et = this.editTable;
 	var ler = this.lastEditedRow;
-	var end, start, tr, line, posopt, morphopt, trs, j;
+	var morphhtml = fileTagset.morphHTML;
+	var end, start, tr, line, posopt, morphopt, oldmorphopt, trs, j;
 	var dlr, dynstart, dynend;
 
 	/* calculate line numbers to be displayed */
@@ -417,9 +459,17 @@ var EditorModel = new Class({
 		selected: 'selected',
 		'class': 'lineSuggestedTag'
 	    }),'top');
-          // Morph
-	    morphopt = tr.getElement('.editTable_Morph select');
-	    morphopt.getElements('.lineSuggestedTag').destroy();
+            // Morph
+	    oldmorphopt = tr.getElement('.editTable_Morph select');
+
+	    if (line.tag_POS) {
+		morphopt = new Element('select', {html:morphhtml[line.tag_POS.replace(/\s[\d\.]+/g,"")]});
+		//morphopt.set('html', morphhtml[line.tag_POS.replace(/\s[\d\.]+/g,"")]);
+	    } else {
+		morphopt = new Element('select');
+		//morphopt.set('html', '');
+	    }
+
 	    line.suggestions_morph.each(function(opt){
 		morphopt.grab(new Element('option',{
 		    html: opt.tag_name+"\t"+opt.tag_probability,
@@ -431,6 +481,8 @@ var EditorModel = new Class({
 		selected: 'selected',
 		'class': 'lineSuggestedTag'
 	    }),'top');
+
+	    morphopt.replaces(oldmorphopt);
 
 	}
 
