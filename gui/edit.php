@@ -12,6 +12,7 @@
 <div class="panel clappable">
 	<h3 class="clapp">Editor-Benutzereinstellungen</h3>
 	<div style="display:none;">
+	<div>
 	<form action="request.php" id="editUserSettings" method="get" accept-charset="utf-8">
 		<p>
 		<label for="noPageLines">Zeilen pro Seite</label>
@@ -22,8 +23,20 @@
 		<input type="text" name="contextLines" value="<?php echo $_SESSION['contextLines'];?>" size="2" />
 		</p>		
 
-		<p><input type="submit" value="Continue &rarr;" /></p>
+		<p><input type="submit" value="Zeilen-Einstellungen übernehmen" /></p>
 	</form>
+	</div>
+	<div id="editorSettingsHiddenColumns">
+	<h4>Angezeigte Spalten:</h4>
+	<p>
+	    <input type="checkbox" name="displayedColumns" value="token" checked="yes" /> Token
+	    <input type="checkbox" name="displayedColumns" value="Norm" checked="yes" /> Normalisierte Form
+	    <input type="checkbox" name="displayedColumns" value="POS" checked="yes" /> POS-Tag
+	    <input type="checkbox" name="displayedColumns" value="Morph" checked="yes" /> Morphologie-Tag
+	    <input type="checkbox" name="displayedColumns" value="Lemma" checked="yes" /> Lemma
+	    <input type="checkbox" name="displayedColumns" value="Comment" checked="yes" /> Kommentar
+	</p>
+	</div>
 	</div>
 </div>	
 
@@ -35,11 +48,11 @@
 </div>
 
 
-	<table id="editTable" border="0">
+	<table id="editTable" border="0" class="draggable">
 		
 		<tr class="editHeadLine">
-			<th>P</th>
-			<th>E</th>
+			<th class="editTable_progress">P</th>
+			<th class="editTable_error">E</th>
 			<th class="editTable_token">Token</th>
 			<th class="editTable_Norm">Normalisierte Form</th>
 			<th class="editTable_POS">POS-Tag</th>
@@ -48,13 +61,34 @@
 			<th class="editTable_Comment">Kommentar</th>
 		</tr>
 
+		<tr id="line_template">
+			<td class="editTable_progress">
+			    <div class="editTableProgress"></div>
+			</td>
+			<td class="editTable_error">
+			    <div class="editTableError"></div>
+			</td>
+			<td class="editTable_token"></td>
+			<td class="editTable_Norm">
+			    <input type="text" size="10" value="" />
+			</td>
+			<td class="editTable_POS"></td>
+			<td class="editTable_Morph"></td>
+			<td class="editTable_Lemma">
+			    <input type="text" size="10" value="" />
+			</td>
+			<td class="editTable_Comment">
+			    <input type="text" size="30" value="" />
+			</td>
+		</tr>
+
 	</table>
 	<!-- <button id="undoEditBtn">Undo</button> -->
 </div>
 
 <div style="display: none;">
      <table>
-		<tr id="line_template">
+		<tr id="line_template_thisisnot">
 			<td class="editTable_progress">
 			    <div class="editTableProgress"></div>
 			</td>

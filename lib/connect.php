@@ -871,6 +871,20 @@ class DBInterface extends DBConnector {
 		$qs = "INSERT INTO {$this->db}.editor_settings (username,noPageLines,contextLines) VALUES ('{$user}','{$lpp}','{$cl}') ON DUPLICATE KEY update noPageLines='{$lpp}',contextLines='{$cl}'";
 		return $this->query($qs);
 	}
+
+	/** Save an editor setting for given user.
+	 *
+	 * @param string $user username
+	 * @param string $name name of the setting, e.g. "contextLines"
+	 * @param string $value new value of the setting
+	 *
+	 * @return bool result of the mysql query
+	 */
+	public function setUserEditorSetting($user,$name,$value) {
+	       	$qs = "INSERT INTO {$this->db}.editor_settings (username,{$name}) VALUES ('{$user}','{$value}') ON DUPLICATE KEY update {$name}='{$value}'";
+		return $this->query($qs);
+	}
+
 	
 	/** Return the total number of lines of a given file.
 	 *

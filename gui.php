@@ -28,6 +28,7 @@
 		<script src="gui/js/mootools-more-1.4.0.1.js" type="text/javascript" charset="utf-8"></script>
 		<script src="gui/js/cerabox/cerabox.min.js"></script>
 		<script src="gui/js/baseBox.js"></script>
+		<script src="gui/js/dragtable_hack.js"></script>
 		<script src="gui/js/iFrameFormRequest.js"></script>
 
 		<!-- JavaScript -->
@@ -39,6 +40,8 @@
 <?php if($_SESSION['loggedIn']): ?>
 								noPageLines: <?php echo $_SESSION['noPageLines']; ?>,
 								contextLines: <?php echo $_SESSION['contextLines']; ?>,
+								editTableDragHistory: '<?php echo $_SESSION['editTableDragHistory']; ?>',
+								hiddenColumns: '<?php echo $_SESSION['hiddenColumns']; ?>',
 <?php endif; ?>
 								admin: "<?php echo $_SESSION['admin']; ?>" ,
 								currentFileId: "<?php echo $_SESSION['currentFileId']; ?>",

@@ -337,7 +337,9 @@ class RequestHandler {
 						
 		case "importFile": $f = new FileModel($this->sh); $f->importFile();
 		
-		case "saveEditorUserSettings": return $this->sh->setUserEditorSettings($get['noPageLines'],$get['contextLines']); exit;
+		case "saveEditorUserSettings": return $this->sh->setUserEditorSettings(self::escapeSQL($get['noPageLines']),self::escapeSQL($get['contextLines'])); exit;
+
+		case "setUserEditorSetting": return $this->sh->setUserEditorSetting(self::escapeSQL($get['name']),self::escapeSQL($get['value'])); exit;
 
 
         default:           self::returnError(400, "Unknown request: " + $get["do"]);

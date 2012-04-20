@@ -63,6 +63,14 @@ class SessionHandler {
 	return false;
   }
 
+  public function setUserEditorSetting($name,$value) {
+  	 if($this->db->setUserEditorSetting($_SESSION['user'],$name,$value)){
+		$_SESSION[$name] = $value;
+		return true;
+	}
+	return false;
+  }
+
   /** Wraps DBInterface::getLanguageArray(), passing the current
       language code. */
   public function getLanguageArray() {
@@ -299,9 +307,13 @@ class SessionHandler {
 	  if($data){
 		$_SESSION['noPageLines'] = (isset($data['noPageLines']) && $data['noPageLines']>0)? $data['noPageLines'] : '30';
 		$_SESSION['contextLines'] = (isset($data['contextLines']))? $data['contextLines'] : '5';
+		$_SESSION['editTableDragHistory'] = (isset($data['editTableDragHistory']))? $data['editTableDragHistory'] : '';
+		$_SESSION['hiddenColumns'] = (isset($data['hiddenColumns']))? $data['hiddenColumns'] : '';
 	  } else {
 		$_SESSION['noPageLines'] = '30';
 		$_SESSION['contextLines'] = '5';
+		$_SESSION['editTableDragHistory'] = '';
+		$_SESSION['hiddenColumns'] = '';
 	  }
     } else {      // login failed
       $_SESSION["failedLogin"] = true;

@@ -730,3 +730,7 @@ div.editTableErrorChecked {
 #pagePanel .currentPage{
     font-weight: bold;
 }
+
+tr#line_template {
+    display: none;
+}

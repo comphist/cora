@@ -37,7 +37,7 @@ var EditorModel = new Class({
 	this.spinner = new Spinner($('overlay'), {message: "Speichere..."});
 
 	/* set up the line template */
-	elem = $('line_template').clone();
+	elem = $('line_template');
 	
 	spos = new Element('select', {'html': fileTagset.posHTML});
 	spos.grab(new Element('option',{html:"-----------"}),'top');
@@ -408,7 +408,7 @@ var EditorModel = new Class({
 	   this could be solved more efficiently, but it takes almost
 	   no computing time anyway (0-3ms) as long as nothing
 	   changes */
-	trs = et.getElements('tr');
+	trs = et.getElements('tr[id!=line_template]');
 	j=1;
 	while (trs[j] != undefined) {
 	    if (j>pl) { // remove superfluous lines
@@ -422,7 +422,7 @@ var EditorModel = new Class({
 	}
 
 	/* build lines */
-	trs = et.getElements('tr');
+	trs = et.getElements('tr[id!=line_template]');
 	j = 0;
 	for (var i=start; i<end; i++) {
 	    line = data[i];
@@ -678,6 +678,34 @@ var edit = {
 		}
 	    }
 	);
+
+	/* Hiding columns */
+	var eshc = $('editorSettingsHiddenColumns');
+	userdata.hiddenColumns.split(",").each(function(value){
+	    eshc.getElements('input[value="'+value+'"]').set('checked', false);
+	    $('editTable').getElements(".editTable_"+value).hide();
+	});
+
+	eshc.addEvent(
+	    'change:relay(input)',
+	    function(event, target) {
+		var checked = target.get('checked');
+		var value = target.get('value');
+		if (checked) {
+		    $('editTable').getElements(".editTable_"+value).show();
+		    userdata.hiddenColumns = userdata.hiddenColumns.replace(value+",","");
+		} else {
+		    $('editTable').getElements(".editTable_"+value).hide();
+		    userdata.hiddenColumns += value + ",";
+		}
+		new Request({url: 'request.php'}).get(
+		    {'do': 'setUserEditorSetting',
+		     'name': 'hiddenColumns',
+		     'value': userdata.hiddenColumns}
+		);
+	    }
+	);
+	
     },
 }
 
