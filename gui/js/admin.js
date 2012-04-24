@@ -236,6 +236,7 @@ var TagsetEditor = new Class({
     element: null,
     tagEditor: null,
     attribEditor: null,
+    disposed: false,
     
     options:{
         elementId: $('editTagset'),
@@ -262,10 +263,7 @@ var TagsetEditor = new Class({
     // this.element = $('editTagset');
     // this.tagEditor = $('editTags');
     // this.attribEditor = $('editAttribs');
-    // console.log(data.tags);
-	var ha = $H(data.tags);
-    // console.log(ha);
-	ha.each(function (tag, id) {
+	$H(data.tags).each(function (tag, id) {
 	    var tagobj = new Tag(id, tag.shortname, tag.desc);
 	    if(tag.link){
 	        tag.link.each(function (link) {
@@ -287,6 +285,13 @@ var TagsetEditor = new Class({
 		this.highestId = id;
 	    }
 	}.bind(this));
+	var shortname_sort = function(tag_a,tag_b) {
+	    var a = tag_a.shortname;
+	    var b = tag_b.shortname;
+	    return a < b ? -1 : a > b ? 1 : 0;
+	};
+	this.tags.sort(shortname_sort);
+	this.attribs.sort(shortname_sort);
     },
     /*
       Function: refreshTags
@@ -377,6 +382,7 @@ var TagsetEditor = new Class({
 	this.attribEditor.getElement('.newAttribRow a').removeEvents();
 
 	this.element.hide();
+	this.disposed = true;
     }
 });
 
@@ -491,13 +497,15 @@ function discardTagset() {
 }
 
 function closeTagset() {
-    var request = new Request({url:"request.php"});
+    if (tagset_editor===null || tagset_editor.disposed) { return; }
+
+    var request = new Request({url:"request.php",async:false});
     request.get({'do': 'unlockTagset', 'name': tagset_editor.tagset});
 
     $('tagsetName').hide();
     tagset_editor.dispose();
     $('chooseTagset').show();
-    return false;
+    return;
 }
 
 // ***********************************************************************
@@ -697,6 +705,7 @@ window.addEvent('domready', function() {
     $('discardChangesButton').addEvent('click', discardTagset);
     $('editTagsetButton').addEvent('click', editTagset);
     user_editor.initialize();
+    $('logoutLink').addEvent('click', closeTagset);
 });
 
 

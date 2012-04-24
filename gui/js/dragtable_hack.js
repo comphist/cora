@@ -408,9 +408,6 @@ dragtable = {
   },
 
     optimizeHistoryString: function(dragstr) {
-	// DOESN'T YET WORK ....
-	return dragstr;
-
 	if (!dragstr || dragstr.length<1) return;
 	var table = new Array();
 	// HACK: MAXIMUM COLUMN NUMBER HARDCODED HERE ...
@@ -425,20 +422,18 @@ dragtable = {
 	    var a = parseInt(pair[0]);
 	    var b = parseInt(pair[1]);
 	    if (isNaN(a) || isNaN(b)) continue;
-	    var c = table[a];
-	    table[a] = table[b];
-	    table[b] = c;
+	    var removed = table.splice(a, 1);
+	    table.splice(b, 0, removed[0]);
 	}
 	// calculate ideal drags
 	var newstr = "";
 	for (var i = 0; i < table.length; i++) {
 	    var j = table.indexOf(i);
 	    if (i!=j) {
-		var c = table[i];
-		table[i] = table[j];
-		table[j] = c;
-		if (newstr!="") { newstr += ","; }
-		newstr += i + "/" + j;
+		table.splice(j, 1);
+		table.splice(i, 0, i);
+		if (newstr!="") { newstr = "," + newstr; }
+		newstr = j + "/" + i + newstr;
 	    }
 	}
 	return newstr;

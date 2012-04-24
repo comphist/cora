@@ -245,12 +245,19 @@ var file = {
 	var posHTML = "";
 	var tags = $H(data.tags);
 	var attribs = $H(data.attribs);
+	var taglist = Object.values(tags);
+
+	taglist.sort(function(tag_a,tag_b) {
+	    var a = tag_a.shortname;
+	    var b = tag_b.shortname;
+	    return a < b ? -1 : a > b ? 1 : 0;
+	});
 
 	fileTagset.pos = tags;
 	fileTagset.attribs = attribs;
 	fileTagset.morph = {};
 
-	tags.each(function(tag, id) {
+	taglist.each(function(tag) {
 	    posHTML += "<option>";
 	    posHTML += tag.shortname;
 	    posHTML += "</option>";

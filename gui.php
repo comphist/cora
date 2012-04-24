@@ -81,7 +81,7 @@
 			<div id="header">
 				<div id="controls" style="right: 5px">
 				  <?php if($_SESSION["loggedIn"]): ?>
-				  <a href="index.php?do=logout"><img src="gui/images/logout.png" alt="Logout" width="60" height="30" /></a>
+				  <a href="index.php?do=logout" id="logoutLink"><img src="gui/images/logout.png" alt="Logout" width="60" height="30" /></a>
 				  <?php endif; ?>
 <!--				  <a href="index.php?lang=<?php echo $sh->getInactiveLanguage(); ?>"><img src="gui/images/lang_de_en.png" alt="Change Language" width="60" height="30" /></a>
 -->
