@@ -432,11 +432,15 @@ var file = {
     },
     
     renderTableLine: function(file){
+	/* TODO: isn't it completely unnecessary to completely
+	 * re-create the whole table each time a change occurs?
+	 * couldn't this be done more efficiently? */
+	var ref = this;
         var opened = file.opened ? 'opened' : '';
         var tr = new Element('tr',{id: 'file_'+file.file_id, 'class': opened});
         if((file.byUser == userdata.name) || userdata.admin){
-            var delTD = new Element('td',{ html: '<img src="gui/images/proxal/delete.ico" />' });
-            delTD.addEvent('click', function(){ ref.deleteFile(file.file_id); } );
+            var delTD = new Element('td',{ html: '<img src="gui/images/proxal/delete.ico" />', 'class': 'deleteFile' });
+            delTD.addEvent('click', function(){ ref.deleteFile(file.file_id,file.file_name); } );
             tr.adopt(delTD);
         } else {
 	    tr.adopt(new Element('td'));
@@ -444,15 +448,15 @@ var file = {
         var addData = (file.opened) ? '-' : '<span class="addData{type}">Hinzufügen</span>';
         var chkImg = '<img src="gui/images/chk_on.png" />';
         tr.adopt(new Element('td',{'class': 'filename'}).adopt(new Element('a',{ html: file.file_name }).addEvent('click',function(){ ref.openFile(file.file_id); })));
-        tr.adopt(new Element('td',{ html: (file.POS_tagged == 1) ? chkImg : addData.substitute({type: 'POS'}) }));
-        tr.adopt(new Element('td',{ html: (file.morph_tagged == 1) ? chkImg : addData.substitute({type: 'Morph'}) }));
-        tr.adopt(new Element('td',{ html: (file.norm == 1) ? chkImg : addData.substitute({type: 'Norm'}) }));
+        tr.adopt(new Element('td',{ 'class': 'tagStatusPOS', html: (file.POS_tagged == 1) ? chkImg : addData.substitute({type: 'POS'}) }));
+        tr.adopt(new Element('td',{ 'class': 'tagStatusMorph', html: (file.morph_tagged == 1) ? chkImg : addData.substitute({type: 'Morph'}) }));
+        tr.adopt(new Element('td',{ 'class': 'tagStatusNorm', html: (file.norm == 1) ? chkImg : addData.substitute({type: 'Norm'}) }));
         tr.adopt(new Element('td',{ html: file.lastMod }));
         tr.adopt(new Element('td',{ html: file.lastModUser }));                    
         tr.adopt(new Element('td',{ html: file.created }));
         tr.adopt(new Element('td',{ html: file.byUser }));
         if((file.opened == userdata.name ) || (opened && userdata.admin)){
-            tr.adopt(new Element('td').adopt(new Element('a',{ html: 'close', 'class': 'closeFileLink' }).addEvent('click', function(){ ref.closeFile(file.file_id); } )));
+            tr.adopt(new Element('td',{'class':'closeFile'}).adopt(new Element('a',{ html: 'close', 'class': 'closeFileLink' }).addEvent('click', function(){ ref.closeFile(file.file_id); } )));
         } else {
 	    tr.adopt(new Element('td'));
 	}

@@ -597,6 +597,10 @@ td.tagStatus {
     opacity: 0.7;
 }
 
+td.deleteFile img {
+    cursor: pointer;
+}
+
 tr.opened {
     opacity: 0.5;
 }
