@@ -31,7 +31,7 @@ $tagsets = $sh->getTagsetList();
 
 		<p>
 		<label for="tagset">Tagset: </label>
-		<select name="tagset" size="1" disabled="disabled">
+		<select name="tagset" size="1">
 			<?php foreach($tagsets as $set):?>
 			<option value="<?php echo $set['shortname'];?>"><?php echo "{$set['shortname']} ({$set['longname']}) ";?></option>
 			<?php endforeach;?>

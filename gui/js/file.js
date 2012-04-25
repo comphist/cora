@@ -80,8 +80,8 @@ var file = {
             })
           ref.formSave(popup);
             
-          $('main').adopt(popup);
           $$('#main > div[class!=importErrorPopup]').setStyle('opacity',0.5);            
+          $('main').adopt(popup);
             
         
     },

@@ -542,8 +542,8 @@ class DBInterface extends DBConnector {
    */
 	public function saveNewFile($name,$user,$pos_tagged,$morph_tagged,$norm,$tagset,&$data){
 
-    	$qs = "INSERT INTO {$this->db}.files_metadata (file_name, POS_tagged, morph_tagged, norm, byUser, created) "
-		 	."VALUES ('{$name}', '{$pos_tagged}', '{$morph_tagged}','{$norm}', '{$user}', CURRENT_TIMESTAMP )";
+    	$qs = "INSERT INTO {$this->db}.files_metadata (file_name, POS_tagged, morph_tagged, norm, byUser, created, tagset) "
+		 	."VALUES ('{$name}', '{$pos_tagged}', '{$morph_tagged}','{$norm}', '{$user}', CURRENT_TIMESTAMP, '{$tagset}' )";
 			
 		if($this->query($qs)){
 			$file_id = mysql_insert_id(); 
@@ -792,7 +792,7 @@ class DBInterface extends DBConnector {
 				$row = @mysql_fetch_row($q,$this->dbobj);
 				$lock['lastEditedRow'] = $row[0];
 			} else {
-				$lock['lastEditedRow'] = 0;
+				$lock['lastEditedRow'] = -1;
 			}
 			$lock['data'] = @mysql_fetch_assoc($query);
 			$lock['success'] = true;
