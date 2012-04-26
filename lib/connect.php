@@ -596,54 +596,117 @@ class DBInterface extends DBConnector {
    * @return @return bool result of the mysql queryies
    */			
  	public function insertData($file_id,$data,$pos_tagged,$morph_tagged,$norm){
-		foreach($data as $lineIndex=>$line){
-			$max = 0;
-			$initTag = "";
-			$initLemma = "";
+	/* CAREFUL!!! ONLY ONE OF "$pos_tagged", "$morph_tagged", "$norm" MAY BE TRUE
+	 * AT THE SAME TIME, THOUGH THE USE OF THREE SEPARATE VARIABLES SUGGESTS OTHERWISE...
+	 */
+	       if($pos_tagged || $morph_tagged || $norm){
+		      if($pos_tagged) $tagname = "tag_POS";
+		      elseif($morph_tagged) $tagname = "tag_morph";
+		      elseif($norm) $tagname = "tag_norm";					
 
-			if($pos_tagged || $morph_tagged || $norm){
+		      $datacount = 0; // number of lines processed since the last SQL query
+		      $dataqs = "";
+		      $suggcount = 0;
+		      $suggqs = "";
 
-				if($pos_tagged) $tagname = "tag_POS";
-				elseif($morph_tagged) $tagname = "tag_morph";
-				elseif($norm) $tagname = "tag_norm";					
+       		      foreach($data as $lineIndex=>$line){
+		       	      $max = 0;
+			      $initTag = "";
+			      $initLemma = "";
 
-				foreach($line['data'] as $tagIndex=>$tag){						
+			      foreach($line['data'] as $tagIndex=>$tag){						
 
-					if($pos_tagged) { $tagName = $tag['pos']; $tagtype = "pos"; }
-					elseif($morph_tagged) {$tagName = $tag['morph']; $tagtype = "morph";}
-					elseif($norm) { $tagName = $tag['norm']; $tagtype = "norm"; }
+				if($pos_tagged) { $tagName = $tag['pos']; $tagtype = "pos"; }
+				elseif($morph_tagged) {$tagName = $tag['morph']; $tagtype = "morph";}
+				elseif($norm) { $tagName = $tag['norm']; $tagtype = "norm"; }
 
-					$qs = "INSERT INTO {$this->db}.files_tags_suggestion (file_id, line_id, tag_suggestion_id, tag_name, lemma, tag_probability, tagtype) "
-						 ."VALUES ('{$file_id}',{$lineIndex},{$tagIndex},'{$tagName}','{$tag['lemma']}','{$tag['possibility']}','{$tagtype}' )";
+				if($suggcount>0) { $suggqs = $suggqs . ","; }
+				$suggqs = $suggqs . "('{$file_id}',{$lineIndex},{$tagIndex},'{$tagName}','{$tag['lemma']}','{$tag['possibility']}','{$tagtype}')";
+				$suggcount++;
 					
-					if(!$this->query($qs)){
-						echo $qs;
-						echo 'DB-Import-Fehler: Line No. '.$lineIndex.', Tag No. '.$tagIndex;
-					}
-                    if($max<$tag['possibility']){
-						$max = $tag['possibility'];
-						if($pos_tagged) $initTag = $tag['pos'];
-						elseif($morph_tagged) $initTag = $tag['morph'];
-						elseif($norm) $initTag = $tag['norm'];						   
-						
-						$initLemma = $tag['lemma'];
-					}
-				}
-
-				$qs = "INSERT INTO {$this->db}.files_data (file_id, line_id, token, {$tagname}, lemma) "
-				   ."VALUES ('{$file_id}','{$lineIndex}','{$line['token']}','{$initTag}','{$initLemma}')";
-				if(!$this->query($qs)){
-					echo $qs;
-					echo "ERROR";
-				}
-				
-			} else {
+				if($max<$tag['possibility']){
+					$max = $tag['possibility'];
+					if($pos_tagged) $initTag = $tag['pos'];
+					elseif($morph_tagged) $initTag = $tag['morph'];
+					elseif($norm) $initTag = $tag['norm'];						   
 					
-			 	$qs = "INSERT INTO {$this->db}.files_data (file_id, line_id, token) VALUES ('{$file_id}','{$lineIndex}','{$line['token']}')";
-			 	if(!$this->query($qs)){
-			 		echo $qs;
-			 	}				
+					$initLemma = $tag['lemma'];
+				}
+			      }
+
+			      if($datacount>0) { $dataqs = $dataqs . ","; }
+			      $dataqs = $dataqs . "('{$file_id}','{$lineIndex}','{$line['token']}','{$initTag}','{$initLemma}')";
+			      $datacount++;
+
+			      if($datacount>1000){	// "flush" every 1000 or so lines
+			      		$dataqs = "INSERT INTO {$this->db}.files_data (file_id, line_id, token, {$tagname}, lemma) VALUES " . $dataqs;
+					if(!$this->query($dataqs)){
+						echo mysql_errno() . ": " . mysql_error() . "\n";
+						echo $dataqs . "\n";
+					}
+					$dataqs = "";
+					$datacount = 0;
+			      }
+			      if($suggcount>1000){
+					$suggqs = "INSERT INTO {$this->db}.files_tags_suggestion (file_id, line_id, tag_suggestion_id, "
+					          . "tag_name, lemma, tag_probability, tagtype) VALUES " . $suggqs;
+				        if(!$this->query($suggqs)){
+						echo mysql_errno() . ": " . mysql_error() . "\n";
+						echo $suggqs . "\n";
+					}
+					$suggqs = "";
+					$suggcount = 0;
+      			      }
+
+		    				
 			}
+
+		      if($datacount>0){
+		      		$dataqs = "INSERT INTO {$this->db}.files_data (file_id, line_id, token, {$tagname}, lemma) VALUES " . $dataqs;
+				if(!$this->query($dataqs)){
+					echo $dataqs . "\n";
+					echo mysql_errno() . ": " . mysql_error() . "\n";
+				}
+ 		      }
+		      if($suggcount>0){
+				$suggqs = "INSERT INTO {$this->db}.files_tags_suggestion (file_id, line_id, tag_suggestion_id, "
+				          . "tag_name, lemma, tag_probability, tagtype) VALUES " . $suggqs;
+			        if(!$this->query($suggqs)){
+					echo mysql_errno() . ": " . mysql_error() . "\n";
+					echo $suggqs . "\n";
+				}
+     		      }
+      
+		
+		}
+		else {
+		     $dataqs = "";
+		     $datacount = 0;
+
+       		      foreach($data as $lineIndex=>$line){
+		      		    if($datacount>0) { $dataqs = $dataqs . ","; }
+				    $dataqs = $dataqs . "('{$file_id}','{$lineIndex}','{$line['token']}')";
+				    $datacount++;
+
+				    if($datacount>1000){
+					$dataqs = "INSERT INTO {$this->db}.files_data (file_id, line_id, token) VALUES " . $dataqs;
+					if(!$this->query($dataqs)){
+						echo mysql_errno() . ": " . mysql_error() . "\n";
+						echo $dataqs . "\n";
+					}
+					$dataqs = "";
+					$datacount = 0;
+				    }
+		      }
+
+		    if($datacount>0){
+			$dataqs = "INSERT INTO {$this->db}.files_data (file_id, line_id, token) VALUES " . $dataqs;
+			if(!$this->query($dataqs)){
+				echo mysql_errno() . ": " . mysql_error() . "\n";
+				echo $dataqs . "\n";
+			}
+		    }
+
 		}
 			
 		return true;
@@ -660,47 +723,85 @@ class DBInterface extends DBConnector {
    * @return @return bool result of the mysql queryies
    */			
  	public function updateData($file_id,$tagType,$data){
-		foreach($data as $lineIndex=>$line){
+	      $datacount = 0; // number of lines since the last SQL query
+	      $dataqs = "";
+	      $suggcount = 0;
+	      $suggqs = "";
+
+ 	      $tagType = strtolower($tagType);
+	      switch($tagType){
+	      	      case "morph": $tagname = "tag_morph"; $tagshortname = "morph"; break;
+		      case "pos":   $tagname = "tag_POS";   $tagshortname = "pos";   break;
+		      case "norm":  $tagname = "tag_norm";  $tagshortname = "norm";  break;
+	      }
+
+	      foreach($data as $lineIndex=>$line){
 			$max = 0;
 			$initTag = "";
 			$initLemma = "";
 
 			foreach($line['data'] as $tagIndex=>$tag){						
-
-				$tagType = strtolower($tagType);
-				if($tagType == 'morph') {$tagName = $tag['morph']; $tagname = "tag_morph";}
-				if($tagType == 'pos') {$tagName = $tag['pos']; $tagname = "tag_POS";}
-				if($tagType == 'norm') {$tagName = $tag['norm']; $tagname = "tag_norm";}
-
-
-				$qs = "INSERT INTO {$this->db}.files_tags_suggestion (file_id, line_id, tag_suggestion_id, tag_name, tag_probability, tagtype) 
-					   VALUES ('{$file_id}',{$lineIndex},{$tagIndex},'{$tagName}','{$tag['possibility']}','{$tagType}')  
-					   ON DUPLICATE KEY UPDATE tag_name='{$tagName}', tag_probability='{$tag['possibility']}'";				   				
-					
-				if(!$this->query($qs)){
-					// echo $qs;
-					// echo 'DB-Import-Fehler: Line No. '.$lineIndex.', Tag No. '.$tagIndex;
-				}
-                if($max<$tag['possibility']){
-					$max = $tag['possibility'];
-					switch($tagType){
-						case "morph": $initTag = $tag['morph']; break;
-						case "pos": $initTag = $tag['pos']; break;
-						case "norm": $initTag = $tag['norm']; break;
-					}
-				}
-			}
-
-			$qs = "	UPDATE {$this->db}.files_data SET {$tagname}='{$initTag}' 
-					WHERE file_id='{$file_id}' AND line_id='{$lineIndex}'";
-
-			if(!$this->query($qs)){
-				echo $qs;
-				echo "ERROR";
-			}
+				$tagName = $tag[$tagshortname];
 				
+				if($suggcount>0){ $suggqs = $suggqs . ","; }
+				$suggqs = $suggqs . "('{$file_id}',{$lineIndex},{$tagIndex},'{$tagName}','{$tag['possibility']}','{$tagType}')";
+				$suggcount++;
+
+              			if($max<$tag['possibility']){
+					$max = $tag['possibility'];
+					$initTag = $tag[$tagshortname];
+				}
+			}
+
+			if($datacount>0){ $dataqs = $dataqs . ","; }
+			$dataqs = $dataqs . "('{$file_id}','{$lineIndex}','{$initTag}')";
+			$datacount++;
+
+			// $qs = "	UPDATE {$this->db}.files_data SET {$tagname}='{$initTag}' 
+			//		WHERE file_id='{$file_id}' AND line_id='{$lineIndex}'";
+
+		      if($datacount>1000){
+				$dataqs = "INSERT INTO {$this->db}.files_data (file_id, line_id, {$tagname}) VALUES "
+					  . $dataqs . " ON DUPLICATE KEY UPDATE {$tagname}=VALUES({$tagname})";
+			        if(!$this->query($dataqs)){
+					echo mysql_errno() . ": " . mysql_error() . "\n";
+					echo $dataqs . "\n";
+				}
+				$dataqs = "";
+				$datacount = 0;
+		      }
+		      if($suggcount>1000){
+				$suggqs = "INSERT INTO {$this->db}.files_tags_suggestion (file_id, line_id, tag_suggestion_id, "
+					  . "tag_name, tag_probability, tagtype) VALUES " . $suggqs
+					  . " ON DUPLICATE KEY UPDATE tag_name=VALUES(tag_name), tag_probability=VALUES(tag_probability)";
+			        if(!$this->query($suggqs)){
+					echo mysql_errno() . ": " . mysql_error() . "\n";
+					echo $suggqs . "\n";
+				}
+				$suggqs = "";
+				$suggcount = 0;
+		      }
+
 		}
 			
+	      if($datacount>0){
+			$dataqs = "INSERT INTO {$this->db}.files_data (file_id, line_id, {$tagname}) VALUES "
+				  . $dataqs . " ON DUPLICATE KEY UPDATE {$tagname}=VALUES({$tagname})";
+		        if(!$this->query($dataqs)){
+				echo mysql_errno() . ": " . mysql_error() . "\n";
+				echo $dataqs . "\n";
+			}
+	      }
+	      if($suggcount>0){
+			$suggqs = "INSERT INTO {$this->db}.files_tags_suggestion (file_id, line_id, tag_suggestion_id, "
+				  . "tag_name, tag_probability, tagtype) VALUES " . $suggqs
+				  . " ON DUPLICATE KEY UPDATE tag_name=VALUES(tag_name), tag_probability=VALUES(tag_probability)";
+		        if(!$this->query($suggqs)){
+				echo mysql_errno() . ": " . mysql_error() . "\n";
+				echo $suggqs . "\n";
+			}
+	      }
+
 		return true;
 	}	
 	

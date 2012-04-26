@@ -24,11 +24,13 @@ var EditorModel = new Class({
 	 start_page - The page to first display
     */
     initialize: function(fileid, line_count, last_edited_row, start_page) {
-	var elem, spos, smorph, et, mr, btn;
+	var elem, td, spos, smorph, et, mr, btn;
 	var ref = this;
 
 	this.lineCount = Number.from(line_count);
-	this.lastEditedRow = Number.from(last_edited_row);
+	if(last_edited_row!==null) {
+	    this.lastEditedRow = Number.from(last_edited_row);
+	}
 	this.changedLines = new Array();
 	this.fileId = fileid;
 
@@ -41,13 +43,16 @@ var EditorModel = new Class({
 	
 	spos = new Element('select', {'html': fileTagset.posHTML});
 	spos.grab(new Element('option',{html:"-----------"}),'top');
-	elem.getElement('td.editTable_POS').adopt(spos);
+	td = elem.getElement('td.editTable_POS')
+	td.empty();
+	td.adopt(spos);
 	
 	smorph = new Element('select');
 	smorph.grab(new Element('option',{html:"-----------"}),'top');
-	elem.getElement('td.editTable_Morph').adopt(smorph);
+	td = elem.getElement('td.editTable_Morph');
+	td.empty();
+	td.adopt(smorph);
 	
-
 	this.lineTemplate = elem;
 
 	/* define delegated events */

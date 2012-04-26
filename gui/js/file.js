@@ -1,6 +1,9 @@
+
 // ***********************************************************************
 // ********** GLOBALE VARIABLEN ******************************************
 // ***********************************************************************
+
+var debugMode = false;
 
 var fileTagset = {
     pos: null,
@@ -21,7 +24,8 @@ var file = {
     },
     
     formSave: function(form){
-        
+        if (debugMode) { return; }
+
         ref = this;
         var iFrame = new iFrameFormRequest(form,{
             onFailure: function(xhr) {
@@ -29,32 +33,32 @@ var file = {
        		   lang_strings.dialog_server_returned_error + "\n\n" +
        		   xhr.responseText);
        	    },
-			onRequest: function(){
-
-			},
-			onComplete: function(response){
-                response = JSON.decode(response);
-			    if(!response.status){
-
-			        if(response.locked){
-			            alert("Tagsset is locked");			            
-			        } else {			            
-			            ref.tagsetName = response.tagsetName;
+	    onRequest: function(){
+		
+	    },
+	    onComplete: function(response){
+		response = JSON.decode(response);
+		if(!response.status){
+		    
+		    if(response.locked){
+			alert("Tagsset is locked");			            
+		    } else {			            
+			ref.tagsetName = response.tagsetName;
                         ref.unmatchedTags = response.data;
-			            ref.importUnmatchedTagError();			                                    
-			        }
-			    } 
-			    else { 
-			        $(form).getElements('input[type!=submit]').set('value','');
-			        if($$('.addDataPopup'))
-			            $$('.addDataPopup').destroy();
-			            $$('#main > div[class!=importErrorPopup]').setStyle('opacity',1);
-			        ref.listFiles();
+			ref.importUnmatchedTagError();			                                    
+		    }
+		} 
+		else { 
+		    $(form).getElements('input[type!=submit]').set('value','');
+		    if($$('.addDataPopup'))
+			$$('.addDataPopup').destroy();
+		    $$('#main > div[class!=importErrorPopup]').setStyle('opacity',1);
+		    ref.listFiles();
                     // ref.addFileToList();
                 }
                 
             }
-		});
+	});
     },
     
     copyTagset: function(){
@@ -78,7 +82,7 @@ var file = {
               if(fileInput.get('value').length > 0 )
                   popup.getElement('input[type=submit]').erase('disabled');
             })
-          ref.formSave(popup);
+          this.formSave(popup);
             
           $$('#main > div[class!=importErrorPopup]').setStyle('opacity',0.5);            
           $('main').adopt(popup);

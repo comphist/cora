@@ -224,7 +224,7 @@ class RequestHandler {
 								}
 								// return tags which do not match with the tagset
 								else {
-									// look if tagset is locked, if not lock it!
+									// look if tagset is locked, if not lock it! @todo <-- why lock it? -MB
 									$lock = $this->sh->lockTagset(self::escapeSQL($post["tagset"]));
 									if(!$lock['success'])
 										// return lock information
