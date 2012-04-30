@@ -21,7 +21,6 @@ header( "Content-Type: text/html; charset=utf-8" );
 
 /* Includes */
 require_once( "lib/connect.php" );      // provides DB interface
-require_once( "lib/fileModel.php" );
 require_once( "lib/requestHandler.php" );
 require_once( "lib/sessionHandler.php" );
 

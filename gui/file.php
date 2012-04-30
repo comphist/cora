@@ -3,8 +3,6 @@
  * The document selection page.
  */
 
-// $fM = new fileModel();
-
 $filelist = $sh->getFiles(); 
 $tagsets = $sh->getTagsetList();
 

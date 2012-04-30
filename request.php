@@ -9,7 +9,6 @@
  * string (depending on the nature of the request).
  */
 
-require_once( "lib/fileModel.php" );
 require_once( "lib/sessionHandler.php" );
 require_once( "lib/requestHandler.php" );
 

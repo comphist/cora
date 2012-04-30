@@ -17,7 +17,7 @@ function onLoad() {
 }
 
 function onBeforeUnload() {
-    if (typeof edit!=undefined && edit.editorModel!==null) {
+    if (typeof edit!="undefined" && edit.editorModel!==null) {
 	var chl = edit.editorModel.changedLines.length;
 	if (chl>0) {
 	    var zeile = (chl>1) ? "Zeilen" : "Zeile";
