@@ -89,6 +89,7 @@ $tagsets = $sh->getTagsetList();
 				<th colspan="2">zuletzt bearbeitet am/von</th>
 				<th colspan="2">erstellt am/von</th>
 				<th></th>
+				<th></th>
 		    </tr>
 			<?php foreach($filelist as $file): ?>
 			<tr id="file_<?php echo $file['file_id']; ?>" class="<?php if($file['opened']) echo 'opened'?>">
@@ -122,6 +123,9 @@ $tagsets = $sh->getTagsetList();
 				<td><?php echo $file['lastModUser']; ?></td>
 				<td><?php echo $file['created']; ?></td>
 				<td><?php echo $file['byUser']; ?></td>
+				<td class="exportFile">
+					<a class="exportFileLink">export</a>
+ 			   	</td>
 				<td class="closeFile">
 					<?php if($file['file_id'] == $_SESSION['currentFileId'] || ($file['opened'] && $_SESSION['admin']) ):?>
 						<a class="closeFileLink">close</a>

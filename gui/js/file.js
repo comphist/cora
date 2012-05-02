@@ -459,6 +459,7 @@ var file = {
         tr.adopt(new Element('td',{ html: file.lastModUser }));                    
         tr.adopt(new Element('td',{ html: file.created }));
         tr.adopt(new Element('td',{ html: file.byUser }));
+        tr.adopt(new Element('td',{'class':'exportFile'}).adopt(new Element('a',{ html: 'export', 'class': 'exportFileLink' }).addEvent('click', function(){ ref.exportFile(file.file_id); } )));
         if((file.opened == userdata.name ) || (opened && userdata.admin)){
             tr.adopt(new Element('td',{'class':'closeFile'}).adopt(new Element('a',{ html: 'close', 'class': 'closeFileLink' }).addEvent('click', function(){ ref.closeFile(file.file_id); } )));
         } else {
@@ -487,7 +488,11 @@ var file = {
     	     }
     	    }
     	).post();
-    }        
+    },
+
+    exportFile: function(fileid){
+	window.location = 'request.php?do=exportFile&fileId='+fileid;
+    }
 };
 
 
@@ -512,6 +517,12 @@ window.addEvent('domready', function() {
         link.addEvent('click', function(e){
             e.stop();
             file.openFile(link.getParent('tr').get('id').substr(5));
+        })
+    });
+    $$('td.exportFile a.exportFileLink').each(function(link){        
+        link.addEvent('click', function(event){ 
+            event.stop();
+            file.exportFile(link.getParent('tr').get('id').substr(5));
         })
     });
     $$('td.closeFile a.closeFileLink').each(function(link){        

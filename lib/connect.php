@@ -1022,6 +1022,31 @@ class DBInterface extends DBConnector {
 		
 	}
 	
+	/** Retrieve all lines from a file, not including error data
+	 *  or tagger suggestions.
+	 */
+	public function getAllLines($fileid){
+	  $qs = "SELECT * from {$this->db}.files_data WHERE file_id='{$fileid}' ORDER BY line_id";
+	  $query = $this->query($qs);
+	  $data = array();
+	  while($row = @mysql_fetch_assoc($query,$this->dbobj)){
+	    $data[] = $row;
+	  }
+	  return $data;
+	}
+
+	/** Retrieve all tagger suggestions for a line in a file. */
+	public function getAllSuggestions($fileid, $lineid){
+	  $qs = "SELECT * FROM {$this->db}.files_tags_suggestion WHERE file_id='{$fileid}' AND line_id='{$lineid}' ORDER BY tagtype DESC";
+	  $q = $this->query($qs);
+
+	  $tag_suggestions = array();
+	  while($row = @mysql_fetch_assoc($q)){
+	    $tag_suggestions[] = $row;
+	  }
+	  return $tag_suggestions;
+	}
+
 	/** Retrieves a specified number of lines from a file.
 	*
 	* @param string $fileid the file id

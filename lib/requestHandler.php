@@ -321,6 +321,12 @@ class RequestHandler {
 					  	   		self::returnError(500, "Could not delete file.");
 						   exit;
 						
+      case "exportFile":
+	$status = $this->sh->exportFile(self::escapeSQL($get["fileId"]));
+	if (!$status)
+	  self::returnError(500, "Could not export file.");
+	exit;
+
 		case "getLines":   $data = $this->sh->getLines(self::escapeSQL($get['page']));
 						   echo json_encode($data);
 						   exit;

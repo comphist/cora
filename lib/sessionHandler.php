@@ -8,6 +8,7 @@
  */
 
 require_once( "connect.php" );
+require_once( "xmlHandler.php" );
 
 /** Manages session-specific data.
  *
@@ -18,6 +19,7 @@ require_once( "connect.php" );
  */
 class SessionHandler {
   private $db; /**< A DBInterface object. */
+  private $xml; /**< An XMLHandler object. */
 
   /** Create a new SessionHandler.
    *
@@ -28,6 +30,7 @@ class SessionHandler {
     @session_start();
 
     $this->db = new DBInterface();
+    $this->xml = new XMLHandler($this->db);
 
     $defaults = array( "lang"        => DEFAULT_LANGUAGE,
 		       "loggedIn"    => false,
@@ -175,8 +178,8 @@ class SessionHandler {
 			unset($_SESSION['currentName']);
 			unset($_SESSION['currentFileId']);
 			return true;
-		}
-		return $ans;
+	    }
+	    return $ans;
 	}
 	
  	/** Calculate the page number on which a given line appears.
@@ -194,7 +197,7 @@ class SessionHandler {
 		return $page;
 	}
 	  
-  /** Wraps DBInterface::openFile(), set the session data for the file */    
+	/** Wraps DBInterface::openFile(), set the session data for the file */    
 	public function openFile( $fileid ){
 		$lock = $this->db->openFile($fileid);
 		if($lock['success']){
@@ -205,6 +208,11 @@ class SessionHandler {
 		}
 		
 		return $lock;		
+	}
+
+	public function exportFile( $fileid ){
+	  $this->xml->export($fileid);
+	  return true;
 	}
 	
 	/** Wraps DBInterface::getFiles() */
