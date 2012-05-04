@@ -428,7 +428,7 @@ var file = {
                             ref.addNewData(link);
                         })
                     });
-                })                
+                })
             }
     	});
         files.get({'do': 'listFiles'});
@@ -441,6 +441,11 @@ var file = {
 	 * couldn't this be done more efficiently? */
 	var ref = this;
         var opened = file.opened ? 'opened' : '';
+	var displayed_name = '';
+	if(file.sigle!=null && file.sigle!=''){
+	    displayed_name = '[' + file.sigle + '] ';
+	}
+	displayed_name += file.file_name;
         var tr = new Element('tr',{id: 'file_'+file.file_id, 'class': opened});
         if((file.byUser == userdata.name) || userdata.admin){
             var delTD = new Element('td',{ html: '<img src="gui/images/proxal/delete.ico" />', 'class': 'deleteFile' });
@@ -451,7 +456,7 @@ var file = {
 	}
         var addData = (file.opened) ? '-' : '<span class="addData{type}">Hinzufügen</span>';
         var chkImg = '<img src="gui/images/chk_on.png" />';
-        tr.adopt(new Element('td',{'class': 'filename'}).adopt(new Element('a',{ html: file.file_name }).addEvent('click',function(){ ref.openFile(file.file_id); })));
+        tr.adopt(new Element('td',{'class': 'filename'}).adopt(new Element('a',{ html: displayed_name }).addEvent('click',function(){ ref.openFile(file.file_id); })));
         tr.adopt(new Element('td',{ 'class': 'tagStatusPOS', html: (file.POS_tagged == 1) ? chkImg : addData.substitute({type: 'POS'}) }));
         tr.adopt(new Element('td',{ 'class': 'tagStatusMorph', html: (file.morph_tagged == 1) ? chkImg : addData.substitute({type: 'Morph'}) }));
         tr.adopt(new Element('td',{ 'class': 'tagStatusNorm', html: (file.norm == 1) ? chkImg : addData.substitute({type: 'Norm'}) }));

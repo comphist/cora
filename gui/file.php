@@ -91,13 +91,15 @@ $tagsets = $sh->getTagsetList();
 				<th></th>
 				<th></th>
 		    </tr>
+
 			<?php foreach($filelist as $file): ?>
 			<tr id="file_<?php echo $file['file_id']; ?>" class="<?php if($file['opened']) echo 'opened'?>">
 				<td class="deleteFile">
 					<?php if(($file['byUser'] == $_SESSION['user']) || $_SESSION['admin']):?>
 					<img src="gui/images/proxal/delete.ico" /></td>
 					<?php endif; ?>
-				<td class="filename"><a class="openFile"><?php echo $file['file_name']; ?></a></td>
+  <td class="filename"><a class="openFile"><?php if($file['sigle']!=null && $file['sigle']!=''){ echo "[{$file['sigle']}] "; }
+ echo $file['file_name']; ?></a></td>
 				<td class="tagStatusPOS">
 					<?php if($file['POS_tagged']):?>
 						<img src="gui/images/chk_on.png" />

@@ -32,7 +32,7 @@ class XMLHandler {
     $metadata = $this->db->openFile($fileid);
     if($metadata['success']) {
       $writer->startElement('header');
-      $writer->writeAttribute('sigle', '');
+      $writer->writeAttribute('sigle', $metadata['data']['sigle']);
       $writer->writeAttribute('name', $metadata['data']['file_name']);
       $writer->writeAttribute('tagset', $metadata['data']['tagset']);
       $writer->writeAttribute('progress', $metadata['lastEditedRow']);
@@ -53,20 +53,28 @@ class XMLHandler {
       // form
       $writer->startElement('form');
       $writer->writeAttribute('dipl', $line['token']);
-      $writer->writeAttribute('norm', $line['tag_norm']);
+      if($line['tag_norm']!==null && $line['tag_norm']!==''){
+	$writer->writeAttribute('norm', $line['tag_norm']);
+      }
       $writer->endElement();
       // lemma
-      $writer->startElement('lemma');
-      $writer->writeAttribute('inst', $line['lemma']);
-      $writer->endElement();
+      if($line['lemma']!==null && $line['lemma']!==''){
+	$writer->startElement('lemma');
+	$writer->writeAttribute('inst', $line['lemma']);
+	$writer->endElement();
+      }
       // pos
-      $writer->startElement('pos');
-      $writer->writeAttribute('inst', $line['tag_POS']);
-      $writer->endElement();
+      if($line['tag_POS']!==null && $line['tag_POS']!==''){
+	$writer->startElement('pos');
+	$writer->writeAttribute('inst', $line['tag_POS']);
+	$writer->endElement();
+      }
       // morph
-      $writer->startElement('infl');
-      $writer->writeAttribute('val', $line['tag_morph']);
-      $writer->endElement();
+      if($line['tag_morph']!==null && $line['tag_morph']!==''){
+	$writer->startElement('infl');
+	$writer->writeAttribute('val', $line['tag_morph']);
+	$writer->endElement();
+      }
       // suggestions
       if($this->output_suggestions){
 	$this->outputSuggestionsAsXML($writer, $fileid, $line['line_id']);
