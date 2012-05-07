@@ -92,49 +92,7 @@ $tagsets = $sh->getTagsetList();
 				<th></th>
 		    </tr>
 
-			<?php foreach($filelist as $file): ?>
-			<tr id="file_<?php echo $file['file_id']; ?>" class="<?php if($file['opened']) echo 'opened'?>">
-				<td class="deleteFile">
-					<?php if(($file['byUser'] == $_SESSION['user']) || $_SESSION['admin']):?>
-					<img src="gui/images/proxal/delete.ico" /></td>
-					<?php endif; ?>
-  <td class="filename"><a class="openFile"><?php if($file['sigle']!=null && $file['sigle']!=''){ echo "[{$file['sigle']}] "; }
- echo $file['file_name']; ?></a></td>
-				<td class="tagStatusPOS">
-					<?php if($file['POS_tagged']):?>
-						<img src="gui/images/chk_on.png" />
-					<?php elseif(!$file['opened']):?>
-						<span class="addDataPOS">Hinzufügen</span>
-					<?php endif; ?>
-				</td>
-				<td class="tagStatusMorph">
-					<?php if($file['morph_tagged']):?>
-						<img src="gui/images/chk_on.png" />
-					<?php elseif(!$file['opened']):?>
-						<span class="addDataMorph">Hinzufügen</span>
-					<?php endif; ?>
-				</td>
-				<td class="tagStatusNorm">
-					<?php if($file['norm']):?>
-						<img src="gui/images/chk_on.png" />
-					<?php elseif(!$file['opened']):?>
-						<span class="addDataNorm">Hinzufügen</span>
-					<?php endif; ?>
-				</td>				
-				<td><?php echo $file['lastMod']; ?></td>
-				<td><?php echo $file['lastModUser']; ?></td>
-				<td><?php echo $file['created']; ?></td>
-				<td><?php echo $file['byUser']; ?></td>
-				<td class="exportFile">
-					<a class="exportFileLink">export</a>
- 			   	</td>
-				<td class="closeFile">
-					<?php if($file['file_id'] == $_SESSION['currentFileId'] || ($file['opened'] && $_SESSION['admin']) ):?>
-						<a class="closeFileLink">close</a>
-					<?php endif; ?>
- 			   	</td>
-			</tr>
-			<?php endforeach; ?>
+		<!-- this table is filled by file.listFiles() @ file.js -->
 		</table>
 	</div>
 

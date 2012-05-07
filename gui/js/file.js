@@ -546,7 +546,8 @@ window.addEvent('domready', function() {
         
         })
     });
-    
+
+    file.listFiles();
     if(userdata.currentFileId)
         file.openFile(userdata.currentFileId);
 
