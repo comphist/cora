@@ -156,6 +156,11 @@ class SessionHandler {
 	public function saveNewFile( $name, $user, $pos_tagged, $morph_tagged, $norm, $tagset, &$data ) {
 		return $this->db->saveNewFile( $name, $user, $pos_tagged, $morph_tagged, $norm, $tagset, $data );
 	}
+
+	/** Wraps XMLHandler::importFile() */
+	public function importFile($xmldata, $options) {
+	  return $this->xml->import($xmldata, $options);
+	}
   	
 	/** Wraps DBInterface::saveAddData() */	
 	public function saveAddData( $id, $tagType, &$data ) {

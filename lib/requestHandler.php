@@ -7,6 +7,7 @@
  * @date January 2012
  */
 
+require_once("fileModel.php");
 
 /** Handles all GET and POST requests.
  */
@@ -175,179 +176,196 @@ class RequestHandler {
   public function handleJSONRequest( $get, $post ) {
 	if (array_key_exists("action", $post)) {
 		switch( $post["action"]) {
-			case "importFile":	$data = file_get_contents($_FILES['textFile']['tmp_name']);
-								// if no name was submitted, use original file name
-								$name = empty($post['textName']) ? str_replace(".txt","",$_FILES['textFile']['name']) : $post['textName'];
+		case "importXMLFile":
+		  if(empty($_FILES['xmlFile']['name']) || $_FILES['xmlFile']['error']!=UPLOAD_ERR_OK || !is_uploaded_file($_FILES['xmlFile']['tmp_name'])) {
+		    echo json_encode(array("success"=>false,"error"=>$_FILES['xmlFile']['error']));
+		    exit;
+		  }
 
-								// set annotation type
-								$pos_tagged = isset($post['tagPOSStatus']) ? 1 : 0;
-								$morph_tagged = isset($post['tagMorphStatus']) ? 1 : 0;
-								$norm = isset($post['tagNormStatus']) ? 1 : 0;
+		  // @todo CHECK DATA FOR BEING VALID XML!!!
 
-								// import File
-								$fM = new FileModel($this->sh);
-								$importStatus = $fM->importFile($post['tagset'],$pos_tagged,$morph_tagged,$norm,$data);
+		  $data = file_get_contents($_FILES['xmlFile']['tmp_name']);
+		  $name = empty($post['xmlName']) ? str_replace(".txt","",$_FILES['xmlFile']['name']) : $post['xmlName'];
+		  $result = $this->sh->importFile($data, array("name"=>$name));
 
-								// save file to database
-								if($importStatus['status']){										$this->sh->saveNewFile($name,$_SESSION['user'],$pos_tagged,$morph_tagged,$norm,$post['tagset'],self::escapeSQL($importStatus['data']));
-									echo json_encode(array("status"=>true));
-								}
-								// return tags which do not match with the tagset
-								else {
-									// look if tagset is locked, if not lock it!
-									$lock = $this->sh->lockTagset(self::escapeSQL($post["tagset"]));
-									if(!$lock['success'])
-										// return lock information
-										echo json_encode(array_merge($importStatus,array('locked'=>true,'byuser'=>$lock['lock'][0],'since'=>$lock['lock'][1])));
-									else {
-										echo json_encode($importStatus);
-									}
-								}
-								
-								exit; 
-			case "addFileData": $data = file_get_contents($_FILES['textFile']['tmp_name']);
-								
-								// set annotation type
-								$pos_tagged = false; $morph_tagged = false; $norm = false;
-								if(strtolower($post['tagType']) == 'morph') {$morph_tagged = true;}
-								if(strtolower($post['tagType']) == 'pos') {$pos_tagged = true;}
-								if(strtolower($post['tagType']) == 'norm') {$norm = true;}
-								
-								// extract annotionen data
-								$fM = new FileModel($this->sh);
-								$importStatus = $fM->addData($post['fileID'],$post['tagset'],$pos_tagged,$morph_tagged,$norm,$data);
-								
-								// save extra data to database
-								if($importStatus['status']){
-									$this->sh->saveAddData($post['fileID'],$post['tagType'],self::escapeSQL($importStatus['data']));
-									echo json_encode(array("status"=>true));
-								}
-								// return tags which do not match with the tagset
-								else {
-									// look if tagset is locked, if not lock it! @todo <-- why lock it? -MB
-									$lock = $this->sh->lockTagset(self::escapeSQL($post["tagset"]));
-									if(!$lock['success'])
-										// return lock information
-										echo json_encode(array_merge($importStatus,array('locked'=>true,'byuser'=>$lock['lock'][0],'since'=>$lock['lock'][1])));
-									else {
-										echo json_encode($importStatus);
-									}
-								}
-			default:	exit();
+		  echo json_encode($result);
+		  exit;
+
+		case "importFile":
+		  $data = file_get_contents($_FILES['textFile']['tmp_name']);
+		  // if no name was submitted, use original file name
+		  $name = empty($post['textName']) ? str_replace(".txt","",$_FILES['textFile']['name']) : $post['textName'];
+		  
+		  // set annotation type
+		  $pos_tagged = isset($post['tagPOSStatus']) ? 1 : 0;
+		  $morph_tagged = isset($post['tagMorphStatus']) ? 1 : 0;
+		  $norm = isset($post['tagNormStatus']) ? 1 : 0;
+		  
+		  // import File
+		  $fM = new FileModel($this->sh);
+		  $importStatus = $fM->importFile($post['tagset'],$pos_tagged,$morph_tagged,$norm,$data);
+		  
+		  // save file to database
+		  if($importStatus['status']){
+		    $this->sh->saveNewFile($name,$_SESSION['user'],$pos_tagged,$morph_tagged,$norm,$post['tagset'],self::escapeSQL($importStatus['data']));
+		    echo json_encode(array("status"=>true));
+		  }
+		  // return tags which do not match with the tagset
+		  else {
+		    // look if tagset is locked, if not lock it! @todo <-- why lock it? -MB
+		    $lock = $this->sh->lockTagset(self::escapeSQL($post["tagset"]));
+		    if(!$lock['success'])
+		      // return lock information
+		      echo json_encode(array_merge($importStatus,array('locked'=>true,'byuser'=>$lock['lock'][0],'since'=>$lock['lock'][1])));
+		    else {
+		      echo json_encode($importStatus);
+		    }
+		  }
+		  
+		  exit; 
+		case "addFileData": $data = file_get_contents($_FILES['textFile']['tmp_name']);
+		  
+		  // set annotation type
+		  $pos_tagged = false; $morph_tagged = false; $norm = false;
+		  if(strtolower($post['tagType']) == 'morph') {$morph_tagged = true;}
+		  if(strtolower($post['tagType']) == 'pos') {$pos_tagged = true;}
+		  if(strtolower($post['tagType']) == 'norm') {$norm = true;}
+		  
+		  // extract annotionen data
+		  $fM = new FileModel($this->sh);
+		  $importStatus = $fM->addData($post['fileID'],$post['tagset'],$pos_tagged,$morph_tagged,$norm,$data);
+		  
+		  // save extra data to database
+		  if($importStatus['status']){
+		    $this->sh->saveAddData($post['fileID'],$post['tagType'],self::escapeSQL($importStatus['data']));
+		    echo json_encode(array("status"=>true));
+		  }
+		  // return tags which do not match with the tagset
+		  else {
+		    // look if tagset is locked, if not lock it! @todo <-- why lock it? -MB
+		    $lock = $this->sh->lockTagset(self::escapeSQL($post["tagset"]));
+		    if(!$lock['success'])
+		      // return lock information
+		      echo json_encode(array_merge($importStatus,array('locked'=>true,'byuser'=>$lock['lock'][0],'since'=>$lock['lock'][1])));
+		    else {
+		      echo json_encode($importStatus);
+		    }
+		  }
+		default:	exit();
 		}
 	}
 	
-    if (array_key_exists("do", $get)) {
-      switch ( $get["do"] ) {
-		case "getHighestTagId": echo $this->sh->getHighestTagId(self::escapeSQL($get["tagset"]));
-								 exit;
-	
-      	case "lockTagset":	$data = $this->sh->lockTagset(self::escapeSQL($get["name"]));
-							echo json_encode($data);
-							exit;
-
-        case "unlockTagset": $this->sh->unlockTagset(self::escapeSQL($get["name"]));
-							exit;
-
-        case "fetchTagset": $data = $this->sh->getTagset(self::escapeSQL($get["name"]));
-							echo json_encode($data);
-							exit;
-							
-		case "getTagsetTags": $data = $this->sh->getTagset(self::escapeSQL($get["tagset"]));
-							  foreach($data['tags'] as $tag){
-								echo "<option>".trim($tag['shortname'])."</option>";
-							  }
-							  exit;
-
-        case "saveTagset":    if ($_SESSION["admin"]) {
-	  							$data = json_decode(file_get_contents("php://input"), true);
-	  							$this->sh->saveTagset(self::escapeSQL($data));
-							}
-							exit;
-	   case "saveCopyTagset": if ($_SESSION["admin"]) {
-						  	  	$data = json_decode($post['tags'], true);
-								echo $post['originTagset'];
-								echo $post['name'];
-						  		$this->sh->saveCopyTagset(self::escapeSQL($data),self::escapeSQL($post['originTagset']),self::escapeSQL($post['name']));
-							  }
-							  exit;
-
-        case "createUser":    $status = $this->sh->createUser(
-														self::escapeSQL($post["username"]),
-														self::escapeSQL($post["password"]),
-														false
-												 );
-							if(!$status) 
-	  							self::returnError(500, "Could not perform query. Check if username already exists.");
-							exit;
-
-        case "deleteUser":    $status = $this->sh->deleteUser(self::escapeSQL($post["username"]));
-							if (!$status)
-	  							self::returnError(500, "Could not delete user.");
-							exit;
-
-        case "toggleAdmin":   $status = $this->sh->toggleAdminStatus(self::escapeSQL($post["username"]));
-							if(!$status)
-	  							self::returnError(500, "Could not toggle admin status.");
-							exit;
-	
-        case "changePassword":$status = $this->sh->changePassword(
-													self::escapeSQL($post["username"]),
-										    		self::escapeSQL($post["password"])
-												 );
-						    if (!$status)
-	  							self::returnError(500, "Could not toggle admin status.");
-							exit;
-														
-	    case "listFiles":  $data = $this->sh->getFiles();
-						   echo json_encode($data);
-						   exit;
-		case "getLastImportedFile": return json_encode($this->sh->getLastImportedFile());
-						
-		case "lockFile":   $data = $this->sh->lockFile(self::escapeSQL($get["fileid"]));
-						   $data = json_encode($data);
-						   echo $data;
-						   exit;
-		
-		case "unlockFile": $data = $this->sh->unlockFile(self::escapeSQL($get["fileid"]));
-						   echo json_encode($data);
-						   exit;
-		
-		case "openFile":   echo json_encode($this->sh->openFile($get['fileid']));
-						   exit;
-						
-		case "deleteFile": $status = $this->sh->deleteFile(self::escapeSQL($post["file_id"]));
-						   if (!$status)
-					  	   		self::returnError(500, "Could not delete file.");
-						   exit;
-						
-      case "exportFile":
-	$status = $this->sh->exportFile(self::escapeSQL($get["fileId"]));
-	if (!$status)
-	  self::returnError(500, "Could not export file.");
-	exit;
-
-		case "getLines":   $data = $this->sh->getLines(self::escapeSQL($get['page']));
-						   echo json_encode($data);
-						   exit;
-		case "getLinesById":   $data = $this->sh->getLinesById(self::escapeSQL($get['start_id']),self::escapeSQL($get['end_id']));
-						   echo json_encode($data);
-						   exit;
-		case "getMaxLinesNo": echo $this->sh->getMaxLinesNo(); exit;
-						
-
-		case "saveData":	$this->sh->saveData(self::escapeSQL($get['lastEditedRow']), self::escapeSQL(json_decode(file_get_contents("php://input"), true)));
-		     			exit;
-
-	    case "copyTagset":	exit;
-						
-		case "saveEditorUserSettings": return $this->sh->setUserEditorSettings(self::escapeSQL($get['noPageLines']),self::escapeSQL($get['contextLines'])); exit;
-
-		case "setUserEditorSetting": return $this->sh->setUserEditorSetting(self::escapeSQL($get['name']),self::escapeSQL($get['value'])); exit;
-
-
-        default:           self::returnError(400, "Unknown request: " + $get["do"]);
-     }
+	if (array_key_exists("do", $get)) {
+	  switch ( $get["do"] ) {
+	  case "getHighestTagId": echo $this->sh->getHighestTagId(self::escapeSQL($get["tagset"]));
+	    exit;
+	    
+	  case "lockTagset":	$data = $this->sh->lockTagset(self::escapeSQL($get["name"]));
+	    echo json_encode($data);
+	    exit;
+	    
+	  case "unlockTagset": $this->sh->unlockTagset(self::escapeSQL($get["name"]));
+	    exit;
+	    
+	  case "fetchTagset": $data = $this->sh->getTagset(self::escapeSQL($get["name"]));
+	    echo json_encode($data);
+	    exit;
+	    
+	  case "getTagsetTags": $data = $this->sh->getTagset(self::escapeSQL($get["tagset"]));
+	    foreach($data['tags'] as $tag){
+	      echo "<option>".trim($tag['shortname'])."</option>";
+	    }
+	    exit;
+	    
+	  case "saveTagset":    if ($_SESSION["admin"]) {
+	      $data = json_decode(file_get_contents("php://input"), true);
+	      $this->sh->saveTagset(self::escapeSQL($data));
+	    }
+	    exit;
+	  case "saveCopyTagset": if ($_SESSION["admin"]) {
+	      $data = json_decode($post['tags'], true);
+	      echo $post['originTagset'];
+	      echo $post['name'];
+	      $this->sh->saveCopyTagset(self::escapeSQL($data),self::escapeSQL($post['originTagset']),self::escapeSQL($post['name']));
+	    }
+	    exit;
+	    
+	  case "createUser":    $status = $this->sh->createUser(
+								self::escapeSQL($post["username"]),
+								self::escapeSQL($post["password"]),
+								false
+								);
+	    if(!$status) 
+	      self::returnError(500, "Could not perform query. Check if username already exists.");
+	    exit;
+	    
+	  case "deleteUser":    $status = $this->sh->deleteUser(self::escapeSQL($post["username"]));
+	    if (!$status)
+	      self::returnError(500, "Could not delete user.");
+	    exit;
+	    
+	  case "toggleAdmin":   $status = $this->sh->toggleAdminStatus(self::escapeSQL($post["username"]));
+	    if(!$status)
+	      self::returnError(500, "Could not toggle admin status.");
+	    exit;
+	    
+	  case "changePassword":$status = $this->sh->changePassword(
+								    self::escapeSQL($post["username"]),
+								    self::escapeSQL($post["password"])
+								    );
+	    if (!$status)
+	      self::returnError(500, "Could not toggle admin status.");
+	    exit;
+	    
+	  case "listFiles":  $data = $this->sh->getFiles();
+	    echo json_encode($data);
+	    exit;
+	  case "getLastImportedFile": return json_encode($this->sh->getLastImportedFile());
+	    
+	  case "lockFile":   $data = $this->sh->lockFile(self::escapeSQL($get["fileid"]));
+	    $data = json_encode($data);
+	    echo $data;
+	    exit;
+	    
+	  case "unlockFile": $data = $this->sh->unlockFile(self::escapeSQL($get["fileid"]));
+	    echo json_encode($data);
+	    exit;
+	    
+	  case "openFile":   echo json_encode($this->sh->openFile($get['fileid']));
+	    exit;
+	    
+	  case "deleteFile": $status = $this->sh->deleteFile(self::escapeSQL($post["file_id"]));
+	    if (!$status)
+	      self::returnError(500, "Could not delete file.");
+	    exit;
+	    
+	  case "exportFile":
+	    $status = $this->sh->exportFile(self::escapeSQL($get["fileId"]));
+	    if (!$status)
+	      self::returnError(500, "Could not export file.");
+	    exit;
+	    
+	  case "getLines":   $data = $this->sh->getLines(self::escapeSQL($get['page']));
+	    echo json_encode($data);
+	    exit;
+	  case "getLinesById":   $data = $this->sh->getLinesById(self::escapeSQL($get['start_id']),self::escapeSQL($get['end_id']));
+	    echo json_encode($data);
+	    exit;
+	  case "getMaxLinesNo": echo $this->sh->getMaxLinesNo(); exit;
+	    
+	    
+	  case "saveData":	$this->sh->saveData(self::escapeSQL($get['lastEditedRow']), self::escapeSQL(json_decode(file_get_contents("php://input"), true)));
+	      exit;
+	      
+	  case "copyTagset":	exit;
+	    
+	  case "saveEditorUserSettings": return $this->sh->setUserEditorSettings(self::escapeSQL($get['noPageLines']),self::escapeSQL($get['contextLines'])); exit;
+	    
+	  case "setUserEditorSetting": return $this->sh->setUserEditorSetting(self::escapeSQL($get['name']),self::escapeSQL($get['value'])); exit;
+	    
+	    
+	  default:           self::returnError(400, "Unknown request: " + $get["do"]);
+	  }
    }
 
    self::returnError(400, "Unknown request.");

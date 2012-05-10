@@ -25,6 +25,7 @@ class DBConnector {
   private $db_user     = DB_USER;     /**< Username to be used for database access. */
   private $db_password = DB_PASSWORD; /**< Password to be used for database access. */
   public  $db          = MAIN_DB;     /**< Name of the database to be used. */
+  private $db_query_threshold = 1000; /**< Number of rows that will minimally be collected before performing an INSERT query. */
 
   /** Create a new DBConnector.
    *
@@ -525,6 +526,16 @@ class DBInterface extends DBConnector {
     return $this->query($qs);
   }
 
+  /** Insert a new document.
+   *
+   * @param array $options Metadata for the document
+   * @param array $data Document data
+   */
+  public function insertNewDocument(&$options, &$data){
+    // $this->db_query_threshold
+    // continue here
+  }
+
   /** Save new file
    *
    * This function writes the metadata for the new file into the database and
@@ -539,6 +550,7 @@ class DBInterface extends DBConnector {
    * @param array reference $data the file content (passed to the @c insertData function)
    *
    * @return bool result of the mysql query and @ insertData function
+   * @deprecated
    */
 	public function saveNewFile($name,$user,$pos_tagged,$morph_tagged,$norm,$tagset,&$data){
 
@@ -564,6 +576,7 @@ class DBInterface extends DBConnector {
    * @param array reference $data file content (passed to the @c updateData function)
    *
    * @return @return bool result of the mysql query and @ insertData function
+   * @deprecated
    */	
 	public function saveAddData($file_id,$tagType,&$data){
 
@@ -594,6 +607,7 @@ class DBInterface extends DBConnector {
    * @param string $norm Normalized state constant (@c true or @c false)
    *
    * @return @return bool result of the mysql queryies
+   * @deprecated
    */			
  	public function insertData($file_id,$data,$pos_tagged,$morph_tagged,$norm){
 	/* CAREFUL!!! ONLY ONE OF "$pos_tagged", "$morph_tagged", "$norm" MAY BE TRUE
@@ -721,6 +735,7 @@ class DBInterface extends DBConnector {
    * @param array $data an array with an entry for each text line 
    *
    * @return @return bool result of the mysql queryies
+   * @deprecated
    */			
  	public function updateData($file_id,$tagType,$data){
 	      $datacount = 0; // number of lines since the last SQL query
