@@ -98,10 +98,11 @@ class RequestHandler {
   public function handleRequests( $get, $post ) {
     if(array_key_exists("action", $post)) {
       switch ( $post["action"] ) {
-      	case "login":	$user = self::escapeSQL( $post["loginform"]["un"] );
-						$pw   = self::escapeSQL( $post["loginform"]["pw"] );
-						$this->sh->login( $user, $pw );
-						break;
+      	case "login":
+	  $user = self::escapeSQL( $post["loginform"]["un"] );
+	  $pw   = self::escapeSQL( $post["loginform"]["pw"] );
+	  $this->sh->login( $user, $pw );
+	  break;
       }
     }
 
@@ -152,7 +153,6 @@ class RequestHandler {
    * @arg @c getLines - Retrieve all lines for the page specified in @c page.
    * @arg @c getMaxLinesNo - Return the total number of lines for the current opened file.
    * @arg @c copyTagset - @c not @c implemented @c yet
-   * @arg @c importFile - @c not @c used; was moved to POST requests
    * @arg @c saveEditorUserSettings - Save user settings specified in
    * @c noPageLines (number of lines per page) and @c contextLines
    * (number of lines to show the context) to the database.
@@ -162,11 +162,7 @@ class RequestHandler {
    * @arg @c undoLastEdit - Undo last progress change.
    *
    * Supports the following POST requests (as values of @c action):
-   * @arg @c importFile - Import a new file specified by @c textName. Annotation type is indicated by the 
-   * three arguments @c tagPOSStatus, @c tagMorphStatus and @c tagNormStatus. The linked tagset is specified
-   * in @c tagset, fiel content is submitted with the @c data item of the array.
-   * @arg @c addFileData - Add annotation data to an existing file specified in @fileID. Annotation type is given in @tagType by one
-   * one of the following values: morph, pos, norm. 
+   * @arg @c insertXMLData - Add a new document from XML format.
    * 
    * @return Depending on the type of request, either:
    * @li a @em string in JavaScript Object Notation (JSON);
@@ -175,84 +171,40 @@ class RequestHandler {
    */
   public function handleJSONRequest( $get, $post ) {
 	if (array_key_exists("action", $post)) {
-		switch( $post["action"]) {
-		case "importXMLFile":
-		  if(empty($_FILES['xmlFile']['name']) || $_FILES['xmlFile']['error']!=UPLOAD_ERR_OK || !is_uploaded_file($_FILES['xmlFile']['tmp_name'])) {
-		    echo json_encode(array("success"=>false,"error"=>$_FILES['xmlFile']['error']));
-		    exit;
-		  }
+	  switch( $post["action"]) {
+	  case "importXMLFile":
+	    if(empty($_FILES['xmlFile']['name']) || $_FILES['xmlFile']['error']!=UPLOAD_ERR_OK || !is_uploaded_file($_FILES['xmlFile']['tmp_name'])) {
+	      echo json_encode(array("success"=>false,
+				     "errors"=>array("UploadError: ".$_FILES['xmlFile']['error'])));
+	      exit;
+	    }
 
-		  // @todo CHECK DATA FOR BEING VALID XML!!!
-
-		  $data = file_get_contents($_FILES['xmlFile']['tmp_name']);
-		  $name = empty($post['xmlName']) ? str_replace(".txt","",$_FILES['xmlFile']['name']) : $post['xmlName'];
-		  $result = $this->sh->importFile($data, array("name"=>$name));
-
-		  echo json_encode($result);
-		  exit;
-
-		case "importFile":
-		  $data = file_get_contents($_FILES['textFile']['tmp_name']);
-		  // if no name was submitted, use original file name
-		  $name = empty($post['textName']) ? str_replace(".txt","",$_FILES['textFile']['name']) : $post['textName'];
-		  
-		  // set annotation type
-		  $pos_tagged = isset($post['tagPOSStatus']) ? 1 : 0;
-		  $morph_tagged = isset($post['tagMorphStatus']) ? 1 : 0;
-		  $norm = isset($post['tagNormStatus']) ? 1 : 0;
-		  
-		  // import File
-		  $fM = new FileModel($this->sh);
-		  $importStatus = $fM->importFile($post['tagset'],$pos_tagged,$morph_tagged,$norm,$data);
-		  
-		  // save file to database
-		  if($importStatus['status']){
-		    $this->sh->saveNewFile($name,$_SESSION['user'],$pos_tagged,$morph_tagged,$norm,$post['tagset'],self::escapeSQL($importStatus['data']));
-		    echo json_encode(array("status"=>true));
-		  }
-		  // return tags which do not match with the tagset
-		  else {
-		    // look if tagset is locked, if not lock it! @todo <-- why lock it? -MB
-		    $lock = $this->sh->lockTagset(self::escapeSQL($post["tagset"]));
-		    if(!$lock['success'])
-		      // return lock information
-		      echo json_encode(array_merge($importStatus,array('locked'=>true,'byuser'=>$lock['lock'][0],'since'=>$lock['lock'][1])));
-		    else {
-		      echo json_encode($importStatus);
-		    }
-		  }
-		  
-		  exit; 
-		case "addFileData": $data = file_get_contents($_FILES['textFile']['tmp_name']);
-		  
-		  // set annotation type
-		  $pos_tagged = false; $morph_tagged = false; $norm = false;
-		  if(strtolower($post['tagType']) == 'morph') {$morph_tagged = true;}
-		  if(strtolower($post['tagType']) == 'pos') {$pos_tagged = true;}
-		  if(strtolower($post['tagType']) == 'norm') {$norm = true;}
-		  
-		  // extract annotionen data
-		  $fM = new FileModel($this->sh);
-		  $importStatus = $fM->addData($post['fileID'],$post['tagset'],$pos_tagged,$morph_tagged,$norm,$data);
-		  
-		  // save extra data to database
-		  if($importStatus['status']){
-		    $this->sh->saveAddData($post['fileID'],$post['tagType'],self::escapeSQL($importStatus['data']));
-		    echo json_encode(array("status"=>true));
-		  }
-		  // return tags which do not match with the tagset
-		  else {
-		    // look if tagset is locked, if not lock it! @todo <-- why lock it? -MB
-		    $lock = $this->sh->lockTagset(self::escapeSQL($post["tagset"]));
-		    if(!$lock['success'])
-		      // return lock information
-		      echo json_encode(array_merge($importStatus,array('locked'=>true,'byuser'=>$lock['lock'][0],'since'=>$lock['lock'][1])));
-		    else {
-		      echo json_encode($importStatus);
-		    }
-		  }
-		default:	exit();
-		}
+	    // @todo CHECK DATA FOR BEING VALID XML!!!
+	    
+	    $data = $_FILES['xmlFile']['tmp_name'];
+	    $options = array();
+	    if(!empty($post['xmlName'])) {
+	      $options['name'] = $post['xmlName'];
+	    }
+	    if(!empty($post['sigle'])) {
+	      $options['sigle'] = $post['sigle'];
+	    }
+	    $options['tagset'] = $post['tagset'];
+	    
+	    try {
+	      $result = $this->sh->importFile($data,self::escapeSQL($options));
+	      echo json_encode($result);
+	    }
+	    catch (Exception $e) {
+	      echo json_encode(array("success"=>false,
+				     "errors"=>array("PHPException: ".
+						     $e->getMessage())));
+	    }
+	    
+	    exit;
+	    
+	  default:	exit();
+	  }
 	}
 	
 	if (array_key_exists("do", $get)) {
@@ -320,8 +272,7 @@ class RequestHandler {
 	  case "listFiles":  $data = $this->sh->getFiles();
 	    echo json_encode($data);
 	    exit;
-	  case "getLastImportedFile": return json_encode($this->sh->getLastImportedFile());
-	    
+
 	  case "lockFile":   $data = $this->sh->lockFile(self::escapeSQL($get["fileid"]));
 	    $data = json_encode($data);
 	    echo $data;

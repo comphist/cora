@@ -36,16 +36,17 @@
 			// Makes variables from PHP accessible to JS
             var default_tab = "<?php echo $menu->getDefaultItem(); ?>";
             var lang_strings = <?php echo json_encode($lang); ?>;
-			var userdata = { 	name: "<?php echo $_SESSION['user']; ?>" , 
+			var userdata = {
 <?php if($_SESSION['loggedIn']): ?>
+			name: "<?php echo $_SESSION['user']; ?>" , 
 								noPageLines: <?php echo $_SESSION['noPageLines']; ?>,
 								contextLines: <?php echo $_SESSION['contextLines']; ?>,
 								editTableDragHistory: '<?php echo $_SESSION['editTableDragHistory']; ?>',
 								hiddenColumns: '<?php echo $_SESSION['hiddenColumns']; ?>',
-<?php endif; ?>
 								admin: "<?php echo $_SESSION['admin']; ?>" ,
 								currentFileId: "<?php echo $_SESSION['currentFileId']; ?>",
 								currentName: "<?php echo $_SESSION['currentName']; ?>"
+<?php endif; ?>
 						   };
 									
 		</script>

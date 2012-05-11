@@ -23,19 +23,26 @@ class XMLHandler {
 
   /** Process header information. */
   private function processXMLHeader(&$reader, &$options) {
+    $doc = new DOMDocument();
     // any data before the header is skipped!
     while ($reader->read() && $reader->name !== 'header');
+    if ($reader->name !== 'header') { // EOF reached
+      return "XML-Fehler: header-Tag nicht gefunden.";
+    }
     $header = simplexml_import_dom($doc->importNode($reader->expand(), true));
     // get header attributes if they are not already set in $options
     foreach($this->xml_header_options as $key) {
-      if (isset($header[$key]) && !isset($options[$key])) {
+      if (isset($header[$key]) && !empty($header[$key])
+	  && (!isset($options[$key]) || empty($options[$key]))) {
 	$options[$key] = $header[$key];
       }
     }
+    return False;
   }
 
   /** Process XML data. */
   private function processXMLData(&$reader) {
+    $doc = new DOMDocument();
     $data = array();
 
     while ($reader->read()) {
@@ -53,15 +60,19 @@ class XMLHandler {
 	$token['morph']   = $node->infl['val'];
 	$token['comment'] = $node->comment;
 	$suggs = array();
+	$posindex = 0;
+	$morphindex = 0;
 	foreach($node->suggestions->pos as $sugg){
-	  $suggs[] = array('type'=>'tag_POS',
+	  $suggs[] = array('type'=>'pos',
 			   'value'=>$sugg['inst'],
-			   'score'=>$sugg['score']);
+			   'score'=>$sugg['score'],
+			   'index'=>$posindex++);
 	}
 	foreach($node->suggestions->infl as $sugg){
-	  $suggs[] = array('type'=>'tag_POS',
+	  $suggs[] = array('type'=>'morph',
 			   'value'=>$sugg['val'],
-			   'score'=>$sugg['score']);
+			   'score'=>$sugg['score'],
+			   'index'=>$morphindex++);
 	}
 	$token['suggestions'] = $suggs;
 	$data[] = $token;
@@ -88,18 +99,29 @@ class XMLHandler {
    * the @c $options array takes precedence
    */
   public function import($xmlfile, $options) {
-    /* 1. Read data into memory.
-     * 2. Possibly check it for integrity, empty fields, etc.
-     * 2b. Also check if the document should be flagged as
-     *     "POS-tagged", "Morph-tagged", etc.
-     * 3. Construct SQL query strings and send them to the DB.
-     */
+    // check for validity
+    libxml_use_internal_errors(true);
+    $doc = new DOMDocument('1.0', 'utf-8');
+    $doc->loadXML(file_get_contents($xmlfile));
+    $errors = libxml_get_errors();
+    if (!empty($errors) && $errors[0]->level > 0) {
+      $message  = "Datei enthält kein wohlgeformtes XML. Parser meldete:\n";
+      $message .= $errors[0]->message.' at line '.$errors[0]->line.'.';
+      return array("success"=>False, errors=>array("XML-Fehler: ".$message));
+    }
 
-    // assumes valid XML
-    $doc = new DOMDocument();
+    // process XML
     $reader = new XMLReader();
-    $reader->open($xmlfile);
-    $this->processXMLHeader($reader, $options);
+    if(!$reader->open($xmlfile)) {
+      return array("success"=>False,
+		   "errors"=>array("Interner Fehler: Konnte '".$xmlfile.
+				   "' nicht öffnen."));
+    }
+    $xmlerror = $this->processXMLHeader($reader, $options);
+    if($xmlerror){
+      return array("success"=>False, 
+		   "errors"=>array($xmlerror));
+    }
     $data = $this->processXMLData($reader);
     $reader->close();
 
@@ -107,11 +129,17 @@ class XMLHandler {
     /* check data for integrity, producing warnings for certain empty
        fields, maybe even check tags against the tagset and produce
        warnings for any mismatching tags. */
+    /* check if the document should be flagged as "POS-tagged" etc. */
 
     // @todo if(!fatal_error) { ... }
-    $this->db->insertNewDocument($options, $data);
+    $sqlerror = $this->db->insertNewDocument($options, $data);
+    if($sqlerror){
+      return array("success"=>False, 
+		   "errors"=>array("SQLError: ".$sqlerror));
+    }
 
     // @todo return errors and/or warnings
+    return array("success"=>True, "warnings"=>array());
   }
 
   /****** FUNCTIONS RELATED TO DATA EXPORT ******/

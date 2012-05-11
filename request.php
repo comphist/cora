@@ -9,12 +9,13 @@
  * string (depending on the nature of the request).
  */
 
+require_once( "lib/globals.php" );
 require_once( "lib/sessionHandler.php" );
 require_once( "lib/requestHandler.php" );
 
 $sh = new SessionHandler();     /**< An instance of the SessionHandler object. */
 $rq = new RequestHandler($sh);  /**< An instance of the RequestHandler object. */
-
+$lang = $sh->getLanguageArray();
 
 if($_SESSION["loggedIn"]) {
   $rq->handleJSONRequest( $_GET, $_POST );

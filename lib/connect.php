@@ -13,6 +13,64 @@
 /** The database settings. */
 require_once 'globals.php';
 
+/** Class enabling arbitrarily long SQL queries by breaking them up
+ *  into smaller parts.
+ */
+class LongSQLQuery {
+  private $head;       /**< String to be put before each query. */
+  private $tail;       /**< String to be put after each query. */
+  private $db;         /**< The database connector to be used. */
+  private $len;
+  private $qa;
+
+  public function __construct($db, $head="", $tail="") {
+    $this->db   = $db;
+    $this->head = $head;
+    $this->tail = $tail;
+    $this->len  = strlen($head) + strlen($tail) + 2;
+    $this->qa   = array();
+  }
+
+  /** Append a new list (i.e., comma-separated) item to the query. */
+  public function append($item) {
+    $newlen = $this->len + strlen($item) + 2;
+    // if query length would exceed maximum, perform a flush first:
+    if($newlen>DB_MAX_QUERY_LENGTH){
+      $status = $this->flush();
+      if($status) { return $status; }
+      $newlen = $this->len + strlen($item) + 2;
+    }
+    $this->len  = $newlen;
+    $this->qa[] = $item;
+    return False;
+  }
+
+  /** Send the query to the server. */
+  public function flush() {
+    if(empty($this->qa)){ return False; }
+
+    $query  = $this->head . ' ';
+    $query .= implode(', ', $this->qa);
+    $query .= ' ' . $this->tail;
+
+    if(!$this->db->query($query)){
+      echo "The SQL server returned:\n";
+      echo mysql_errno() . ": " . mysql_error() . "\n\n";
+      echo "The following query was sent:\n";
+      echo $query;
+      echo "\n\nExiting now.";
+      exit;
+
+      return mysql_errno() . ": " . mysql_error() . "\n";
+    }
+
+    $this->len = strlen($this->head) + strlen($this->tail) + 2;
+    $this->qa  = array();
+    return False;
+  }
+}
+
+
 /** Class providing a database connection.
  *
  * This class sets up a database connection and provides helper
@@ -25,7 +83,6 @@ class DBConnector {
   private $db_user     = DB_USER;     /**< Username to be used for database access. */
   private $db_password = DB_PASSWORD; /**< Password to be used for database access. */
   public  $db          = MAIN_DB;     /**< Name of the database to be used. */
-  private $db_query_threshold = 1000; /**< Number of rows that will minimally be collected before performing an INSERT query. */
 
   /** Create a new DBConnector.
    *
@@ -71,7 +128,7 @@ class DBConnector {
    * @param string $query Query string in SQL syntax.
    * @return The result of the respective @c mysql_query() command.
    */
-   protected function query( $query ) { 
+   public function query( $query ) { 
      $this->selectDatabase( $this->db );
      return mysql_query( $query, $this->dbobj ); 
    }
@@ -93,6 +150,26 @@ class DBConnector {
 	die();
     }
     return $status;
+  }
+
+  /** Clone of RequestHandler::escapeSQL() */
+  protected function escapeSQL( $obj ) {
+    if(is_string($obj)) {
+      return mysql_real_escape_string(stripslashes($obj));
+    }
+    else if(is_array($obj)) {
+      $newarray = array();
+      foreach($obj as $k => $v) {
+	$newarray[$k] = self::escapeSQL($v);
+      }
+      return $newarray;
+    }
+    else if(is_object($obj) && get_class($obj)=='SimpleXMLElement') {
+      return self::escapeSQL((string) $obj);
+    }
+    else {
+      return $obj;
+    }
   }
 }
 
@@ -530,296 +607,59 @@ class DBInterface extends DBConnector {
    *
    * @param array $options Metadata for the document
    * @param array $data Document data
+   *
+   * @return An error message if insertion failed, False otherwise
    */
   public function insertNewDocument(&$options, &$data){
-    // $this->db_query_threshold
-    // continue here
+    // Insert metadata
+    $metadata  = "INSERT INTO {$this->db}.files_metadata ";
+    $metadata .= "(file_name, sigle, byUser, created, tagset) ";
+    $metadata .= "VALUES ('" . $options['name'] . "', '";
+    $metadata .= $options['sigle'] . "', '" . $_SESSION['user'];
+    $metadata .= "', CURRENT_TIMESTAMP, '" . $options['tagset'] . "')";
+
+    if(!$this->query($metadata)){
+      return "Fehler beim Schreiben in 'files_metadata':\n" .
+	mysql_errno() . ": " . mysql_error() . "\n";
+    }
+
+    $file_id = mysql_insert_id(); 
+    $this->lockFile($file_id, "@@@system@@@");
+
+    // Insert data
+    $data_head  = "INSERT INTO {$this->db}.files_data (file_id, line_id, ";
+    $data_head .= "token, tag_POS, tag_morph, tag_norm, lemma, comment) VALUES";
+    $data_table = new LongSQLQuery($this, $data_head, "");
+    $sugg_head  = "INSERT INTO {$this->db}.files_tags_suggestion ";
+    $sugg_head .= "(file_id, line_id, tag_suggestion_id, tagtype, ";
+    $sugg_head .= "tag_name, tag_probability, lemma) VALUES"; 
+    $sugg_table = new LongSQLQuery($this, $sugg_head, "");
+
+    foreach($data as $index=>$token){
+      $token = $this->escapeSQL($token);
+      $qs = "('{$file_id}', {$index}, '".$token['form']."', '".
+	$token['pos']."', '".$token['morph']."', '".
+	$token['norm']."', '".$token['lemma']."', '".
+	$token['comment']."')";
+      $status = $data_table->append($qs);
+      if($status){ $this->deleteFile($file_id); return $status; }
+      foreach($token['suggestions'] as $sugg){
+	$qs = "('{$file_id}', {$index}, ".$sugg['index'].
+	  ", '".$sugg['type']."', '".$sugg['value'].
+	  "', ".$sugg['score'].", '".$token['lemma']."')";
+	$status = $sugg_table->append($qs);
+	if($status){ $this->deleteFile($file_id); return $status; }
+      }
+    }
+    $status = $data_table->flush();
+    if($status){ $this->deleteFile($file_id); return $status; }
+    $status = $sugg_table->flush();
+    if($status){ $this->deleteFile($file_id); return $status; }
+
+    $this->unlockFile($file_id, "@@@system@@@");
+    return False;
   }
 
-  /** Save new file
-   *
-   * This function writes the metadata for the new file into the database and
-   * calls the @c insertData function for importing the file content.
-   *
-   * @param string $name the filename
-   * @param string $user the user who imported the file
-   * @param string $pos_tagged POS tagged state constant (@c true or @c false)
-   * @param string $morph_tagged Morph tagged state constant (@c true or @c false)
-   * @param string $norm Normalized state constant (@c true or @c false)
-   * @param string $tagset used tagset for this file
-   * @param array reference $data the file content (passed to the @c insertData function)
-   *
-   * @return bool result of the mysql query and @ insertData function
-   * @deprecated
-   */
-	public function saveNewFile($name,$user,$pos_tagged,$morph_tagged,$norm,$tagset,&$data){
-
-    	$qs = "INSERT INTO {$this->db}.files_metadata (file_name, POS_tagged, morph_tagged, norm, byUser, created, tagset) "
-		 	."VALUES ('{$name}', '{$pos_tagged}', '{$morph_tagged}','{$norm}', '{$user}', CURRENT_TIMESTAMP, '{$tagset}' )";
-			
-		if($this->query($qs)){
-			$file_id = mysql_insert_id(); 
-			return $this->insertData($file_id,$data,$pos_tagged,$morph_tagged,$norm);			
-		}
-		
-		return false;
-	}
-	
-	
-  /** Save new data to an existing file
-   *
-   * This function updates the metadata for the given file in the database and
-   * calls the @c updateData function for adding the new content.
-   *
-   * @param string $file_id file_id
-   * @param string $tagType annotate data type of the file content (@c morph or @c pos or @c norm)
-   * @param array reference $data file content (passed to the @c updateData function)
-   *
-   * @return @return bool result of the mysql query and @ insertData function
-   * @deprecated
-   */	
-	public function saveAddData($file_id,$tagType,&$data){
-
-		if(strtolower($tagType) == 'morph') {$tagname = "morph_tagged";}
-		if(strtolower($tagType) == 'pos') {$tagname = "POS_tagged";}
-		if(strtolower($tagType) == 'norm') {$tagname = "norm";}
-		$pos_tagged = false; $morph_tagged = false; $norm = false;
-		$$tagname = true;
-		
-		$qs = "UPDATE {$this->db}.files_metadata SET {$tagname}=1 WHERE file_id='{$file_id}'";
-		if($this->query($qs)){ 
-			return $this->updateData($file_id,$tagType,$data);
-		}
-		
-		return false;
-		
-	}
-	
-	
-  /** Insert data to a new created file
-   *
-   * This function writes each line of the file content into the database, splitting the line according to the given tag type.
-   *
-   * @param string $file_id file_id
-   * @param array $data an array with an entry for each text line 
-   * @param string $pos_tagged POS tagged state constant (@c true or @c false)
-   * @param string $morph_tagged Morph tagged state constant (@c true or @c false)
-   * @param string $norm Normalized state constant (@c true or @c false)
-   *
-   * @return @return bool result of the mysql queryies
-   * @deprecated
-   */			
- 	public function insertData($file_id,$data,$pos_tagged,$morph_tagged,$norm){
-	/* CAREFUL!!! ONLY ONE OF "$pos_tagged", "$morph_tagged", "$norm" MAY BE TRUE
-	 * AT THE SAME TIME, THOUGH THE USE OF THREE SEPARATE VARIABLES SUGGESTS OTHERWISE...
-	 */
-	       if($pos_tagged || $morph_tagged || $norm){
-		      if($pos_tagged) $tagname = "tag_POS";
-		      elseif($morph_tagged) $tagname = "tag_morph";
-		      elseif($norm) $tagname = "tag_norm";					
-
-		      $datacount = 0; // number of lines processed since the last SQL query
-		      $dataqs = "";
-		      $suggcount = 0;
-		      $suggqs = "";
-
-       		      foreach($data as $lineIndex=>$line){
-		       	      $max = 0;
-			      $initTag = "";
-			      $initLemma = "";
-
-			      foreach($line['data'] as $tagIndex=>$tag){						
-
-				if($pos_tagged) { $tagName = $tag['pos']; $tagtype = "pos"; }
-				elseif($morph_tagged) {$tagName = $tag['morph']; $tagtype = "morph";}
-				elseif($norm) { $tagName = $tag['norm']; $tagtype = "norm"; }
-
-				if($suggcount>0) { $suggqs = $suggqs . ","; }
-				$suggqs = $suggqs . "('{$file_id}',{$lineIndex},{$tagIndex},'{$tagName}','{$tag['lemma']}','{$tag['possibility']}','{$tagtype}')";
-				$suggcount++;
-					
-				if($max<$tag['possibility']){
-					$max = $tag['possibility'];
-					if($pos_tagged) $initTag = $tag['pos'];
-					elseif($morph_tagged) $initTag = $tag['morph'];
-					elseif($norm) $initTag = $tag['norm'];						   
-					
-					$initLemma = $tag['lemma'];
-				}
-			      }
-
-			      if($datacount>0) { $dataqs = $dataqs . ","; }
-			      $dataqs = $dataqs . "('{$file_id}','{$lineIndex}','{$line['token']}','{$initTag}','{$initLemma}')";
-			      $datacount++;
-
-			      if($datacount>1000){	// "flush" every 1000 or so lines
-			      		$dataqs = "INSERT INTO {$this->db}.files_data (file_id, line_id, token, {$tagname}, lemma) VALUES " . $dataqs;
-					if(!$this->query($dataqs)){
-						echo mysql_errno() . ": " . mysql_error() . "\n";
-						echo $dataqs . "\n";
-					}
-					$dataqs = "";
-					$datacount = 0;
-			      }
-			      if($suggcount>1000){
-					$suggqs = "INSERT INTO {$this->db}.files_tags_suggestion (file_id, line_id, tag_suggestion_id, "
-					          . "tag_name, lemma, tag_probability, tagtype) VALUES " . $suggqs;
-				        if(!$this->query($suggqs)){
-						echo mysql_errno() . ": " . mysql_error() . "\n";
-						echo $suggqs . "\n";
-					}
-					$suggqs = "";
-					$suggcount = 0;
-      			      }
-
-		    				
-			}
-
-		      if($datacount>0){
-		      		$dataqs = "INSERT INTO {$this->db}.files_data (file_id, line_id, token, {$tagname}, lemma) VALUES " . $dataqs;
-				if(!$this->query($dataqs)){
-					echo $dataqs . "\n";
-					echo mysql_errno() . ": " . mysql_error() . "\n";
-				}
- 		      }
-		      if($suggcount>0){
-				$suggqs = "INSERT INTO {$this->db}.files_tags_suggestion (file_id, line_id, tag_suggestion_id, "
-				          . "tag_name, lemma, tag_probability, tagtype) VALUES " . $suggqs;
-			        if(!$this->query($suggqs)){
-					echo mysql_errno() . ": " . mysql_error() . "\n";
-					echo $suggqs . "\n";
-				}
-     		      }
-      
-		
-		}
-		else {
-		     $dataqs = "";
-		     $datacount = 0;
-
-       		      foreach($data as $lineIndex=>$line){
-		      		    if($datacount>0) { $dataqs = $dataqs . ","; }
-				    $dataqs = $dataqs . "('{$file_id}','{$lineIndex}','{$line['token']}')";
-				    $datacount++;
-
-				    if($datacount>1000){
-					$dataqs = "INSERT INTO {$this->db}.files_data (file_id, line_id, token) VALUES " . $dataqs;
-					if(!$this->query($dataqs)){
-						echo mysql_errno() . ": " . mysql_error() . "\n";
-						echo $dataqs . "\n";
-					}
-					$dataqs = "";
-					$datacount = 0;
-				    }
-		      }
-
-		    if($datacount>0){
-			$dataqs = "INSERT INTO {$this->db}.files_data (file_id, line_id, token) VALUES " . $dataqs;
-			if(!$this->query($dataqs)){
-				echo mysql_errno() . ": " . mysql_error() . "\n";
-				echo $dataqs . "\n";
-			}
-		    }
-
-		}
-			
-		return true;
-	}
-
-  /** Add data to an existing file
-   *
-   * This function adds the information from each line of the file content to the database, splitting the line according to the given tag type. For each entry the token is compared to ensure the correct alignment.
-   *
-   * @param string $file_id file_id
-   * @param string $tagType annotate data type of the file content (@c morph or @c pos or @c norm)
-   * @param array $data an array with an entry for each text line 
-   *
-   * @return @return bool result of the mysql queryies
-   * @deprecated
-   */			
- 	public function updateData($file_id,$tagType,$data){
-	      $datacount = 0; // number of lines since the last SQL query
-	      $dataqs = "";
-	      $suggcount = 0;
-	      $suggqs = "";
-
- 	      $tagType = strtolower($tagType);
-	      switch($tagType){
-	      	      case "morph": $tagname = "tag_morph"; $tagshortname = "morph"; break;
-		      case "pos":   $tagname = "tag_POS";   $tagshortname = "pos";   break;
-		      case "norm":  $tagname = "tag_norm";  $tagshortname = "norm";  break;
-	      }
-
-	      foreach($data as $lineIndex=>$line){
-			$max = 0;
-			$initTag = "";
-			$initLemma = "";
-
-			foreach($line['data'] as $tagIndex=>$tag){						
-				$tagName = $tag[$tagshortname];
-				
-				if($suggcount>0){ $suggqs = $suggqs . ","; }
-				$suggqs = $suggqs . "('{$file_id}',{$lineIndex},{$tagIndex},'{$tagName}','{$tag['possibility']}','{$tagType}')";
-				$suggcount++;
-
-              			if($max<$tag['possibility']){
-					$max = $tag['possibility'];
-					$initTag = $tag[$tagshortname];
-				}
-			}
-
-			if($datacount>0){ $dataqs = $dataqs . ","; }
-			$dataqs = $dataqs . "('{$file_id}','{$lineIndex}','{$initTag}')";
-			$datacount++;
-
-			// $qs = "	UPDATE {$this->db}.files_data SET {$tagname}='{$initTag}' 
-			//		WHERE file_id='{$file_id}' AND line_id='{$lineIndex}'";
-
-		      if($datacount>1000){
-				$dataqs = "INSERT INTO {$this->db}.files_data (file_id, line_id, {$tagname}) VALUES "
-					  . $dataqs . " ON DUPLICATE KEY UPDATE {$tagname}=VALUES({$tagname})";
-			        if(!$this->query($dataqs)){
-					echo mysql_errno() . ": " . mysql_error() . "\n";
-					echo $dataqs . "\n";
-				}
-				$dataqs = "";
-				$datacount = 0;
-		      }
-		      if($suggcount>1000){
-				$suggqs = "INSERT INTO {$this->db}.files_tags_suggestion (file_id, line_id, tag_suggestion_id, "
-					  . "tag_name, tag_probability, tagtype) VALUES " . $suggqs
-					  . " ON DUPLICATE KEY UPDATE tag_name=VALUES(tag_name), tag_probability=VALUES(tag_probability)";
-			        if(!$this->query($suggqs)){
-					echo mysql_errno() . ": " . mysql_error() . "\n";
-					echo $suggqs . "\n";
-				}
-				$suggqs = "";
-				$suggcount = 0;
-		      }
-
-		}
-			
-	      if($datacount>0){
-			$dataqs = "INSERT INTO {$this->db}.files_data (file_id, line_id, {$tagname}) VALUES "
-				  . $dataqs . " ON DUPLICATE KEY UPDATE {$tagname}=VALUES({$tagname})";
-		        if(!$this->query($dataqs)){
-				echo mysql_errno() . ": " . mysql_error() . "\n";
-				echo $dataqs . "\n";
-			}
-	      }
-	      if($suggcount>0){
-			$suggqs = "INSERT INTO {$this->db}.files_tags_suggestion (file_id, line_id, tag_suggestion_id, "
-				  . "tag_name, tag_probability, tagtype) VALUES " . $suggqs
-				  . " ON DUPLICATE KEY UPDATE tag_name=VALUES(tag_name), tag_probability=VALUES(tag_probability)";
-		        if(!$this->query($suggqs)){
-				echo mysql_errno() . ": " . mysql_error() . "\n";
-				echo $suggqs . "\n";
-			}
-	      }
-
-		return true;
-	}	
-	
   /** Lock a file for editing.
    *
    * This function insures restricted access when editing file data. In detail this is done by
@@ -878,16 +718,20 @@ class DBInterface extends DBConnector {
 	* @todo move SESSION data out of this function
 	*
 	* @param string $fileid file id
+	* @param string $user username (defaults to current session user)
 	*
 	* @return @em array result of the mysql query
   	*/		
-	public function unlockFile($fileid) {
-	    if ($_SESSION["admin"]) { // admins can unlock any file
-	        $qs = "DELETE FROM {$this->db}.files_locked WHERE file_id='{$fileid}'";
-	    } else {
-	        $qs = "DELETE FROM {$this->db}.files_locked WHERE file_id='{$fileid}' AND locked_by='{$_SESSION['user']}'";
-	    }
-	    return $this->query($qs);
+	public function unlockFile($fileid,$user="") {
+	  if (empty($user)) {
+	    $user=$_SESSION['user'];
+	  }
+	  if ($_SESSION["admin"]) { // admins can unlock any file
+	    $qs = "DELETE FROM {$this->db}.files_locked WHERE file_id='{$fileid}'";
+	  } else {
+	    $qs = "DELETE FROM {$this->db}.files_locked WHERE file_id='{$fileid}' AND locked_by='{$user}'";
+	  }
+	  return $this->query($qs);
 	}
 
 	/** Open a file.
@@ -943,6 +787,8 @@ class DBInterface extends DBConnector {
 		$qs = "DELETE FROM {$this->db}.files_progress WHERE file_id='{$fileid}'";
 		$this->query($qs);
 		
+		$qs = "DELETE FROM {$this->db}.files_locked WHERE file_id='{$fileid}'";
+		$this->query($qs);
 		
 	    return true;
 	}
@@ -962,18 +808,6 @@ class DBInterface extends DBConnector {
 	    }
 		return $files;
 	}
-	
-	/** Get meta data of the last imported file.
-	*
-	* This function is supposed to be called from JavaScript after import for refreshing the file list.
-	*
-	* @return an two-dimensional @em array with the meta data
-  	*/		
-	public function getLastImportedFile($user){
-		$qs = "SELECT a.*, b.locked_by as opened FROM {$this->db}.files_metadata a LEFT JOIN {$this->db}.files_locked b ON a.file_id=b.file_id WHERE a.byUser='{$user}' ORDER BY lastMod DESC LIMIT 1";
-		return mysql_fetch_assoc($this->query($qs));
-	}
-	
 	
 	/** Save editor settings for given user.
 	*

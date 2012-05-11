@@ -18,13 +18,18 @@ $tagsets = $sh->getTagsetList();
 	<h3>Füge neue Datei hinzu</h3>
 	<form action="request.php" id="newFileImportForm" method="post" accept-charset="utf-8" enctype="multipart/form-data">
 		<p>
-		<label for="textFile">Datei: </label>
-		<input type="file" name="textFile" />
+		<label for="xmlFile">Datei: </label>
+		<input type="file" name="xmlFile" />
 		</p>
 
 		<p>
-		<label for="textFile">Name: </label>
-		<input type="text" name="textName" />
+		<label for="xmlFile">Name: </label>
+		<input type="text" name="xmlName" />
+		</p>
+
+		<p>
+		<label for="sigle">Sigle: </label>
+		<input type="text" name="sigle" />
 		</p>
 
 		<p>
@@ -35,21 +40,9 @@ $tagsets = $sh->getTagsetList();
 			<?php endforeach;?>
 		</select>
 		</p>
-		
-		<p>
-		<label for="tagPOSStatus">POS getaggt?</label>
-		<input type="checkbox" name="tagPOSStatus" />
 
-		<label for="tagMorphStatus">Morph getaggt?</label>
-		<input type="checkbox" name="tagMorphStatus" />
-
-		<label for="tagNormStatus">normalisiert?</label>
-		<input type="checkbox" name="tagNormStatus" />
-		</p>
-
-
-		<p><input type="hidden" name="action" value="importFile" /></p>
-		<p><input type="submit" value="Continue &rarr;" /></p>
+		<p><input type="hidden" name="action" value="importXMLFile" /></p>
+		<p><input type="submit" value="Hinzufügen &rarr;" /></p>
 	</form>
 </div>
 

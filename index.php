@@ -20,18 +20,10 @@
 header( "Content-Type: text/html; charset=utf-8" );
 
 /* Includes */
+require_once( "lib/globals.php" );
 require_once( "lib/connect.php" );      // provides DB interface
 require_once( "lib/requestHandler.php" );
 require_once( "lib/sessionHandler.php" );
-
-
-/* Globals */
-define( "TITLE",              "CorA"	                  );
-define( "VERSION",            "alpha"			  );
-define( "LONGTITLE",          "Corpus Annotator"          );
-define( "DESCRIPTION",        "An annotation tool."       );
-define( "KEYWORDS",           "annotation"                );
-define( "DEFAULT_LANGUAGE",   "de"                        );
 
 $sh;   /**< An instance of the SessionHandler object. */
 $rq;   /**< An instance of the RequestHandler object. */
