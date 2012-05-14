@@ -19,6 +19,10 @@
 		<link rel="stylesheet" type="text/css" href="gui/css/imagezoom.css" media="all" />
         <link rel="stylesheet" href="gui/js/cerabox/style/cerabox.css" media="screen" />        
         <link rel="stylesheet" href="gui/css/baseBox.css" type="text/css" media="screen" />
+        <link rel="stylesheet" href="gui/js/mbox/assets/mBoxCore.css" media="screen" />        
+        <link rel="stylesheet" href="gui/js/mbox/assets/mBoxModal.css" media="screen" />        
+        <link rel="stylesheet" href="gui/js/mbox/assets/mBoxNotice.css" media="screen" />        
+        <link rel="stylesheet" href="gui/js/mbox/assets/mBoxTooltip.css" media="screen" />        
          
 
 		<!-- Print only, on bottom --> 
@@ -28,6 +32,11 @@
 		<script src="gui/js/mootools-more-1.4.0.1.js" type="text/javascript" charset="utf-8"></script>
 		<script src="gui/js/cerabox/cerabox.min.js"></script>
 		<script src="gui/js/baseBox.js"></script>
+		<script src="gui/js/mbox/mBox.Core.js"></script>
+		<script src="gui/js/mbox/mBox.Modal.js"></script>
+		<script src="gui/js/mbox/mBox.Notice.js"></script>
+		<script src="gui/js/mbox/mBox.Tooltip.js"></script>
+		<script src="gui/js/mbox/mBox.Modal.Confirm.js"></script>
 		<script src="gui/js/dragtable_hack.js"></script>
 		<script src="gui/js/iFrameFormRequest.js"></script>
 

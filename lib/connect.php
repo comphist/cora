@@ -603,6 +603,17 @@ class DBInterface extends DBConnector {
     return $this->query($qs);
   }
 
+  /** Find documents with a certain key/value pair in their metadata,
+   *  e.g. documents with specific names or sigles.
+   */
+  public function queryForMetadata($metakey, $metavalue) {
+    $qs  = "SELECT * FROM {$this->db}.files_metadata ";
+    $qs .= "WHERE {$metakey}='{$metavalue}'";
+    $query = $this->query($qs);
+    @$row = mysql_fetch_array($query, $this->dbobj);
+    return $row;
+  }
+
   /** Insert a new document.
    *
    * @param array $options Metadata for the document
@@ -613,10 +624,14 @@ class DBInterface extends DBConnector {
   public function insertNewDocument(&$options, &$data){
     // Insert metadata
     $metadata  = "INSERT INTO {$this->db}.files_metadata ";
-    $metadata .= "(file_name, sigle, byUser, created, tagset) ";
+    $metadata .= "(file_name, sigle, byUser, created, tagset, ";
+    $metadata .= "POS_tagged, morph_tagged, norm) ";
     $metadata .= "VALUES ('" . $options['name'] . "', '";
     $metadata .= $options['sigle'] . "', '" . $_SESSION['user'];
-    $metadata .= "', CURRENT_TIMESTAMP, '" . $options['tagset'] . "')";
+    $metadata .= "', CURRENT_TIMESTAMP, '" . $options['tagset'];
+    $metadata .= "', " . $options['POS_tagged'] . ", ";
+    $metadata .= $options['morph_tagged'] . ", ";
+    $metadata .= $options['norm'] . ")";
 
     if(!$this->query($metadata)){
       return "Fehler beim Schreiben in 'files_metadata':\n" .

@@ -7,8 +7,6 @@
  * @date January 2012
  */
 
-require_once("fileModel.php");
-
 /** Handles all GET and POST requests.
  */
 class RequestHandler {
@@ -179,9 +177,7 @@ class RequestHandler {
 	      exit;
 	    }
 
-	    // @todo CHECK DATA FOR BEING VALID XML!!!
-	    
-	    $data = $_FILES['xmlFile']['tmp_name'];
+	    $data = $_FILES['xmlFile'];
 	    $options = array();
 	    if(!empty($post['xmlName'])) {
 	      $options['name'] = $post['xmlName'];

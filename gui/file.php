@@ -47,23 +47,10 @@ $tagsets = $sh->getTagsetList();
 </div>
 
 <div class="templateHolder" style="display: none;">
-	<div id="ceraAddDataToFile">
-		<form action="request.php" id="addDataImportForm" method="post" accept-charset="utf-8" enctype="multipart/form-data">			
-			<p>Name: <input type="text" name="textName" readonly="readonly"/></p>
-			<!-- <p>Tagset: <input type="text" name="tagset" readonly="readonly"/></p> -->
-			<p>Annotationstyp: <input type="text" name="tagType" readonly="readonly" /></p>
-		
-			<p>
-			<label for="textFile">Datei: </label>
-			<input type="file" name="textFile" />
-			</p>
-		
-			<p><input type="hidden" name="fileID" /></p>
-			<p><input type="hidden" name="action" value="addFileData" /></p>
-			<p><input type="submit" value="Continue &rarr;" disabled="disabled"/><input type="button" value="Abbrechen" /></p>
-		
-		</form>
-	</div>	
+  <div id="fileImportPopup">
+    <p></p>
+    <p><textarea cols="80" rows="10" readonly="readonly"></textarea></p>
+  </div>
 </div>	
 
 <div class="panel">

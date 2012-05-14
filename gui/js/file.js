@@ -25,39 +25,70 @@ var file = {
     formSave: function(form){
         if (debugMode) { return; }
 
-        ref = this;
+        var ref = this;
+	var spinner;
         var iFrame = new iFrameFormRequest(form,{
             onFailure: function(xhr) {
-       	     alert(lang_strings.dialog_save_unsuccessful + " " +
-       		   lang_strings.dialog_server_returned_error + "\n\n" +
-       		   xhr.responseText);
+		// never fires?
+       		alert(lang_strings.dialog_save_unsuccessful + " " +
+       		      lang_strings.dialog_server_returned_error + "\n\n" +
+       		      xhr.responseText);
        	    },
 	    onRequest: function(){
-		
+		$('overlay').show();
+		spinner = new Spinner($('overlay'),
+				      {message: "Importiere Daten..."});
+		spinner.show();
 	    },
 	    onComplete: function(response){
+		var title="", message="", textarea="";
 		response = JSON.decode(response);
 		
 		if(response==null){
-		    alert("Hinzufügen war nicht erfolgreich.\n\nUnbekannter Server-Fehler.");
+		    title = "Datei-Import fehlgeschlagen";
+		    message = "Beim Hinzufügen der Datei ist ein unbekannter Fehler aufgetreten.";
 		}
 		else if(!response.success){
-		    var popup = "Hinzufügen der Datei fehlgeschlagen. Es ";
-		    popup += response.errors.length>1 ? "sind " + response.errors.length : "ist ein";
-		    popup += "Fehler aufgetreten.\n\n";
+		    title = "Datei-Import fehlgeschlagen";
+		    message  = "Beim Hinzufügen der Datei ";
+		    message += response.errors.length>1 ? "sind " + response.errors.length : "ist ein";
+		    message += " Fehler aufgetreten:";
+
 		    for(var i=0;i<response.errors.length;i++){
-			popup += response.errors[i] + "\n";
+			textarea += response.errors[i] + "\n";
 		    }
-		    alert(popup);
 		} 
 		else { 
-		    var popup = "Datei erfolgreich hinzugefügt.";
+		    title = "Datei-Import erfolgreich";
+		    message = "Die Datei wurde erfolgreich hinzugefügt.";
+		    if((typeof response.warnings !== "undefined") && response.warnings.length>0) {
+			message += " Das System lieferte ";
+			message += response.warnings.length>1 ? response.warnings.length + " Warnungen" : "eine Warnung";
+			message += " zurück:";
 
-		    $(form).getElements('input[type!=submit]').set('value','');
-		    $$('#main > div[class!=importErrorPopup]').setStyle('opacity',1);
+			for(var i=0;i<response.warnings.length;i++){
+			    textarea += response.warnings[i] + "\n";
+			}
+		    }
+
+		    $(form).getElements('input[type=text]').set('value','');
+		    $(form).getElements('input[type=file]').set('value','');
 		    ref.listFiles();
                 }
-                
+
+		if(textarea!='') {
+		    $('fileImportPopup').getElement('p').set('html', message);
+		    $('fileImportPopup').getElement('textarea').set('html', textarea);
+		    message = 'fileImportPopup';
+		}
+		new mBox.Modal({
+		    title: title,
+		    content: message,
+		    buttons: [ {title: "OK"} ]
+		}).open();
+
+		spinner.hide();
+		$('overlay').hide();                
             }
 	});
     },

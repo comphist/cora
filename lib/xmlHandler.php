@@ -84,6 +84,107 @@ class XMLHandler {
     return $data;
   }
 
+  /** Check if data should be considered normalized, POS-tagged,
+   *  and/or morph-tagged; and, if tags are present, whether they
+   *  conform to the chosen tagset.
+   */
+  private function checkIntegrity(&$options, &$data) {
+    $lines  = 0;
+    $norm   = 0;
+    $pos    = 0;
+    $morph  = 0;
+    $warnings = array();
+    $posset   = array();
+    $morphset = array();
+
+    // check names
+    if(isset($options['name']) && !empty($options['name'])) {
+      if($this->db->queryForMetadata("file_name", $options['name'])){
+	$warnings[] = "Ein Dokument mit dem Namen '".$options['name']."' existiert bereits.";
+      }
+    }
+
+    if(isset($options['sigle']) && !empty($options['sigle'])) {
+      if($this->db->queryForMetadata("sigle", $options['sigle'])){
+	$warnings[] = "Ein Dokument mit der Sigle '".$options['sigle']."' existiert bereits.";
+      }
+    }
+
+    // load tagset
+    if(isset($options['tagset']) && !empty($options['tagset'])){
+      // @hack hardcoded language:
+      $tagset = $this->db->getTagset($options['tagset'], 'de');
+      if(empty($tagset)){
+	$warnings[] = "Tagset '".$options['tagset']
+	  ."' existiert nicht oder ist leer.";
+      } else {
+	$attribs = array();
+	foreach($tagset['attribs'] as $id=>$attrib){
+	  $attribs[$attrib['shortname']] = $id;
+	}
+	ksort($attribs);
+	// collect POS tags in a list
+	foreach($tagset['tags'] as $id=>$tag){
+	  $posset[] = (string) $tag['shortname'];
+	  // build all valid morph tag combinations
+	  $combinations = array();
+	  foreach($attribs as $att_name=>$att_id){
+	    if(in_array($att_id, $tag['link'])){
+	      if(empty($combinations)){
+		$combinations = $tagset['attribs'][$att_id]['val'];
+	      } else {
+		$newcomb = array();
+		foreach($combinations as $prev){
+		  foreach($tagset['attribs'][$att_id]['val'] as $next) {
+		    $newcomb[] = $prev.".".$next;
+		  }
+		}
+		$combinations = $newcomb;
+	      }
+	    }
+	  }
+	  if(empty($combinations)) { $combinations = array("--"); }
+	  $morphset[$tag['shortname']] = $combinations;
+	}
+      }
+    } else {
+      $tagset = False;
+    }
+
+    // check data
+    foreach($data as $line_id=>$token){
+      $lines++;
+      $poserror = False;
+      if(!empty($token['norm'])) { $norm++; }
+      if($tagset && !empty($token['pos'])) { 
+	$pos++;
+	$postag = (string) $token['pos'];
+	if(!in_array($postag, $posset)){
+	  $warnings[] = "Token ".$line_id.": '".$postag
+	    ."' ist kein gültiger POS-Tag.";
+	  $poserror = True;
+	}
+	if(!empty($token['morph'])) { 
+	  $morph++;
+	  $morphtag = (string) $token['morph'];
+	  if(!$poserror && !empty($morphset[$postag]) &&
+	     !in_array($morphtag,$morphset[$postag])) {
+	    $warnings[] = "Token ".$line_id.": '".$morphtag
+	      ."' ist kein gültiger Morphologie-Tag für Wortart '"
+	      .$postag."'.";
+	  }
+	}
+      }
+    }
+
+    $threshold = 0.9 * $lines;
+    $options['norm'] = ($norm>$threshold) ? 1 : 0;
+    $options['POS_tagged'] = ($pos>$threshold) ? 1 : 0;
+    $options['morph_tagged'] = ($morph>$threshold) ? 1 : 0;
+
+    return $warnings;
+  }
+
   /** Import XML data into the database as a new document.
    *
    * Parses XML data and sends database queries to import the data.
@@ -102,20 +203,19 @@ class XMLHandler {
     // check for validity
     libxml_use_internal_errors(true);
     $doc = new DOMDocument('1.0', 'utf-8');
-    $doc->loadXML(file_get_contents($xmlfile));
+    $doc->loadXML(file_get_contents($xmlfile['tmp_name']));
     $errors = libxml_get_errors();
     if (!empty($errors) && $errors[0]->level > 0) {
       $message  = "Datei enthält kein wohlgeformtes XML. Parser meldete:\n";
       $message .= $errors[0]->message.' at line '.$errors[0]->line.'.';
-      return array("success"=>False, errors=>array("XML-Fehler: ".$message));
+      return array("success"=>False, "errors"=>array("XML-Fehler: ".$message));
     }
 
     // process XML
     $reader = new XMLReader();
-    if(!$reader->open($xmlfile)) {
+    if(!$reader->open($xmlfile['tmp_name'])) {
       return array("success"=>False,
-		   "errors"=>array("Interner Fehler: Konnte '".$xmlfile.
-				   "' nicht öffnen."));
+		   "errors"=>array("Interner Fehler: Konnte temporäre Datei '".$xmlfile."' nicht öffnen."));
     }
     $xmlerror = $this->processXMLHeader($reader, $options);
     if($xmlerror){
@@ -125,21 +225,22 @@ class XMLHandler {
     $data = $this->processXMLData($reader);
     $reader->close();
 
-    // continue here:
-    /* check data for integrity, producing warnings for certain empty
-       fields, maybe even check tags against the tagset and produce
-       warnings for any mismatching tags. */
-    /* check if the document should be flagged as "POS-tagged" etc. */
+    // check for data integrity
+    $warnings = $this->checkIntegrity($options, $data);
+    if(!(isset($options['name']) && !empty($options['name'])) &&
+       !(isset($options['sigle']) && !empty($options['sigle']))) {
+      array_unshift($warnings, "Dokument hat weder Name noch Sigle; benutze Dateiname als Dokumentname.");
+      $options['name'] = $xmlfile['name'];
+    }
 
-    // @todo if(!fatal_error) { ... }
+    // insert data into database
     $sqlerror = $this->db->insertNewDocument($options, $data);
     if($sqlerror){
       return array("success"=>False, 
 		   "errors"=>array("SQLError: ".$sqlerror));
     }
 
-    // @todo return errors and/or warnings
-    return array("success"=>True, "warnings"=>array());
+    return array("success"=>True, "warnings"=>$warnings);
   }
 
   /****** FUNCTIONS RELATED TO DATA EXPORT ******/
