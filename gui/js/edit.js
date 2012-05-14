@@ -467,7 +467,7 @@ var EditorModel = new Class({
             // Morph
 	    oldmorphopt = tr.getElement('.editTable_Morph select');
 
-	    if (line.tag_POS) {
+	    if (line.tag_POS!=null) {
 		morphopt = new Element('select', {html:morphhtml[line.tag_POS.replace(/\s[\d\.]+/g,"")]});
 		//morphopt.set('html', morphhtml[line.tag_POS.replace(/\s[\d\.]+/g,"")]);
 	    } else {
@@ -562,7 +562,7 @@ var EditorModel = new Class({
        to the database.
      */
     saveData: function() {
-	var req, cl, data, save, line;
+	var req, cl, data, save, line, tp, tm;
 	var ref = this;
 	var spin = this.spinner;
 
@@ -573,35 +573,68 @@ var EditorModel = new Class({
 
 	for (var i=0, len=cl.length; i<len; i++) {
 	    line=data[cl[i]];
+	    tp = line.tag_POS==null ? "" : line.tag_POS;
+	    tm = line.tag_morph==null ? "" : line.tag_morph;
 	    save.push({
 		line_id: line.line_id,
 		errorChk: line.errorChk,
 		lemma: line.lemma,
-		tag_POS: line.tag_POS.replace(/\s[\d\.]+/g,""),
-		tag_morph: line.tag_morph.replace(/\s[\d\.]+/g,""),
+		tag_POS: tp.replace(/\s[\d\.]+/g,""),
+		tag_morph: tm.replace(/\s[\d\.]+/g,""),
 		tag_norm: line.tag_norm,
 		comment: line.comment
 	    });
 	}
 
-	req = new Request({
+	req = new Request.JSON({
 	    url: 'request.php?do=saveData&lastEditedRow='+this.lastEditedRow,
-	    onSuccess: function(txt,xml) {
-		if (txt!=null && txt!="") {
-		    alert("Speichern NICHT erfolgreich!\n\nServer lieferte Antwort:\n"+txt);
-		    return;
-		}
+	    onSuccess: function(status,xml) {
+		var title="", message="", textarea="";
 
-		ref.changedLines = new Array(); // reset "changed lines" array
-		spin.hide();
+		if (status!=null && status.success) {
+		    ref.changedLines = new Array(); // reset "changed lines" array
+		    new mBox.Notice({
+			type: 'ok',
+			content: 'Speichern erfolgreich.',
+			position: { x: 'right' }
+		    });
+		}
+		else {
+		    if (status==null) {
+			message = 'Beim Speichern der Datei ist leider ein unbekannter Fehler aufgetreten.';
+		    }
+		    else {
+			message = 'Beim Speichern der Datei ist leider ein Fehler aufgetreten.  Bitte melden Sie die folgende Fehlermeldung ggf. einem Administrator.';
+			for(var i=0;i<status.errors.length;i++){
+			    textarea += status.errors[i] + "\n";
+			}
+		    }
+		    
+		    if(textarea!='') {
+			$('saveErrorPopup').getElement('p').set('html', message);
+			$('saveErrorPopup').getElement('textarea').set('html', textarea);
+			message = 'saveErrorPopup';
+		    }
+		    new mBox.Modal({
+			title: 'Speichern fehlgeschlagen',
+			content: message,
+			buttons: [ {title: "OK"} ]
+		    }).open();
+		}
+		//spin.hide();
 		$('overlay').hide();
 	    },
 	    onFailure: function(xhr) {
-		alert("Speichern NICHT erfolgreich!\n\nServer lieferte Antwort:\n"+xhr);
+		new mBox.Modal({
+		    title: 'Speichern fehlgeschlagen',
+		    content: 'Das Speichern der Datei war nicht erfolgreich! Server lieferte folgende Antwort: "'+xhr+'".'
+		}).open();
+		//spin.hide();
+		$('overlay').hide();
 	    }
 	});
 	$('overlay').show();
-	spin.show();
+	//spin.show();
 	req.post(JSON.encode(save));	
     },
 

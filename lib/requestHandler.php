@@ -7,6 +7,8 @@
  * @date January 2012
  */
 
+// @todo App is not 100% secured against SQL injection at the moment.
+
 /** Handles all GET and POST requests.
  */
 class RequestHandler {
@@ -154,8 +156,6 @@ class RequestHandler {
    * @arg @c saveEditorUserSettings - Save user settings specified in
    * @c noPageLines (number of lines per page) and @c contextLines
    * (number of lines to show the context) to the database.
-   * @arg @c highlightError - Save an error marker specified by the @c line id to the database.
-   * @arg @c unhighlightError - Remove an error marker specified by the @c line id from the database.
    * @arg @c markLastPosition - Save user progress indicated by the @line id for the current opened file.
    * @arg @c undoLastEdit - Undo last progress change.
    *
@@ -301,8 +301,10 @@ class RequestHandler {
 	  case "getMaxLinesNo": echo $this->sh->getMaxLinesNo(); exit;
 	    
 	    
-	  case "saveData":	$this->sh->saveData(self::escapeSQL($get['lastEditedRow']), self::escapeSQL(json_decode(file_get_contents("php://input"), true)));
-	      exit;
+	  case "saveData":
+	    $status = $this->sh->saveData(self::escapeSQL($get['lastEditedRow']), self::escapeSQL(json_decode(file_get_contents("php://input"), true)));
+	    echo json_encode($status);
+	    exit;
 	      
 	  case "copyTagset":	exit;
 	    

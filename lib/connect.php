@@ -13,6 +13,11 @@
 /** The database settings. */
 require_once 'globals.php';
 
+/** Exception when an SQL query fails; currently only used by @c
+ *  LongSQLQuery class.
+ */
+class SQLQueryException extends Exception { }
+
 /** Class enabling arbitrarily long SQL queries by breaking them up
  *  into smaller parts.
  */
@@ -36,8 +41,7 @@ class LongSQLQuery {
     $newlen = $this->len + strlen($item) + 2;
     // if query length would exceed maximum, perform a flush first:
     if($newlen>DB_MAX_QUERY_LENGTH){
-      $status = $this->flush();
-      if($status) { return $status; }
+      $this->flush();
       $newlen = $this->len + strlen($item) + 2;
     }
     $this->len  = $newlen;
@@ -54,14 +58,7 @@ class LongSQLQuery {
     $query .= ' ' . $this->tail;
 
     if(!$this->db->query($query)){
-      echo "The SQL server returned:\n";
-      echo mysql_errno() . ": " . mysql_error() . "\n\n";
-      echo "The following query was sent:\n";
-      echo $query;
-      echo "\n\nExiting now.";
-      exit;
-
-      return mysql_errno() . ": " . mysql_error() . "\n";
+      throw new SQLQueryException(mysql_errno().": ".mysql_error());
     }
 
     $this->len = strlen($this->head) + strlen($this->tail) + 2;
@@ -957,67 +954,64 @@ class DBInterface extends DBConnector {
 	    
 	}
 
-	/** Save a changed line.
+	/** Saves changed lines.
 	*
-	* This function is called from the session handler during the saving process.
+	* This function is called from the session handler during the
+	* saving process.  
 	* 
 	* @param string $fileid the file id
-	* @param string $lineid the line id
-	* @param string $lemma  the lemma
-	* @param string $pos    the POS tag
-	* @param string $morph  the morph tag
-	* @param string $norm   the normalization
-	* @param string $comment the comment field
 	*
 	* @return @bool the result of the mysql query
  	*/ 		
-	public function saveLine($fileid,$lineid,$lemma,$pos,$morph,$norm,$comment){
-	       $qs = "UPDATE {$this->db}.files_data SET lemma='{$lemma}', ";
-	       $qs .= "tag_POS='{$pos}', tag_morph='{$morph}', ";
-	       $qs .= "tag_norm='{$norm}', comment='$comment' ";
-	       $qs .= "WHERE file_id='{$fileid}' AND line_id='{$lineid}'";
-	       return $this->query( $qs );
+	public function saveLines($fileid,$lasteditedrow,$lines) {
+	  // data insertion query
+	  $qhead  = "INSERT INTO {$this->db}.files_data (file_id, line_id, ";
+	  $qhead .= "lemma, tag_POS, tag_morph, tag_norm, comment) VALUES";
+	  $qtail  = "ON DUPLICATE KEY UPDATE lemma=VALUES(lemma), ";
+	  $qtail .= "tag_POS=VALUES(tag_POS), tag_morph=VALUES(tag_morph), ";
+	  $qtail .= "tag_norm=VALUES(tag_norm), comment=VALUES(comment)";
+	  $query  = new LongSQLQuery($this, $qhead, $qtail);
+	  // error highlighting query
+	  $eonhd  = "INSERT INTO {$this->db}.files_errors (file_id, ";
+	  $eonhd .= "line_id, user) VALUES";
+	  $eontl  = "ON DUPLICATE KEY UPDATE user='@@global@@'";
+	  $erron  = new LongSQLQuery($this, $eonhd, $eontl);
+	  // error un-highlighting query
+	  $eofhd  = "DELETE FROM {$this->db}.files_errors WHERE ";
+	  $eofhd .= "file_id='{$fileid}' AND line_id IN (";
+	  $eoftl  = ")";
+	  $erroff = new LongSQLQuery($this, $eofhd, $eoftl);
+	  
+	  // build and perform the queries!
+	  try {
+	    foreach ($lines as $line) {
+	      $qs  = "('{$fileid}', '".$line["line_id"]."', '".$line["lemma"];
+	      $qs .= "', '".$line["tag_POS"]."', '".$line["tag_morph"]."', '";
+	      $qs .= $line["tag_norm"]."', '".$line["comment"]."')";
+	      $query->append($qs);
+	      if($line["errorChk"]=="0") {
+		$erroff->append($line["line_id"]);
+	      } else {
+		$erron->append("('{$fileid}', '".$line["line_id"]."', '@@global@@')");
+	      }
+	    }
+	    $query->flush();
+	    $erron->flush();
+	    $erroff->flush();
+	  } catch (SQLQueryException $e) {
+	    return $e->getMessage();
+	  }
+
+	  // finally, one last query...
+	  $result = $this->markLastPosition($fileid,$lasteditedrow,'@@global@@');
+	  if (!$result) {
+	    return mysql_errno().": ".mysql_error();
+	  }
+
+	  return False;
 	}
 
-	/** Highlight an error.
-	*
-	* Each error marker is represented by an entry in a special database table. CAUTION: It is no longer depending on the user, but rather saved on a per-file basis. This can be changed back later if desired, though.
-	*
-	* This function is called by the session handler during the saving process.
-	* 
-	* @param string $file the file id
-	* @param string $line the line id
-	* @param string $user the username (currently not used)
-	*
-	* @return bool the result of the mysql query
- 	*/ 			
-	public function highlightError($file,$line,$user){
-	// !!IMPORTANT!! there is a bug in getLines() that messes
-	// up line requests if there are multiple entries in
-	// files_errors for the same line (as would be the case
-	// with per-user-based saving)
-		$qs = "INSERT INTO {$this->db}.files_errors (file_id,line_id,user) VALUES ('{$file}','{$line}','@@global@@')";
-		return $this->query( $qs );
-	}
-
-	/** Remove an error marker.
-	*
-	* Removes the corresponding database entry.
-	*
-	* This function is called during the saving process.
-	* 
-	* @param string $file the file id
-	* @param string $line the line id
-	* @param string $user the username (currently not used)
-	*
-	* @return bool the result of the mysql query
- 	*/ 			
-	public function unhighlightError($file,$line,$user){
-	// changed: errors are no longer saved on a per-user basis
-		$qs = "DELETE FROM {$this->db}.files_errors WHERE file_id='{$file}' AND line_id='{$line}'";
-		return $this->query( $qs );
-	}
-    
+   
 	/** Save progress on the given file.
 	*
 	* Progress is shown by a green bar at the left side of the editor and indicates the last line for which changes have been made.

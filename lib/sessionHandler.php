@@ -247,26 +247,21 @@ class SessionHandler {
   
   /** Save file data to the database.
    *
-   * Calls DBInterface::saveLine(), DBInterface::highlightError(), DBInterface::unhighlightError(), and DBInterface::markLastPosition().
+   * Calls DBInterface::saveLines().
    *
    * @param string $lasteditedrow Line number of the last edited row
    * @param array  $data		Array of lines to be saved
    */
   public function saveData($lasteditedrow,$data){
-    $fileid = $_SESSION['currentFileId'];
-    $user = $_SESSION['user'];
-    foreach ($data as $line) {
-      $result = $this->db->saveLine($fileid,$line["line_id"],$line["lemma"],$line["tag_POS"],$line["tag_morph"],$line["tag_norm"],$line["comment"]);
-      if (!$result) { die(mysql_error()); }
-      if ($line["errorChk"]=="0") {
-	$result = $this->db->unhighlightError($fileid,$line["line_id"],$user);
-      } else {
-	$result = $this->db->highlightError($fileid,$line["line_id"],$user);	       
-      }
+    $status = $this->db->saveLines($_SESSION['currentFileId'],
+				   $lasteditedrow,
+				   $data);
+
+    if($status) {
+      return array("success"=>false, "errors"=>array($status));
+    } else {
+      return array("success"=>true);
     }
-    $result = $this->db->markLastPosition($fileid,$lasteditedrow,$user);
-    if (!$result) { die(mysql_error()); }
-    return;
   }
 
   /** Wraps DBInterface::getHighestTagId() */

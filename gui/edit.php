@@ -86,29 +86,11 @@
 	<!-- <button id="undoEditBtn">Undo</button> -->
 </div>
 
-<div style="display: none;">
-     <table>
-		<tr id="line_template_thisisnot">
-			<td class="editTable_progress">
-			    <div class="editTableProgress"></div>
-			</td>
-			<td class="editTable_error">
-			    <div class="editTableError"></div>
-			</td>
-			<td class="editTable_token"></td>
-			<td class="editTable_Norm">
-			    <input type="text" size="10" value="" />
-			</td>
-			<td class="editTable_POS"></td>
-			<td class="editTable_Morph"></td>
-			<td class="editTable_Lemma">
-			    <input type="text" size="10" value="" />
-			</td>
-			<td class="editTable_Comment">
-			    <input type="text" size="30" value="" />
-			</td>
-		</tr>
-     </table>
-</div>
+<div class="templateHolder" style="display: none;">
+  <div id="saveErrorPopup">
+    <p></p>
+    <p><textarea cols="80" rows="3" readonly="readonly"></textarea></p>
+  </div>
+</div>	
 
 </div>
