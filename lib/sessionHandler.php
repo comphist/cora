@@ -185,8 +185,9 @@ class SessionHandler {
    *	   or 0 if there is only one page at all
    */  
   public function calculateEditorPage($line){
-    if($line>$_SESSION['noPageLines']) // if there are more lines than fit on a single page ...
-      $page = @ceil(($line - $_SESSION['contextLines'])/($_SESSION['noPageLines']-$_SESSION['contextLines']));
+    $uniquelines = $_SESSION['noPageLines'] - $_SESSION['contextLines'];
+    if($line>$uniquelines) // if there are more lines than fit on a single page ...
+      $page = @ceil($line/$uniquelines);
     else
       $page = 0;
     return $page;

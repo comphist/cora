@@ -41,14 +41,13 @@ var EditorModel = new Class({
 	/* set up the line template */
 	elem = $('line_template');
 	
-	spos = new Element('select', {'html': fileTagset.posHTML});
-	spos.grab(new Element('option',{html:"-----------"}),'top');
+	spos = new Element('select');
+	spos.grab(new Element('optgroup', {'html': fileTagset.posHTML, 'label': 'Alle Tags'}));
 	td = elem.getElement('td.editTable_POS')
 	td.empty();
 	td.adopt(spos);
 	
 	smorph = new Element('select');
-	smorph.grab(new Element('option',{html:"-----------"}),'top');
 	td = elem.getElement('td.editTable_Morph');
 	td.empty();
 	td.adopt(smorph);
@@ -77,7 +76,7 @@ var EditorModel = new Class({
 	    function(event, target) {
 		var this_id = target.getParent('tr').get('id').substr(5);
 		var parent = target.getParent('td');
-		var new_value = target.getSelected()[0].get('html');
+		var new_value = target.getSelected()[0].get('value');
 		if (parent.hasClass("editTable_POS")) {
 		    ref.updateData(this_id, 'tag_POS', new_value);
 		    ref.renderMorphOptions(this_id, target.getParent('tr'), new_value);
@@ -144,29 +143,40 @@ var EditorModel = new Class({
 	postag - the new POS tag
     */
     renderMorphOptions: function(id, tr, postag) {
-	var morphopt;
-	var oldmorphopt = tr.getElement('.editTable_Morph select');
-	var line = this.data[id]
+	var morphopt, suggestions, line;
+	var mselect = tr.getElement('.editTable_Morph select');
 
 	if (postag) {
-	    morphopt = new Element('select', {html:fileTagset.morphHTML[postag.replace(/\s[\d\.]+/g,"")]});
-	} else {
-	    morphopt = new Element('select');
+	    //postag = postag.replace(/\s[\d\.]+/g,"");
+	    morphopt = new Element('optgroup', {'label': "Alle Tags für '"+postag+"'",
+					       'html': fileTagset.morphHTML[postag]});
 	}
-	
-	line.suggestions_morph.each(function(opt){
-	    morphopt.grab(new Element('option',{
-		html: opt.tag_name+"\t"+opt.tag_probability,
-		'class': 'lineSuggestedTag'
-	    }),'top');
-        });
-	morphopt.grab(new Element('option',{
+
+	line = this.data[id];
+	if (line.suggestions_morph) {
+	    suggestions = new Element('optgroup', {'label': 'Vorgeschlagene Tags', 'class': 'lineSuggestedTag'});
+	    line.suggestions_morph.each(function(opt){
+		suggestions.grab(new Element('option',{
+		    html: opt.tag_name+" ("+opt.tag_probability+")",
+		    value: opt.tag_name,
+		    'class': 'lineSuggestedTag'
+		}),'top');
+            });
+	}
+
+	mselect.empty();
+	mselect.grab(new Element('option',{
 	    html: line.tag_morph,
+	    value: line.tag_morph,
 	    selected: 'selected',
 	    'class': 'lineSuggestedTag'
 	}),'top');
-	
-	morphopt.replaces(oldmorphopt);	
+	if (suggestions) {
+	    mselect.grab(suggestions);
+	}
+	if (postag) {
+	    mselect.grab(morphopt);
+	}
     },
 
     /* Function: renderPagesPanel
@@ -365,7 +375,8 @@ var EditorModel = new Class({
 	var et = this.editTable;
 	var ler = this.lastEditedRow;
 	var morphhtml = fileTagset.morphHTML;
-	var end, start, tr, line, posopt, morphopt, oldmorphopt, trs, j;
+	var end, start, tr, line, posopt, morphopt, mselect, trs, j;
+	var optgroup;
 	var dlr, dynstart, dynend;
 
 	/* calculate line numbers to be displayed */
@@ -453,42 +464,49 @@ var EditorModel = new Class({
             // POS
 	    posopt = tr.getElement('.editTable_POS select');
 	    posopt.getElements('.lineSuggestedTag').destroy();
+	    optgroup = new Element('optgroup', {'label': 'Vorgeschlagene Tags', 'class': 'lineSuggestedTag'});
 	    line.suggestions_pos.each(function(opt){
-		posopt.grab(new Element('option',{
-		    html: opt.tag_name+"\t"+opt.tag_probability,
+		optgroup.grab(new Element('option',{
+		    html: opt.tag_name+" ("+opt.tag_probability+")",
+		    value: opt.tag_name,
 		    'class': 'lineSuggestedTag'
 		}),'top');
             });
+	    posopt.grab(optgroup, 'top');
+
 	    posopt.grab(new Element('option',{
 		html: line.tag_POS,
+		value: line.tag_POS,
 		selected: 'selected',
 		'class': 'lineSuggestedTag'
 	    }),'top');
             // Morph
-	    oldmorphopt = tr.getElement('.editTable_Morph select');
-
-	    if (line.tag_POS!=null) {
-		morphopt = new Element('select', {html:morphhtml[line.tag_POS.replace(/\s[\d\.]+/g,"")]});
-		//morphopt.set('html', morphhtml[line.tag_POS.replace(/\s[\d\.]+/g,"")]);
-	    } else {
-		morphopt = new Element('select');
-		//morphopt.set('html', '');
-	    }
-
-	    line.suggestions_morph.each(function(opt){
-		morphopt.grab(new Element('option',{
-		    html: opt.tag_name+"\t"+opt.tag_probability,
-		    'class': 'lineSuggestedTag'
-		}),'top');
-            });
-	    morphopt.grab(new Element('option',{
+	    mselect = tr.getElement('.editTable_Morph select');
+	    mselect.empty();
+	    mselect.grab(new Element('option',{
 		html: line.tag_morph,
+		value: line.tag_morph,
 		selected: 'selected',
 		'class': 'lineSuggestedTag'
-	    }),'top');
+	    }));
 
-	    morphopt.replaces(oldmorphopt);
+	    if (line.suggestions_morph) {
+		optgroup = new Element('optgroup', {'label': 'Vorgeschlagene Tags', 'class': 'lineSuggestedTag'});
+		line.suggestions_morph.each(function(opt){
+		    optgroup.grab(new Element('option',{
+			html: opt.tag_name+" ("+opt.tag_probability+")",
+			value: opt.tag_name,
+			'class': 'lineSuggestedTag'
+		    }),'top');
+		});
+		mselect.grab(optgroup);
+	    }
 
+	    if (line.tag_POS!=null) {
+		var postag = line.tag_POS; //.replace(/\s[\d\.]+/g,"");
+		mselect.grab(new Element('optgroup', {'label': "Alle Tags für '"+postag+"'",
+						      html: morphhtml[postag]}));
+	    }
 	}
 
 	/* unhide the table */
@@ -579,8 +597,8 @@ var EditorModel = new Class({
 		line_id: line.line_id,
 		errorChk: line.errorChk,
 		lemma: line.lemma,
-		tag_POS: tp.replace(/\s[\d\.]+/g,""),
-		tag_morph: tm.replace(/\s[\d\.]+/g,""),
+		tag_POS: tp, //.replace(/\s[\d\.]+/g,""),
+		tag_morph: tm, //.replace(/\s[\d\.]+/g,""),
 		tag_norm: line.tag_norm,
 		comment: line.comment
 	    });

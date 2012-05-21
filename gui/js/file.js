@@ -118,7 +118,9 @@ var file = {
 	fileTagset.morph = {};
 
 	taglist.each(function(tag) {
-	    posHTML += "<option>";
+	    posHTML += '<option value="';
+	    posHTML += tag.shortname;
+	    posHTML += '">';
 	    posHTML += tag.shortname;
 	    posHTML += "</option>";
 
@@ -149,12 +151,14 @@ var file = {
 		
 		// build HTML tags
 		fileTagset.morph[tag.shortname] = new Array();
-		var morphHTML = "<option>-----------</option>";
+		var morphHTML = "";
 		combinations.sort();
 		combinations.each(function(combi) {
 		    combi = combi.replace(/ZZZ@/g, "*");
 		    fileTagset.morph[tag.shortname].push(combi);
-		    morphHTML += "<option>";
+		    morphHTML += '<option value="';
+		    morphHTML += combi;
+		    morphHTML += '">';
 		    morphHTML += combi;
 		    morphHTML += "</option>";
 		});
@@ -162,7 +166,7 @@ var file = {
 		fileTagset.morphHTML[tag.shortname] = morphHTML;
 	    } else {
 		fileTagset.morph[tag.shortname] = new Array();
-		fileTagset.morphHTML[tag.shortname] = "<option>--</option>";
+		fileTagset.morphHTML[tag.shortname] = '<option value="--">--</option>';
 	    }
 	});
 	fileTagset.posHTML = posHTML;
