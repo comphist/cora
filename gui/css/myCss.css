@@ -738,3 +738,16 @@ div.editTableErrorChecked {
 tr#line_template {
     display: none;
 }
+
+div#editorSettingsNumberOfLines label {
+    display: inline-block;
+    width: 11.5em;
+}
+
+div#editorSettingsNumberOfLines input {
+    text-align: right;
+}
+
+div#editorSettingsHiddenColumns input {
+    margin-left: 0.5em;
+}

@@ -9,39 +9,7 @@
 
 <div id="editDiv" class="content" style="display: none;">
 
-<div class="panel clappable">
-	<h3 class="clapp">Editor-Benutzereinstellungen</h3>
-	<div style="display:none;">
-	<div>
-	<form action="request.php" id="editUserSettings" method="get" accept-charset="utf-8">
-		<p>
-		<label for="noPageLines">Zeilen pro Seite</label>
-		<input type="text" name="noPageLines" value="<?php echo $_SESSION['noPageLines'];?>" size="3" />
-		</p>
-        <p>
-		<label for="contextLines">Anzahl überlappender Zeilen</label>
-		<input type="text" name="contextLines" value="<?php echo $_SESSION['contextLines'];?>" size="2" />
-		</p>		
-
-		<p><input type="submit" value="Zeilen-Einstellungen übernehmen" /></p>
-	</form>
-	</div>
-	<div id="editorSettingsHiddenColumns">
-	<h4>Angezeigte Spalten:</h4>
-	<p>
-	    <input type="checkbox" name="displayedColumns" value="token" checked="yes" /> Token
-	    <input type="checkbox" name="displayedColumns" value="Norm" checked="yes" /> Normalisierte Form
-	    <input type="checkbox" name="displayedColumns" value="POS" checked="yes" /> POS-Tag
-	    <input type="checkbox" name="displayedColumns" value="Morph" checked="yes" /> Morphologie-Tag
-	    <input type="checkbox" name="displayedColumns" value="Lemma" checked="yes" /> Lemma
-	    <input type="checkbox" name="displayedColumns" value="Comment" checked="yes" /> Kommentar
-	</p>
-	</div>
-	</div>
-</div>	
-
-
-<div id="editPanelDiv" class="panel" style="display: none;">
+<div id="editPanelDiv" class="panel">
 
 <div id="pagePanel">
 	<span>Seite: </span>

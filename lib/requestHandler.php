@@ -308,9 +308,9 @@ class RequestHandler {
 	      
 	  case "copyTagset":	exit;
 	    
-	  case "saveEditorUserSettings": return $this->sh->setUserEditorSettings(self::escapeSQL($get['noPageLines']),self::escapeSQL($get['contextLines'])); exit;
+	  case "saveEditorUserSettings": return $this->sh->setUserSettings(self::escapeSQL($get['noPageLines']),self::escapeSQL($get['contextLines'])); exit;
 	    
-	  case "setUserEditorSetting": return $this->sh->setUserEditorSetting(self::escapeSQL($get['name']),self::escapeSQL($get['value'])); exit;
+	  case "setUserEditorSetting": return $this->sh->setUserSetting(self::escapeSQL($get['name']),self::escapeSQL($get['value'])); exit;
 	    
 	    
 	  default:           self::returnError(400, "Unknown request: " + $get["do"]);

@@ -57,8 +57,8 @@ class SessionHandler {
     }
   }
 
-  public function setUserEditorSettings($lpp,$cl){
-	if($this->db->setUserEditorSettings($_SESSION['user'],$lpp,$cl)){
+  public function setUserSettings($lpp,$cl){
+	if($this->db->setUserSettings($_SESSION['user'],$lpp,$cl)){
 		$_SESSION['noPageLines'] = $lpp;
 		$_SESSION['contextLines'] = $cl;
 		return true;
@@ -66,8 +66,8 @@ class SessionHandler {
 	return false;
   }
 
-  public function setUserEditorSetting($name,$value) {
-  	 if($this->db->setUserEditorSetting($_SESSION['user'],$name,$value)){
+  public function setUserSetting($name,$value) {
+  	 if($this->db->setUserSetting($_SESSION['user'],$name,$value)){
 		$_SESSION[$name] = $value;
 		return true;
 	}
@@ -295,17 +295,19 @@ class SessionHandler {
 	  }
 
 	  //editor settings
-	  $data = $this->db->getUserEditorSettings( $user );
+	  $data = $this->db->getUserSettings( $user );
 	  if($data){
 		$_SESSION['noPageLines'] = (isset($data['noPageLines']) && $data['noPageLines']>0)? $data['noPageLines'] : '30';
 		$_SESSION['contextLines'] = (isset($data['contextLines']))? $data['contextLines'] : '5';
 		$_SESSION['editTableDragHistory'] = (isset($data['editTableDragHistory']))? $data['editTableDragHistory'] : '';
 		$_SESSION['hiddenColumns'] = (isset($data['hiddenColumns']))? $data['hiddenColumns'] : '';
+		$_SESSION['showTooltips'] = (isset($data['showTooltips']))? ($data['showTooltips']==1 ? 'true' : 'false') : 'true';
 	  } else {
 		$_SESSION['noPageLines'] = '30';
 		$_SESSION['contextLines'] = '5';
 		$_SESSION['editTableDragHistory'] = '';
 		$_SESSION['hiddenColumns'] = '';
+		$_SESSION['showTooltips'] = 'true';
 	  }
     } else {      // login failed
       $_SESSION["failedLogin"] = true;

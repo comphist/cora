@@ -187,7 +187,7 @@ var file = {
         		        var afterLoadTagset = function() {
 				    // code that depends on the tagsets being fully loaded
 				    edit.editorModel = new EditorModel(fileid, fileData.maxLinesNo, fileData.lastEditedRow, fileData.lastPage);
-				    $('editPanelDiv').show();
+				    $('editTabButton').show();
 				    default_tab = 'edit';
 				    changeTab('edit');
 				};
@@ -238,7 +238,7 @@ var file = {
 			changeTab(default_tab);
 			$('menuRight').hide();
 			$('editTable').hide();
-			$('editPanelDiv').hide();
+			$('editTabButton').hide();
 			$('currentfile').set('text','');
 			$('overlay').hide();
 		    }

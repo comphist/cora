@@ -47,14 +47,15 @@
             var lang_strings = <?php echo json_encode($lang); ?>;
 			var userdata = {
 <?php if($_SESSION['loggedIn']): ?>
-			name: "<?php echo $_SESSION['user']; ?>" , 
-								noPageLines: <?php echo $_SESSION['noPageLines']; ?>,
-								contextLines: <?php echo $_SESSION['contextLines']; ?>,
-								editTableDragHistory: '<?php echo $_SESSION['editTableDragHistory']; ?>',
-								hiddenColumns: '<?php echo $_SESSION['hiddenColumns']; ?>',
-								admin: "<?php echo $_SESSION['admin']; ?>" ,
-								currentFileId: "<?php echo $_SESSION['currentFileId']; ?>",
-								currentName: "<?php echo $_SESSION['currentName']; ?>"
+name: "<?php echo $_SESSION['user']; ?>" , 
+noPageLines: <?php echo $_SESSION['noPageLines']; ?>,
+contextLines: <?php echo $_SESSION['contextLines']; ?>,
+editTableDragHistory: '<?php echo $_SESSION['editTableDragHistory']; ?>',
+hiddenColumns: '<?php echo $_SESSION['hiddenColumns']; ?>',
+admin: "<?php echo $_SESSION['admin']; ?>" ,
+currentFileId: "<?php echo $_SESSION['currentFileId']; ?>",
+currentName: "<?php echo $_SESSION['currentName']; ?>",
+showTooltips: <?php echo $_SESSION['showTooltips']; ?>
 <?php endif; ?>
 						   };
 									

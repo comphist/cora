@@ -211,14 +211,14 @@ class DBInterface extends DBConnector {
     return @mysql_fetch_array( $query );
   }
   
-  /** Return editor settings for the current user. 
+  /** Return settings for the current user. 
    *
    * @param string $user Username
    *
-   * @return An array with the database entries from the table 'editor_settings' for the given user.
+   * @return An array with the database entries from the table 'user_settings' for the given user.
    */
-  public function getUserEditorSettings($user){
-	$qs = "SELECT * FROM {$this->db}.editor_settings WHERE username='{$user}'";
+  public function getUserSettings($user){
+	$qs = "SELECT * FROM {$this->db}.user_settings WHERE username='{$user}'";
 	return @mysql_fetch_assoc( $this->query( $qs ) );
   }
 
@@ -821,7 +821,7 @@ class DBInterface extends DBConnector {
 		return $files;
 	}
 	
-	/** Save editor settings for given user.
+	/** Save settings for given user.
 	*
 	* @param string $user username
 	* @param string $lpp number of lines per page
@@ -829,12 +829,12 @@ class DBInterface extends DBConnector {
 	*
 	* @return bool result of the mysql query
   	*/			
-	public function setUserEditorSettings($user,$lpp,$cl){
-		$qs = "INSERT INTO {$this->db}.editor_settings (username,noPageLines,contextLines) VALUES ('{$user}','{$lpp}','{$cl}') ON DUPLICATE KEY update noPageLines='{$lpp}',contextLines='{$cl}'";
+	public function setUserSettings($user,$lpp,$cl){
+		$qs = "INSERT INTO {$this->db}.user_settings (username,noPageLines,contextLines) VALUES ('{$user}','{$lpp}','{$cl}') ON DUPLICATE KEY update noPageLines='{$lpp}',contextLines='{$cl}'";
 		return $this->query($qs);
 	}
 
-	/** Save an editor setting for given user.
+	/** Save a setting for given user.
 	 *
 	 * @param string $user username
 	 * @param string $name name of the setting, e.g. "contextLines"
@@ -842,8 +842,8 @@ class DBInterface extends DBConnector {
 	 *
 	 * @return bool result of the mysql query
 	 */
-	public function setUserEditorSetting($user,$name,$value) {
-	       	$qs = "INSERT INTO {$this->db}.editor_settings (username,{$name}) VALUES ('{$user}','{$value}') ON DUPLICATE KEY update {$name}='{$value}'";
+	public function setUserSetting($user,$name,$value) {
+	       	$qs = "INSERT INTO {$this->db}.user_settings (username,{$name}) VALUES ('{$user}','{$value}') ON DUPLICATE KEY update {$name}='{$value}'";
 		return $this->query($qs);
 	}
 

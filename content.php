@@ -20,6 +20,7 @@ if( $_SESSION["loggedIn"] === true ) {
 	// $menu->addMenuItem( "file", "gui/file.php" );
   $menu->addMenuItem( "edit", "gui/edit.php", "gui/js/edit.js" );
 	// $menu->addMenuItem( "edit", "gui/edit.php" );
+  $menu->addMenuItem( "settings", "gui/settings.php", "gui/js/settings.js" );
   if ( $_SESSION["admin"] ) {
     $menu->addMenuItem( "admin", "gui/admin.php" );
   }
