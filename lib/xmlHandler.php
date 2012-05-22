@@ -34,7 +34,7 @@ class XMLHandler {
     foreach($this->xml_header_options as $key) {
       if (isset($header[$key]) && !empty($header[$key])
 	  && (!isset($options[$key]) || empty($options[$key]))) {
-	$options[$key] = $header[$key];
+	$options[$key] = (string) $header[$key];
       }
     }
     return False;

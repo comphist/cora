@@ -302,12 +302,13 @@ class SessionHandler {
 		$_SESSION['editTableDragHistory'] = (isset($data['editTableDragHistory']))? $data['editTableDragHistory'] : '';
 		$_SESSION['hiddenColumns'] = (isset($data['hiddenColumns']))? $data['hiddenColumns'] : '';
 		$_SESSION['showTooltips'] = (isset($data['showTooltips']))? ($data['showTooltips']==1 ? 'true' : 'false') : 'true';
+		$_SESSION['showInputErrors'] = (isset($data['showInputErrors']))? ($data['showInputErrors']==1 ? 'true' : 'false') : 'true';
 	  } else {
 		$_SESSION['noPageLines'] = '30';
 		$_SESSION['contextLines'] = '5';
 		$_SESSION['editTableDragHistory'] = '';
 		$_SESSION['hiddenColumns'] = '';
-		$_SESSION['showTooltips'] = 'true';
+		$_SESSION['showInputErrors'] = 'true';
 	  }
     } else {      // login failed
       $_SESSION["failedLogin"] = true;

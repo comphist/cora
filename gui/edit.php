@@ -18,7 +18,7 @@
 
 	<table id="editTable" border="0" class="draggable">
 		
-		<tr class="editHeadLine">
+		<tr class="editHeadLine" id="editHeadline">
 			<th class="editTable_progress">P</th>
 			<th class="editTable_error">E</th>
 			<th class="editTable_token">Token</th>

@@ -636,6 +636,15 @@ table#editTable td.editTable_Morph select {
     width: 15em;
 }
 
+table#editTable td.editTable_Morph .input_error {
+    box-shadow: 0 0 4px 1px #FF0000, 0 0 2px rgba(0, 0, 0, 0.12) inset;
+}
+
+table#editTable td.editTable_Morph .input_error_chrome {
+    border: 1px solid #FF0000;
+    outline: 2px solid #FFA0A0;
+}
+
 .editTable_token {
 }
 
@@ -750,4 +759,11 @@ div#editorSettingsNumberOfLines input {
 
 div#editorSettingsHiddenColumns input {
     margin-left: 0.5em;
+}
+
+form#newFileImportForm label {
+    display: inline-block;
+    width: 4.5em;
+    text-align: right;
+    padding-right: 5px;
 }

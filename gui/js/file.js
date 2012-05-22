@@ -84,6 +84,7 @@ var file = {
 		new mBox.Modal({
 		    title: title,
 		    content: message,
+		    closeOnBodyClick: false,
 		    buttons: [ {title: "OK"} ]
 		}).open();
 
@@ -113,11 +114,12 @@ var file = {
 	    return a < b ? -1 : a > b ? 1 : 0;
 	});
 
-	fileTagset.pos = tags;
+	fileTagset.pos = new Array();
 	fileTagset.attribs = attribs;
 	fileTagset.morph = {};
 
 	taglist.each(function(tag) {
+	    fileTagset.pos.push(tag.shortname);
 	    posHTML += '<option value="';
 	    posHTML += tag.shortname;
 	    posHTML += '">';
@@ -165,7 +167,7 @@ var file = {
 
 		fileTagset.morphHTML[tag.shortname] = morphHTML;
 	    } else {
-		fileTagset.morph[tag.shortname] = new Array();
+		fileTagset.morph[tag.shortname] = new Array("--");
 		fileTagset.morphHTML[tag.shortname] = '<option value="--">--</option>';
 	    }
 	});

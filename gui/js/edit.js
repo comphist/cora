@@ -12,6 +12,7 @@ var EditorModel = new Class({
     tries: 0,
     spinner: null,
     dynamicLoadRange: 5, // how many pages should be loaded in advance
+    inputErrorClass: "", // browser-dependent CSS styling for input errors
 
     /* Constructor: EditorModel
 
@@ -26,6 +27,12 @@ var EditorModel = new Class({
     initialize: function(fileid, line_count, last_edited_row, start_page) {
 	var elem, td, spos, smorph, et, mr, btn;
 	var ref = this;
+
+	if(Browser.chrome) {
+	    this.inputErrorClass = "input_error_chrome";
+	} else {
+	    this.inputErrorClass = "input_error";
+	}
 
 	this.lineCount = Number.from(line_count);
 	if(last_edited_row!==null) {
@@ -80,8 +87,12 @@ var EditorModel = new Class({
 		if (parent.hasClass("editTable_POS")) {
 		    ref.updateData(this_id, 'tag_POS', new_value);
 		    ref.renderMorphOptions(this_id, target.getParent('tr'), new_value);
+		    if (userdata.showInputErrors)
+			ref.updateInputError(target.getParent('tr'));
 		} else if (parent.hasClass("editTable_Morph")) {
 		    ref.updateData(this_id, 'tag_morph', new_value);
+		    if (userdata.showInputErrors)
+			ref.updateInputError(target.getParent('tr'));
 		}
 		ref.updateProgress(this_id, true);
 	    }
@@ -126,6 +137,64 @@ var EditorModel = new Class({
 	this.renderPagesPanel(start_page);
 	this.displayPage(start_page);
 	this.activePage = start_page;
+    },
+
+    /* Function: updateInputError
+
+       Visualize whether selected tags are legal values.
+
+       Checks legality of the selected tags in a given row with regard
+       to the currently loaded tagset (and, in case of morphology
+       tags, to the selected POS tag), then adds or removes the class
+       signalling an illegal input value.
+
+       Parameters:
+        tr - table row object to examine
+    */
+    updateInputError: function(tr) {
+	var iec = this.inputErrorClass;
+	var pselect, ptag, mselect, mtag;
+	try {
+	    pselect = tr.getElement('td.editTable_POS select');
+	    ptag = pselect.getSelected()[0].get('value');
+	    mselect = tr.getElement('td.editTable_Morph select');
+	    mtag = mselect.getSelected()[0].get('value');
+	}
+	catch(err) {
+	    // row doesn't have the select, or the select is empty
+	    return;
+	}
+
+	if(ptag!="") {
+	    if(!fileTagset.pos.contains(ptag)) {
+		pselect.addClass(iec);
+	    } else {
+		pselect.removeClass(iec);
+	    }
+	    
+	    if(mtag!="" && fileTagset.morph[ptag]!=null &&
+	       !fileTagset.morph[ptag].contains(mtag)) {
+		mselect.addClass(iec);
+	    } else {
+		mselect.removeClass(iec);
+	    }
+	}
+    },
+
+    /* Function: updateShowInputErrors
+
+       Show or hide input error visualization for each row in the
+       table.
+
+       Calls updateInputError() for each row in the table.  Used when
+       the corresponding user setting changes. */
+    updateShowInputErrors: function() {
+	if(userdata.showInputErrors) {
+	    $('editTable').getElements('tr').each(this.updateInputError.bind(this));
+	} else {
+	    $$('.editTable_POS select').removeClass(this.inputErrorClass);
+	    $$('.editTable_Morph select').removeClass(this.inputErrorClass);
+	}
     },
 
     /* Function: renderMorphOptions
@@ -374,9 +443,13 @@ var EditorModel = new Class({
 	var data = this.data;
 	var et = this.editTable;
 	var ler = this.lastEditedRow;
+	var sie = userdata.showInputErrors;
+	var iec = this.inputErrorClass;
 	var morphhtml = fileTagset.morphHTML;
+	var morph = fileTagset.morph;
+	var pos = fileTagset.pos;
 	var end, start, tr, line, posopt, morphopt, mselect, trs, j;
-	var optgroup;
+	var optgroup, elem;
 	var dlr, dynstart, dynend;
 
 	/* calculate line numbers to be displayed */
@@ -464,15 +537,24 @@ var EditorModel = new Class({
             // POS
 	    posopt = tr.getElement('.editTable_POS select');
 	    posopt.getElements('.lineSuggestedTag').destroy();
-	    optgroup = new Element('optgroup', {'label': 'Vorgeschlagene Tags', 'class': 'lineSuggestedTag'});
-	    line.suggestions_pos.each(function(opt){
-		optgroup.grab(new Element('option',{
-		    html: opt.tag_name+" ("+opt.tag_probability+")",
-		    value: opt.tag_name,
-		    'class': 'lineSuggestedTag'
-		}),'top');
-            });
-	    posopt.grab(optgroup, 'top');
+	    if(line.suggestions_pos.length>0) {
+		optgroup = new Element('optgroup', {'label': 'Vorgeschlagene Tags', 'class': 'lineSuggestedTag'});
+		line.suggestions_pos.each(function(opt){
+		    optgroup.grab(new Element('option',{
+			html: opt.tag_name+" ("+opt.tag_probability+")",
+			value: opt.tag_name,
+			'class': 'lineSuggestedTag'
+		    }),'top');
+		});
+		posopt.grab(optgroup, 'top');
+	    }
+	    if(sie){
+		if(line.tag_POS!="" && !pos.contains(line.tag_POS)) {
+		    posopt.addClass(iec);
+		} else {
+		    posopt.removeClass(iec);
+		}
+	    }
 
 	    posopt.grab(new Element('option',{
 		html: line.tag_POS,
@@ -483,14 +565,20 @@ var EditorModel = new Class({
             // Morph
 	    mselect = tr.getElement('.editTable_Morph select');
 	    mselect.empty();
-	    mselect.grab(new Element('option',{
-		html: line.tag_morph,
-		value: line.tag_morph,
-		selected: 'selected',
-		'class': 'lineSuggestedTag'
-	    }));
+	    mselect.grab(new Element('option',{html: line.tag_morph,
+					       value: line.tag_morph,
+					       selected: 'selected',
+					       'class': 'lineSuggestedTag'
+					      }));
+	    if(sie){
+		if(morph[line.tag_POS]!=null && !morph[line.tag_POS].contains(line.tag_morph)) {
+		    mselect.addClass(iec);
+		} else {
+		    mselect.removeClass(iec);
+		}
+	    }
 
-	    if (line.suggestions_morph) {
+	    if (line.suggestions_morph.length>0) {
 		optgroup = new Element('optgroup', {'label': 'Vorgeschlagene Tags', 'class': 'lineSuggestedTag'});
 		line.suggestions_morph.each(function(opt){
 		    optgroup.grab(new Element('option',{

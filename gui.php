@@ -55,7 +55,8 @@ hiddenColumns: '<?php echo $_SESSION['hiddenColumns']; ?>',
 admin: "<?php echo $_SESSION['admin']; ?>" ,
 currentFileId: "<?php echo $_SESSION['currentFileId']; ?>",
 currentName: "<?php echo $_SESSION['currentName']; ?>",
-showTooltips: <?php echo $_SESSION['showTooltips']; ?>
+showTooltips: <?php echo $_SESSION['showTooltips']; ?>,
+showInputErrors: <?php echo $_SESSION['showInputErrors']; ?>
 <?php endif; ?>
 						   };
 									
