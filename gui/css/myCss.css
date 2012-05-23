@@ -612,7 +612,7 @@ table#editTable{
 }
 
 tr.editHeadLine{
-/*    font-size: 2em;    */
+    cursor: pointer;
 }
 
 table#editTable tr {
@@ -766,4 +766,17 @@ form#newFileImportForm label {
     width: 4.5em;
     text-align: right;
     padding-right: 5px;
+}
+
+div#fileImportForm p {
+    max-width: 31em;
+}
+
+.templateHolder {
+    display: none;
+}
+
+.error_text {
+    color: red;
+    display: none;
 }

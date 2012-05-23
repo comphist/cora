@@ -2,8 +2,6 @@
 // ********** DOMREADY BINDINGS ******************************************
 // ***********************************************************************
 
-
-
 window.addEvent('domready', function() {
     var ref;
     var eus = $('editUserSettings');
@@ -119,7 +117,7 @@ window.addEvent('domready', function() {
     /* Showing tooltips */
     var general = $('generalSettings');
     general.getElement('input[name="showTooltips"]').set('checked', userdata.showTooltips);
-    
+
     general.addEvent(
 	'change:relay(input)',
 	function(event, target) {

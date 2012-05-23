@@ -17,17 +17,33 @@ var fileTagset = {
 // ***********************************************************************
 
 var file = {
-    
     initialize: function(){
-        this.formSave('newFileImportForm');
+        this.activateImportForm();
     },
-    
-    formSave: function(form){
-        if (debugMode) { return; }
 
+    activateImportForm: function(){
+	var formname = 'newFileImportForm';
         var ref = this;
 	var spinner;
-        var iFrame = new iFrameFormRequest(form,{
+
+	var import_mbox = new mBox.Modal({
+	    title: 'Importieren aus CorA-XML-Format',
+	    content: 'fileImportForm',
+	    attach: 'importNewXMLLink'
+	});
+
+	// check if a file has been selected
+	$('newFileImportForm').getElement('input[type="submit"]').addEvent('click', function(e) {
+	    var importfile = $('newFileImportForm').getElement('input[name="xmlFile"]').get('value');
+	    if(importfile==null || importfile=="") {
+		$$('#newFileImportForm p.error_text').show();
+		e.stop();
+	    } else {
+		$$('#newFileImportForm p.error_text').hide();
+	    }
+	});
+
+        var iFrame = new iFrameFormRequest(formname,{
             onFailure: function(xhr) {
 		// never fires?
        		alert(lang_strings.dialog_save_unsuccessful + " " +
@@ -35,6 +51,7 @@ var file = {
        		      xhr.responseText);
        	    },
 	    onRequest: function(){
+		import_mbox.close();
 		$('overlay').show();
 		spinner = new Spinner($('overlay'),
 				      {message: "Importiere Daten..."});
@@ -71,8 +88,8 @@ var file = {
 			}
 		    }
 
-		    $(form).getElements('input[type=text]').set('value','');
-		    $(form).getElements('input[type=file]').set('value','');
+		    form.reset($(formname));
+		    $(formname).getElements('.error_text').hide();
 		    ref.listFiles();
                 }
 

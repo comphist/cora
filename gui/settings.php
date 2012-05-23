@@ -53,7 +53,7 @@
 	<div>
 
 	<div id="generalSettings">
-	<p>
+	<p style="display: none;">
 	    <input type="checkbox" name="showTooltips" value="showTooltips" checked="yes" /> Tooltips anzeigen
 	</p>
 	</div>

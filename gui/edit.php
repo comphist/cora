@@ -54,7 +54,7 @@
 	<!-- <button id="undoEditBtn">Undo</button> -->
 </div>
 
-<div class="templateHolder" style="display: none;">
+<div class="templateHolder">
   <div id="saveErrorPopup">
     <p></p>
     <p><textarea cols="80" rows="3" readonly="readonly"></textarea></p>

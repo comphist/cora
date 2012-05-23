@@ -622,11 +622,12 @@ class DBInterface extends DBConnector {
     // Insert metadata
     $metadata  = "INSERT INTO {$this->db}.files_metadata ";
     $metadata .= "(file_name, sigle, byUser, created, tagset, ";
-    $metadata .= "POS_tagged, morph_tagged, norm) ";
-    $metadata .= "VALUES ('" . $options['name'] . "', '";
-    $metadata .= $options['sigle'] . "', '" . $_SESSION['user'];
-    $metadata .= "', CURRENT_TIMESTAMP, '" . $options['tagset'];
-    $metadata .= "', " . $options['POS_tagged'] . ", ";
+    $metadata .= "POS_tagged, morph_tagged, norm) VALUES ('";
+    $metadata .= mysql_real_escape_string($options['name']) . "', '";
+    $metadata .= mysql_real_escape_string($options['sigle']) . "', '";
+    $metadata .= $_SESSION['user'] . "', CURRENT_TIMESTAMP, '";
+    $metadata .= mysql_real_escape_string($options['tagset']) . "', ";
+    $metadata .= $options['POS_tagged'] . ", ";
     $metadata .= $options['morph_tagged'] . ", ";
     $metadata .= $options['norm'] . ")";
 
@@ -649,16 +650,21 @@ class DBInterface extends DBConnector {
 
     foreach($data as $index=>$token){
       $token = $this->escapeSQL($token);
-      $qs = "('{$file_id}', {$index}, '".$token['form']."', '".
-	$token['pos']."', '".$token['morph']."', '".
-	$token['norm']."', '".$token['lemma']."', '".
-	$token['comment']."')";
+      $qs = "('{$file_id}', {$index}, '".
+	mysql_real_escape_string($token['form'])."', '".
+	mysql_real_escape_string($token['pos'])."', '".
+	mysql_real_escape_string($token['morph'])."', '".
+	mysql_real_escape_string($token['norm'])."', '".
+	mysql_real_escape_string($token['lemma'])."', '".
+	mysql_real_escape_string($token['comment'])."')";
       $status = $data_table->append($qs);
       if($status){ $this->deleteFile($file_id); return $status; }
       foreach($token['suggestions'] as $sugg){
 	$qs = "('{$file_id}', {$index}, ".$sugg['index'].
-	  ", '".$sugg['type']."', '".$sugg['value'].
-	  "', ".$sugg['score'].", '".$token['lemma']."')";
+	  ", '".$sugg['type']."', '".
+	  mysql_real_escape_string($sugg['value']).
+	  "', ".$sugg['score'].", '".
+	  mysql_real_escape_string($token['lemma'])."')";
 	$status = $sugg_table->append($qs);
 	if($status){ $this->deleteFile($file_id); return $status; }
       }

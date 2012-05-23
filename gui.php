@@ -23,6 +23,8 @@
         <link rel="stylesheet" href="gui/js/mbox/assets/mBoxModal.css" media="screen" />        
         <link rel="stylesheet" href="gui/js/mbox/assets/mBoxNotice.css" media="screen" />        
         <link rel="stylesheet" href="gui/js/mbox/assets/mBoxTooltip.css" media="screen" />        
+        <link rel="stylesheet" href="gui/js/mbox/assets/mForm_mod.css" media="screen" />        
+        <link rel="stylesheet" href="gui/js/mbox/assets/mFormElement-Select.css" media="screen" />        
          
 
 		<!-- Print only, on bottom --> 
@@ -32,11 +34,17 @@
 		<script src="gui/js/mootools-more-1.4.0.1.js" type="text/javascript" charset="utf-8"></script>
 		<script src="gui/js/cerabox/cerabox.min.js"></script>
 		<script src="gui/js/baseBox.js"></script>
+
 		<script src="gui/js/mbox/mBox.Core.js"></script>
 		<script src="gui/js/mbox/mBox.Modal.js"></script>
 		<script src="gui/js/mbox/mBox.Notice.js"></script>
 		<script src="gui/js/mbox/mBox.Tooltip.js"></script>
 		<script src="gui/js/mbox/mBox.Modal.Confirm.js"></script>
+		<script src="gui/js/mbox/mForm.Core.js"></script>
+		<script src="gui/js/mbox/mForm.Submit.js"></script>
+		<script src="gui/js/mbox/mForm.Element.js"></script>
+		<script src="gui/js/mbox/mForm.Element.Select.js"></script>
+
 		<script src="gui/js/dragtable_hack.js"></script>
 		<script src="gui/js/iFrameFormRequest.js"></script>
 
