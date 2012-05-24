@@ -136,6 +136,16 @@ class SessionHandler {
     return $this->db->changePassword($username, $password);
   }
 
+  /** Wraps DBInterface::changePassword(), intended for users
+      changing their own passwords. */
+  public function changeUserPassword( $oldpw, $newpw ) {
+    if ($this->db->getUserData($_SESSION["user"], $oldpw)) {
+      $this->db->changePassword($_SESSION["user"], $newpw);
+      return array("success"=>True);
+    }
+    return array("success"=>False, "errcode"=>"oldpwmm");
+  }
+
   /** Wraps DBInterface::deleteUser(), checking for administrator
       privileges first. */
   public function deleteUser( $username ) {

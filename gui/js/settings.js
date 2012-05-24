@@ -132,5 +132,52 @@ window.addEvent('domready', function() {
 	}
     );
 
+    /* Change password */
+    var pwch = new mBox.Modal({
+	title: 'Passwort ändern',
+	content: 'changePasswordFormDiv',
+	attach: 'changePasswordLink'
+    });
+    new mForm.Submit({
+	form: 'changePasswordForm',
+	ajax: true,
+	validate: true,
+	blinkErrors: true,
+	bounceSubmitButton: false,
+	onSubmit: function() {
+	    var pw1 = this.form.getElement('input[name="newpw"]').get('value');
+	    var pw2 = this.form.getElement('input[name="newpw2"]').get('value');
+	    if (pw1=="" && pw2=="") {
+		// mForm deals with this automatically ...
+		this.form.getElements('.error_text').hide();
+	    }
+	    else if (pw1==pw2) {
+		this.blockSubmit = false;
+		this.form.getElements('.error_text').hide();
+	    } else {
+		this.blockSubmit = true;
+		this.showErrors([
+		    this.form.getElement('input[name="newpw"]'),
+		    this.form.getElement('input[name="newpw2"]')
+		]);
+		$('changePasswordErrorNew').show();
+	    }
+	},
+	onComplete: function(response) {
+	    response = JSON.decode(response);
+	    if(response.success) {
+		pwch.close();
+		form.reset($('changePasswordForm'));
+		new mBox.Notice({
+		    content: 'Passwort geändert',
+		    type: 'ok',
+		    position: {x: 'right'}
+		});
+	    } else if (response.errcode!=null && response.errcode=="oldpwmm") {
+		$('changePasswordErrorOld').show();
+		this.showErrors(this.form.getElement('input[name="oldpw"]'));
+	    }
+	}
+    });
 
 });

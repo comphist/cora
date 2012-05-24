@@ -170,6 +170,13 @@ class RequestHandler {
   public function handleJSONRequest( $get, $post ) {
 	if (array_key_exists("action", $post)) {
 	  switch( $post["action"]) {
+	  case "changeUserPassword":$status = $this->sh->changeUserPassword(
+								    self::escapeSQL($post["oldpw"]),
+								    self::escapeSQL($post["newpw"])
+								    );
+	    echo json_encode($status);
+	    exit;
+
 	  case "importXMLFile":
 	    if(empty($_FILES['xmlFile']['name']) || $_FILES['xmlFile']['error']!=UPLOAD_ERR_OK || !is_uploaded_file($_FILES['xmlFile']['tmp_name'])) {
 	      echo json_encode(array("success"=>false,
@@ -262,9 +269,9 @@ class RequestHandler {
 								    self::escapeSQL($post["password"])
 								    );
 	    if (!$status)
-	      self::returnError(500, "Could not toggle admin status.");
+	      self::returnError(500, "Could not change password.");
 	    exit;
-	    
+
 	  case "listFiles":  $data = $this->sh->getFiles();
 	    echo json_encode($data);
 	    exit;

@@ -12,7 +12,7 @@ $tagsets = $sh->getTagsetList();
 
 <div class="panel" id="fileImport">
 	<h3>Datei importieren</h3>
-  <p><a id="importNewXMLLink">Neues Dokument aus XML-Datei importieren...</a></p>
+  <p><button class="mform" id="importNewXMLLink">Neues Dokument aus XML-Datei importieren...</button></p>
 </div>
 
 <div class="panel">
