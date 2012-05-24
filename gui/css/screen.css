@@ -17,15 +17,15 @@ a:hover {
 
 h2 {
 	color : #343434;
-	font : italic 200% sans-serif;
+	font : italic large sans-serif;
 }
 h3 {
 	color : #343434;
-	font : italic 160% sans-serif;
+	font : italic medium sans-serif;
 }
 h4 {
 	color : #343434;
-	font : bold 110% sans-serif;
+	font : bold small sans-serif;
 	padding : 1em 1em 0 1em;
 }
 
@@ -34,6 +34,10 @@ html {
 	font : 60% sans-serif;
 	text-align : justify;
 	font-family: Helvetica, arial, sans-serif;
+}
+
+p {
+    font-size : small;
 }
 
 img.left {
@@ -133,6 +137,7 @@ ol {
 #topbar {
     position: fixed;
     width: 100%;
+    z-index: 998; /* mBox uses 8000, spinner uses 999 */
 }
 
 #header {
@@ -178,6 +183,7 @@ ol {
 	border : 1px solid #2b548c;
 	border-bottom : 1px solid #ffffff;
 	color : #437fda;
+	font-weight: bold;
 }
 #menu li[active=true] a:hover {
 	background : #ffffff;

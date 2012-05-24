@@ -13,7 +13,7 @@ $ulist = $sh->getUserList();
 
 <div id="adminDiv" class="content" style="display: none;">
 
-<h2><?php echo $lang["admin_caption"]; ?></h2>
+<!-- <h2><?php echo $lang["admin_caption"]; ?></h2> -->
 
 <!-- USER MANAGEMENT -->
 <div class="panel clappable" id="users">

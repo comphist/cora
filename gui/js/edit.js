@@ -61,6 +61,9 @@ var EditorModel = new Class({
 	
 	this.lineTemplate = elem;
 
+	/* clear out any previously generated lines */
+	et.getElements('tr[id^=line][id!=line_template]').destroy();
+
 	/* define delegated events */
 	et.removeEvents();
 	et.addEvent(
@@ -171,9 +174,9 @@ var EditorModel = new Class({
 	    } else {
 		pselect.removeClass(iec);
 	    }
-	    
-	    if(mtag!="" && fileTagset.morph[ptag]!=null &&
-	       !fileTagset.morph[ptag].contains(mtag)) {
+
+	    if(mtag!="" && (fileTagset.morph[ptag]==null ||
+	       !fileTagset.morph[ptag].contains(mtag))) {
 		mselect.addClass(iec);
 	    } else {
 		mselect.removeClass(iec);
@@ -571,7 +574,7 @@ var EditorModel = new Class({
 					       'class': 'lineSuggestedTag'
 					      }));
 	    if(sie){
-		if(morph[line.tag_POS]!=null && !morph[line.tag_POS].contains(line.tag_morph)) {
+		if(morph[line.tag_POS]==null || !morph[line.tag_POS].contains(line.tag_morph)) {
 		    mselect.addClass(iec);
 		} else {
 		    mselect.removeClass(iec);
