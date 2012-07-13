@@ -318,6 +318,7 @@ class SessionHandler {
 		$_SESSION['contextLines'] = '5';
 		$_SESSION['editTableDragHistory'] = '';
 		$_SESSION['hiddenColumns'] = '';
+		$_SESSION['showTooltips'] = 'true';
 		$_SESSION['showInputErrors'] = 'true';
 	  }
     } else {      // login failed
