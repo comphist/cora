@@ -9,8 +9,6 @@
  * string (depending on the nature of the request).
  */
 
-session_name("PHPSESSID_CORA");
-
 require_once( "lib/globals.php" );
 require_once( "lib/sessionHandler.php" );
 require_once( "lib/requestHandler.php" );

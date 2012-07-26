@@ -27,6 +27,7 @@ class SessionHandler {
    * defaults for various session values if required.
    */
   function __construct() {
+    session_name("PHPSESSID_CORA");
     @session_start();
 
     $this->db = new DBInterface();
