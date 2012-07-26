@@ -17,7 +17,6 @@
  * considerable modifications.
  */
 
-session_name("PHPSESSID_CORA");
 header( "Content-Type: text/html; charset=utf-8" );
 
 /* Includes */
