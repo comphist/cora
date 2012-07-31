@@ -22,6 +22,10 @@ var file = {
     },
 
     activateImportForm: function(){
+	if($('noProjectGroups')) {
+	    return;
+	}
+
 	var formname = 'newFileImportForm';
         var ref = this;
 	var spinner;
@@ -39,10 +43,10 @@ var file = {
 		$$('#newFileImportForm p.error_text').show();
 		e.stop();
 	    } else {
-		$$('#newFileImportForm p.error_text').hide();
+		    $$('#newFileImportForm p.error_text').hide();
 	    }
 	});
-
+	
         var iFrame = new iFrameFormRequest(formname,{
             onFailure: function(xhr) {
 		// never fires?
@@ -279,21 +283,42 @@ var file = {
     },
     
     listFiles: function(){
+	if($('noProjectGroups')) {
+	    return;
+	}
+
         var ref = this;
         var files = new Request.JSON({
             url:'request.php',
     		onSuccess: function(filesArray, text) {
-                $$('#fileList tr[class!=fileTableHeadLine]').dispose();
+		var files_div = $('files').empty();
 
-                filesArray.each(function(file){
-                    $('fileList').adopt(ref.renderTableLine(file));
-                })
+		var fileHash = {};
+		filesArray.each(function(file){
+		    var prj = file.project_name;
+		    if(fileHash[prj]) {
+			fileHash[prj].push(file);
+		    } else {
+			fileHash[prj] = [file];
+		    }
+		});
+
+		Object.each(fileHash, function(fileArray, project){
+		    var project_div = $('fileGroup').clone();
+		    var project_table = project_div.getElement('table');
+		    project_div.getElement('h4.projectname').set('html', project);
+		    fileArray.each(function(file) {
+			project_table.adopt(ref.renderTableLine(file));
+		    });
+		    project_div.inject(files_div);
+		});
+
             }
     	});
         files.get({'do': 'listFiles'});
         
     },
-    
+
     renderTableLine: function(file){
 	/* TODO: isn't it completely unnecessary to completely
 	 * re-create the whole table each time a change occurs?
@@ -318,8 +343,10 @@ var file = {
         tr.adopt(new Element('td',{ 'class': 'tagStatusPOS', html: (file.POS_tagged == 1) ? chkImg : '--' }));
         tr.adopt(new Element('td',{ 'class': 'tagStatusMorph', html: (file.morph_tagged == 1) ? chkImg : '--' }));
         tr.adopt(new Element('td',{ 'class': 'tagStatusNorm', html: (file.norm == 1) ? chkImg : '--' }));
-        tr.adopt(new Element('td',{ html: file.lastMod }));
-        tr.adopt(new Element('td',{ html: file.lastModUser }));                    
+	/* the following lines have been uncommented as the field is
+	 * not currently used */
+        // tr.adopt(new Element('td',{ html: file.lastMod }));
+        // tr.adopt(new Element('td',{ html: file.lastModUser }));                    
         tr.adopt(new Element('td',{ html: file.created }));
         tr.adopt(new Element('td',{ html: file.byUser }));
         tr.adopt(new Element('td',{'class':'exportFile'}).adopt(new Element('a',{ html: 'export', 'class': 'exportFileLink' }).addEvent('click', function(){ ref.exportFile(file.file_id); } )));

@@ -583,18 +583,32 @@ table#editUsers td {
  }
  
 /* File-table */
-table#fileList {
+table.fileList {
     font-size: 1.5em;
+    border-collapse: collapse;
 }
 
-table#fileList td, table#fileList th {
+table.fileList td {
     padding: 5px 10px;
     border-bottom: 1px solid #999;
 }
 
-td.tagStatus {
+table.fileList th {
+    padding: 5px 10px;
+    border-bottom: 1px solid #999;
+}
+
+h4.projectname {
+    font-size: medium;
+    font-weight: normal;
     font-style: italic;
-    opacity: 0.7;
+    text-decoration: underline;
+}
+
+th.tagStatusPOS, th.tagStatusMorph, th.tagStatusNorm,
+td.tagStatusPOS, td.tagStatusMorph, td.tagStatusNorm {
+    min-width: 3em;
+    text-align: center;
 }
 
 td.deleteFile img {

@@ -5,10 +5,23 @@
 
 $filelist = $sh->getFiles(); 
 $tagsets = $sh->getTagsetList();
+$projects = $sh->getProjectList();
 
 ?>
 
 <div id="fileDiv" class="content" style="display: none;">
+
+<?php
+  if(empty($projects)):
+?>
+<div class="panel" id="noProjectGroups">
+   <h3>Keine Projektgruppen verfügbar</h3>
+   <p>Sie gehören zur Zeit keiner Projektgruppe an.</p>
+   <p>Wenden Sie sich an einen Administrator, um zu einer Projektgruppe hinzuzufügt zu werden.</p>
+</div>
+<?php
+    else:
+?>
 
 <div class="panel" id="fileImport">
 	<h3>Datei importieren</h3>
@@ -22,14 +35,22 @@ $tagsets = $sh->getTagsetList();
 	</div>
 
 	<div id="files">
-		<table id="fileList">
+	</div>
+
+</div>
+
+<div class="templateHolder">
+  <div class="panel" id="fileGroup">
+    <h4 class="projectname">Projektname</h4>
+        <div>
+		<table class="fileList">
 			<tr class="fileTableHeadLine">
 				<th></th>
 				<th>Dateiname</th>
-				<th>POS getaggt</th>
-				<th>Morph getaggt</th>
-				<th>normalisiert</th>
-				<th colspan="2">zuletzt bearbeitet am/von</th>
+				<th class="tagStatusPOS">POS</th>
+				<th class="tagStatusMorph">Morph</th>
+				<th class="tagStatusNorm">Norm.</th>
+<!--				<th colspan="2">zuletzt bearbeitet am/von</th> -->
 				<th colspan="2">erstellt am/von</th>
 				<th></th>
 				<th></th>
@@ -37,11 +58,9 @@ $tagsets = $sh->getTagsetList();
 
 		<!-- this table is filled by file.listFiles() @ file.js -->
 		</table>
-	</div>
+        </div>
+  </div>
 
-</div>
-
-<div class="templateHolder">
   <div id="fileImportPopup">
     <p></p>
     <p><textarea cols="80" rows="10" readonly="readonly"></textarea></p>
@@ -56,16 +75,25 @@ $tagsets = $sh->getTagsetList();
 		<input type="file" name="xmlFile" data-required="" />
 		</p>
 
+		<p>
+		<label for="project">Projekt: </label>
+		<select name="project" size="1">
+			<?php foreach($projects as $set):?>
+			<option value="<?php echo $set['project_id'];?>"><?php echo "{$set['project_name']}";?></option>
+			<?php endforeach;?>
+		</select>
+		</p>
+
   <p>Die folgenden Felder müssen nicht ausgefüllt werden, falls die entsprechenden Informationen bereits in der XML-Datei enthalten sind.</p>
 
 		<p>
 		<label for="xmlFile">Name: </label>
-		<input type="text" name="xmlName" placeholder="Dokumentname" size="30" />
+		<input type="text" name="xmlName" placeholder="(Dokumentname)" size="30" />
 		</p>
 
 		<p>
 		<label for="sigle">Sigle: </label>
-		<input type="text" name="sigle" placeholder="Sigle (optional)" size="30" />
+		<input type="text" name="sigle" placeholder="(Sigle &ndash; optional)" size="30" />
 		</p>
 
 		<p>
@@ -87,4 +115,7 @@ $tagsets = $sh->getTagsetList();
   </div>
 </div>
 
+<?php
+  endif;
+?>
 </div>

@@ -193,7 +193,8 @@ class RequestHandler {
 	      $options['sigle'] = $post['sigle'];
 	    }
 	    $options['tagset'] = $post['tagset'];
-	    
+	    $options['project'] = $post['project'];
+
 	    try {
 	      $result = $this->sh->importFile($data,self::escapeSQL($options));
 	      echo json_encode($result);

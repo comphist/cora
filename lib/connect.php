@@ -622,14 +622,15 @@ class DBInterface extends DBConnector {
     // Insert metadata
     $metadata  = "INSERT INTO {$this->db}.files_metadata ";
     $metadata .= "(file_name, sigle, byUser, created, tagset, ";
-    $metadata .= "POS_tagged, morph_tagged, norm) VALUES ('";
+    $metadata .= "POS_tagged, morph_tagged, norm, project_id) VALUES ('";
     $metadata .= mysql_real_escape_string($options['name']) . "', '";
     $metadata .= mysql_real_escape_string($options['sigle']) . "', '";
     $metadata .= $_SESSION['user'] . "', CURRENT_TIMESTAMP, '";
     $metadata .= mysql_real_escape_string($options['tagset']) . "', ";
     $metadata .= $options['POS_tagged'] . ", ";
     $metadata .= $options['morph_tagged'] . ", ";
-    $metadata .= $options['norm'] . ")";
+    $metadata .= $options['norm'] . ", ";
+    $metadata .= $options['project'] . ")";
 
     if(!$this->query($metadata)){
       return "Fehler beim Schreiben in 'files_metadata':\n" .
@@ -781,6 +782,24 @@ class DBInterface extends DBConnector {
 		return $lock;		
 	}
 
+	/** Check whether a user is allowed to open a file.
+	 *
+	 * @param string $fileid file id
+	 * @param string $user username
+	 *
+	 * @return boolean value indicating whether user may open the
+	 *         file
+	 */
+	public function canOpenFile($fileid, $user){
+	  $qs = "SELECT a.project_id FROM ({$this->db}.project_users a, {$this->db}.files_metadata b) WHERE (a.username='{$user}' AND b.file_id='{$fileid}' AND a.project_id=b.project_id)";
+	  $q = $this->query($qs);
+	  if(@mysql_fetch_row($q,$this->dbobj)) {
+	    return true;
+	  } else {
+	    return false;
+	  }
+	}
+
 	/** Delete a file.
 	*
 	* Deletes ALL database entries linked with the given file id.
@@ -813,12 +832,15 @@ class DBInterface extends DBConnector {
 
 	/** Get a list of all files.
 	*
-	* Retrieves meta information such as filename, created by user, locked by user, etc for all files.
+	* Retrieves meta information such as filename, created by
+	* user, locked by user, etc for all files.  Should only be
+	* called for administrators; otherwise, use @c
+	* getFilesForUser() function.
 	*
 	* @return an two-dimensional @em array with the meta data
   	*/		
 	public function getFiles(){
-		$qs = "SELECT a.*,b.locked_by as opened FROM {$this->db}.files_metadata a LEFT JOIN {$this->db}.files_locked b ON a.file_id=b.file_id ORDER BY lastMod DESC";
+		$qs = "SELECT a.*,d.project_name,b.locked_by as opened FROM {$this->db}.files_metadata a  LEFT JOIN {$this->db}.files_locked b ON a.file_id=b.file_id LEFT JOIN {$this->db}.projects d ON a.project_id=d.project_id ORDER BY sigle, file_name";
 	    $query = $this->query($qs); 
 		$files = array();
 	    while ( @$row = mysql_fetch_array( $query, $this->dbobj ) ) {
@@ -827,6 +849,58 @@ class DBInterface extends DBConnector {
 		return $files;
 	}
 	
+	/** Get a list of all files in projects accessible by a given
+	 * user.
+	*
+	* Retrieves meta information such as filename, created by
+	* user, locked by user, etc for all files.
+	*
+	* @param string $user username
+	* @return an two-dimensional @em array with the meta data
+  	*/		
+	public function getFilesForUser($user){
+		$qs = "SELECT a.*,d.project_name,b.locked_by as opened FROM ({$this->db}.files_metadata a, {$this->db}.project_users c) LEFT JOIN {$this->db}.files_locked b ON a.file_id=b.file_id LEFT JOIN {$this->db}.projects d ON a.project_id=d.project_id WHERE (a.project_id=c.project_id AND c.username='{$user}') ORDER BY sigle, file_name";
+	    $query = $this->query($qs); 
+		$files = array();
+	    while ( @$row = mysql_fetch_array( $query, $this->dbobj ) ) {
+			$files[] = $row;
+	    }
+		return $files;
+	}
+	
+	/** Get a list of all projects.  
+	 *
+	 * Should only be called for administrators; otherwise, use @c
+	 * getProjectsForUser() function.
+	 *
+	 * @param string $user username
+	 * @return a two-dimensional @em array with the project id and name
+	 */
+	public function getProjects(){
+	  $qs = "SELECT * FROM {$this->db}.projects ORDER BY project_id";
+	  $query = $this->query($qs); 
+	  $projects = array();
+	  while ( @$row = mysql_fetch_array( $query, $this->dbobj ) ) {
+	    $projects[] = $row;
+	  }
+	  return $projects;
+	}
+
+	/** Get a list of all projects accessible by a given user.
+	 *
+	 * @param string $user username
+	 * @return a two-dimensional @em array with the project id and name
+	 */
+	public function getProjectsForUser($user){
+	  $qs = "SELECT a.* FROM ({$this->db}.projects a, {$this->db}.project_users b) WHERE (a.project_id=b.project_id AND b.username='{$user}') ORDER BY project_id";
+	  $query = $this->query($qs); 
+	  $projects = array();
+	  while ( @$row = mysql_fetch_array( $query, $this->dbobj ) ) {
+	    $projects[] = $row;
+	  }
+	  return $projects;
+	}
+
 	/** Save settings for given user.
 	*
 	* @param string $user username

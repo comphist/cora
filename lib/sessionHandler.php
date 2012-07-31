@@ -175,6 +175,10 @@ class SessionHandler {
 
   /** Wraps DBInterface::lockFile() */	
   public function lockFile( $fileid ) {
+    if(!$_SESSION['admin'] && !$this->db->canOpenFile($fileid, $_SESSION['user'])) {
+      return array('success' => false);
+    }
+
     return $this->db->lockFile( $fileid , $_SESSION['user']);
   }
 
@@ -206,6 +210,10 @@ class SessionHandler {
 	  
   /** Wraps DBInterface::openFile(), set the session data for the file */    
   public function openFile( $fileid ){
+    if(!$_SESSION['admin'] && !$this->db->canOpenFile($fileid, $_SESSION['user'])) {
+      return array('success' => false);
+    }
+
     $lock = $this->db->openFile($fileid);
     if($lock['success']){
       $_SESSION['currentFileId'] = $lock['data']['file_id'];
@@ -219,15 +227,32 @@ class SessionHandler {
 
   /** Wraps XMLHandler::export() */
   public function exportFile( $fileid ){
+    if(!$_SESSION['admin'] && !$this->db->canOpenFile($fileid, $_SESSION['user'])) {
+      return false;
+    }
+
     $this->xml->export($fileid);
     return true;
   }
 	
   /** Wraps DBInterface::getFiles() */
   public function getFiles(){
-    return $this->db->getFiles();
+    if ($_SESSION["admin"]) {
+      return $this->db->getFiles();
+    } else {
+      return $this->db->getFilesForUser($_SESSION["user"]);
+    }
   }
-	
+
+  /** Wraps DBInterface::getProjects() */
+  public function getProjectList(){
+    if ($_SESSION["admin"]) {
+      return $this->db->getProjects();
+    } else {
+      return $this->db->getProjectsForUser($_SESSION["user"]);
+    }
+  }
+
   /** Wraps DBInterface::getLines(), calculating start line and limit first */
   public function getLines($page){
     if($page==0) $page++;
