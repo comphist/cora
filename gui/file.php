@@ -5,7 +5,7 @@
 
 $filelist = $sh->getFiles(); 
 $tagsets = $sh->getTagsetList();
-$projects = $sh->getProjectList();
+// $projects = $sh->getProjectList();   defined in gui.php
 
 ?>
 

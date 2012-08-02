@@ -291,29 +291,31 @@ var file = {
         var files = new Request.JSON({
             url:'request.php',
     		onSuccess: function(filesArray, text) {
-		var files_div = $('files').empty();
+		    var files_div = $('files').empty();
 
-		var fileHash = {};
-		filesArray.each(function(file){
-		    var prj = file.project_name;
-		    if(fileHash[prj]) {
-			fileHash[prj].push(file);
-		    } else {
-			fileHash[prj] = [file];
-		    }
-		});
-
-		Object.each(fileHash, function(fileArray, project){
-		    var project_div = $('fileGroup').clone();
-		    var project_table = project_div.getElement('table');
-		    project_div.getElement('h4.projectname').set('html', project);
-		    fileArray.each(function(file) {
-			project_table.adopt(ref.renderTableLine(file));
+		    var fileHash = {};
+		    var projectNames = {};
+		    filesArray.each(function(file){
+			var prj = file.project_id;
+			if(fileHash[prj]) {
+			    fileHash[prj].push(file);
+			} else {
+			    fileHash[prj] = [file];
+			}
+			projectNames[prj] = file.project_name;
 		    });
-		    project_div.inject(files_div);
-		});
-
-            }
+		    
+		    ref.fileHash = fileHash;
+		    Object.each(fileHash, function(fileArray, project){
+			var project_div = $('fileGroup').clone();
+			var project_table = project_div.getElement('table');
+			project_div.getElement('h4.projectname').set('html', projectNames[project]);
+			fileArray.each(function(file) {
+			    project_table.adopt(ref.renderTableLine(file));
+			});
+			project_div.inject(files_div);
+		    });
+		}
     	});
         files.get({'do': 'listFiles'});
         

@@ -553,12 +553,12 @@ div.clappable div {
     padding-left: 0.75em;
 }
 
-table#editUsers th {
+table#editProjects th, table#editUsers th {
     background: none repeat scroll 0 0 #D1D1D1;
     padding: 0.5em;
 }
 
-table#editUsers td {
+table#editProjects td, table#editUsers td {
     background: none repeat scroll 0 0 #EFEFEF;
     font-size: 140%;
     padding: 0.2em;
@@ -586,6 +586,7 @@ table#editUsers td {
 table.fileList {
     font-size: 1.5em;
     border-collapse: collapse;
+    margin: 10px;
 }
 
 table.fileList td {
@@ -603,6 +604,7 @@ h4.projectname {
     font-weight: normal;
     font-style: italic;
     text-decoration: underline;
+    padding-bottom: 4px;
 }
 
 th.tagStatusPOS, th.tagStatusMorph, th.tagStatusNorm,

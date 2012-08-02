@@ -8,6 +8,8 @@
 
 $tlist = $sh->getTagsetList();
 $ulist = $sh->getUserList();
+// $projects = $sh->getProjectList();   defined in gui.php
+// $project_users = $sh->getProjectUsers();   defined in gui.php
 
  ?>
 
@@ -45,9 +47,49 @@ $ulist = $sh->getUserList();
      <?php endforeach; ?>
    </table>
 
-   <button id="createUser" type="button">
+   <button id="createUser" type="button" class="mform">
        <img src="gui/images/proxal/plus.ico" />
        <?php echo $lang["admin_create_user"]; ?>...
+   </button>
+
+   </div>
+</div>
+
+
+<!-- PROJECT MANAGEMENT -->
+<div class="panel clappable" id="projectMngr">
+   <h3 class="clapp">Projektverwaltung</h3>
+
+   <div>
+   <table id="editProjects">
+     <tr>
+       <th></th>
+       <th>Projektname</th>
+       <th>Zugeordnete Benutzer</th>
+       <th></th>
+     </tr>
+     <?php foreach ($projects as $project): 
+	     $pn = $project['project_name'];
+             $pid = $project['project_id'];
+     ?>
+     <tr id="project_<?php echo $pid; ?>" class="adminProjectInfoRow">
+       <td><a id="projectdelete_<?php echo $pid; ?>" class="adminProjectDelete"><img src="gui/images/proxal/delete.ico" /></a></td>
+       <td class="adminProjectNameCell"><?php echo $pn; ?></td>
+       <td class="adminProjectUsersCell">
+       <?php 
+	       echo implode(',', $project_users[$pid]);
+       ?>
+       </td>
+       <td>
+           <button id="projectbutton_<?php echo $pid; ?>" class="adminProjectUsersButton" type="button">Benutzergruppe bearbeiten...</button>
+       </td>
+     </tr>
+     <?php endforeach; ?>
+   </table>
+
+   <button id="createProject" type="button" class="mform">
+       <img src="gui/images/proxal/plus.ico" />
+       Neues Projekt hinzufügen...
    </button>
 
    </div>
@@ -134,7 +176,7 @@ $ulist = $sh->getUserList();
 
 </div>
 
-    <div class="templateHolder" style="display: none;">
+<div class="templateHolder" style="display: none;">
       <div id="ceraCreateUser" class="ceraCreateUser ceraInput">
 	<table>
 	  <tr>
@@ -177,7 +219,24 @@ $ulist = $sh->getUserList();
 	    </button>
 	  </p>
       </div>
-    </div>
+
+     <div id="projectUserChangeForm">
+         <form action="request.php"  method="post">
+	 <p>
+             <?php foreach ($ulist as $user):
+             $un = $user['username'];
+?>
+             <input type="checkbox" name="allowedUsers[]" value="<?php echo $un; ?>" /> <label for="allowedUsers[]"><?php echo $un; ?></label>
+	     <?php endforeach; ?>
+	 </p>							    
+	 <p style="text-align:right;">
+	   <input type="hidden" name="project_id" value="" />
+	   <input type="hidden" name="action" value="changeProjectUsers" />
+           <input type="submit" value="Änderungen bestätigen" />
+         </p>
+         </form>
+     </div>
+</div>
 
 
 </div>

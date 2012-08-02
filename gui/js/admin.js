@@ -696,6 +696,93 @@ var user_editor = {
 }
 
 
+var project_editor = {
+    initialize: function() {
+	var ref = this;
+	$('editProjects').addEvent(
+	    'click:relay(a)',
+	    function(event, target) {
+		if(target.hasClass("adminProjectDelete")) {
+		    var pid = target.get('id').substr(14);
+		    var pn  = target.getParent('tr').getElement('td.adminProjectNameCell').get('html');
+		    if(file.fileHash == undefined) {
+			file.listFiles();
+		    }
+		    if (file.fileHash[pid] == undefined
+		      || Object.getLength(file.fileHash[pid]) == 0) {
+		    } else {
+			new mBox.Modal({
+			    'title': 'Projekt löschen: "'+pn+'"',
+			    'content': 'Projekte können nicht gelöscht werden, solange noch mindestens ein Dokument dem Projekt zugeordnet ist.',
+			    'buttons': [ {'title': 'OK'} ]
+			}).open();
+		    }
+		}
+	    }
+	);
+	$('editProjects').addEvent(
+	    'click:relay(button)',
+	    function(event, target) {
+		if(target.hasClass("adminProjectUsersButton")) {
+		    var mbox_content = $('projectUserChangeForm').clone();
+		    var pid = target.get('id').substr(14);
+		    var pn  = target.getParent('tr').getElement('td.adminProjectNameCell').get('html');
+		    if (ref.project_users[pid] != undefined) {
+			ref.project_users[pid].each(function(un, idx) {
+			    mbox_content.getElement("input[value='"+un+"']").set('checked', 'checked');
+			});
+		    }
+		    mbox_content.getElement("input[name='project_id']").set('value', pid);
+		    var mbox = new mBox.Modal({
+			title: 'Benutzergruppe für Projekt "'+pn+'" bearbeiten',
+			content: mbox_content,
+		    });
+		    new mForm.Submit({
+			form: mbox_content.getElement('form'),
+			timer: 0,
+			showLoader: true,
+			onComplete: function(response) {
+			    response = JSON.decode(response);
+			    if(response.success) {
+				mbox.close();
+
+				ref.project_users[pid] = mbox_content.
+				    getElements("input[type='checkbox']:checked").map(
+				    function(checkbox, idx) {
+					return checkbox.get('value');
+				    }
+				);
+				ref.updateProjectUserInfo();
+				
+				new mBox.Notice({
+				    content: 'Benutzergruppe geändert',
+				    type: 'ok',
+				    position: {x: 'right'}
+				});
+			    } else {
+				new mBox.Modal({
+				    'title': 'Änderungen speichern nicht erfolgreich',
+				    content: 'Ein unerwarteter Fehler ist aufgetreten. Bitte kontaktieren Sie einen Administrator.'
+				}).open();
+			    }
+			}
+		    });
+		    mbox.open();
+		}
+	    }
+	);
+    },
+
+    updateProjectUserInfo: function() {
+	Object.each(this.project_users, function(ulist, pid) {
+	    var tr = $('project_'+pid);
+	    if(tr != undefined) {
+		tr.getElement('td.adminProjectUsersCell').set('html', ulist.join());
+	    }
+	});
+    }
+}
+
 // ***********************************************************************
 // ********** DOMREADY BINDINGS ******************************************
 // ***********************************************************************
@@ -705,6 +792,7 @@ window.addEvent('domready', function() {
     $('discardChangesButton').addEvent('click', discardTagset);
     $('editTagsetButton').addEvent('click', editTagset);
     user_editor.initialize();
+    project_editor.initialize();
     $('logoutLink').addEvent('click', closeTagset);
 });
 

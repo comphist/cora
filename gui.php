@@ -3,6 +3,8 @@
  * Display the graphical user interface.
  */
 
+$projects = $sh->getProjectList();
+
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -67,13 +69,23 @@ showTooltips: <?php echo $_SESSION['showTooltips']; ?>,
 showInputErrors: <?php echo $_SESSION['showInputErrors']; ?>
 <?php endif; ?>
 						   };
-									
 		</script>
 
 		<script src="gui/js/navigation.js" type="text/javascript" charset="utf-8"></script>
 		<?php if($_SESSION['admin']): ?>
-			<script src="gui/js/admin.js" type="text/javascript" charset="utf-8"></script>
-		<?php endif; ?>
+			<script src="gui/js/admin.js" type="text/javascript" charset="utf-8"></script><script type="text/javascript">
+project_editor.project_users = new Object();
+<?php
+$project_users = $sh->getProjectUsers();
+foreach ($project_users as $pid => $userlist):
+    $arrstr = '"' . implode('","', $userlist) . '"';
+?>
+project_editor.project_users[<?php echo $pid; ?>] = new Array(<?php echo $arrstr; ?>);
+
+<?php endforeach; ?>
+</script>
+	<?php endif; ?>
+
 
 		<?php foreach($menu->getItems() as $item): ?>
 			<?php $js = $menu->getItemJSFile($item); if(!empty($js)): ?>

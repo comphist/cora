@@ -147,6 +147,15 @@ class SessionHandler {
     return array("success"=>False, "errcode"=>"oldpwmm");
   }
 
+  /** Wraps DBInterface::changeProjectUsers(), checking for
+      administrator privileges first. */
+  public function changeProjectUsers( $pid, $userlist ) { 
+    if ($_SESSION["admin"] && $this->db->changeProjectUsers($pid, $userlist)) {
+      return array("success"=>True);
+    }
+    return array("success"=>False);
+  }
+
   /** Wraps DBInterface::deleteUser(), checking for administrator
       privileges first. */
   public function deleteUser( $username ) {
@@ -175,7 +184,7 @@ class SessionHandler {
 
   /** Wraps DBInterface::lockFile() */	
   public function lockFile( $fileid ) {
-    if(!$_SESSION['admin'] && !$this->db->canOpenFile($fileid, $_SESSION['user'])) {
+    if(!$_SESSION['admin'] && !$this->db->isAllowedToOpenFile($fileid, $_SESSION['user'])) {
       return array('success' => false);
     }
 
@@ -210,7 +219,7 @@ class SessionHandler {
 	  
   /** Wraps DBInterface::openFile(), set the session data for the file */    
   public function openFile( $fileid ){
-    if(!$_SESSION['admin'] && !$this->db->canOpenFile($fileid, $_SESSION['user'])) {
+    if(!$_SESSION['admin'] && !$this->db->isAllowedToOpenFile($fileid, $_SESSION['user'])) {
       return array('success' => false);
     }
 
@@ -227,7 +236,7 @@ class SessionHandler {
 
   /** Wraps XMLHandler::export() */
   public function exportFile( $fileid ){
-    if(!$_SESSION['admin'] && !$this->db->canOpenFile($fileid, $_SESSION['user'])) {
+    if(!$_SESSION['admin'] && !$this->db->isAllowedToOpenFile($fileid, $_SESSION['user'])) {
       return false;
     }
 
@@ -250,6 +259,22 @@ class SessionHandler {
       return $this->db->getProjects();
     } else {
       return $this->db->getProjectsForUser($_SESSION["user"]);
+    }
+  }
+
+  /** Wraps DBInterface::getProjectUsers(), indexing the results by
+      project id */
+  public function getProjectUsers() {
+    if ($_SESSION["admin"]) {
+      $indexed_by_project = array();
+      $projectuser = $this->db->getProjectUsers();
+      foreach ($projectuser as $pu) {
+	if (!array_key_exists($pu['project_id'],$indexed_by_project)) {
+	  $indexed_by_project[$pu['project_id']] = array();
+	}
+	$indexed_by_project[$pu['project_id']][] = $pu['username'];
+      }
+      return $indexed_by_project;
     }
   }
 

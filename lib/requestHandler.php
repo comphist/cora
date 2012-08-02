@@ -177,6 +177,11 @@ class RequestHandler {
 	    echo json_encode($status);
 	    exit;
 
+	  case "changeProjectUsers":
+	    $status = $this->sh->changeProjectUsers($post["project_id"], $post["allowedUsers"]);
+	    echo json_encode($status);
+	    exit;
+
 	  case "importXMLFile":
 	    if(empty($_FILES['xmlFile']['name']) || $_FILES['xmlFile']['error']!=UPLOAD_ERR_OK || !is_uploaded_file($_FILES['xmlFile']['tmp_name'])) {
 	      echo json_encode(array("success"=>false,

@@ -571,6 +571,26 @@ class DBInterface extends DBConnector {
     return $this->query($qs);
   }
 
+  /** Change project<->user associations.
+   *
+   * @param string $pid the project ID of the project to change
+   * @param array $userlist an array of user names
+   *
+   * @return The result of the corresponding @c mysql_query() command
+   */
+  public function changeProjectUsers($pid, $userlist) {
+    $qs = "DELETE FROM {$this->db}.project_users WHERE project_id='".$pid."'";
+    if ($this->query($qs)) {
+      $qs = "INSERT INTO {$this->db}.project_users (project_id, username) VALUES ";
+      $values = array();
+      foreach ($userlist as $user) {
+	$values[] = "('".$pid."', '".$user."')";
+      }
+      $qs .= implode(", ", $values);
+      return $this->query($qs);
+    }
+  }
+
   /** Drop a user record from the database.
    *
    * @param string $username The username to be deleted
@@ -790,7 +810,7 @@ class DBInterface extends DBConnector {
 	 * @return boolean value indicating whether user may open the
 	 *         file
 	 */
-	public function canOpenFile($fileid, $user){
+	public function isAllowedToOpenFile($fileid, $user){
 	  $qs = "SELECT a.project_id FROM ({$this->db}.project_users a, {$this->db}.files_metadata b) WHERE (a.username='{$user}' AND b.file_id='{$fileid}' AND a.project_id=b.project_id)";
 	  $q = $this->query($qs);
 	  if(@mysql_fetch_row($q,$this->dbobj)) {
@@ -878,6 +898,22 @@ class DBInterface extends DBConnector {
 	 */
 	public function getProjects(){
 	  $qs = "SELECT * FROM {$this->db}.projects ORDER BY project_id";
+	  $query = $this->query($qs); 
+	  $projects = array();
+	  while ( @$row = mysql_fetch_array( $query, $this->dbobj ) ) {
+	    $projects[] = $row;
+	  }
+	  return $projects;
+	}
+
+	/** Get a list of all project user groups.  
+	 *
+	 * Should only be called for administrators.
+	 *
+	 * @return a two-dimensional @em array with the project id and name
+	 */
+	public function getProjectUsers(){
+	  $qs = "SELECT * FROM {$this->db}.project_users ORDER BY username";
 	  $query = $this->query($qs); 
 	  $projects = array();
 	  while ( @$row = mysql_fetch_array( $query, $this->dbobj ) ) {
