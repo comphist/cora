@@ -699,6 +699,51 @@ var user_editor = {
 var project_editor = {
     initialize: function() {
 	var ref = this;
+	// adding projects
+	var cp_mbox = new mBox.Modal({
+	    'title': 'Neues Projekt erstellen',
+	    'content': 'projectCreateForm',
+	    'attach': 'createProject'
+	});
+	$('projectCreateForm').getElement("button[name='submitCreateProject']").addEvent(
+	    'click',
+	    function(event, target) {
+		var pn = $('projectCreateForm').getElement('input').get('value');
+		var req = new Request.JSON(
+		    {url:'request.php',
+		     onSuccess: function(data, text) {
+			 var pid = Number.from(text);
+			 if(!pid || pid<1) {
+			     new mBox.Notice({
+				 content: 'Projekt erstellen fehlgeschlagen',
+				 type: 'error',
+				 position: {x: 'right'}
+			     });
+			 } else {
+			     pid = String.from(pid);
+			     var new_row = $('editProjects').getElement('tr.adminProjectInfoRow').clone();
+			     new_row.set('id', 'project_'+pid);
+			     new_row.getElement('a.adminProjectDelete').set('id', 'projectdelete_'+pid);
+			     new_row.getElement('td.adminProjectNameCell').set('html', pn);
+			     new_row.getElement('td.adminProjectUsersCell').set('html', '');
+			     new_row.getElement('button.adminProjectUsersButton').set('id', 'projectbutton_'+pid);
+			     $('editProjects').adopt(new_row);
+			     
+			     $('projectCreateForm').getElement('input').set('value', '');
+			     cp_mbox.close();
+			     new mBox.Notice({
+				 content: 'Projekt erfolgreich angelegt',
+				 type: 'ok',
+				 position: {x: 'right'}
+			     });
+			 }
+		     }
+		    });
+		req.get({'do': 'createProject', 'project_name': pn});
+	    }
+	);
+
+	// deleting projects
 	$('editProjects').addEvent(
 	    'click:relay(a)',
 	    function(event, target) {
@@ -710,6 +755,28 @@ var project_editor = {
 		    }
 		    if (file.fileHash[pid] == undefined
 		      || Object.getLength(file.fileHash[pid]) == 0) {
+			var req =  new Request.JSON(
+			    {url:'request.php',
+			     onSuccess: function(data, text) {
+				 if(data.success) {
+				     $('project_'+pid).dispose();
+				     new mBox.Notice({
+					 content: 'Projekt gelöscht',
+					 type: 'ok',
+					 position: {x: 'right'}
+				     });
+				 } else {
+				     new mBox.Notice({
+					 content: 'Projekt löschen fehlgeschlagen',
+					 type: 'error',
+					 position: {x: 'right'}
+				     });
+				 }
+			     }
+			    }
+			);
+			req.get({'do': 'deleteProject', 'project_id': pid});
+	   
 		    } else {
 			new mBox.Modal({
 			    'title': 'Projekt löschen: "'+pn+'"',
@@ -720,6 +787,7 @@ var project_editor = {
 		}
 	    }
 	);
+	// editing project groups
 	$('editProjects').addEvent(
 	    'click:relay(button)',
 	    function(event, target) {

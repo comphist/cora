@@ -278,6 +278,22 @@ class SessionHandler {
     }
   }
 
+  /** Wraps DBInterface::createProject(), checking for administrator
+      privileges first */
+  public function createProject($name) {
+    if ($_SESSION["admin"]) {
+      return $this->db->createProject($name);
+    }
+  }
+
+  /** Wraps DBInterface::deleteProject(), checking for administrator
+      privileges first */
+  public function deleteProject($name) {
+    if ($_SESSION["admin"]) {
+      return array("success" => $this->db->deleteProject($name));
+    }
+  }
+
   /** Wraps DBInterface::getLines(), calculating start line and limit first */
   public function getLines($page){
     if($page==0) $page++;

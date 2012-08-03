@@ -937,6 +937,38 @@ class DBInterface extends DBConnector {
 	  return $projects;
 	}
 
+	/** Create a new project.
+	 *
+	 * @param string $name project name
+	 * @return the project ID of the newly generated project
+	 */
+	public function createProject($name){
+	  $qs = "INSERT INTO {$this->db}.projects (project_name) VALUES ('{$name}')";
+	  $query = $this->query($qs);
+	  return mysql_insert_id();
+	}
+
+	/** Deletes a project.  Will fail unless no document is
+	 * assigned to the project.
+	 *
+	 * @param string $pid the project id
+	 * @return a boolean value indicating success
+	 */
+	public function deleteProject($pid){
+	  $qs = "SELECT * FROM {$this->db}.files_metadata WHERE project_id='{$pid}'";
+	  $query = $this->query($qs);
+	  if(mysql_num_rows($query)==0) {
+	    $qs = "DELETE FROM {$this->db}.project_users WHERE project_id='{$pid}'";
+	    if($this->query($qs)) {
+	      $qs = "DELETE FROM {$this->db}.projects WHERE project_id='{$pid}'";
+	      if($this->query($qs)) {
+		return True;
+	      }
+	    }     
+	  }
+	  return False;
+	}
+
 	/** Save settings for given user.
 	*
 	* @param string $user username

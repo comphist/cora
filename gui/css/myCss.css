@@ -803,3 +803,16 @@ div#changePasswordFormDiv label {
     color: red;
     display: none;
 }
+
+/* (more) admin stuff */
+div.userChangeEditTable {
+    min-width: 40em;
+    max-width: 40em;
+    text-align: left;
+}
+
+div.userChangeEditTable span {
+    display: inline-block;
+    margin: 2px;
+    min-width: 6em;
+}

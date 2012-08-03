@@ -222,19 +222,32 @@ $ulist = $sh->getUserList();
 
      <div id="projectUserChangeForm">
          <form action="request.php"  method="post">
-	 <p>
+	 <div class="userChangeEditTable">
              <?php foreach ($ulist as $user):
              $un = $user['username'];
 ?>
-             <input type="checkbox" name="allowedUsers[]" value="<?php echo $un; ?>" /> <label for="allowedUsers[]"><?php echo $un; ?></label>
+             <span><input type="checkbox" name="allowedUsers[]" value="<?php echo $un; ?>" /> <label for="allowedUsers[]"><?php echo $un; ?></label></span>
 	     <?php endforeach; ?>
-	 </p>							    
+	 </div>							    
 	 <p style="text-align:right;">
 	   <input type="hidden" name="project_id" value="" />
 	   <input type="hidden" name="action" value="changeProjectUsers" />
            <input type="submit" value="Änderungen bestätigen" />
          </p>
          </form>
+     </div>
+
+     <div id="projectCreateForm">
+	<p>
+            <b>Projektname:</b>
+	    <input type="text" name="project_name" value="" />
+        </p>
+
+	 <p style="text-align:right;">
+	    <button name="submitCreateProject" value="save" type="submit">
+	      Projekt erstellen
+	    </button>
+         </p>
      </div>
 </div>
 

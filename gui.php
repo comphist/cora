@@ -14,6 +14,7 @@ $projects = $sh->getProjectList();
 		<meta name="description" content="<?php echo DESCRIPTION; ?>" />
 		<meta name="keywords" content="<?php echo KEYWORDS; ?>" />
 		<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
+		<meta http-equiv="Expires" content="0" />
 
 		<!-- Main stylesheets on top --> 
 		<link rel="stylesheet" type="text/css" href="gui/css/screen.css" media="all" />

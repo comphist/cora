@@ -312,7 +312,10 @@ class RequestHandler {
 	    echo json_encode($data);
 	    exit;
 	  case "getMaxLinesNo": echo $this->sh->getMaxLinesNo(); exit;
-	    
+
+	  case "createProject": echo json_encode($this->sh->createProject(self::escapeSQL($get['project_name']))); exit;
+
+	  case "deleteProject": echo json_encode($this->sh->deleteProject(self::escapeSQL($get['project_id']))); exit;
 	    
 	  case "saveData":
 	    $status = $this->sh->saveData(self::escapeSQL($get['lastEditedRow']), self::escapeSQL(json_decode(file_get_contents("php://input"), true)));
