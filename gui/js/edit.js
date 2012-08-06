@@ -533,7 +533,10 @@ var EditorModel = new Class({
 		tr.getElement('div.editTableError').removeClass('editTableErrorChecked');
 	    }
 	    tr.getElement('.editTable_token').set('html', line.token);
-	    tr.getElement('.editTable_Norm input').set('value', line.tag_norm);
+	    var norm_tr = tr.getElement('.editTable_Norm input');
+	    if(norm_tr != null && norm_tr != undefined) {
+		norm_tr.set('value', line.tag_norm);
+	    }
 	    tr.getElement('.editTable_Lemma input').set('value', line.lemma);
 	    tr.getElement('.editTable_Comment input').set('value', line.comment);
 

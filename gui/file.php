@@ -49,7 +49,9 @@ $tagsets = $sh->getTagsetList();
 				<th>Dateiname</th>
 				<th class="tagStatusPOS">POS</th>
 				<th class="tagStatusMorph">Morph</th>
+   <?php if($_SESSION["normvisible"]): ?>
 				<th class="tagStatusNorm">Norm.</th>
+   <?php endif; ?>
 <!--				<th colspan="2">zuletzt bearbeitet am/von</th> -->
 				<th colspan="2">erstellt am/von</th>
 				<th></th>

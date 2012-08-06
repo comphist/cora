@@ -36,6 +36,7 @@ class SessionHandler {
     $defaults = array( "lang"        => DEFAULT_LANGUAGE,
 		       "loggedIn"    => false,
 		       "admin"       => false,
+		       "normvisible" => false,
 		       "failedLogin" => false );
 
     foreach($defaults as $key => $default) {
@@ -372,6 +373,8 @@ class SessionHandler {
       $_SESSION["user"] = $user;
       $_SESSION["failedLogin"] = false;
       $_SESSION["admin"] = ($data['admin'] == "y");
+      $_SESSION["normvisible"] = ($data['normvisible'] == "y");
+
 	  // file already opened?
 	  $data = $this->db->getLockedFiles( $user );
 	  if(!empty($data)){

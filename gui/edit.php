@@ -22,7 +22,9 @@
 			<th class="editTable_progress">P</th>
 			<th class="editTable_error">E</th>
 			<th class="editTable_token">Token</th>
+   <?php if($_SESSION["normvisible"]): ?>
 			<th class="editTable_Norm">Normalisierte Form</th>
+   <?php endif; ?>
 			<th class="editTable_POS">POS-Tag</th>
 			<th class="editTable_Morph">Morphologie-Tag</th>
 			<th class="editTable_Lemma">Lemma</th>
@@ -37,9 +39,11 @@
 			    <div class="editTableError"></div>
 			</td>
 			<td class="editTable_token"></td>
+   <?php if($_SESSION["normvisible"]): ?>
 			<td class="editTable_Norm">
 			    <input type="text" size="10" value="" />
 			</td>
+   <?php endif; ?>
 			<td class="editTable_POS"></td>
 			<td class="editTable_Morph"></td>
 			<td class="editTable_Lemma">

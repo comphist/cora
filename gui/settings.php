@@ -31,7 +31,9 @@
 	<h4>Sichtbare Spalten</h4>
 	<p>
 	    <input type="checkbox" name="displayedColumns" value="token" checked="yes" /> Token
+   <?php if($_SESSION["normvisible"]): ?>
 	    <input type="checkbox" name="displayedColumns" value="Norm" checked="yes" /> Normalisierte Form
+   <?php endif; ?>
 	    <input type="checkbox" name="displayedColumns" value="POS" checked="yes" /> POS-Tag
 	    <input type="checkbox" name="displayedColumns" value="Morph" checked="yes" /> Morphologie-Tag
 	    <input type="checkbox" name="displayedColumns" value="Lemma" checked="yes" /> Lemma
