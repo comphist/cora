@@ -51,11 +51,15 @@ $ulist = $sh->getUserList();
      <?php endforeach; ?>
    </table>
 
+   <p><strong>Hinweis:</strong> Administratoren können <i>immer</i> die Spalte &quot;Normalisierung&quot; sehen.</p>
+
+   <p>
    <button id="createUser" type="button" class="mform">
        <img src="gui/images/proxal/plus.ico" />
        <?php echo $lang["admin_create_user"]; ?>...
    </button>
-
+   </p>
+   
    </div>
 </div>
 
@@ -91,10 +95,14 @@ $ulist = $sh->getUserList();
      <?php endforeach; ?>
    </table>
 
+   <p><strong>Hinweis:</strong> Administratoren können <i>immer</i> alle Projektgruppen sehen.</p>
+
+   <p>
    <button id="createProject" type="button" class="mform">
        <img src="gui/images/proxal/plus.ico" />
        Neues Projekt hinzufügen...
    </button>
+   </p>
 
    </div>
 </div>
