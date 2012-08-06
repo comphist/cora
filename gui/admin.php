@@ -27,21 +27,25 @@ $ulist = $sh->getUserList();
        <th></th>
        <th><?php echo $lang["login_un"]; ?></th>
        <th><?php echo $lang["admin_admin"]; ?>?</th>
+       <th>Norm.-Spalte?</th>
        <th></th>
      </tr>
      <?php foreach ($ulist as $user): 
              $un = $user['username'];
              $admin = $user['admin'] == 'y';
+             $norm = $user['normvisible'] == 'y';
      ?>
-     <tr id="<?php echo $un; ?>" class="adminUserInfoRow">
-       <td><a id="<?php echo $un; ?>Del" class="adminUserDelete"><img src="gui/images/proxal/delete.ico" /></a></td>
+     <tr id="User_<?php echo $un; ?>" class="adminUserInfoRow">
+       <td class="adminUserDelete"><img src="gui/images/proxal/delete.ico" /></td>
        <td class="adminUserNameCell"><?php echo $un; ?></td>
-       <td class="centered"><img src="gui/images/proxal/check.ico" class="adminUserAdminStatus"
+       <td class="centered adminUserAdminStatus"><img src="gui/images/proxal/check.ico" class="adminUserAdminStatus"
            <?php if (!$admin): ?>style="display: none;"<?php endif; ?>/>
        </td>
+       <td class="centered adminUserNormStatus"><img src="gui/images/proxal/check.ico" class="adminUserNormStatus"
+           <?php if (!$norm): ?>style="display: none;"<?php endif; ?>/>
+       </td>
        <td>
-           <button id="<?php echo $un; ?>Admin" class="adminUserToggleButton" type="button"><?php echo $lang["admin_toggle_admin"]; ?></button>
-           <button id="<?php echo $un; ?>Pw" class="adminUserPasswordButton" type="button"><?php echo $lang["admin_change_password"]; ?>...</button>
+           <button class="adminUserPasswordButton" type="button"><?php echo $lang["admin_change_password"]; ?>...</button>
        </td>
      </tr>
      <?php endforeach; ?>

@@ -530,24 +530,39 @@ var user_editor = {
 	    }
 	});
 
-	$$('a.adminUserDelete').addEvent('click', user_editor.deleteUser);
-	$$('button.adminUserToggleButton').addEvent('click', user_editor.toggleAdminStatus);
-	$$('button.adminUserPasswordButton').each(function(button) {
-	    var username = button.getParent('tr').get('id');
-	    var ceralink = new Element('a', {'href':'#ceraChangePassword'}).wraps(button);
-	    ceralink.cerabox({
-		displayTitle: false,
-		group: false,
-		events: {
-		    onOpen: function(currentItem, collection) {
-			$$('input[name="changepw[un]"]').set('value', username);
-			$$('button[name="submitChangePassword"]').addEvent(
-			    'click', user_editor.changePassword, user_editor
-			);
-		    }
+
+	$('editUsers').addEvent(
+	    'click:relay(td)',
+	    function(event, target) {
+		if(target.hasClass('adminUserAdminStatus')) {
+		    user_editor.toggleStatus(event, 'Admin');
 		}
-	    });
-	});
+		else if(target.hasClass('adminUserNormStatus')) {
+		    user_editor.toggleStatus(event, 'Norm');
+		}
+		else if(target.hasClass('adminUserDelete')) {
+		    user_editor.deleteUser(event);
+		}
+	    }
+	);
+	$$('button.adminUserPasswordButton').each(
+	    function(button) {
+		var username = button.getParent('tr').get('id').substr(5);
+		var ceralink = new Element('a', {'href':'#ceraChangePassword'}).wraps(button);
+		ceralink.cerabox({
+		    displayTitle: false,
+		    group: false,
+		    events: {
+			onOpen: function(currentItem, collection) {
+			    $$('input[name="changepw[un]"]').set('value', username);
+			    $$('button[name="submitChangePassword"]').addEvent(
+				'click', user_editor.changePassword, user_editor
+			    );
+			}
+		    }
+		});
+	    }
+	);
 	
     },
     createUser: function() {
@@ -585,15 +600,11 @@ var user_editor = {
 	     },
 	     onSuccess: function(data, xml) {
 		 var row = $$('.adminUserInfoRow')[0].clone();
-		 row.set('id', username);
-		 row.getElement('a.adminUserDelete').set('id', username + 'Del');
-		 row.getElement('a.adminUserDelete').addEvent('click', user_editor.deleteUser);
+		 row.set('id', 'User_'+username);
 		 row.getElement('td.adminUserNameCell').set('text', username);
 		 row.getElement('img.adminUserAdminStatus').hide();
-		 row.getElement('button.adminUserToggleButton').set('id', username + 'Admin');
-		 row.getElement('button.adminUserToggleButton').addEvent('click', user_editor.toggleAdminStatus);
+		 row.getElement('img.adminUserNormStatus').show('inline');
 		 var pwbutton = row.getElement('button.adminUserPasswordButton');
-		 pwbutton.set('id', username + 'Pw');
 		 new Element('a', {'href':'#ceraChangePassword'}).wraps(pwbutton).cerabox({
 		     displayTitle: false,
 		     group: false,
@@ -618,7 +629,7 @@ var user_editor = {
     },
     deleteUser: function(event) {
 	var parentrow = event.target.getParent('tr');
-	var username = parentrow.get('id');
+	var username = parentrow.get('id').substr(5);
 	var dialog = lang_strings.dialog_box_confirm_delete_user.substitute({user: username});
 	if (!confirm(dialog))
 	    return;
@@ -638,11 +649,11 @@ var user_editor = {
 	);
 	request.post();	
     },
-    toggleAdminStatus: function(event) {
+    toggleStatus: function(event, statusname) {
 	var parentrow = event.target.getParent('tr');
-	var username = parentrow.get('id');
+	var username = parentrow.get('id').substr(5);
 	var request = new Request(
-	    {'url': 'request.php?do=toggleAdmin',
+	    {'url': 'request.php?do=toggle'+statusname,
 	     'async': false,
 	     'data': 'username='+username,
 	     onFailure: function(xhr) {
@@ -650,7 +661,12 @@ var user_editor = {
 		       lang_strings.dialog_server_returned_error + "\n\n" + xhr.responseText);
 	     },
 	     onSuccess: function(data, xml) {
-		 parentrow.getElement('img.adminUserAdminStatus').toggle();
+		 var arrow = parentrow.getElement('img.adminUser'+statusname+'Status');
+		 if(arrow.isDisplayed()) {
+		     arrow.hide();
+		 } else {
+		     arrow.show('inline');
+		 }
 	     }
 	    }
 	);

@@ -228,7 +228,7 @@ class DBInterface extends DBConnector {
    * information about their admin status.
    */
   public function getUserList() {
-    $qs = "SELECT username, admin FROM {$this->db}.users";
+    $qs = "SELECT username, admin, normvisible FROM {$this->db}.users";
     $query = $this->query( $qs );
     $users = array();
     while ( @$row = mysql_fetch_array($query) ) {
@@ -610,13 +610,29 @@ class DBInterface extends DBConnector {
    * @return The result of the corresponding @c mysql_query() command.
    */
   public function toggleAdminStatus($username) {
-    $qs = "SELECT admin FROM {$this->db}.users WHERE username='{$username}'";
+    return $this->toggleUserStatus($username, 'admin');
+  }
+
+  /** Toggle visibility of normalization column for a user.
+   *
+   * @param string $username The username for which the status should
+   * be changed
+   *
+   * @return The result of the corresponding @c mysql_query() command.
+   */
+  public function toggleNormStatus($username) {
+    return $this->toggleUserStatus($username, 'normvisible');
+  }
+
+  /** Helper function for @c toggleAdminStatus() and @c toggleNormStatus(). */
+  public function toggleUserStatus($username, $statusname) {
+    $qs = "SELECT {$statusname} FROM {$this->db}.users WHERE username='{$username}'";
     $query = $this->query($qs);
     @$row = mysql_fetch_array($query, $this->dbobj);
     if (!$row)
       return false;
-    $admin = ($row['admin'] == 'y') ? 'n' : 'y';
-    $qs = "UPDATE {$this->db}.users SET admin='{$admin}' WHERE username='{$username}'";
+    $status = ($row[$statusname] == 'y') ? 'n' : 'y';
+    $qs = "UPDATE {$this->db}.users SET {$statusname}='{$status}' WHERE username='{$username}'";
     return $this->query($qs);
   }
 

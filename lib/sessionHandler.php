@@ -171,6 +171,14 @@ class SessionHandler {
       return false;
     return $this->db->toggleAdminStatus($username);
   }
+
+  /** Wraps DBInterface::toggleNormStatus(), checking for
+      administrator privileges first. */
+  public function toggleNormStatus( $username ) {
+    if (!$_SESSION["admin"])
+      return false;
+    return $this->db->toggleNormStatus($username);
+  }
   
   /** Wraps XMLHandler::import() */
   public function importFile($xmldata, $options) {
