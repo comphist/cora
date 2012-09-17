@@ -80,6 +80,7 @@ class DBConnector {
   private $db_user     = DB_USER;     /**< Username to be used for database access. */
   private $db_password = DB_PASSWORD; /**< Password to be used for database access. */
   public  $db          = MAIN_DB;     /**< Name of the database to be used. */
+  private $transaction = false;
 
   /** Create a new DBConnector.
    *
@@ -120,6 +121,28 @@ class DBConnector {
     return $status;
   }
 
+  /** Start an SQL transaction. */
+  public function startTransaction() {
+    $status = mysql_query( "START TRANSACTION", $this->dbobj );
+    if ($status) {
+      $status = $this->selectDatabase( $this->db );
+      $this->transaction = true;
+    }
+    return $status;
+  }
+
+  /** Commits an SQL transaction. */
+  public function commitTransaction() {
+    $this->transaction = false;
+    return mysql_query( "COMMIT", $this->dbobj );
+  }
+
+  /** Rollback an SQL transaction. */
+  public function rollback() {
+    $this->transaction = false;
+    return mysql_query( "ROLLBACK", $this->dbobj );
+  }
+
   /** Perform a database query.
    *
    * @param string $query Query string in SQL syntax.
@@ -142,9 +165,12 @@ class DBConnector {
   protected function criticalQuery($query) {
     $status = $this->query($query);
     if (!$status) {
-	header("HTTP/1.1 500 Internal Server Error");
-	echo("Database error while processing the following query: {$query}");
-	die();
+      if ($this->transaction) {
+	$this->rollback();
+      }
+      header("HTTP/1.1 500 Internal Server Error");
+      echo("Database error while processing the following query: {$query}");
+      die();
     }
     return $status;
   }
@@ -363,6 +389,8 @@ class DBInterface extends DBConnector {
       return false;
     }
 
+    $this->startTransaction();
+
     // newly created tags
     foreach($data['created'] as $i => $entry) {
       $qs = "INSERT INTO {$this->db}.tagset_tags (tagset, `id`, shortname, type) "
@@ -442,7 +470,8 @@ class DBInterface extends DBConnector {
     $qs = "UPDATE {$this->db}.tagsets "
 	. "SET last_modified_by='{$_SESSION['user']}' "
 	. "WHERE tagset='{$tagset}'";
-    $this->query($qs);
+    $this->query($qs); // non-critical, so return value not checked
+    $this->commitTransaction();
 
     return true;
   }
@@ -464,21 +493,24 @@ class DBInterface extends DBConnector {
     if (!$lock['success']) {
       return false;
     }
+
+    $this->startTransaction();
 	
 	$qs = "INSERT INTO {$this->db}.tagset_tags (tagset,id,shortname,type) SELECT '{$newTagset}',id,shortname,type FROM {$this->db}.tagset_tags WHERE tagset='{$originTagset}'";
-	$this->query($qs);
+	$this->criticalQuery($qs);
 
 	$qs = "INSERT INTO {$this->db}.tagset_strings (tagset,de,en,id) SELECT '{$newTagset}',de,en,id FROM {$this->db}.tagset_strings WHERE tagset='{$originTagset}'";
-	$this->query($qs);
+	$this->criticalQuery($qs);
 
 	$qs = "INSERT INTO {$this->db}.tagset_links (tagset,tag_id,attrib_id) SELECT '{$newTagset}',tag_id,attrib_id FROM {$this->db}.tagset_links WHERE tagset='{$originTagset}'";
-	$this->query($qs);
+	$this->criticalQuery($qs);
 
 	$qs = "INSERT INTO {$this->db}.tagset_values (tagset,id,value) SELECT '{$newTagset}',id,value FROM {$this->db}.tagset_values WHERE tagset='{$originTagset}'";
-	$this->query($qs);
+	$this->criticalQuery($qs);
 	
 	$qs = "INSERT INTO {$this->db}.tagsets (tagset,last_modified_by) VALUES ('{$newTagset}','{$_SESSION['user']}')";
-    $this->query($qs);
+	$this->criticalQuery($qs);
+	$this->commitTransaction();
 
 	$this->unlockTagset($newTagset);
 
@@ -579,6 +611,7 @@ class DBInterface extends DBConnector {
    * @return The result of the corresponding @c mysql_query() command
    */
   public function changeProjectUsers($pid, $userlist) {
+    $this->startTransaction();
     $qs = "DELETE FROM {$this->db}.project_users WHERE project_id='".$pid."'";
     if ($this->query($qs)) {
       $qs = "INSERT INTO {$this->db}.project_users (project_id, username) VALUES ";
@@ -587,8 +620,16 @@ class DBInterface extends DBConnector {
 	$values[] = "('".$pid."', '".$user."')";
       }
       $qs .= implode(", ", $values);
-      return $this->query($qs);
+      $status = $this->query($qs);
+      if ($status) {
+	$this->commitTransaction();
+      } else {
+	$this->rollback();
+      }
+      return $status;
     }
+    $this->rollback();
+    return false;
   }
 
   /** Drop a user record from the database.
@@ -655,6 +696,8 @@ class DBInterface extends DBConnector {
    * @return An error message if insertion failed, False otherwise
    */
   public function insertNewDocument(&$options, &$data){
+    $this->startTransaction();
+
     // Insert metadata
     $metadata  = "INSERT INTO {$this->db}.files_metadata ";
     $metadata .= "(file_name, sigle, byUser, created, tagset, ";
@@ -669,6 +712,7 @@ class DBInterface extends DBConnector {
     $metadata .= $options['project'] . ")";
 
     if(!$this->query($metadata)){
+      $this->rollback();
       return "Fehler beim Schreiben in 'files_metadata':\n" .
 	mysql_errno() . ": " . mysql_error() . "\n";
     }
@@ -685,33 +729,40 @@ class DBInterface extends DBConnector {
     $sugg_head .= "tag_name, tag_probability, lemma) VALUES"; 
     $sugg_table = new LongSQLQuery($this, $sugg_head, "");
 
-    foreach($data as $index=>$token){
-      $token = $this->escapeSQL($token);
-      $qs = "('{$file_id}', {$index}, '".
-	mysql_real_escape_string($token['form'])."', '".
-	mysql_real_escape_string($token['pos'])."', '".
-	mysql_real_escape_string($token['morph'])."', '".
-	mysql_real_escape_string($token['norm'])."', '".
-	mysql_real_escape_string($token['lemma'])."', '".
-	mysql_real_escape_string($token['comment'])."')";
-      $status = $data_table->append($qs);
-      if($status){ $this->deleteFile($file_id); return $status; }
-      foreach($token['suggestions'] as $sugg){
-	$qs = "('{$file_id}', {$index}, ".$sugg['index'].
-	  ", '".$sugg['type']."', '".
-	  mysql_real_escape_string($sugg['value']).
-	  "', ".$sugg['score'].", '".
-	  mysql_real_escape_string($token['lemma'])."')";
-	$status = $sugg_table->append($qs);
-	if($status){ $this->deleteFile($file_id); return $status; }
+    try {
+      foreach($data as $index=>$token){
+	$token = $this->escapeSQL($token);
+	$qs = "('{$file_id}', {$index}, '".
+	  mysql_real_escape_string($token['form'])."', '".
+	  mysql_real_escape_string($token['pos'])."', '".
+	  mysql_real_escape_string($token['morph'])."', '".
+	  mysql_real_escape_string($token['norm'])."', '".
+	  mysql_real_escape_string($token['lemma'])."', '".
+	  mysql_real_escape_string($token['comment'])."')";
+	$status = $data_table->append($qs);
+	if($status){ $this->rollback(); return $status; }
+	foreach($token['suggestions'] as $sugg){
+	  $qs = "('{$file_id}', {$index}, ".$sugg['index'].
+	    ", '".$sugg['type']."', '".
+	    mysql_real_escape_string($sugg['value']).
+	    "', ".$sugg['score'].", '".
+	    mysql_real_escape_string($token['lemma'])."')";
+	  $status = $sugg_table->append($qs);
+	  if($status){ $this->rollback(); return $status; }
+	}
       }
-    }
-    $status = $data_table->flush();
-    if($status){ $this->deleteFile($file_id); return $status; }
-    $status = $sugg_table->flush();
-    if($status){ $this->deleteFile($file_id); return $status; }
+      $status = $data_table->flush();
+      if($status){ $this->rollback(); return $status; }
+      $status = $sugg_table->flush();
+      if($status){ $this->rollback(); return $status; }
 
-    $this->unlockFile($file_id, "@@@system@@@");
+      $this->unlockFile($file_id, "@@@system@@@");
+      $this->commitTransaction();
+    } catch (SQLQueryException $e) {
+      $this->rollback();
+      return "Fehler beim Importieren der Daten:\n" . $e . "\n";
+    }
+    
     return False;
   }
 
@@ -862,7 +913,7 @@ class DBInterface extends DBConnector {
 		
 		$qs = "DELETE FROM {$this->db}.files_locked WHERE file_id='{$fileid}'";
 		$this->query($qs);
-		
+
 	    return true;
 	}
 
@@ -1128,6 +1179,8 @@ class DBInterface extends DBConnector {
 	* @return @bool the result of the mysql query
  	*/ 		
 	public function saveLines($fileid,$lasteditedrow,$lines) {
+	  $this->startTransaction();
+
 	  // data insertion query
 	  $qhead  = "INSERT INTO {$this->db}.files_data (file_id, line_id, ";
 	  $qhead .= "lemma, tag_POS, tag_morph, tag_norm, comment) VALUES";
@@ -1162,7 +1215,9 @@ class DBInterface extends DBConnector {
 	    $query->flush();
 	    $erron->flush();
 	    $erroff->flush();
+	    $this->commitTransaction();
 	  } catch (SQLQueryException $e) {
+	    $this->rollback();
 	    return $e->getMessage();
 	  }
 
