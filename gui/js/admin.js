@@ -277,9 +277,11 @@ var TagsetEditor = new Class({
 	}.bind(this));
 	$H(data.attribs).each(function (attrib, id) {
 	    var attobj = new Attribute(id, attrib.shortname, attrib.desc);
-	    attrib.val.each(function (value) {
-		attobj.addValue(value);
-	    });
+	    if(attrib.val) {
+		attrib.val.each(function (value) {
+		    attobj.addValue(value);
+		});
+	    }
 	    this.attribs.push(attobj);
 	    if (id > this.highestId) {
 		this.highestId = id;
