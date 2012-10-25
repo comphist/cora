@@ -721,7 +721,7 @@ class DBInterface extends DBConnector {
     $this->lockFile($file_id, "@@@system@@@");
 
     // Insert data
-    $data_head  = "INSERT INTO {$this->db}.files_data (file_id, line_id, ";
+    $data_head  = "INSERT INTO {$this->db}.files_data (file_id, line_id, ext_id,";
     $data_head .= "token, tag_POS, tag_morph, tag_norm, lemma, comment) VALUES";
     $data_table = new LongSQLQuery($this, $data_head, "");
     $sugg_head  = "INSERT INTO {$this->db}.files_tags_suggestion ";
@@ -733,6 +733,7 @@ class DBInterface extends DBConnector {
       foreach($data as $index=>$token){
 	$token = $this->escapeSQL($token);
 	$qs = "('{$file_id}', {$index}, '".
+	  mysql_real_escape_string($token['id'])."', '".
 	  mysql_real_escape_string($token['form'])."', '".
 	  mysql_real_escape_string($token['pos'])."', '".
 	  mysql_real_escape_string($token['morph'])."', '".

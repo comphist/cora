@@ -53,6 +53,7 @@ class XMLHandler {
 	$node = simplexml_import_dom($doc->importNode($reader->expand(), true));
 	$token = array();
 	// some of these can possibly be empty
+	$token['id']      = $node['id'];
 	$token['form']    = $node->form['dipl'];
 	$token['norm']    = $node->form['norm'];
 	$token['lemma']   = $node->lemma['inst'];
@@ -160,8 +161,12 @@ class XMLHandler {
 	$pos++;
 	$postag = (string) $token['pos'];
 	if(!in_array($postag, $posset)){
-	  $warnings[] = "Token ".$line_id.": '".$postag
-	    ."' ist kein gültiger POS-Tag.";
+	  $warning = "Token ".$line_id;
+	  if(!empty($token['id'])) {
+	    $warning = $warning . " (" . $token['id'] . ")";
+	  }
+	  $warning = $warning . ": '" . $postag ."' ist kein gültiger POS-Tag.";
+	  $warnings[] = $warning;
 	  $poserror = True;
 	}
 	if(!empty($token['morph'])) { 
@@ -169,9 +174,14 @@ class XMLHandler {
 	  $morphtag = (string) $token['morph'];
 	  if(!$poserror && !empty($morphset[$postag]) &&
 	     !in_array($morphtag,$morphset[$postag])) {
-	    $warnings[] = "Token ".$line_id.": '".$morphtag
+	    $warning = "Token ".$line_id;
+	    if(!empty($token['id'])) {
+	      $warning = $warning . " (" . $token['id'] . ")";
+	    }
+	    $warning = $warning.": '".$morphtag
 	      ."' ist kein gültiger Morphologie-Tag für Wortart '"
 	      .$postag."'.";
+	    $warnings[] = $warning;
 	  }
 	}
       }
@@ -276,7 +286,9 @@ class XMLHandler {
     $count = 1;
     foreach($this->db->getAllLines($fileid) as $line){
       $writer->startElement('token');
-      $writer->writeAttribute('id', "t_{$line['line_id']}");
+      if(!empty($line['ext_id'])) {
+	$writer->writeAttribute('id', $line['ext_id']);
+      }
       $writer->writeAttribute('count', $count++);
       // form
       $writer->startElement('form');
