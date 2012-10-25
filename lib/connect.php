@@ -720,6 +720,10 @@ class DBInterface extends DBConnector {
     $file_id = mysql_insert_id(); 
     $this->lockFile($file_id, "@@@system@@@");
 
+    if(!empty($options['progress'])) {
+      $this->markLastPosition($file_id,$options['progress'],'@@global@@');
+    }
+
     // Insert data
     $data_head  = "INSERT INTO {$this->db}.files_data (file_id, line_id, ext_id,";
     $data_head .= "token, tag_POS, tag_morph, tag_norm, lemma, comment) VALUES";
@@ -728,6 +732,9 @@ class DBInterface extends DBConnector {
     $sugg_head .= "(file_id, line_id, tag_suggestion_id, tagtype, ";
     $sugg_head .= "tag_name, tag_probability, lemma) VALUES"; 
     $sugg_table = new LongSQLQuery($this, $sugg_head, "");
+    $err_head   = "INSERT INTO {$this->db}.files_errors ";
+    $err_head  .= "(file_id, line_id, user, value) VALUES";
+    $err_table  = new LongSQLQuery($this, $err_head, "");
 
     try {
       foreach($data as $index=>$token){
@@ -751,10 +758,18 @@ class DBInterface extends DBConnector {
 	  $status = $sugg_table->append($qs);
 	  if($status){ $this->rollback(); return $status; }
 	}
+	if(!empty($token['error'])){
+	  $qs = "('{$file_id}', {$index}, '@@global@@', '".
+	    $token['error']."')";
+	  $status = $err_table->append($qs);
+	  if($status){ $this->rollback(); return $status; }
+	}
       }
       $status = $data_table->flush();
       if($status){ $this->rollback(); return $status; }
       $status = $sugg_table->flush();
+      if($status){ $this->rollback(); return $status; }
+      $status = $err_table->flush();
       if($status){ $this->rollback(); return $status; }
 
       $this->unlockFile($file_id, "@@@system@@@");
@@ -1099,11 +1114,11 @@ class DBInterface extends DBConnector {
 		
 	}
 	
-	/** Retrieve all lines from a file, not including error data
-	 *  or tagger suggestions.
+	/** Retrieve all lines from a file, including error data,
+	 *  but not tagger suggestions.
 	 */
 	public function getAllLines($fileid){
-	  $qs = "SELECT * from {$this->db}.files_data WHERE file_id='{$fileid}' ORDER BY line_id";
+	  $qs = "SELECT a.*, b.value AS 'errorChk' FROM {$this->db}.files_data a LEFT JOIN {$this->db}.files_errors b ON (a.file_id=b.file_id AND a.line_id=b.line_id) WHERE a.file_id='{$fileid}' ORDER BY line_id";
 	  $query = $this->query($qs);
 	  $data = array();
 	  while($row = @mysql_fetch_assoc($query,$this->dbobj)){
@@ -1134,7 +1149,7 @@ class DBInterface extends DBConnector {
  	*/ 	
 	public function getLines($fileid,$start,$lim){		
 		// $qs = "SELECT * FROM {$this->db}.files_data WHERE file_id='{$fileid}'";
-		$qs = "	SELECT a.*, IF(b.line_id+1,true,false) AS 'errorChk'
+		$qs = "	SELECT a.*, b.value AS 'errorChk'
 				FROM {$this->db}.files_data a LEFT JOIN {$this->db}.files_errors b ON (a.line_id=b.line_id AND a.file_id=b.file_id)
 				WHERE a.file_id='{$fileid}'";
 		// if($lim != 0)
@@ -1191,7 +1206,7 @@ class DBInterface extends DBConnector {
 	  $query  = new LongSQLQuery($this, $qhead, $qtail);
 	  // error highlighting query
 	  $eonhd  = "INSERT INTO {$this->db}.files_errors (file_id, ";
-	  $eonhd .= "line_id, user) VALUES";
+	  $eonhd .= "line_id, user, value) VALUES";
 	  $eontl  = "ON DUPLICATE KEY UPDATE user='@@global@@'";
 	  $erron  = new LongSQLQuery($this, $eonhd, $eontl);
 	  // error un-highlighting query
@@ -1210,7 +1225,7 @@ class DBInterface extends DBConnector {
 	      if($line["errorChk"]=="0") {
 		$erroff->append($line["line_id"]);
 	      } else {
-		$erron->append("('{$fileid}', '".$line["line_id"]."', '@@global@@')");
+		$erron->append("('{$fileid}', '".$line["line_id"]."', '@@global@@', '1')");
 	      }
 	    }
 	    $query->flush();

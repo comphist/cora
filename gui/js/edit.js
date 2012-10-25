@@ -527,7 +527,7 @@ var EditorModel = new Class({
 	    } else {
 		tr.getElement('div.editTableProgress').removeClass('editTableProgressChecked');
 	    }
-	    if (line.errorChk != 0) {
+	    if (line.errorChk != null && line.errorChk != 0) {
 		tr.getElement('div.editTableError').addClass('editTableErrorChecked');
 	    } else {
 		tr.getElement('div.editTableError').removeClass('editTableErrorChecked');

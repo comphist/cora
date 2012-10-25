@@ -54,6 +54,7 @@ class XMLHandler {
 	$token = array();
 	// some of these can possibly be empty
 	$token['id']      = $node['id'];
+	$token['error']   = $node['error'];
 	$token['form']    = $node->form['dipl'];
 	$token['norm']    = $node->form['norm'];
 	$token['lemma']   = $node->lemma['inst'];
@@ -286,8 +287,11 @@ class XMLHandler {
     $count = 1;
     foreach($this->db->getAllLines($fileid) as $line){
       $writer->startElement('token');
-      if(!empty($line['ext_id'])) {
+      if($line['ext_id']!==null && $line['ext_id']!=='') {
 	$writer->writeAttribute('id', $line['ext_id']);
+      }
+      if(!empty($line['errorChk'])) {
+	$writer->writeAttribute('error', $line['errorChk']);
       }
       $writer->writeAttribute('count', $count++);
       // form
