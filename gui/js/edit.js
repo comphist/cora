@@ -377,7 +377,8 @@ var EditorModel = new Class({
 		    content: 'Zeilennummer existiert nicht.'
 		});
 	    } else {
-		ref.displayPageByLine(line_no);
+		var new_page = ref.displayPageByLine(line_no);
+		$('pageSelector').set('value', new_page);
 		mbox.close();
 	    }
 	}
@@ -676,16 +677,16 @@ var EditorModel = new Class({
          line - Number of the line to display
 
        Returns:
-         False if line number does not exist, or the result of
-         the displayPage() call.
+         The page number that holds the given line.
      */
     displayPageByLine: function(line) {
 	if(line>this.lineCount){
-	    return false;
+	    line = this.lineCount;
 	}
 	y = (userdata.noPageLines - userdata.contextLines);
 	page_no = (line % y) ? Math.ceil(line/y) : (line/y);
-	return this.displayPage(page_no);
+	this.displayPage(page_no);
+	return page_no;
     },
 
     /* Function: dynamicLoadLines
