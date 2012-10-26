@@ -364,6 +364,8 @@ class XMLHandler {
 
     $writer = new XMLWriter();
     $writer->openURI('php://output');
+    $writer->setIndent(true);
+    $writer->setIndentString("  ");
     $writer->startDocument('1.0', 'UTF-8'); 
     $writer->startElement('cora');
 
