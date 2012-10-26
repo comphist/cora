@@ -1222,10 +1222,11 @@ class DBInterface extends DBConnector {
 	      $qs .= "', '".$line["tag_POS"]."', '".$line["tag_morph"]."', '";
 	      $qs .= $line["tag_norm"]."', '".$line["comment"]."')";
 	      $query->append($qs);
-	      if($line["errorChk"]=="0") {
+	      if($line["errorChk"]=="0" || $line["errorChk"]==null) {
 		$erroff->append($line["line_id"]);
 	      } else {
-		$erron->append("('{$fileid}', '".$line["line_id"]."', '@@global@@', '1')");
+		$erron->append("('{$fileid}', '".$line["line_id"]."', '@@global@@', '".
+			       $line["errorChk"]."')");
 	      }
 	    }
 	    $query->flush();

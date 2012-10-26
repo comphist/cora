@@ -268,6 +268,7 @@ var EditorModel = new Class({
     */
     renderPagesPanel: function(active_page) {
 	var x, y, max_page, dropdown, el;
+	var jumpto, jumptoFunc, jumptoBox;
 	var pp = $('pagePanel');
 	var ref = this;
 	active_page = Number.from(active_page);
@@ -357,6 +358,52 @@ var EditorModel = new Class({
 		}
 	    },
 	}));
+
+	// Jump to line
+	// Whoa, this is a mess ...
+	jumpto = new Element('a',{
+	    href: 'javascript:;', text: 'Springe zu Zeile...',
+	});
+	jumptoFunc = function(mbox) {
+	    var line_no = Number.from($('jumpToBox').value);
+	    if(line_no==null) {
+		new mBox.Notice({
+		    type: 'error', position: {x: 'right'},
+		    content: 'Bitte eine Zahl eingeben.'
+		});
+	    } else if(line_no>ref.lineCount || line_no<1) {
+		new mBox.Notice({
+		    type: 'error', position: {x: 'right'},
+		    content: 'Zeilennummer existiert nicht.'
+		});
+	    } else {
+		ref.displayPageByLine(line_no);
+		mbox.close();
+	    }
+	}
+	pp.adopt(jumpto);
+	jumptoBox = new mBox.Modal({
+	    content: 'jumpToLineForm',
+	    title: 'Springe zu Zeile',
+	    buttons: [
+		{title: 'Abbrechen', addClass: 'mform'},
+		{title: 'OK', addClass: 'mform button_green',
+		 event: function() {
+		     jumptoFunc(this);
+		 }
+		}
+	    ],
+	    onOpenComplete: function() {
+		$('jumpToBox').focus();
+		$('jumpToBox').select();
+	    },
+	    attach: jumpto
+	});
+	$('jumpToBox').addEvent('keydown', function(event) {
+	    if(event.key == "enter") {
+		jumptoFunc(jumptoBox);
+	    }
+	});
 
 	pp.show();
     },
@@ -533,6 +580,7 @@ var EditorModel = new Class({
 		tr.getElement('div.editTableError').removeClass('editTableErrorChecked');
 	    }
 	    tr.getElement('.editTable_token').set('html', line.token);
+	    tr.getElement('.editTable_tokenid').set('html', i+1);
 	    var norm_tr = tr.getElement('.editTable_Norm input');
 	    if(norm_tr != null && norm_tr != undefined) {
 		norm_tr.set('value', line.tag_norm);
@@ -617,6 +665,26 @@ var EditorModel = new Class({
 	this.displayedLinesEnd = end - 1;
 	this.tries = 0;
 	return true;
+    },
+
+    /* Function: displayPageByLine
+
+       Display page where a given line number appears.
+
+       Parameters:
+         line - Number of the line to display
+
+       Returns:
+         False if line number does not exist, or the result of
+         the displayPage() call.
+     */
+    displayPageByLine: function(line) {
+	if(line>this.lineCount){
+	    return false;
+	}
+	y = (userdata.noPageLines - userdata.contextLines);
+	page_no = (line % y) ? Math.ceil(line/y) : (line/y);
+	return this.displayPage(page_no);
     },
 
     /* Function: dynamicLoadLines

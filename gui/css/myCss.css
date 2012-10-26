@@ -644,6 +644,12 @@ table#editTable td.editTable_progress {
     padding: 0px 12px;
 }
 
+table#editTable td.editTable_tokenid {
+    font-size: 80%;
+    font-weight: bold;
+    text-align: right;
+}
+
 table#editTable td.editTable_POS select {
     width: 10em;
 }

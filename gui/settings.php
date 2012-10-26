@@ -30,6 +30,7 @@
 	<div id="editorSettingsHiddenColumns">
 	<h4>Sichtbare Spalten</h4>
 	<p>
+	    <input type="checkbox" name="displayedColumns" value="tokenid" checked="yes" /> Zeilennummer
 	    <input type="checkbox" name="displayedColumns" value="token" checked="yes" /> Token
    <?php if($_SESSION["normvisible"]): ?>
 	    <input type="checkbox" name="displayedColumns" value="Norm" checked="yes" /> Normalisierte Form

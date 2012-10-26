@@ -20,6 +20,7 @@
 		
 		<tr class="editHeadLine" id="editHeadline">
 			<th class="editTable_progress">P</th>
+			<th class="editTable_tokenid">#</th>
 			<th class="editTable_error">E</th>
 			<th class="editTable_token">Token</th>
    <?php if($_SESSION["normvisible"]): ?>
@@ -34,6 +35,9 @@
 		<tr id="line_template">
 			<td class="editTable_progress">
 			    <div class="editTableProgress"></div>
+			</td>
+			<td class="editTable_tokenid">
+   <!-- currently displays line numbers, maybe we want the external id that gets written in the XML? can be changed in edit.js:displayPage() -->
 			</td>
 			<td class="editTable_error">
 			    <div class="editTableError"></div>
@@ -63,6 +67,11 @@
     <p></p>
     <p><textarea cols="80" rows="3" readonly="readonly"></textarea></p>
   </div>
+
+   <div id="jumpToLineForm">
+     <label for="jumpTo">Zeilennummer: </label>
+     <input id="jumpToBox" type="text" name="jumpTo" placeholder="" size="6" />
+   </div>
 </div>	
 
 </div>
