@@ -399,6 +399,7 @@ var EditorModel = new Class({
 	    },
 	    attach: jumpto
 	});
+	$('jumpToBox').removeEvents('keydown');
 	$('jumpToBox').addEvent('keydown', function(event) {
 	    if(event.key == "enter") {
 		jumptoFunc(jumptoBox);
