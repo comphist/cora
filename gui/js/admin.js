@@ -271,6 +271,7 @@ var TagsetEditor = new Class({
 	        });
             }
 	    this.tags.push(tagobj);
+	    id = Number.from(id);
 	    if (id > this.highestId) {
 		this.highestId = id;
 	    }
@@ -283,6 +284,7 @@ var TagsetEditor = new Class({
 		});
 	    }
 	    this.attribs.push(attobj);
+	    id = Number.from(id);
 	    if (id > this.highestId) {
 		this.highestId = id;
 	    }

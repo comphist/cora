@@ -123,7 +123,7 @@ var file = {
 
        Parses tagset data and builds HTML code for drop-down boxes.
     */
-    preprocessTagset: function(data) {
+    preprocessTagset: function(data, tagsetname) {
 	var posHTML = "";
 	var tags = $H(data.tags);
 	var attribs = $H(data.attribs);
@@ -171,6 +171,29 @@ var file = {
 			combinations = updated;
 		    }
 		});
+		// TODO: hard-coded hack! Tags shouldn't be build this
+		// way, but supplied by the server, and probably
+		// stored there as a simple list.
+		if (tagsetname == 'FNHDTS') {
+		    combinations = combinations.filter(function(tagstr) {
+			if(tagstr.contains('Pl','.')) {
+			    if(tagstr.contains('Mask','.') ||
+			       tagstr.contains('Fem','.')  ||
+			       tagstr.contains('Neut','.') ||
+			       tagstr.contains('MF','.')   ||
+			       tagstr.contains('MN','.')   ||
+			       tagstr.contains('FN','.')) {
+				return false;
+			    }
+			}
+			return true;
+		    });
+		    allstar = "ZZZ@";
+		    for (var i=1; i<tag.link.length; i++) {
+			allstar = allstar + ".ZZZ@"
+		    }
+		    combinations.push(allstar);
+		}
 		
 		// build HTML tags
 		fileTagset.morph[tag.shortname] = new Array();
@@ -221,7 +244,7 @@ var file = {
 				    method: 'get',
 				    data: {'do':'fetchTagset','name':fileData.data.tagset},
         		            onComplete: function(response){
-					ref.preprocessTagset(response);
+					ref.preprocessTagset(response, fileData.data.tagset);
 					afterLoadTagset();
         		            }
         		        }).send();

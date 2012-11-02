@@ -395,15 +395,17 @@ class DBInterface extends DBConnector {
     foreach($data['created'] as $i => $entry) {
       $qs = "INSERT INTO {$this->db}.tagset_tags (tagset, `id`, shortname, type) "
 	. "VALUES ('{$tagset}', {$entry['id']}, "
-	. "'{$entry['shortname']}', '{$entry['type']}')";
+	. "'{$entry['shortname']}', '{$entry['type']}') "
+	. "ON DUPLICATE KEY UPDATE shortname='{$entry['shortname']}'";
       $this->criticalQuery($qs);
       $qs = "INSERT INTO {$this->db}.tagset_strings (tagset, `id`, {$lang}) "
-	. "VALUES ('{$tagset}', {$entry['id']}, '{$entry['desc']}')";
+	. "VALUES ('{$tagset}', {$entry['id']}, '{$entry['desc']}') "
+	. "ON DUPLICATE KEY UPDATE {$lang}='{$entry['desc']}'";
       $this->criticalQuery($qs);
 
       if ($entry['type'] == 'tag') {
 	foreach($entry['link'] as $i => $link_id) {
-	  $qs = "INSERT INTO {$this->db}.tagset_links (tagset, tag_id, attrib_id) "
+	  $qs = "INSERT IGNORE INTO {$this->db}.tagset_links (tagset, tag_id, attrib_id) "
 	    . "VALUES ('{$tagset}', {$entry['id']}, {$link_id})";
 	  $this->criticalQuery($qs);
 	}
