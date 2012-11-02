@@ -409,7 +409,20 @@ var file = {
     },
 
     exportFile: function(fileid){
-	window.location = 'request.php?do=exportFile&fileId='+fileid;
+	new mBox.Modal({
+	    content: 'fileExportPopup',
+	    title: 'Datei exportieren',
+	    buttons: [
+		{title: 'Abbrechen', addClass: 'mform'},
+		{title: 'Exportieren', addClass: 'mform button_green',
+		 event: function() {
+		     var format = $('fileExportFormat').getSelected()[0].get('value');
+		     this.close();
+		     window.location = 'request.php?do=exportFile&fileId='+fileid+'&format='+format;
+		 }
+		}
+	    ]
+	}).open();
     }
 };
 

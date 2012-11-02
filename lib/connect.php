@@ -702,21 +702,23 @@ class DBInterface extends DBConnector {
 
     // Insert metadata
     $metadata  = "INSERT INTO {$this->db}.files_metadata ";
-    $metadata .= "(file_name, sigle, byUser, created, tagset, ";
+    $metadata .= "(file_name, sigle, byUser, created, tagset, ext_id, ";
     $metadata .= "POS_tagged, morph_tagged, norm, project_id) VALUES ('";
     $metadata .= mysql_real_escape_string($options['name']) . "', '";
     $metadata .= mysql_real_escape_string($options['sigle']) . "', '";
     $metadata .= $_SESSION['user'] . "', CURRENT_TIMESTAMP, '";
-    $metadata .= mysql_real_escape_string($options['tagset']) . "', ";
+    $metadata .= mysql_real_escape_string($options['tagset']) . "', '";
+    $metadata .= mysql_real_escape_string($options['ext_id']) . "', ";
     $metadata .= $options['POS_tagged'] . ", ";
     $metadata .= $options['morph_tagged'] . ", ";
     $metadata .= $options['norm'] . ", ";
     $metadata .= $options['project'] . ")";
 
     if(!$this->query($metadata)){
-      $this->rollback();
-      return "Fehler beim Schreiben in 'files_metadata':\n" .
+      $errstr = "Fehler beim Schreiben in 'files_metadata':\n" .
 	mysql_errno() . ": " . mysql_error() . "\n";
+      $this->rollback();
+      return $errstr;
     }
 
     $file_id = mysql_insert_id(); 

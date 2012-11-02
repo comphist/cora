@@ -63,6 +63,18 @@ $tagsets = $sh->getTagsetList();
         </div>
   </div>
 
+  <div id="fileExportPopup">
+    <p>In welchem Format möchten Sie die Datei exportieren?</p>
+		<p>
+		<label for="exportformat">Exportformat: </label>
+		<select id="fileExportFormat" name="exportformat" size="1">
+			<option value="cora">CorA-XML</option>
+                        <option value="hist" selected="selected">Neues CorA-XML (empfohlen)</option>
+		</select>
+		</p>
+  <p></p>
+  </div>
+
   <div id="fileImportPopup">
     <p></p>
     <p><textarea cols="80" rows="10" readonly="readonly"></textarea></p>

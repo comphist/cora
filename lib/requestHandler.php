@@ -197,6 +197,9 @@ class RequestHandler {
 	    if(!empty($post['sigle'])) {
 	      $options['sigle'] = $post['sigle'];
 	    }
+	    if(!empty($post['extid'])) {
+	      $options['ext_id'] = $post['extid'];
+	    }
 	    $options['tagset'] = $post['tagset'];
 	    $options['project'] = $post['project'];
 
@@ -305,7 +308,8 @@ class RequestHandler {
 	    exit;
 	    
 	  case "exportFile":
-	    $status = $this->sh->exportFile(self::escapeSQL($get["fileId"]));
+	    $status = $this->sh->exportFile(self::escapeSQL($get["fileId"]),
+					    self::escapeSQL($get["format"]));
 	    if (!$status)
 	      self::returnError(500, "Could not export file.");
 	    exit;

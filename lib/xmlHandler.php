@@ -21,15 +21,7 @@ class XMLHandler {
 
   /****** FUNCTIONS RELATED TO DATA IMPORT ******/
 
-  /** Process header information. */
-  private function processXMLHeader(&$reader, &$options) {
-    $doc = new DOMDocument();
-    // any data before the header is skipped!
-    while ($reader->read() && $reader->name !== 'header');
-    if ($reader->name !== 'header') { // EOF reached
-      return "XML-Fehler: header-Tag nicht gefunden.";
-    }
-    $header = simplexml_import_dom($doc->importNode($reader->expand(), true));
+  private function setOptionsFromHeader(&$header, &$options) {
     // get header attributes if they are not already set in $options
     foreach($this->xml_header_options as $key) {
       if (isset($header[$key]) && !empty($header[$key])
@@ -37,44 +29,110 @@ class XMLHandler {
 	$options[$key] = (string) $header[$key];
       }
     }
+  }
+
+  /** Process header information. */
+  private function processXMLHeader(&$reader, &$options, &$format) {
+    $doc = new DOMDocument();
+    $format = '';
+    while ($reader->read()) {
+      if ($reader->name == 'cora') {
+	$format = 'cora';
+	break;
+      }
+      if ($reader->name == 'text') {
+	$format = 'hist';
+	$textnode = simplexml_import_dom($doc->importNode($reader->expand(), true));
+	if (isset($header['id']) && !empty($header['id'])
+	    && (!isset($options['ext_id']) || empty($options['ext_id']))) {
+	  $options['ext_id'] = (string) $header['id'];
+	}
+	break;
+      }
+    }
+    if(empty($format)) {
+      return "XML-Format nicht erkannt (erwarte cora- oder text-Tag).";
+    }
+    if($format !== 'cora') {
+      return False; // header tag is only mandatory for CorA format
+    }
+
+    // any data before the header is skipped!
+    while ($reader->read() && $reader->name !== 'header');
+    if ($reader->name !== 'header') { // EOF reached
+      return "XML-Fehler: CorA-Format erkannt, aber header-Tag nicht gefunden.";
+    }
+    $header = simplexml_import_dom($doc->importNode($reader->expand(), true));
+    $this->setOptionsFromHeader($header, $options);
     return False;
   }
 
   /** Process XML data. */
-  private function processXMLData(&$reader) {
+  private function processXMLData(&$reader, &$options, $format) {
     $doc = new DOMDocument();
     $data = array();
+
+    if ($format == 'cora') {
+      $tokenname = 'token';
+    } else if ($format == 'hist') {
+      $tokenname = 'mod';
+    }
 
     while ($reader->read()) {
       // only handle opening tags
       if ($reader->nodeType!==XMLReader::ELEMENT) { continue; }
 
-      if ($reader->name == 'token') {
+      if ($reader->name == 'cora-header' && $format == 'hist') {
+	$node = simplexml_import_dom($doc->importNode($reader->expand(), true));
+	$this->setOptionsFromHeader($node, $options);
+      }
+      else if ($reader->name == $tokenname) {
 	$node = simplexml_import_dom($doc->importNode($reader->expand(), true));
 	$token = array();
 	// some of these can possibly be empty
 	$token['id']      = $node['id'];
-	$token['error']   = $node['error'];
-	$token['form']    = $node->form['dipl'];
-	$token['norm']    = $node->form['norm'];
-	$token['lemma']   = $node->lemma['inst'];
-	$token['pos']     = $node->pos['inst'];
-	$token['morph']   = $node->infl['val'];
-	$token['comment'] = $node->comment;
+	if ($format == 'cora') {
+	  $token['error']   = $node['error'];
+	  $token['form']    = $node->form['dipl'];
+	  $token['norm']    = $node->form['norm'];
+	  $token['lemma']   = $node->lemma['inst'];
+	  $token['pos']     = $node->pos['inst'];
+	  $token['morph']   = $node->infl['val'];
+	  $token['comment'] = $node->comment;
+	}
+	else if ($format == 'hist') {
+	  $token['error']   = $node['cora-error'];
+	  $token['form']    = $node['utf'];
+	  $token['norm']    = $node->norm['tag'];
+	  $token['lemma']   = $node->lemma['tag'];
+	  $token['pos']     = $node->pos['tag'];
+	  $token['morph']   = $node->morph['tag'];
+	  $token['comment'] = $node->{'cora-comment'};
+	}
 	$suggs = array();
 	$posindex = 0;
 	$morphindex = 0;
 	foreach($node->suggestions->pos as $sugg){
+	  $val = ($format=='hist') ? 'tag' : 'inst';
 	  $suggs[] = array('type'=>'pos',
-			   'value'=>$sugg['inst'],
+			   'value'=>$sugg[$val],
 			   'score'=>$sugg['score'],
 			   'index'=>$posindex++);
 	}
-	foreach($node->suggestions->infl as $sugg){
-	  $suggs[] = array('type'=>'morph',
-			   'value'=>$sugg['val'],
-			   'score'=>$sugg['score'],
-			   'index'=>$morphindex++);
+	if ($format == 'cora') {
+	  foreach($node->suggestions->infl as $sugg){
+	    $suggs[] = array('type'=>'morph',
+			     'value'=>$sugg['val'],
+			     'score'=>$sugg['score'],
+			     'index'=>$morphindex++);
+	  }
+	} else if ($format == 'hist') {
+	  foreach($node->suggestions->morph as $sugg){
+	    $suggs[] = array('type'=>'morph',
+			     'value'=>$sugg['tag'],
+			     'score'=>$sugg['score'],
+			     'index'=>$morphindex++);
+	  }
 	}
 	$token['suggestions'] = $suggs;
 	$data[] = $token;
@@ -228,12 +286,13 @@ class XMLHandler {
       return array("success"=>False,
 		   "errors"=>array("Interner Fehler: Konnte temporäre Datei '".$xmlfile."' nicht öffnen."));
     }
-    $xmlerror = $this->processXMLHeader($reader, $options);
+    $format = '';
+    $xmlerror = $this->processXMLHeader($reader, $options, $format);
     if($xmlerror){
       return array("success"=>False, 
 		   "errors"=>array($xmlerror));
     }
-    $data = $this->processXMLData($reader);
+    $data = $this->processXMLData($reader, $options, $format);
     $reader->close();
 
     // check for data integrity
@@ -242,6 +301,9 @@ class XMLHandler {
        !(isset($options['sigle']) && !empty($options['sigle']))) {
       array_unshift($warnings, "Dokument hat weder Name noch Sigle; benutze Dateiname als Dokumentname.");
       $options['name'] = $xmlfile['name'];
+    }
+    if(!(isset($options['ext_id']) && !empty($options['ext_id']))) {
+      $options['ext_id'] = '';
     }
 
     // insert data into database
@@ -266,24 +328,30 @@ class XMLHandler {
   }
 
   /** Output metadata in XML format. */
-  private function outputMetadataAsXML($writer, $fileid) {
-    // this does nothing but fetch file metadata:
-    $metadata = $this->db->openFile($fileid);
-    if($metadata['success']) {
-      $writer->startElement('header');
-      $writer->writeAttribute('sigle', $metadata['data']['sigle']);
-      $writer->writeAttribute('name', $metadata['data']['file_name']);
-      $writer->writeAttribute('tagset', $metadata['data']['tagset']);
-      $writer->writeAttribute('progress', $metadata['lastEditedRow']);
-      $writer->endElement(); // 'header'
+  private function outputMetadataAsXML($writer, $metadata, $format) {
+    if($format == 'hist') {
+      $header = 'cora-header';
+    } else {
+      $header = 'header';
     }
-    else {
-      throw new Exception("File metadata could not be retrieved from the database.");
-    }
+    $writer->startElement($header);
+    $writer->writeAttribute('sigle', $metadata['data']['sigle']);
+    $writer->writeAttribute('name', $metadata['data']['file_name']);
+    $writer->writeAttribute('tagset', $metadata['data']['tagset']);
+    $writer->writeAttribute('progress', $metadata['lastEditedRow']);
+    $writer->endElement(); // 'header'
   }
 
   /** Output lines in XML format. */
-  private function outputLinesAsXML($writer, $fileid) {
+  private function outputLinesAsXML($writer, $fileid, $format) {
+    if($format == 'cora') {
+      $this->outputLinesAsCoraXML($writer, $fileid);
+    } else if($format == 'hist') {
+      $this->outputLinesAsHistXML($writer, $fileid);
+    }
+  }
+
+  private function outputLinesAsCoraXML($writer, $fileid) {
     $count = 1;
     foreach($this->db->getAllLines($fileid) as $line){
       $writer->startElement('token');
@@ -321,7 +389,7 @@ class XMLHandler {
       }
       // suggestions
       if($this->output_suggestions){
-	$this->outputSuggestionsAsXML($writer, $fileid, $line['line_id']);
+	$this->outputSuggestionsAsXML($writer, $fileid, $line['line_id'], 'cora');
       }
       // comment
       if($line['comment']!==null && $line['comment']!=='') {
@@ -332,19 +400,76 @@ class XMLHandler {
     }
   }
 
+  private function outputLinesAsHistXML($writer, $fileid) {
+    $count = 1;
+    foreach($this->db->getAllLines($fileid) as $line){
+      $writer->startElement('mod');
+      $writer->writeAttribute('utf', $line['token']);
+      if($line['ext_id']!==null && $line['ext_id']!=='') {
+	$writer->writeAttribute('id', $line['ext_id']);
+      }
+      if(!empty($line['errorChk'])) {
+	$writer->writeAttribute('cora-error', $line['errorChk']);
+      }
+      // norm
+      if($line['tag_norm']!==null && $line['tag_norm']!==''){
+	$writer->startElement('norm');
+	$writer->writeAttribute('tag', $line['tag_norm']);
+	$writer->endElement();
+      }
+      // lemma
+      if($line['lemma']!==null && $line['lemma']!==''){
+	$writer->startElement('lemma');
+	$writer->writeAttribute('tag', $line['lemma']);
+	$writer->endElement();
+      }
+      // pos
+      if($line['tag_POS']!==null && $line['tag_POS']!==''){
+	$writer->startElement('pos');
+	$writer->writeAttribute('tag', $line['tag_POS']);
+	$writer->endElement();
+      }
+      // morph
+      if($line['tag_morph']!==null && $line['tag_morph']!==''){
+	$writer->startElement('morph');
+	$writer->writeAttribute('tag', $line['tag_morph']);
+	$writer->endElement();
+      }
+      // suggestions
+      if($this->output_suggestions){
+	$this->outputSuggestionsAsXML($writer, $fileid, $line['line_id'], 'hist');
+      }
+      // comment
+      if($line['comment']!==null && $line['comment']!=='') {
+	$writer->writeElement('cora-comment', $line['comment']);
+      }
+      // closing
+      $writer->endElement(); // 'mod'
+    }
+  }
+
   /** Output tagger suggestions in XML format. */
-  private function outputSuggestionsAsXML($writer, $fileid, $lineid) {
+  private function outputSuggestionsAsXML($writer, $fileid, $lineid, $format) {
+    if($format=='cora') {
+      $posattr   = 'inst';
+      $morph     = 'infl';
+      $morphattr = 'val';
+    } else {
+      $posattr   = 'tag';
+      $morph     = 'morph';
+      $morphattr = 'tag';
+    }
     $writer->startElement('suggestions');
     foreach($this->db->getAllSuggestions($fileid,$lineid) as $sugg){
       if($sugg['tagtype']=='pos') {
 	$writer->startElement('pos');
-	$writer->writeAttribute('inst', $sugg['tag_name']);
+	$writer->writeAttribute($posattr, $sugg['tag_name']);
 	$writer->writeAttribute('score', $sugg['tag_probability']);
 	$writer->endElement();
       }
       else if($sugg['tagtype']=='morph') {
-	$writer->startElement('infl');
-	$writer->writeAttribute('val', $sugg['tag_name']);
+	$writer->startElement($morph);
+	$writer->writeAttribute($morphattr, $sugg['tag_name']);
 	$writer->writeAttribute('score', $sugg['tag_probability']);
 	$writer->endElement();
       }
@@ -358,8 +483,10 @@ class XMLHandler {
    * writes the corresponding XML data to the PHP output stream.
    *
    * @param string $fileid Internal ID of the document to export
+   * @param string $format XML format to export to (currently
+   * accepted: 'cora','hist')
    */
-  public function export($fileid) {
+  public function export($fileid,$format) {
     $this->outputXMLHeader($fileid.".xml");
 
     $writer = new XMLWriter();
@@ -367,12 +494,25 @@ class XMLHandler {
     $writer->setIndent(true);
     $writer->setIndentString("  ");
     $writer->startDocument('1.0', 'UTF-8'); 
-    $writer->startElement('cora');
 
-    $this->outputMetadataAsXML($writer, $fileid);
-    $this->outputLinesAsXML($writer, $fileid);
+    // fetch metadata
+    // openFile() does nothing but fetch file metadata
+    $metadata = $this->db->openFile($fileid);
+    if(!$metadata['success']) {
+      throw new Exception("File metadata could not be retrieved from the database.");
+    }
 
-    $writer->endElement(); // 'cora'
+    if($format=='cora') {
+      $writer->startElement('cora');
+    }
+    else if($format=='hist') {
+      $writer->startElement('text');
+      $writer->writeAttribute('id', $metadata['data']['ext_id']);
+    }
+
+    $this->outputMetadataAsXML($writer, $metadata, $format);
+    $this->outputLinesAsXML($writer, $fileid, $format);
+    $writer->endElement();
     $writer->endDocument();
     $writer->flush();
   }

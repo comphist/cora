@@ -244,12 +244,12 @@ class SessionHandler {
   }
 
   /** Wraps XMLHandler::export() */
-  public function exportFile( $fileid ){
+  public function exportFile( $fileid, $format ){
     if(!$_SESSION['admin'] && !$this->db->isAllowedToOpenFile($fileid, $_SESSION['user'])) {
       return false;
     }
 
-    $this->xml->export($fileid);
+    $this->xml->export($fileid,$format);
     return true;
   }
 	
