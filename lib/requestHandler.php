@@ -184,8 +184,22 @@ class RequestHandler {
 
 	  case "importXMLFile":
 	    if(empty($_FILES['xmlFile']['name']) || $_FILES['xmlFile']['error']!=UPLOAD_ERR_OK || !is_uploaded_file($_FILES['xmlFile']['tmp_name'])) {
+	      switch ($_FILES['xmlFile']['error']) {
+	      case 1:
+	      case 2:
+		$errmsg = "Die Datei überschreitet die maximal erlaubte Dateigröße.";
+		break;
+	      case 3:
+		$errmsg = "Die Datei wurde nur unvollständig übertragen.";
+		break;
+	      case 4:
+		$errmsg = "Die Datei konnte nicht übertragen werden.";
+		break;
+	      default:
+		$errmsg = "Ein interner Fehler ist aufgetreten (Fehlernummer: ".$_FILES['xmlFile']['error'].").  Bitte kontaktieren Sie einen Administrator unter Angabe der Fehlernummer.";
+	      }
 	      echo json_encode(array("success"=>false,
-				     "errors"=>array("UploadError: ".$_FILES['xmlFile']['error'])));
+				     "errors"=>array("Fehler beim Upload: ".$errmsg)));
 	      exit;
 	    }
 
