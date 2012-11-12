@@ -248,6 +248,10 @@ var EditorModel = new Class({
 	}
 	if (postag) {
 	    mselect.grab(morphopt);
+	    // If there's only one legal choice for morph, select it
+	    if(morphopt.getChildren().length == 1) {
+		morphopt.getChildren()[0].set('selected', 'selected');
+	    }
 	}
     },
 

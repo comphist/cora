@@ -90,7 +90,7 @@ class XMLHandler {
 	$node = simplexml_import_dom($doc->importNode($reader->expand(), true));
 	$token = array();
 	// some of these can possibly be empty
-	$token['id']      = $node['id'];
+	$token['id'] = $node['id'];
 	if ($format == 'cora') {
 	  $token['error']   = $node['error'];
 	  $token['form']    = $node->form['dipl'];
@@ -108,6 +108,9 @@ class XMLHandler {
 	  $token['pos']     = $node->pos['tag'];
 	  $token['morph']   = $node->morph['tag'];
 	  $token['comment'] = $node->{'cora-comment'};
+	}
+	if (empty($token['morph'])) {
+	  $token['morph'] = "--";
 	}
 	$suggs = array();
 	$posindex = 0;
@@ -382,7 +385,7 @@ class XMLHandler {
 	$writer->endElement();
       }
       // morph
-      if($line['tag_morph']!==null && $line['tag_morph']!==''){
+      if($line['tag_morph']!==null && $line['tag_morph']!=='' && $line['tag_morph']!=='--'){
 	$writer->startElement('infl');
 	$writer->writeAttribute('val', $line['tag_morph']);
 	$writer->endElement();
