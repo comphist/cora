@@ -109,7 +109,7 @@ class XMLHandler {
 	  $token['morph']   = $node->morph['tag'];
 	  $token['comment'] = $node->{'cora-comment'};
 	}
-	if (empty($token['morph'])) {
+	if (empty($token['morph']) || $token['morph'] == "" ) {
 	  $token['morph'] = "--";
 	}
 	$suggs = array();
