@@ -188,6 +188,9 @@ class SessionHandler {
   
   /** Wraps DBInterface::deleteFile() */	
   public function deleteFile($fileid){
+    if(!$_SESSION['admin'] && !$this->db->isAllowedToDeleteFile($fileid, $_SESSION['user'])) {
+      return "Permission denied.";
+    }
     return $this->db->deleteFile($fileid);
   }
 

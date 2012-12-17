@@ -912,6 +912,18 @@ class DBInterface extends DBConnector {
 	  }
 	}
 
+	/** Check whether a user is allowed to delete a file.
+	 *
+	 * @param string $fileid file id
+	 * @param string $user username
+	 *
+	 * @return boolean value indicating whether user may delete the
+	 *         file
+	 */
+	public function isAllowedToDeleteFile($fileid, $user){
+	  return $this->isAllowedToOpenFile($fileid, $user);
+	}
+
 	/** Delete a file.
 	*
 	* Deletes ALL database entries linked with the given file id.
@@ -921,25 +933,30 @@ class DBInterface extends DBConnector {
 	* @return bool @c true 
   	*/	
 	public function deleteFile($fileid){
+	  $this->startTransaction();
+	  $this->lockFile($fileid, "@@@system@@@");
+
 		$qs = "	DELETE FROM {$this->db}.files_metadata WHERE file_id='{$fileid}'";							 
-		$this->query($qs);
+		if(!$this->query($qs)) { $this->rollback(); return "Query for metadata failed."; }
 
 		$qs = "	DELETE FROM {$this->db}.files_tags_suggestion WHERE file_id='{$fileid}'";							 
-		$this->query($qs);
+		if(!$this->query($qs)) { $this->rollback(); return "Query for tags_suggestion failed."; }
 
 		$qs = "	DELETE FROM {$this->db}.files_data WHERE file_id='{$fileid}'";
-		$this->query($qs);
+		if(!$this->query($qs)) { $this->rollback(); return "Query for data failed."; }
 		
 		$qs = "DELETE FROM {$this->db}.files_errors WHERE file_id='{$fileid}'";
-		$this->query($qs);
+		if(!$this->query($qs)) { $this->rollback(); return "Query for errors failed."; }
 
 		$qs = "DELETE FROM {$this->db}.files_progress WHERE file_id='{$fileid}'";
-		$this->query($qs);
+		if(!$this->query($qs)) { $this->rollback(); return "Query for progress failed."; }
 		
 		$qs = "DELETE FROM {$this->db}.files_locked WHERE file_id='{$fileid}'";
 		$this->query($qs);
 
-	    return true;
+	    $this->commitTransaction();
+
+	    return false;
 	}
 
 	/** Get a list of all files.

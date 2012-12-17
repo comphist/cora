@@ -317,8 +317,8 @@ class RequestHandler {
 	    exit;
 	    
 	  case "deleteFile": $status = $this->sh->deleteFile(self::escapeSQL($post["file_id"]));
-	    if (!$status)
-	      self::returnError(500, "Could not delete file.");
+	    if ($status)
+	      self::returnError(500, "Could not delete file.  "+$status);
 	    exit;
 	    
 	  case "exportFile":
