@@ -202,7 +202,8 @@ class SessionHandler {
 
   /** Wraps DBInterface::unlockFile(), unset the session data of the file */ 
   public function unlockFile( $fileid ) {
-    if($ans = $this->db->unlockFile( $fileid )){
+    $force = (bool) $_SESSION["admin"]; // admins can unlock any file
+    if($ans = $this->db->unlockFile( $fileid, $_SESSION['user'], $force )){
       unset($_SESSION['currentName']);
       unset($_SESSION['currentFileId']);
       return true;

@@ -788,10 +788,10 @@ class DBInterface extends DBConnector {
 
   /** Lock a file for editing.
    *
-   * This function insures restricted access when editing file data. In detail this is done by
+   * This function ensures restricted access when editing file data. In detail this is done by
    * a lock table where first all entries for the given user are deleted and then tries to insert
    * a new entry for the given file id. Note that if the file is already locked by another user,
-   * the operation will fail und it is unpossible to lock the file at the moment.
+   * the operation will fail und it is impossible to lock the file at the moment.
    *
    * Should be called before editing any database entries concerning the file content.
    *
@@ -805,7 +805,7 @@ class DBInterface extends DBConnector {
    * false, a key named @c lock contains further information about the
    * already-existing, conflicting lock.
    */	  
-	public function lockFile($fileid,$user) {
+  public function lockFile($fileid,$user) {
 	    // first, delete all locks by the current user
 	    $qs = "DELETE FROM {$this->db}.files_locked WHERE locked_by='{$user}'";
 	    $this->query($qs);
@@ -848,11 +848,11 @@ class DBInterface extends DBConnector {
 	*
 	* @return @em array result of the mysql query
   	*/		
-	public function unlockFile($fileid,$user="") {
+	public function unlockFile($fileid,$user="",$force=false) {
 	  if (empty($user)) {
 	    $user=$_SESSION['user'];
 	  }
-	  if ($_SESSION["admin"]) { // admins can unlock any file
+	  if ($force) {
 	    $qs = "DELETE FROM {$this->db}.files_locked WHERE file_id='{$fileid}'";
 	  } else {
 	    $qs = "DELETE FROM {$this->db}.files_locked WHERE file_id='{$fileid}' AND locked_by='{$user}'";
@@ -871,6 +871,11 @@ class DBInterface extends DBConnector {
 	* @return an @em array with at least the file meta data. If exists, the user's last edited row is also transmitted.
   	*/		
 	public function openFile($fileid){
+	  $locked = $this->lockFile($fileid, $_SESSION["user"]);
+	  if(!$locked['success']) {
+	    return array('success' => false);
+	  }
+
 		$qs = "SELECT * FROM {$this->db}.files_metadata WHERE file_id='{$fileid}'";
 		if($query = $this->query($qs)){
 			$qs = "SELECT new_line_id FROM {$this->db}.files_progress WHERE file_id='{$fileid}' AND user='@@global@@'";
@@ -1199,6 +1204,11 @@ class DBInterface extends DBConnector {
 	* @return @bool the result of the mysql query
  	*/ 		
 	public function saveLines($fileid,$lasteditedrow,$lines) {
+	  $locked = $this->lockFile($fileid, $_SESSION["user"]);
+	  if(!$locked['success']) {
+	    return "lock failed";
+	  }
+
 	  $this->startTransaction();
 
 	  // data insertion query
