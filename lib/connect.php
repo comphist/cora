@@ -231,8 +231,8 @@ class DBInterface extends DBConnector {
    */
   public function getUserData( $user, $pw ) {
     $pw_hash = $this->hashPassword($pw);
-    $qs = "SELECT * FROM {$this->db}.users "
-      . "WHERE username='{$user}' AND password='{$pw_hash}' LIMIT 1";
+    $qs = "SELECT name, admin, lastactive FROM {$this->db}.users "
+      . "WHERE name='{$user}' AND password='{$pw_hash}' AND `id`!=1 LIMIT 1";
     $query = $this->query( $qs );
     return @mysql_fetch_array( $query );
   }
@@ -244,7 +244,9 @@ class DBInterface extends DBConnector {
    * @return An array with the database entries from the table 'user_settings' for the given user.
    */
   public function getUserSettings($user){
-	$qs = "SELECT * FROM {$this->db}.user_settings WHERE username='{$user}'";
+	$qs = "SELECT lines_per_page, lines_context, "
+	    . "columns_order, columns_hidden, show_error "
+	    . "FROM {$this->db}.users WHERE name='{$user}'";
 	return @mysql_fetch_assoc( $this->query( $qs ) );
   }
 
@@ -254,30 +256,13 @@ class DBInterface extends DBConnector {
    * information about their admin status.
    */
   public function getUserList() {
-    $qs = "SELECT username, admin, normvisible FROM {$this->db}.users";
+    $qs = "SELECT name, admin, lastactive FROM {$this->db}.users WHERE `id`!=1";
     $query = $this->query( $qs );
     $users = array();
     while ( @$row = mysql_fetch_array($query) ) {
       $users[] = $row;
     }
     return $users;
-  }
-
-  /** Fetch language-specific strings.
-   *
-   * @param string $lang A language code (@c de or @c en)
-   *
-   * @return An associative array of all language-specific strings in
-   * the respective language.
-   */
-  public function getLanguageArray( $lang ) {
-    $result = array();
-    $qs = "SELECT `key`, {$lang} FROM {$this->db}.gui_strings";
-    $query = $this->query($qs);
-    while ( @ $row = mysql_fetch_array( $query, $this->dbobj ) ) {
-      $result[ $row["key"] ] = $row[$lang];
-    }
-    return $result;
   }
 
   /** Get a list of all tagsets.
@@ -584,8 +569,8 @@ class DBInterface extends DBConnector {
    */ 
   public function createUser($username, $password, $admin) {
     $hashpw = $this->hashPassword($password);
-    $adm = $admin ? 'y' : 'n';
-    $qs = "INSERT INTO {$this->db}.users (username, password, admin) "
+    $adm = $admin ? 1 : 0;
+    $qs = "INSERT INTO {$this->db}.users (name, password, admin) "
       . "VALUES ('{$username}', '{$hashpw}', '{$adm}')";
     return $this->query($qs);
   }
@@ -601,7 +586,7 @@ class DBInterface extends DBConnector {
   public function changePassword($username, $password) {
     $hashpw = $this->hashPassword($password);
     $qs = "UPDATE {$this->db}.users SET password='{$hashpw}' "
-      . "WHERE username='{$username}'";
+      . "WHERE name='{$username}'";
     return $this->query($qs);
   }
 
@@ -641,7 +626,7 @@ class DBInterface extends DBConnector {
    * @return The result of the corresponding @c mysql_query() command.
    */
   public function deleteUser($username) {
-    $qs = "DELETE FROM {$this->db}.users WHERE username='{$username}'";
+    $qs = "DELETE FROM {$this->db}.users WHERE name='{$username}' AND `id`!=1";
     return $this->query($qs);
   }
 
@@ -669,13 +654,13 @@ class DBInterface extends DBConnector {
 
   /** Helper function for @c toggleAdminStatus() and @c toggleNormStatus(). */
   public function toggleUserStatus($username, $statusname) {
-    $qs = "SELECT {$statusname} FROM {$this->db}.users WHERE username='{$username}'";
+    $qs = "SELECT {$statusname} FROM {$this->db}.users WHERE name='{$username}'";
     $query = $this->query($qs);
     @$row = mysql_fetch_array($query, $this->dbobj);
     if (!$row)
       return false;
-    $status = ($row[$statusname] == 'y') ? 'n' : 'y';
-    $qs = "UPDATE {$this->db}.users SET {$statusname}='{$status}' WHERE username='{$username}'";
+    $status = ($row[$statusname] == 1) ? 0 : 1;
+    $qs = "UPDATE {$this->db}.users SET {$statusname}={$status} WHERE name='{$username}'";
     return $this->query($qs);
   }
 
@@ -1087,7 +1072,7 @@ class DBInterface extends DBConnector {
 	* @return bool result of the mysql query
   	*/			
 	public function setUserSettings($user,$lpp,$cl){
-		$qs = "INSERT INTO {$this->db}.user_settings (username,noPageLines,contextLines) VALUES ('{$user}','{$lpp}','{$cl}') ON DUPLICATE KEY update noPageLines='{$lpp}',contextLines='{$cl}'";
+		$qs = "UPDATE {$this->db}.users SET lines_per_page={$lpp},lines_context={$cl} WHERE name='{$user}' AND `id`!=1";
 		return $this->query($qs);
 	}
 
@@ -1100,8 +1085,13 @@ class DBInterface extends DBConnector {
 	 * @return bool result of the mysql query
 	 */
 	public function setUserSetting($user,$name,$value) {
-	       	$qs = "INSERT INTO {$this->db}.user_settings (username,{$name}) VALUES ('{$user}','{$value}') ON DUPLICATE KEY update {$name}='{$value}'";
+	  $validnames = array("lines_context", "lines_per_page", "show_error",
+			      "columns_order", "columns_hidden");
+	  if (in_array($name,$validnames)) {
+	       	$qs = "UPDATE {$this->db}.users SET {$name}='{$value}' WHERE name='{$user}' AND `id`!=1";
 		return $this->query($qs);
+	    }
+	  return false;
 	}
 
 	

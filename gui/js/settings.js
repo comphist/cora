@@ -88,21 +88,21 @@ window.addEvent('domready', function() {
 		}
 		new Request({url: 'request.php'}).get(
 		    {'do': 'setUserEditorSetting',
-		     'name': 'hiddenColumns',
+		     'name': 'columns_hidden',
 		     'value': userdata.hiddenColumns}
 		);
 	    }
 	);
 
 	var esia = $('editorSettingsInputAids');
-	esia.getElement('input[name="showInputErrors"]').set('checked', userdata.showInputErrors);
+	esia.getElement('input[name="show_error"]').set('checked', userdata.showInputErrors);
 	esia.addEvent(
 	    'change:relay(input)',
 	    function(event, target) {
 		var checked = target.get('checked');
 		var value = target.get('value');
 		userdata[value] = checked;
-		if(value=="showInputErrors" && ref.editorModel!=null) {
+		if(value=="show_error" && ref.editorModel!=null) {
 		    ref.editorModel.updateShowInputErrors();
 		}
 		new Request({url: 'request.php'}).get(

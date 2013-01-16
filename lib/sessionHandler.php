@@ -36,7 +36,7 @@ class SessionHandler {
     $defaults = array( "lang"        => DEFAULT_LANGUAGE,
 		       "loggedIn"    => false,
 		       "admin"       => false,
-		       "normvisible" => false,
+		       "normvisible" => true,
 		       "failedLogin" => false );
 
     foreach($defaults as $key => $default) {
@@ -370,8 +370,8 @@ class SessionHandler {
       $_SESSION["loggedIn"] = true;
       $_SESSION["user"] = $user;
       $_SESSION["failedLogin"] = false;
-      $_SESSION["admin"] = ($data['admin'] == "y");
-      $_SESSION["normvisible"] = ($data['normvisible'] == "y");
+      $_SESSION["admin"] = ($data['admin'] == 1);
+      //$_SESSION["normvisible"] = ($data['normvisible'] == 1);
 
 	  // file already opened?
 	  $data = $this->db->getLockedFiles( $user );
@@ -383,12 +383,12 @@ class SessionHandler {
 	  //editor settings
 	  $data = $this->db->getUserSettings( $user );
 	  if($data){
-		$_SESSION['noPageLines'] = (isset($data['noPageLines']) && $data['noPageLines']>0)? $data['noPageLines'] : '30';
-		$_SESSION['contextLines'] = (isset($data['contextLines']))? $data['contextLines'] : '5';
-		$_SESSION['editTableDragHistory'] = (isset($data['editTableDragHistory']))? $data['editTableDragHistory'] : '';
-		$_SESSION['hiddenColumns'] = (isset($data['hiddenColumns']))? $data['hiddenColumns'] : '';
-		$_SESSION['showTooltips'] = (isset($data['showTooltips']))? ($data['showTooltips']==1 ? 'true' : 'false') : 'true';
-		$_SESSION['showInputErrors'] = (isset($data['showInputErrors']))? ($data['showInputErrors']==1 ? 'true' : 'false') : 'true';
+		$_SESSION['noPageLines'] = (isset($data['lines_per_page']) && $data['lines_per_page']>0)? $data['lines_per_page'] : '30';
+		$_SESSION['contextLines'] = (isset($data['lines_context']))? $data['lines_context'] : '5';
+		$_SESSION['editTableDragHistory'] = (isset($data['columns_order']))? $data['columns_order'] : '';
+		$_SESSION['hiddenColumns'] = (isset($data['columns_hidden']))? $data['columns_hidden'] : '';
+		$_SESSION['showTooltips'] = 'true';
+		$_SESSION['showInputErrors'] = (isset($data['show_error']))? ($data['show_error']==1 ? 'true' : 'false') : 'true';
 	  } else {
 		$_SESSION['noPageLines'] = '30';
 		$_SESSION['contextLines'] = '5';

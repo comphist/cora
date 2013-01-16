@@ -401,7 +401,7 @@ dragtable = {
       // we assume MooTools is available here
       new Request({url: 'request.php'}).get({
 	  'do': 'setUserEditorSetting',
-	  'name': 'editTableDragHistory',
+	  'name': 'columns_order',
 	  'value': new_val
       });
       userdata.editTableDragHistory = new_val;

@@ -45,7 +45,7 @@
 	<div id="editorSettingsInputAids">
 	<h4>Editierhilfen</h4>
 	<p>
-   <input type="checkbox" name="showInputErrors" value="showInputErrors" checked="yes" /> Fehlerhafte Tags hervorheben
+   <input type="checkbox" name="show_error" value="show_error" checked="yes" /> Fehlerhafte Tags hervorheben
 	</p>
 	</div>
 	</div>

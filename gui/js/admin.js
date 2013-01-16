@@ -369,12 +369,8 @@ var project_editor = {
 // ***********************************************************************
 
 window.addEvent('domready', function() {
-    $('saveChangesButton').addEvent('click', saveTagset);
-    $('discardChangesButton').addEvent('click', discardTagset);
-    $('editTagsetButton').addEvent('click', editTagset);
     user_editor.initialize();
     project_editor.initialize();
-    $('logoutLink').addEvent('click', closeTagset);
 });
 
 

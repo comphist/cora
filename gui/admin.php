@@ -27,13 +27,13 @@ $ulist = $sh->getUserList();
        <th></th>
        <th>Benutzername</th>
        <th>Admin?</th>
-       <th>Norm.-Spalte?</th>
+<!--       <th>Norm.-Spalte?</th> -->
        <th></th>
      </tr>
      <?php foreach ($ulist as $user): 
-             $un = $user['username'];
-             $admin = $user['admin'] == 'y';
-             $norm = $user['normvisible'] == 'y';
+             $un = $user['name'];
+             $admin = $user['admin'] == '1';
+             $norm = TRUE; //$user['normvisible'] == 'y';
      ?>
      <tr id="User_<?php echo $un; ?>" class="adminUserInfoRow">
        <td class="adminUserDelete"><img src="gui/images/proxal/delete.ico" /></td>
@@ -41,9 +41,10 @@ $ulist = $sh->getUserList();
        <td class="centered adminUserAdminStatus"><img src="gui/images/proxal/check.ico" class="adminUserAdminStatus"
            <?php if (!$admin): ?>style="display: none;"<?php endif; ?>/>
        </td>
-       <td class="centered adminUserNormStatus"><img src="gui/images/proxal/check.ico" class="adminUserNormStatus"
+<!--       <td class="centered adminUserNormStatus"><img src="gui/images/proxal/check.ico" class="adminUserNormStatus"
            <?php if (!$norm): ?>style="display: none;"<?php endif; ?>/>
        </td>
+-->
        <td>
            <button class="adminUserPasswordButton" type="button">Passwort ändern...</button>
        </td>
@@ -51,7 +52,8 @@ $ulist = $sh->getUserList();
      <?php endforeach; ?>
    </table>
 
-   <p><strong>Hinweis:</strong> Administratoren können <i>immer</i> die Spalte &quot;Normalisierung&quot; sehen.</p>
+<!--   <p><strong>Hinweis:</strong> Administratoren können <i>immer</i> die Spalte &quot;Normalisierung&quot; sehen.</p> -->
+   <p><strong>Hinweis:</strong> Spalte &quot;Normalisierung&quot; ist derzeit <i>immer</i> sichtbar.</p>
 
    <p>
    <button id="createUser" type="button" class="mform">
