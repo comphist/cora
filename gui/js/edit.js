@@ -175,8 +175,8 @@ var EditorModel = new Class({
 		pselect.removeClass(iec);
 	    }
 
-	    if(mtag!="" && (fileTagset.morph[ptag]==null ||
-	       !fileTagset.morph[ptag].contains(mtag))) {
+	    if(mtag=="" || fileTagset.morph[ptag]==null ||
+	       !fileTagset.morph[ptag].contains(mtag)) {
 		mselect.addClass(iec);
 	    } else {
 		mselect.removeClass(iec);
@@ -787,7 +787,7 @@ var EditorModel = new Class({
 		}
 		else {
 		    if (status==null) {
-			message = 'Beim Speichern der Datei ist leider ein unbekannter Fehler aufgetreten.';
+			message = 'Beim Speichern der Datei ist ein unbekannter Fehler aufgetreten.';
 		    }
 		    else {
 			message = 'Beim Speichern der Datei ist leider ein Fehler aufgetreten.  Bitte melden Sie die folgende Fehlermeldung ggf. einem Administrator.';
@@ -807,7 +807,7 @@ var EditorModel = new Class({
 			buttons: [ {title: "OK"} ]
 		    }).open();
 		}
-		//spin.hide();
+		spin.hide();
 		$('overlay').hide();
 	    },
 	    onFailure: function(xhr) {
@@ -815,12 +815,12 @@ var EditorModel = new Class({
 		    title: 'Speichern fehlgeschlagen',
 		    content: 'Das Speichern der Datei war nicht erfolgreich! Server lieferte folgende Antwort: "'+xhr+'".'
 		}).open();
-		//spin.hide();
+		spin.hide();
 		$('overlay').hide();
 	    }
 	});
 	$('overlay').show();
-	//spin.show();
+	spin.show();
 	req.post(JSON.encode(save));	
     },
 

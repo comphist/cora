@@ -300,7 +300,7 @@ var file = {
 			    ref.listFiles();
 			}
 		    }
-		}).get({'do': 'unlockFile', 'fileid': fileid});
+		}).get({'do': 'unlockFile', 'fileid': fileid, 'force': true});
 	    }
 	}
     },
