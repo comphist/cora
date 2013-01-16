@@ -76,12 +76,6 @@ class SessionHandler {
 	return false;
   }
 
-  /** Wraps DBInterface::getLanguageArray(), passing the current
-      language code. */
-  public function getLanguageArray() {
-    return $this->db->getLanguageArray( $_SESSION["lang"] );
-  }
-
   /** Wraps DBInterface::getTagsets(), passing the current language
       code. */
   public function getTagsetList() {

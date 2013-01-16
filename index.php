@@ -27,7 +27,6 @@ require_once( "lib/sessionHandler.php" );
 
 $sh;   /**< An instance of the SessionHandler object. */
 $rq;   /**< An instance of the RequestHandler object. */
-$lang; /**< An associative array of language-specific strings. */
 $menu; /**< A Menu object containing the menu items and references to
             the corresponding web pages, instantiated in
             content.php. */
@@ -36,7 +35,6 @@ $menu; /**< A Menu object containing the menu items and references to
 $sh = new SessionHandler();
 $rq = new RequestHandler( $sh );
 $rq->handleRequests($_GET, $_POST);
-$lang = $sh->getLanguageArray();
 
 /* Define site content */
 include( "content.php" );

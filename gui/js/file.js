@@ -50,8 +50,7 @@ var file = {
         var iFrame = new iFrameFormRequest(formname,{
             onFailure: function(xhr) {
 		// never fires?
-       		alert(lang_strings.dialog_save_unsuccessful + " " +
-       		      lang_strings.dialog_server_returned_error + "\n\n" +
+       		alert("Speichern nicht erfolgreich: Der Server lieferte folgende Fehlermeldung zurück:\n\n" +
        		      xhr.responseText);
        	    },
 	    onRequest: function(){
@@ -255,8 +254,7 @@ var file = {
         		}
         	    }).get({'do': 'openFile', 'fileid': fileid});
     		} else {
-    		    var msg = lang_strings.dialog_file_locked_error +
-    		        ": " + data.lock.locked_by + ", " +
+    		    var msg = "Das Dokument wird zur Zeit bereits bearbeitet:" + data.lock.locked_by + ", " +
     			data.lock.locked_since;
     		    alert(msg);
     		}
@@ -389,7 +387,7 @@ var file = {
     deleteFile: function(fileid,filename){
         var ref = this;
 
-        var dialog = lang_strings.dialog_box_confirm_file_delete.substitute({file: filename}); 
+        var dialog = "Soll das Dokument '" + filename + "' wirklich gelöscht werden? Dieser Schritt kann nicht rückgängig gemacht werden!";
         if(!confirm(dialog))
             return;
         
@@ -398,8 +396,7 @@ var file = {
     	     'async': false,
     	     'data': 'file_id='+fileid,
     	     onFailure: function(xhr) {
-    		 alert(lang_strings.dialog_error_caps + ": " +
-    		       lang_strings.dialog_server_returned_error + "\n\n" + xhr.responseText);
+    		 alert("Fehler: Der Server lieferte folgende Fehlermeldung zurück:\n\n" + xhr.responseText);
     	     },
     	     onSuccess: function(data, xml) {    	         
     		     ref.listFiles();

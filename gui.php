@@ -55,7 +55,6 @@ $projects = $sh->getProjectList();
 		<script type="text/javascript">
 			// Makes variables from PHP accessible to JS
             var default_tab = "<?php echo $menu->getDefaultItem(); ?>";
-            var lang_strings = <?php echo json_encode($lang); ?>;
 			var userdata = {
 <?php if($_SESSION['loggedIn']): ?>
 name: "<?php echo $_SESSION['user']; ?>" , 
@@ -117,8 +116,6 @@ project_editor.project_users[<?php echo $pid; ?>] = new Array(<?php echo $arrstr
 				  <?php if($_SESSION["loggedIn"]): ?>
 				  <a href="index.php?do=logout" id="logoutLink"><img src="gui/images/logout.png" alt="Logout" width="60" height="30" /></a>
 				  <?php endif; ?>
-<!--				  <a href="index.php?lang=<?php echo $sh->getInactiveLanguage(); ?>"><img src="gui/images/lang_de_en.png" alt="Change Language" width="60" height="30" /></a>
--->
 <!--					<a href="#"><img id="HelpMe" src="gui/images/help.png" height="30" alt="Help" class="tipz" title="Help::Click here to toggle help mode."  /></a>
 -->
 				</div>

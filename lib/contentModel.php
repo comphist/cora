@@ -18,12 +18,16 @@ class Menu {
   private $menu_files;   /**< Array linking menu items to source files. */
   private $menu_js_files;
   private $default_item; /**< Name of the default menu item. */
+  private $menu_captions;
+  private $menu_tooltips;
 
   /** Create a new Menu. */
   function __construct() {
     $this->menu_items = array();
     $this->menu_files = array();
     $this->menu_js_files = array();
+    $this->menu_captions = array();
+    $this->menu_tooltips = array();
   }
 
   /** Add an item to the menu.
@@ -31,13 +35,15 @@ class Menu {
    * @param string $id   Name of the menu item
    * @param string $file Filename of the corresponding PHP source
    */
-  public function addMenuItem( $id, $file, $js="" ) {
+  public function addMenuItem( $id, $file, $js="", $caption="", $tooltip="" ) {
     if ( empty($this->menu_items) ) {
       $this->default_item = $id;
     }
     $this->menu_items[] = $id;
     $this->menu_files[$id] = $file;
     $this->menu_js_files[$id] = $js;
+    $this->menu_captions[$id] = $caption;
+    $this->menu_tooltips[$id] = $tooltip;
   }
 
   /** Get a list of all menu items. */
@@ -67,6 +73,16 @@ class Menu {
     return $this->menu_js_files[$item];
   }
 
+
+  /** Get the caption for a given menu item. */
+  public function getItemCaption( $item ) {
+    return $this->menu_captions[$item];
+  }
+
+  /** Get the tooltip for a given menu item. */
+  public function getItemTooltip( $item ) {
+    return $this->menu_tooltips[$item];
+  }
 
   /** Set the menu item selected by default. */
   public function setDefaultItem( $item ) {

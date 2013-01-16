@@ -15,18 +15,18 @@ $ulist = $sh->getUserList();
 
 <div id="adminDiv" class="content" style="display: none;">
 
-<!-- <h2><?php echo $lang["admin_caption"]; ?></h2> -->
+<!-- <h2>Admin</h2> -->
 
 <!-- USER MANAGEMENT -->
 <div class="panel clappable" id="users">
-   <h3 class="clapp"><?php echo $lang["admin_user_management"]; ?></h3>
+   <h3 class="clapp">Benutzerverwaltung</h3>
 
    <div>
    <table id="editUsers">
      <tr>
        <th></th>
-       <th><?php echo $lang["login_un"]; ?></th>
-       <th><?php echo $lang["admin_admin"]; ?>?</th>
+       <th>Benutzername</th>
+       <th>Admin?</th>
        <th>Norm.-Spalte?</th>
        <th></th>
      </tr>
@@ -45,7 +45,7 @@ $ulist = $sh->getUserList();
            <?php if (!$norm): ?>style="display: none;"<?php endif; ?>/>
        </td>
        <td>
-           <button class="adminUserPasswordButton" type="button"><?php echo $lang["admin_change_password"]; ?>...</button>
+           <button class="adminUserPasswordButton" type="button">Passwort ändern...</button>
        </td>
      </tr>
      <?php endforeach; ?>
@@ -56,7 +56,7 @@ $ulist = $sh->getUserList();
    <p>
    <button id="createUser" type="button" class="mform">
        <img src="gui/images/proxal/plus.ico" />
-       <?php echo $lang["admin_create_user"]; ?>...
+       Neuen Benutzer hinzufügen...
    </button>
    </p>
    
@@ -110,124 +110,53 @@ $ulist = $sh->getUserList();
 
 <!-- TAGSET EDITOR -->
 <div class="panel clappable" id="tagsets">
-   <h3 class="clapp"><?php echo $lang["admin_tagset_caption"]; ?></h3>
+   <h3 class="clapp">Tagset-Editor</h3>
 
    <div>
-
-   <div id="tagsetInfo">
-     <form id="chooseTagset">
-       <select name="tagset" size="1" onchange="tagsetOnChange();" id="tagset-select">
-	 <?php foreach ($tlist as $tagset): 
-	       $short = $tagset['shortname'];
-	       $long  = $tagset['longname'];  ?>
-	 <option value="<?php echo $short; ?>"><?php echo "{$short} ({$long})"; ?></option>
-	 <?php endforeach; ?>
-       </select>
-       <button id="editTagsetButton" type="button"><?php echo $lang["admin_tagset_edit"]; ?>...</button>
-       <button id="createTagsetButton" type="button"><?php echo $lang["admin_tagset_create"]; ?>...</button>
-     </form>
-
-     <h4 id="tagsetName" style="display: none;">Name</h4>
-
-     <?php foreach ($tlist as $tagset): ?>
-     <p id="tagsetLastModified_<?php echo $tagset['shortname']; ?>" style="display: none;">
-       <?php echo "{$lang["admin_last_modified_by_user"]} '{$tagset['last_modified_by']}', {$tagset['last_modified']}"; ?>
-     </p>
-     <?php endforeach; ?>
-     <p id="tagsetLastModified"><?php $tagset = $tlist[0]; echo "{$lang["admin_last_modified_by_user"]} '{$tagset['last_modified_by']}', {$tagset['last_modified']}"; ?></p>
+     <p>Tagsets können zur Zeit nicht über die Web-Oberfläche editiert werden.</p>
    </div>
-
-<div id="editTagset" style="display: none;">
-	<div class="panel clappable">
-		<h4 class="clapp"><?php echo $lang["admin_tags"]; ?></h4>
-		<div>
-			<!-- this div is filled by JavaScript code -->
-			<table id="editTags">
-				<tr>
-					<th></th>
-					<th><?php echo $lang["admin_tag"]; ?></th>
-					<th><?php echo $lang["admin_description"]; ?></th>
-					<th><?php echo $lang["admin_possible_attributes"]; ?></th>
-				</tr>
-				<tr class="newTagRow">
-					<td></td>
-					<td><a><?php echo $lang["admin_tag_new"]; ?></a></td>
-					<td></td>
-					<td></td>
-				</tr>
-			</table>
-		</div>
-	</div>
-	<div class="panel clappable">
-		<h4 class="clapp" id="editAttribPanel"><?php echo $lang["admin_attribs"]; ?></h4>
-		<div>
-			<!-- this div is filled by JavaScript code -->
-			<table id="editAttribs">
-				<tr>
-					<th></th>
-					<th><?php echo $lang["admin_attrib"]; ?></th>
-					<th><?php echo $lang["admin_description"]; ?></th>
-					<th><?php echo $lang["admin_possible_values"]; ?></th>
-				</tr>
-				<tr class="newAttribRow">
-					<td></td>
-					<td><a><?php echo $lang["admin_attrib_new"]; ?></a></td>
-					<td></td>
-					<td></td>
-				</tr>
-			</table>
-		</div>
-	</div>
-	<div>
-		<button id="saveChangesButton" type="button"><img src="gui/images/proxal/file.ico" /><?php echo $lang["dialog_save_changes"]; ?></button>
-		<button id="discardChangesButton" type="button" style="min-height:22px;"><?php echo $lang["dialog_discard_changes"]; ?></button>
-	</div>
-
-</div>
-   </div>
-
 </div>
 
 <div class="templateHolder" style="display: none;">
       <div id="ceraCreateUser" class="ceraCreateUser ceraInput">
 	<table>
 	  <tr>
-	    <th><?php echo "{$lang['login_un']}:"; ?></th>
+            <th>Benutzername:</th>
 	    <td><input type="text" name="newuser[un]" value="" /></td>
 	  </tr>
 	  <tr>
-	    <th><?php echo "{$lang['login_pw']}:"; ?></th>
+            <th>Passwort:</th>
 	    <td><input type="password" name="newuser[pw]" value="" /></td>
 	  </tr>
 	  <tr>
-	    <th><?php echo "{$lang['login_pw']} ({$lang['admin_repeat']}):"; ?></th>
+	    <th>Passwort wiederholen:</th>
 	    <td><input type="password" name="newuser[pw2]" value="" /></td>
 	  </tr>
 	</table>
 	  <p class="button">
 	    <button name="submitCreateUser" value="save" type="submit">
-	      <?php echo $lang['admin_create_user_button']; ?>
+	      Benutzer hinzufügen
 	    </button>
 	  </p>
       </div>
       <div id="ceraChangePassword" class="ceraChangePassword ceraInput">
 	<table>
 	  <tr style="display: none;">
-	    <th><?php echo "{$lang['login_un']}:"; ?></th>
+	    <th>Benutzername:</th>
 	    <td><input type="text" name="changepw[un]" value="" /></td>
 	  </tr>
 	  <tr>
-	    <th><?php echo "{$lang['login_pw']}:"; ?></th>
+	    <th>Neues Passwort:</th>
 	    <td><input type="password" name="changepw[pw]" value="" /></td>
 	  </tr>
 	  <tr>
-	    <th><?php echo "{$lang['login_pw']} ({$lang['admin_repeat']}):"; ?></th>
+	    <th>Neues Passwort wiederholen:</th>
 	    <td><input type="password" name="changepw[pw2]" value="" /></td>
 	  </tr>
 	</table>
 	  <p class="button">
 	    <button name="submitChangePassword" value="save" type="submit">
-	      <?php echo $lang['admin_change_password']; ?>
+	      Passwort ändern
 	    </button>
 	  </p>
       </div>

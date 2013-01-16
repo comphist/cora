@@ -12,8 +12,8 @@
 <?php
 /* Generate a button for each menu entry */
 foreach( $menu->getItems() as $item ) {
-   $tooltip = $lang["tooltip_".$item];
-   $text = $lang["menu_".$item];
+   $tooltip = $menu->getItemTooltip($item);
+   $text = $menu->getItemCaption($item);
 echo <<<MENUITEM
       <li class="tabButton" id="{$item}TabButton" title="{$tooltip}" active="false">
          <a onclick="changeTab('$item');">$text</a>
