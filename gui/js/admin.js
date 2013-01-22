@@ -105,7 +105,7 @@ var user_editor = {
 		 row.set('id', 'User_'+username);
 		 row.getElement('td.adminUserNameCell').set('text', username);
 		 row.getElement('img.adminUserAdminStatus').hide();
-		 row.getElement('img.adminUserNormStatus').show('inline');
+		 // row.getElement('img.adminUserNormStatus').show('inline');
 		 var pwbutton = row.getElement('button.adminUserPasswordButton');
 		 new Element('a', {'href':'#ceraChangePassword'}).wraps(pwbutton).cerabox({
 		     displayTitle: false,

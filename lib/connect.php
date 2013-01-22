@@ -236,7 +236,25 @@ class DBInterface extends DBConnector {
     $query = $this->query( $qs );
     return @mysql_fetch_array( $query );
   }
+
+  /** Get user info by id.
+   */
+  public function getUserById($uid) {
+    $qs = "SELECT `id`, name, admin, lastactive FROM {$this->db}.users "
+      . "WHERE `id`={$uid}";
+    $query = $this->query( $qs );
+    return @mysql_fetch_array( $query );
+  }
   
+  /** Get user info by name.
+   */
+  public function getUserByName($uname) {
+    $qs = "SELECT `id`, name, admin, lastactive FROM {$this->db}.users "
+      . "WHERE name='{$uname}'";
+    $query = $this->query( $qs );
+    return @mysql_fetch_array( $query );
+  }
+
   /** Return settings for the current user. 
    *
    * @param string $user Username
@@ -256,7 +274,7 @@ class DBInterface extends DBConnector {
    * information about their admin status.
    */
   public function getUserList() {
-    $qs = "SELECT name, admin, lastactive FROM {$this->db}.users WHERE `id`!=1";
+    $qs = "SELECT `id`, name, admin, lastactive FROM {$this->db}.users WHERE `id`!=1";
     $query = $this->query( $qs );
     $users = array();
     while ( @$row = mysql_fetch_array($query) ) {
@@ -599,24 +617,32 @@ class DBInterface extends DBConnector {
    */
   public function changeProjectUsers($pid, $userlist) {
     $this->startTransaction();
-    $qs = "DELETE FROM {$this->db}.project_users WHERE project_id='".$pid."'";
-    if ($this->query($qs)) {
-      $qs = "INSERT INTO {$this->db}.project_users (project_id, username) VALUES ";
-      $values = array();
-      foreach ($userlist as $user) {
-	$values[] = "('".$pid."', '".$user."')";
+    $qs = "DELETE FROM {$this->db}.user2project WHERE project_id='".$pid."'";
+    $message = "";
+    $status = $this->query($qs);
+    if ($status) {
+      if (!empty($userlist)) {
+	$qs = "INSERT INTO {$this->db}.user2project (project_id, user_id) VALUES ";
+	$values = array();
+	foreach ($userlist as $uname) {
+	  $user = $this->getUserByName($uname);
+	  $values[] = "('".$pid."', '".$user['id']."')";
+	}
+	$qs .= implode(", ", $values);
+	$status = $this->query($qs);
       }
-      $qs .= implode(", ", $values);
-      $status = $this->query($qs);
       if ($status) {
 	$this->commitTransaction();
       } else {
+	$message = mysql_error();
 	$this->rollback();
       }
-      return $status;
     }
-    $this->rollback();
-    return false;
+    else {
+      $message = mysql_error();
+      $this->rollback();
+    }
+    return array('success' => $status, 'message' => $message);
   }
 
   /** Drop a user record from the database.
@@ -954,13 +980,21 @@ class DBInterface extends DBConnector {
 	* @return an two-dimensional @em array with the meta data
   	*/		
 	public function getFiles(){
-		$qs = "SELECT a.*,d.project_name,b.locked_by as opened FROM {$this->db}.files_metadata a  LEFT JOIN {$this->db}.files_locked b ON a.file_id=b.file_id LEFT JOIN {$this->db}.projects d ON a.project_id=d.project_id ORDER BY sigle, file_name";
+	  $qs = "SELECT a.*, d.id as project_id, d.name as project_name, "
+	    . "c.name as opened, e.name as creator_name, f.name as changer_name "
+	    . "     FROM {$this->db}.text a "
+	    . "LEFT JOIN {$this->db}.locks b ON a.id=b.text_id "
+	    . "LEFT JOIN {$this->db}.users c ON b.user_id=c.id "
+	    . "LEFT JOIN {$this->db}.project d ON a.project_id=d.id "
+	    . "LEFT JOIN {$this->db}.users e ON a.creator_id=e.id "
+	    . "LEFT JOIN {$this->db}.users f ON a.changer_id=f.id "
+	    . "ORDER BY sigle, fullname";
 	    $query = $this->query($qs); 
 		$files = array();
 	    while ( @$row = mysql_fetch_array( $query, $this->dbobj ) ) {
-			$files[] = $row;
+	      $files[] = $row;
 	    }
-		return $files;
+	    return $files;
 	}
 	
 	/** Get a list of all files in projects accessible by a given
@@ -972,14 +1006,25 @@ class DBInterface extends DBConnector {
 	* @param string $user username
 	* @return an two-dimensional @em array with the meta data
   	*/		
-	public function getFilesForUser($user){
-		$qs = "SELECT a.*,d.project_name,b.locked_by as opened FROM ({$this->db}.files_metadata a, {$this->db}.project_users c) LEFT JOIN {$this->db}.files_locked b ON a.file_id=b.file_id LEFT JOIN {$this->db}.projects d ON a.project_id=d.project_id WHERE (a.project_id=c.project_id AND c.username='{$user}') ORDER BY sigle, file_name";
+	public function getFilesForUser($uname){
+	  $user = $this->getUserByName($uname);
+	  $uid = $user["id"];
+	  $qs = "SELECT a.*, d.id as project_id, d.name as project_name, "
+	    . "c.name as opened, e.name as creator_name, f.name as changer_name "
+	    . "    FROM ({$this->db}.text a, {$this->db}.user2project g) "
+	    . "LEFT JOIN {$this->db}.locks b ON a.id=b.text_id "
+	    . "LEFT JOIN {$this->db}.users c ON b.user_id=c.id "
+	    . "LEFT JOIN {$this->db}.project d ON a.project_id=d.id "
+	    . "LEFT JOIN {$this->db}.users e ON a.creator_id=e.id "
+	    . "LEFT JOIN {$this->db}.users f ON a.changer_id=f.id "
+	    . "WHERE (a.project_id=g.project_id AND g.user_id={$uid}) "
+	    . "ORDER BY sigle, fullname";
 	    $query = $this->query($qs); 
-		$files = array();
+	    $files = array();
 	    while ( @$row = mysql_fetch_array( $query, $this->dbobj ) ) {
 			$files[] = $row;
 	    }
-		return $files;
+	    return $files;
 	}
 	
 	/** Get a list of all projects.  
@@ -991,7 +1036,7 @@ class DBInterface extends DBConnector {
 	 * @return a two-dimensional @em array with the project id and name
 	 */
 	public function getProjects(){
-	  $qs = "SELECT * FROM {$this->db}.projects ORDER BY project_id";
+	  $qs = "SELECT * FROM {$this->db}.project ORDER BY name";
 	  $query = $this->query($qs); 
 	  $projects = array();
 	  while ( @$row = mysql_fetch_array( $query, $this->dbobj ) ) {
@@ -1007,11 +1052,13 @@ class DBInterface extends DBConnector {
 	 * @return a two-dimensional @em array with the project id and name
 	 */
 	public function getProjectUsers(){
-	  $qs = "SELECT * FROM {$this->db}.project_users ORDER BY username";
+	  $qs = "SELECT * FROM {$this->db}.user2project";
 	  $query = $this->query($qs); 
 	  $projects = array();
 	  while ( @$row = mysql_fetch_array( $query, $this->dbobj ) ) {
-	    $projects[] = $row;
+	    $user = $this->getUserById($row["user_id"]);
+	    $projects[] = array("project_id" => $row["project_id"],
+				"username" => $user["name"]);
 	  }
 	  return $projects;
 	}
@@ -1021,8 +1068,10 @@ class DBInterface extends DBConnector {
 	 * @param string $user username
 	 * @return a two-dimensional @em array with the project id and name
 	 */
-	public function getProjectsForUser($user){
-	  $qs = "SELECT a.* FROM ({$this->db}.projects a, {$this->db}.project_users b) WHERE (a.project_id=b.project_id AND b.username='{$user}') ORDER BY project_id";
+	public function getProjectsForUser($uname){
+	  $user = $this->getUserByName($uname);
+	  $uid  = $user["id"];
+	  $qs = "SELECT a.* FROM ({$this->db}.project a, {$this->db}.user2project b) WHERE (a.id=b.project_id AND b.user_id='{$uid}') ORDER BY project_id";
 	  $query = $this->query($qs); 
 	  $projects = array();
 	  while ( @$row = mysql_fetch_array( $query, $this->dbobj ) ) {
@@ -1037,7 +1086,7 @@ class DBInterface extends DBConnector {
 	 * @return the project ID of the newly generated project
 	 */
 	public function createProject($name){
-	  $qs = "INSERT INTO {$this->db}.projects (project_name) VALUES ('{$name}')";
+	  $qs = "INSERT INTO {$this->db}.project (`name`) VALUES ('{$name}')";
 	  $query = $this->query($qs);
 	  return mysql_insert_id();
 	}
@@ -1049,16 +1098,9 @@ class DBInterface extends DBConnector {
 	 * @return a boolean value indicating success
 	 */
 	public function deleteProject($pid){
-	  $qs = "SELECT * FROM {$this->db}.files_metadata WHERE project_id='{$pid}'";
-	  $query = $this->query($qs);
-	  if(mysql_num_rows($query)==0) {
-	    $qs = "DELETE FROM {$this->db}.project_users WHERE project_id='{$pid}'";
-	    if($this->query($qs)) {
-	      $qs = "DELETE FROM {$this->db}.projects WHERE project_id='{$pid}'";
-	      if($this->query($qs)) {
-		return True;
-	      }
-	    }     
+	  $qs = "DELETE FROM {$this->db}.project WHERE `id`={$pid}";
+	  if($this->query($qs)) {
+	    return True;
 	  }
 	  return False;
 	}

@@ -248,7 +248,7 @@ var file = {
         		            }
         		        }).send();
 				
-				$('currentfile').set('text',fileData.data.file_name);
+				$('currentfile').set('text',fileData.data.fullname);
 				ref.listFiles();
 			    }
         		}
@@ -352,32 +352,32 @@ var file = {
 	if(file.sigle!=null && file.sigle!=''){
 	    displayed_name = '[' + file.sigle + '] ';
 	}
-	displayed_name += file.file_name;
-        var tr = new Element('tr',{id: 'file_'+file.file_id, 'class': opened});
+	displayed_name += file.fullname;
+        var tr = new Element('tr',{id: 'file_'+file.id, 'class': opened});
         if((file.byUser == userdata.name) || userdata.admin){
             var delTD = new Element('td',{ html: '<img src="gui/images/proxal/delete.ico" />', 'class': 'deleteFile' });
-            delTD.addEvent('click', function(){ ref.deleteFile(file.file_id,file.file_name); } );
+            delTD.addEvent('click', function(){ ref.deleteFile(file.id,file.fullname); } );
             tr.adopt(delTD);
         } else {
 	    tr.adopt(new Element('td'));
 	}
         var chkImg = '<img src="gui/images/chk_on.png" />';
-        tr.adopt(new Element('td',{'class': 'filename'}).adopt(new Element('a',{ html: displayed_name }).addEvent('click',function(){ ref.openFile(file.file_id); })));
-        tr.adopt(new Element('td',{ 'class': 'tagStatusPOS', html: (file.POS_tagged == 1) ? chkImg : '--' }));
-        tr.adopt(new Element('td',{ 'class': 'tagStatusMorph', html: (file.morph_tagged == 1) ? chkImg : '--' }));
+        tr.adopt(new Element('td',{'class': 'filename'}).adopt(new Element('a',{ html: displayed_name }).addEvent('click',function(){ ref.openFile(file.id); })));
+//        tr.adopt(new Element('td',{ 'class': 'tagStatusPOS', html: (file.POS_tagged == 1) ? chkImg : '--' }));
+//        tr.adopt(new Element('td',{ 'class': 'tagStatusMorph', html: (file.morph_tagged == 1) ? chkImg : '--' }));
 
-	if(userdata.usenorm) {
-            tr.adopt(new Element('td',{ 'class': 'tagStatusNorm', html: (file.norm == 1) ? chkImg : '--' }));
-	}
+//	if(userdata.usenorm) {
+//            tr.adopt(new Element('td',{ 'class': 'tagStatusNorm', html: (file.norm == 1) ? chkImg : '--' }));
+//	}
 	/* the following lines have been uncommented as the field is
 	 * not currently used */
-        // tr.adopt(new Element('td',{ html: file.lastMod }));
-        // tr.adopt(new Element('td',{ html: file.lastModUser }));                    
+        tr.adopt(new Element('td',{ html: file.changed }));
+        tr.adopt(new Element('td',{ html: file.changer_name }));                    
         tr.adopt(new Element('td',{ html: file.created }));
-        tr.adopt(new Element('td',{ html: file.byUser }));
-        tr.adopt(new Element('td',{'class':'exportFile'}).adopt(new Element('a',{ html: 'export', 'class': 'exportFileLink' }).addEvent('click', function(){ ref.exportFile(file.file_id); } )));
+        tr.adopt(new Element('td',{ html: file.creator_name }));
+        tr.adopt(new Element('td',{'class':'exportFile'}).adopt(new Element('a',{ html: 'export', 'class': 'exportFileLink' }).addEvent('click', function(){ ref.exportFile(file.id); } )));
         if((file.opened == userdata.name ) || (opened && userdata.admin)){
-            tr.adopt(new Element('td',{'class':'closeFile'}).adopt(new Element('a',{ html: 'close', 'class': 'closeFileLink' }).addEvent('click', function(){ ref.closeFile(file.file_id); } )));
+            tr.adopt(new Element('td',{'class':'closeFile'}).adopt(new Element('a',{ html: 'close', 'class': 'closeFileLink' }).addEvent('click', function(){ ref.closeFile(file.id); } )));
         } else {
 	    tr.adopt(new Element('td'));
 	}

@@ -79,8 +79,8 @@ $ulist = $sh->getUserList();
        <th></th>
      </tr>
      <?php foreach ($projects as $project): 
-	     $pn = $project['project_name'];
-             $pid = $project['project_id'];
+	     $pn = $project['name'];
+             $pid = $project['id'];
      ?>
      <tr id="project_<?php echo $pid; ?>" class="adminProjectInfoRow">
        <td><a id="projectdelete_<?php echo $pid; ?>" class="adminProjectDelete"><img src="gui/images/proxal/delete.ico" /></a></td>
@@ -167,7 +167,7 @@ $ulist = $sh->getUserList();
          <form action="request.php"  method="post">
 	 <div class="userChangeEditTable">
              <?php foreach ($ulist as $user):
-             $un = $user['username'];
+             $un = $user['name'];
 ?>
              <span><input type="checkbox" name="allowedUsers[]" value="<?php echo $un; ?>" /> <label for="allowedUsers[]"><?php echo $un; ?></label></span>
 	     <?php endforeach; ?>

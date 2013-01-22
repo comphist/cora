@@ -145,10 +145,9 @@ class SessionHandler {
   /** Wraps DBInterface::changeProjectUsers(), checking for
       administrator privileges first. */
   public function changeProjectUsers( $pid, $userlist ) { 
-    if ($_SESSION["admin"] && $this->db->changeProjectUsers($pid, $userlist)) {
-      return array("success"=>True);
+    if ($_SESSION["admin"]) {
+      return $this->db->changeProjectUsers($pid, $userlist);
     }
-    return array("success"=>False);
   }
 
   /** Wraps DBInterface::deleteUser(), checking for administrator
