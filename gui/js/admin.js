@@ -364,6 +364,174 @@ var project_editor = {
     }
 }
 
+
+var tagset_editor = {
+    initialize: function() {
+	var ref = this;
+	this.activateImportForm();
+	this.activateTagsetViewer();
+    },
+
+    activateTagsetViewer: function() {
+	var ref = this;
+	var import_mbox = new mBox.Modal({
+	    title: 'Tagset-Browser',
+	    content: 'adminTagsetBrowser',
+	    attach: 'viewTagset'
+	});
+
+	$('aTBview').addEvent('click', function(e) {
+	    var tagset     = $('aTBtagset').getSelected().get('value')[0];
+	    var tagsetname = $('aTBtagset').getSelected().get('html');
+	    var textarea   = $('aTBtextarea');
+	    textarea.set('html', '');
+	    // fetch tag list and perform a quick and dirty analysis:
+	    var request = new Request.JSON(
+		{url:'request.php',
+		 onSuccess: function(data, text) {
+		     var postags = new Array();
+		     var output = tagsetname + " (ID: " + tagset + ") has ";
+		     output += data.length + " tags ";
+		     Array.each(data, function(tag) {
+			 var pos;
+			 var dot = tag['value'].indexOf('.');
+			 if(dot>=0 && dot<tag['value'].length-1) {
+			     pos = tag['value'].slice(0, dot);
+			 } else {
+			     pos = tag['value'];
+			 }
+			 postags.push(pos);
+		     });
+		     postags = postags.unique();
+		     output += "in " + postags.length + " base POS categories.\n\n";
+		     output += "Base POS categories are:\n";
+		     output += postags.join(", ");
+		     output += "\n\nAll tags:\n";
+		     Array.each(data, function(tag) {
+			 if(tag['needs_revision']==1) {
+			     output += "^";
+			 }
+			 output += tag['value'] + "\n";
+		     });
+		     textarea.set('html', output);
+		 }
+		}
+	    );
+	    request.get({'do': 'fetchTagset', 'tagset_id': tagset});	    
+	});
+    },
+
+    activateImportForm: function() {
+	var ref = this;
+	var formname = 'newTagsetImportForm';
+	var import_mbox = new mBox.Modal({
+	    title: 'Tagset aus Textdatei importieren',
+	    content: 'tagsetImportForm',
+	    attach: 'importTagset'
+	});
+
+	// note: these checks would be redundant if the iFrame method
+	// below would be replaced by an mForm.Submit ...
+	// check if a name & file has been selected
+	$('newTagsetImportForm').getElement('input[type="submit"]').addEvent('click', function(e) {
+	    var importname = $('newTagsetImportForm').getElement('input[name="tagset_name"]').get('value');
+	    if(importname==null || importname=="") {
+		$('newTagsetImportForm').getElement('input[name="tagset_name"]').addClass("input_error");
+		e.stop();
+	    } else {
+		$('newTagsetImportForm').getElement('input[name="tagset_name"]').removeClass("input_error");
+	    }
+	    var importfile = $('newTagsetImportForm').getElement('input[name="txtFile"]').get('value');
+	    if(importfile==null || importfile=="") {
+		$$('#newTagsetImportForm p.error_text').show();
+		e.stop();
+	    } else {
+		$$('#newTagsetImportForm p.error_text').hide();
+	    }
+	});
+
+	var spinner;
+        var iFrame = new iFrameFormRequest(formname, {
+            onFailure: function(xhr) {
+		// never fires?
+       		alert("Import nicht erfolgreich: Der Server lieferte folgende Fehlermeldung zurück:\n\n" +
+       		      xhr.responseText);
+       	    },
+	    onRequest: function(){
+		import_mbox.close();
+		$('overlay').show();
+		spinner = new Spinner($('overlay'),
+				      {message: "Importiere Tagset...",
+				       fxOptions: {duration: 500}});
+		spinner.show(true);
+	    },
+	    onComplete: function(response){
+		var title="", message="", textarea="", error=false;
+		try{
+		    response = JSON.decode(response);
+		}catch(err){
+		    message =  "Der Server lieferte eine ungültige Antwort zurück.";
+		    textarea  = "Antwort des Servers:\n";
+		    textarea += response;
+		    textarea += "\n\nInterner Fehler:\n";
+		    textarea += err.message;
+		    error = true;
+		}
+		
+		if(error){
+		    title = "Tagset-Import fehlgeschlagen";
+		}
+		else if(response==null){
+		    title = "Tagset-Import fehlgeschlagen";
+		    message = "Beim Import des Tagsets ist ein unbekannter Fehler aufgetreten.";
+		}
+		else if(!response.success){
+		    title = "Tagset-Import fehlgeschlagen";
+		    message  = "Beim Import des Tagsets ";
+		    message += response.errors.length>1 ? "sind " + response.errors.length : "ist ein";
+		    message += " Fehler aufgetreten:";
+
+		    for(var i=0;i<response.errors.length;i++){
+			textarea += response.errors[i] + "\n";
+		    }
+		} 
+		else { 
+		    title = "Tagset-Import erfolgreich";
+		    message = "Das Tagset wurde erfolgreich hinzugefügt.";
+		    if((typeof response.warnings !== "undefined") && response.warnings.length>0) {
+			message += " Das System lieferte ";
+			message += response.warnings.length>1 ? response.warnings.length + " Warnungen" : "eine Warnung";
+			message += " zurück:";
+
+			for(var i=0;i<response.warnings.length;i++){
+			    textarea += response.warnings[i] + "\n";
+			}
+		    }
+
+		    form.reset($(formname));
+		    $(formname).getElements('.error_text').hide();
+                }
+
+		if(textarea!='') {
+		    $('adminImportPopup').getElement('p').set('html', message);
+		    $('adminImportPopup').getElement('textarea').set('html', textarea);
+		    message = 'adminImportPopup';
+		}
+		new mBox.Modal({
+		    title: title,
+		    content: message,
+		    closeOnBodyClick: false,
+		    buttons: [ {title: "OK"} ]
+		}).open();
+
+		spinner.hide();
+		$('overlay').hide();                
+            }
+	});
+
+    }
+}
+
 // ***********************************************************************
 // ********** DOMREADY BINDINGS ******************************************
 // ***********************************************************************
@@ -371,6 +539,7 @@ var project_editor = {
 window.addEvent('domready', function() {
     user_editor.initialize();
     project_editor.initialize();
+    tagset_editor.initialize();
 });
 
 

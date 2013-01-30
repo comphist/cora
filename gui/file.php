@@ -114,7 +114,7 @@ $tagsets = $sh->getTagsetList();
 		<select name="tagset" size="1">
 			<option value="">Angabe aus XML-Datei übernehmen</option>
 			<?php foreach($tagsets as $set):?>
-			<option value="<?php echo $set['shortname'];?>"><?php echo "{$set['shortname']} ({$set['longname']}) ";?></option>
+			<option value="<?php echo $set['shortname'];?>"><?php echo $set['longname'];?></option>
 			<?php endforeach;?>
 		</select>
 		</p>

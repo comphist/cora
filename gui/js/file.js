@@ -375,9 +375,9 @@ var file = {
         tr.adopt(new Element('td',{ html: file.changer_name }));                    
         tr.adopt(new Element('td',{ html: file.created }));
         tr.adopt(new Element('td',{ html: file.creator_name }));
-        tr.adopt(new Element('td',{'class':'exportFile'}).adopt(new Element('a',{ html: 'export', 'class': 'exportFileLink' }).addEvent('click', function(){ ref.exportFile(file.id); } )));
+        tr.adopt(new Element('td',{'class':'exportFile'}).adopt(new Element('a',{ html: 'Exportieren...', 'class': 'exportFileLink' }).addEvent('click', function(){ ref.exportFile(file.id); } )));
         if((file.opened == userdata.name ) || (opened && userdata.admin)){
-            tr.adopt(new Element('td',{'class':'closeFile'}).adopt(new Element('a',{ html: 'close', 'class': 'closeFileLink' }).addEvent('click', function(){ ref.closeFile(file.id); } )));
+            tr.adopt(new Element('td',{'class':'closeFile'}).adopt(new Element('a',{ html: 'Schließen', 'class': 'closeFileLink' }).addEvent('click', function(){ ref.closeFile(file.id); } )));
         } else {
 	    tr.adopt(new Element('td'));
 	}

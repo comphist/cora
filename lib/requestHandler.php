@@ -119,6 +119,31 @@ class RequestHandler {
     }
   }
 
+  /** Check whether a file was uploaded correctly.
+   *
+   * @return An error message, or 'false' if everything was ok
+   */
+  private function checkFileUpload($file) {
+    if(empty($file['name']) || $file['error']!=UPLOAD_ERR_OK || !is_uploaded_file($file['tmp_name'])) {
+      switch ($file['error']) {
+      case 1:
+      case 2:
+	$errmsg = "Die Datei überschreitet die maximal erlaubte Dateigröße.";
+	break;
+      case 3:
+	$errmsg = "Die Datei wurde nur unvollständig übertragen.";
+	break;
+      case 4:
+	$errmsg = "Die Datei konnte nicht übertragen werden.";
+	break;
+      default:
+	$errmsg = "Ein interner Fehler ist aufgetreten (Fehlernummer: ".$file['error'].").  Bitte kontaktieren Sie einen Administrator unter Angabe der Fehlernummer.";
+      }
+      return $errmsg;
+    }
+    return false;
+  }
+
   /** Handle requests sent to request.php.
    *
    * Intended for requests sent through JavaScript. This will
@@ -182,22 +207,25 @@ class RequestHandler {
 	    echo json_encode($status);
 	    exit;
 
+	  case "importTagsetTxt":
+	    $errmsg = $this->checkFileUpload($_FILES['txtFile']);
+	    if($errmsg) {
+	      echo json_encode(array("success"=>false,
+				     "errors"=>array("Fehler beim Upload: ".$errmsg)));
+	      exit;
+	    }
+	    if(empty($post['tagset_name'])) {
+	      echo json_encode(array("success"=>false,
+				     "errors"=>array("Kein Tagset-Name angegeben.")));
+	    }
+	    $taglist = explode('\n', self::escapeSQL(file_get_contents($_FILES['txtFile']['tmp_name'])));
+	    $result = $this->sh->importTagList($taglist,self::escapeSQL($post['tagset_name']));
+	    echo json_encode($result);
+	    exit;
+
 	  case "importXMLFile":
-	    if(empty($_FILES['xmlFile']['name']) || $_FILES['xmlFile']['error']!=UPLOAD_ERR_OK || !is_uploaded_file($_FILES['xmlFile']['tmp_name'])) {
-	      switch ($_FILES['xmlFile']['error']) {
-	      case 1:
-	      case 2:
-		$errmsg = "Die Datei überschreitet die maximal erlaubte Dateigröße.";
-		break;
-	      case 3:
-		$errmsg = "Die Datei wurde nur unvollständig übertragen.";
-		break;
-	      case 4:
-		$errmsg = "Die Datei konnte nicht übertragen werden.";
-		break;
-	      default:
-		$errmsg = "Ein interner Fehler ist aufgetreten (Fehlernummer: ".$_FILES['xmlFile']['error'].").  Bitte kontaktieren Sie einen Administrator unter Angabe der Fehlernummer.";
-	      }
+	    $errmsg = $this->checkFileUpload($_FILES['xmlFile']);
+	    if(!$errmsg) {
 	      echo json_encode(array("success"=>false,
 				     "errors"=>array("Fehler beim Upload: ".$errmsg)));
 	      exit;
@@ -238,33 +266,13 @@ class RequestHandler {
 	  case "getHighestTagId": echo $this->sh->getHighestTagId(self::escapeSQL($get["tagset"]));
 	    exit;
 	    
-	  case "lockTagset":	$data = $this->sh->lockTagset(self::escapeSQL($get["name"]));
-	    echo json_encode($data);
-	    exit;
-	    
-	  case "unlockTagset": $this->sh->unlockTagset(self::escapeSQL($get["name"]));
-	    exit;
-	    
-	  case "fetchTagset": $data = $this->sh->getTagset(self::escapeSQL($get["name"]));
+	  case "fetchTagset": $data = $this->sh->getTagset(self::escapeSQL($get["tagset_id"]));
 	    echo json_encode($data);
 	    exit;
 	    
 	  case "getTagsetTags": $data = $this->sh->getTagset(self::escapeSQL($get["tagset"]));
-	    foreach($data['tags'] as $tag){
-	      echo "<option>".trim($tag['shortname'])."</option>";
-	    }
-	    exit;
-	    
-	  case "saveTagset":    if ($_SESSION["admin"]) {
-	      $data = json_decode(file_get_contents("php://input"), true);
-	      $this->sh->saveTagset(self::escapeSQL($data));
-	    }
-	    exit;
-	  case "saveCopyTagset": if ($_SESSION["admin"]) {
-	      $data = json_decode($post['tags'], true);
-	      echo $post['originTagset'];
-	      echo $post['name'];
-	      $this->sh->saveCopyTagset(self::escapeSQL($data),self::escapeSQL($post['originTagset']),self::escapeSQL($post['name']));
+	    foreach($data as $tag){
+	      echo "<option>".trim($tag['value'])."</option>";
 	    }
 	    exit;
 	    

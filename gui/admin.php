@@ -116,6 +116,17 @@ $ulist = $sh->getUserList();
 
    <div>
      <p>Tagsets können zur Zeit nicht über die Web-Oberfläche editiert werden.</p>
+
+   <p>
+   <button id="viewTagset" type="button" class="mform">
+       (POS-)Tagsets anzeigen
+   </button>
+   <button id="importTagset" type="button" class="mform">
+       <img src="gui/images/proxal/plus.ico" />
+       Neues (POS-)Tagset importieren...
+   </button>
+   </p>
+
    </div>
 </div>
 
@@ -182,7 +193,7 @@ $ulist = $sh->getUserList();
 
      <div id="projectCreateForm">
 	<p>
-            <b>Projektname:</b>
+            <label for="project_name"><b>Projektname:</b></label>
 	    <input type="text" name="project_name" value="" />
         </p>
 
@@ -192,6 +203,48 @@ $ulist = $sh->getUserList();
 	    </button>
          </p>
      </div>
+
+     <div id="tagsetImportForm">
+	<form action="request.php" id="newTagsetImportForm" method="post" accept-charset="utf-8" enctype="multipart/form-data">
+	<p>
+            <label for="tagset_name">Name des Tagsets:</label>
+	    <input type="text" name="tagset_name" value="" size="40" maxlength="255" data-required />
+        </p>
+        <p class="error_text">Bitte wählen Sie eine Datei zum Importieren aus!</p>
+
+		<p>
+		<label for="txtFile">Tagset-Datei: </label>
+		<input type="file" name="txtFile" data-required />
+		</p>
+
+	       <p style="max-width:32em;">
+	       Hinweis: Als Tagset-Datei wird eine Textdatei erwartet, die aus einem Tag pro Zeile besteht.  Punkte werden als Trennsymbole zwischen POS- und Morph-Attributen interpretiert.  Tags, die als "korrekturbedürftig" markiert werden sollen, muss jeweils ein Caret (^) vorangestellt werden.
+		 </p>
+
+		<p><input type="hidden" name="action" value="importTagsetTxt" /></p>
+		<p style="text-align:right;">
+                  <input type="submit" value="Tagset importieren &rarr;" />
+                </p>
+	</form>
+     </div>
+
+  <div id="adminImportPopup">
+    <p></p>
+    <p><textarea cols="80" rows="10" readonly="readonly"></textarea></p>
+  </div>
+
+  <div id="adminTagsetBrowser">
+    <p><select id="aTBtagset" class="mform">
+			<?php foreach($tlist as $set):?>
+			<option value="<?php echo $set['shortname'];?>"><?php echo $set['longname'];?></option>
+			<?php endforeach;?>
+       </select>
+       <button id="aTBview" type="button" class="mform">Anzeigen</button>
+    </p>
+    <p><textarea id="aTBtextarea" cols="80" rows="10" readonly="readonly"></textarea></p>
+  </div>
+
+
 </div>
 
 

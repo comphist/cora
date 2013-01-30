@@ -76,36 +76,14 @@ class SessionHandler {
 	return false;
   }
 
-  /** Wraps DBInterface::getTagsets(), passing the current language
-      code. */
+  /** Wraps DBInterface::getTagsets(). */
   public function getTagsetList() {
-    return $this->db->getTagsets( $_SESSION["lang"] );
+    return $this->db->getTagsets();
   }
 
-  /** Wraps DBInterface::getTagset(), passing the current language
-      code. */
-  public function getTagset( $tagset ) {
-    return $this->db->getTagset( $tagset, $_SESSION["lang"] );
-  }
-
-  /** Wraps DBInterface::saveTagset(), passing the current language
-      code. */
-  public function saveTagset( $data ) {
-    $this->db->saveTagset( $data, $_SESSION["lang"] );
-  }
-
-  public function saveCopyTagset( $data, $originTagset, $newTagset ) {
-	$this->db->saveCopyTagset( $data, $originTagset, $newTagset, $_SESSION["lang"] );
-  }
-
-  /** Wraps DBInterface::lockTagset(). */
-  public function lockTagset( $tagset ) {
-    return $this->db->lockTagset( $tagset );
-  }
-
-  /** Wraps DBInterface::unlockTagset(). */
-  public function unlockTagset( $tagset ) {
-    return $this->db->unlockTagset( $tagset );
+  /** Wraps DBInterface::getTagset(). */
+  public function getTagset($tagset) {
+    return $this->db->getTagset($tagset);
   }
 
   /** Wraps DBInterface::getUserList(), checking for administrator
@@ -179,10 +157,18 @@ class SessionHandler {
     return $this->xml->import($xmldata, $options);
   }
   
+  /** Wraps DBInterface::importTagList() */
+  public function importTagList($taglist, $tagsetname){
+    if(!$_SESSION['admin']) {
+      return array('success'=>false, 'errors'=>array("Keine Berechtigung."));
+    }
+    return $this->db->importTagList($taglist, $tagsetname);
+  }
+
   /** Wraps DBInterface::deleteFile() */	
   public function deleteFile($fileid){
     if(!$_SESSION['admin'] && !$this->db->isAllowedToDeleteFile($fileid, $_SESSION['user'])) {
-      return "Permission denied.";
+      return "Keine Berechtigung.";
     }
     return $this->db->deleteFile($fileid);
   }
@@ -362,18 +348,19 @@ class SessionHandler {
    * @param string $user The username to be used for logging in
    * @param string $pw   The corresponding password
    */
-  public function login( $user, $pw ) {	
+  public function login($user, $pw) {	
 	
-    $data = $this->db->getUserData( $user, $pw );
+    $data = $this->db->getUserData($user, $pw);
     if ($data) {  // login successful
       $_SESSION["loggedIn"] = true;
       $_SESSION["user"] = $user;
+      $_SESSION["user_id"] = $data['id'];
       $_SESSION["failedLogin"] = false;
       $_SESSION["admin"] = ($data['admin'] == 1);
       //$_SESSION["normvisible"] = ($data['normvisible'] == 1);
 
 	  // file already opened?
-	  $data = $this->db->getLockedFiles( $user );
+	  $data = $this->db->getLockedFiles($user);
 	  if(!empty($data)){
 		$_SESSION['currentFileId'] = $data[0];
 		$_SESSION['currentName'] = $data[1];
@@ -409,6 +396,7 @@ class SessionHandler {
     $_SESSION["failedLogin"] = false;
     $_SESSION["admin"] = false;
     $_SESSION["user"] = null;
+    $_SESSION["user_id"] = null;
     $_SESSION["currentName"] = null;
     $_SESSION["currentFileId"] = null;
   }
