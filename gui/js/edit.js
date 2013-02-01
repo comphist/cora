@@ -225,12 +225,12 @@ var EditorModel = new Class({
 	}
 
 	line = this.data[id];
-	if (line.suggestions_morph) {
+	if (line.anno.suggestions) {
 	    suggestions = new Element('optgroup', {'label': 'Vorgeschlagene Tags', 'class': 'lineSuggestedTag'});
-	    line.suggestions_morph.each(function(opt){
+	    line.anno.suggestions.each(function(opt){
 		suggestions.grab(new Element('option',{
-		    html: opt.tag_name+" ("+opt.tag_probability+")",
-		    value: opt.tag_name,
+		    html: opt.morph+" ("+opt.score+")",
+		    value: opt.morph,
 		    'class': 'lineSuggestedTag'
 		}),'top');
             });
@@ -238,8 +238,8 @@ var EditorModel = new Class({
 
 	mselect.empty();
 	mselect.grab(new Element('option',{
-	    html: line.tag_morph,
-	    value: line.tag_morph,
+	    html: line.anno.morph,
+	    value: line.anno.morph,
 	    selected: 'selected',
 	    'class': 'lineSuggestedTag'
 	}),'top');
@@ -533,8 +533,8 @@ var EditorModel = new Class({
 			    return;
 			}
 			Object.each(lineArray, function(ln) {
-			    if (this.data[ln.line_id] == undefined) {
-				this.data[ln.line_id] = ln;
+			    if (this.data[ln.num] == undefined) {
+				this.data[ln.num] = ln;
 			    }
 			}.bind(this));
 			/* lazy implementation: just retry the whole method */
@@ -574,86 +574,88 @@ var EditorModel = new Class({
 	    j++;
 	    tr = trs[j];
 
-	    tr.set('id', 'line_'+line.line_id);
-	    if (parseInt(line.line_id)<=ler) {
+	    tr.set('id', 'line_'+line.num);
+	    if (parseInt(line.num)<=ler) {
 		tr.getElement('div.editTableProgress').addClass('editTableProgressChecked');
 	    } else {
 		tr.getElement('div.editTableProgress').removeClass('editTableProgressChecked');
 	    }
-	    if (line.errorChk != null && line.errorChk != 0) {
+	    if (line.error != null && line.error == "general error") {
 		tr.getElement('div.editTableError').addClass('editTableErrorChecked');
 	    } else {
 		tr.getElement('div.editTableError').removeClass('editTableErrorChecked');
 	    }
-	    tr.getElement('.editTable_token').set('html', line.token);
+	    tr.getElement('.editTable_token').set('html', line.utf);
 	    tr.getElement('.editTable_tokenid').set('html', i+1);
+	    tr.getElement('.editTable_Comment input').set('value', line.comment); // XXXXXX
+
+	    // build annotation elements
 	    var norm_tr = tr.getElement('.editTable_Norm input');
 	    if(norm_tr != null && norm_tr != undefined) {
-		norm_tr.set('value', line.tag_norm);
+		norm_tr.set('value', line.anno.norm);
 	    }
-	    tr.getElement('.editTable_Lemma input').set('value', line.lemma);
-	    tr.getElement('.editTable_Comment input').set('value', line.comment);
+	    tr.getElement('.editTable_Lemma input').set('value', line.anno.lemma);
 
             // POS
 	    posopt = tr.getElement('.editTable_POS select');
 	    posopt.getElements('.lineSuggestedTag').destroy();
-	    if(line.suggestions_pos.length>0) {
+	    if(line.anno.suggestions.length>0) {
 		optgroup = new Element('optgroup', {'label': 'Vorgeschlagene Tags', 'class': 'lineSuggestedTag'});
-		line.suggestions_pos.each(function(opt){
+		line.anno.suggestions.each(function(opt){
 		    optgroup.grab(new Element('option',{
-			html: opt.tag_name+" ("+opt.tag_probability+")",
-			value: opt.tag_name,
+			html: opt.POS+" ("+opt.score+")",
+			value: opt.POS,
 			'class': 'lineSuggestedTag'
 		    }),'top');
 		});
 		posopt.grab(optgroup, 'top');
 	    }
-	    if(sie){
-		if(line.tag_POS!="" && !pos.contains(line.tag_POS)) {
+	    if(sie){ // this should never happen with the new DB, I guess?
+		if(line.anno.POS && !pos.contains(line.anno.POS)) {
 		    posopt.addClass(iec);
 		} else {
 		    posopt.removeClass(iec);
 		}
 	    }
-
 	    posopt.grab(new Element('option',{
-		html: line.tag_POS,
-		value: line.tag_POS,
+		html: line.anno.POS,
+		value: line.anno.POS,
 		selected: 'selected',
 		'class': 'lineSuggestedTag'
 	    }),'top');
+
             // Morph
 	    mselect = tr.getElement('.editTable_Morph select');
 	    mselect.empty();
-	    mselect.grab(new Element('option',{html: line.tag_morph,
-					       value: line.tag_morph,
+	    mselect.grab(new Element('option',{html: line.anno.morph,
+					       value: line.anno.morph,
 					       selected: 'selected',
 					       'class': 'lineSuggestedTag'
 					      }));
-	    if(sie){
-		if(morph[line.tag_POS]==null || !morph[line.tag_POS].contains(line.tag_morph)) {
+	    if(sie && line.anno.POS){
+		if(morph[line.anno.POS]==null
+		   || !morph[line.anno.POS].contains(line.anno.morph)) {
 		    mselect.addClass(iec);
 		} else {
 		    mselect.removeClass(iec);
 		}
 	    }
 
-	    if (line.suggestions_morph.length>0) {
+	    if (line.anno.suggestions.length>0) {
 		optgroup = new Element('optgroup', {'label': 'Vorgeschlagene Tags', 'class': 'lineSuggestedTag'});
-		line.suggestions_morph.each(function(opt){
+		line.anno.suggestions.each(function(opt){
 		    optgroup.grab(new Element('option',{
-			html: opt.tag_name+" ("+opt.tag_probability+")",
-			value: opt.tag_name,
+			html: opt.morph+" ("+opt.score+")",
+			value: opt.morph,
 			'class': 'lineSuggestedTag'
 		    }),'top');
 		});
 		mselect.grab(optgroup);
 	    }
 
-	    if (line.tag_POS!=null) {
-		var postag = line.tag_POS; //.replace(/\s[\d\.]+/g,"");
-		mselect.grab(new Element('optgroup', {'label': "Alle Tags für '"+postag+"'",
-						      html: morphhtml[postag]}));
+	    if (line.anno.POS!=null) {
+		mselect.grab(new Element('optgroup', {'label': "Alle Tags für '"+line.anno.POS+"'",
+						      html: morphhtml[line.anno.POS]}));
 	    }
 	}
 
@@ -734,8 +736,8 @@ var EditorModel = new Class({
 	    async: true,
 	    onSuccess: function(lineArray, text) {
 		Object.each(lineArray, function(ln) {
-		    if (this.data[ln.line_id] == undefined) {
-			this.data[ln.line_id] = ln;
+		    if (this.data[ln.num] == undefined) {
+			this.data[ln.num] = ln;
 		    }
 		}.bind(this));
 	    }.bind(this)

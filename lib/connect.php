@@ -459,7 +459,7 @@ class DBInterface extends DBConnector {
    *  e.g. documents with specific names or sigles.
    */
   public function queryForMetadata($metakey, $metavalue) {
-    $qs  = "SELECT * FROM {$this->db}.files_metadata ";
+    $qs  = "SELECT * FROM {$this->db}.text ";
     $qs .= "WHERE {$metakey}='{$metavalue}'";
     $query = $this->query($qs);
     @$row = mysql_fetch_array($query, $this->dbobj);
@@ -619,7 +619,7 @@ class DBInterface extends DBConnector {
     $qs  = "SELECT a.text_id as 'file_id', b.fullname as 'file_name' ";
     $qs .= "FROM {$this->db}.locks a, {$this->db}.text b ";
     $qs .= "WHERE a.user_id='{$userid}' AND a.text_id=b.text_id LIMIT 1";
-    return @mysql_fetch_row($this->query($qs));
+    return @mysql_fetch_assoc($this->query($qs));
   }
   
   /** Unlock a file for the current user.
@@ -663,16 +663,28 @@ class DBInterface extends DBConnector {
       return array('success' => false);
     }
     
-    $qs = "SELECT * FROM {$this->db}.files_metadata WHERE file_id='{$fileid}'";
+    $qs  = "SELECT text.*, tagset.id AS 'tagset_id' ";
+    $qs .= "FROM   ({$this->db}.text, {$this->db}.tagset) ";
+    $qs .= "  LEFT JOIN {$this->db}.text2tagset ttt ";
+    $qs .= "         ON (ttt.tagset_id=tagset.id AND ttt.text_id=text.id) ";
+    $qs .= "WHERE  text.id='{$fileid}' AND tagset.class='POS'";
     if($query = $this->query($qs)){
-      $qs = "SELECT new_line_id FROM {$this->db}.files_progress WHERE file_id='{$fileid}' AND user='@@global@@'";
-      if($q = $this->query($qs)){
-	$row = @mysql_fetch_row($q,$this->dbobj);
-	$lock['lastEditedRow'] = $row[0];
-      } else {
-	$lock['lastEditedRow'] = -1;
+      $metadata = @mysql_fetch_assoc($query);
+      $cmid = $metadata['currentmod_id'];
+      $lock['lastEditedRow'] = -1;
+      if(!empty($cmid)) {
+	// calculate position of currentmod_id
+	$qs  = "SELECT x.id, @rownum := @rownum + 1 AS position FROM ";
+	$qs .= " (SELECT a.id FROM ({$this->db}.modern a, {$this->db}.token b) ";
+	$qs .= "  WHERE a.tok_id=b.id ORDER BY b.ordnr ASC, a.id ASC) x ";
+	$qs .= "JOIN (SELECT @rownum := 0) r ";
+	$qs .= "WHERE x.id = '{$cmid}'";
+	if($q = $this->query($qs)){
+	  $row = @mysql_fetch_assoc($q,$this->dbobj);
+	  $lock['lastEditedRow'] = $row['position'];
+	}
       }
-      $lock['data'] = @mysql_fetch_assoc($query);
+      $lock['data'] = $metadata;
       $lock['success'] = true;
     } else {
       $lock['success'] = false;
@@ -689,8 +701,10 @@ class DBInterface extends DBConnector {
    * @return boolean value indicating whether user may open the
    *         file
    */
-  public function isAllowedToOpenFile($fileid, $user){
-    $qs = "SELECT a.project_id FROM ({$this->db}.project_users a, {$this->db}.files_metadata b) WHERE (a.username='{$user}' AND b.file_id='{$fileid}' AND a.project_id=b.project_id)";
+  public function isAllowedToOpenFile($fileid, $uname){
+    $uid = $this->getUserIDFromName($uname);
+    $qs  = "SELECT a.fullname FROM ({$this->db}.text a, {$this->db}.user2project b) ";
+    $qs .= "WHERE a.id='{$fileid}' AND b.user_id='{$uid}' AND a.project_id=b.project_id";
     $q = $this->query($qs);
     if(@mysql_fetch_row($q,$this->dbobj)) {
       return true;
@@ -721,7 +735,7 @@ class DBInterface extends DBConnector {
    */	
   public function deleteFile($fileid){
     $this->startTransaction();
-    $this->lockFile($fileid, "@@@system@@@");
+    $this->lockFile($fileid, "system");
     
     $qs = "	DELETE FROM {$this->db}.files_metadata WHERE file_id='{$fileid}'";
     if(!$this->query($qs)) { $this->rollback(); return "Query for metadata failed."; }
@@ -920,32 +934,14 @@ class DBInterface extends DBConnector {
    * @return The number of lines for the given file
    */
   public function getMaxLinesNo($fileid){
-    $qs = "SELECT COUNT(line_id) FROM {$this->db}.files_data WHERE file_id='{$fileid}'";
+    $qs  = "SELECT COUNT(modern.id) FROM {$this->db}.token ";
+    $qs .= "LEFT JOIN {$this->db}.modern ON modern.tok_id=token.id ";
+    $qs .= "WHERE token.text_id='{$fileid}'";
     if($query = $this->query($qs)){
       $row = mysql_fetch_row($query);
       return $row[0];
     }		
-    
     return 0;
-  }
-  
-  /** Retrieve all tokens from a file.
-   *
-   * This function is called from the @c addData function.
-   *
-   * @param string $fileid the file id
-   *
-   * @return an @em array containing all tokens
-   */	
-  public function getToken($fileid){
-    $qs = "SELECT token FROM {$this->db}.files_data WHERE file_id='{$fileid}'";
-    $query = $this->query($qs);
-    $data = array();
-    while($row = @mysql_fetch_row($query,$this->dbobj)){
-      $data[] = $row['token'];
-    }
-    return $data;
-    
   }
   
   /** Retrieve all lines from a file, including error data,
@@ -982,36 +978,71 @@ class DBInterface extends DBConnector {
    * @return an @em array containing the lines
    */ 	
   public function getLines($fileid,$start,$lim){		
-    // $qs = "SELECT * FROM {$this->db}.files_data WHERE file_id='{$fileid}'";
-    $qs = "	SELECT a.*, b.value AS 'errorChk'
-				FROM {$this->db}.files_data a LEFT JOIN {$this->db}.files_errors b ON (a.line_id=b.line_id AND a.file_id=b.file_id)
-				WHERE a.file_id='{$fileid}'";
-    // if($lim != 0)
-    $qs .= " LIMIT {$start},{$lim}";
-    
     $data = array();
-    
+
+    $qs  = "SELECT q.*, @rownum := @rownum + 1 AS num FROM ";
+    $qs .= "  (SELECT modern.id, modern.trans, modern.utf, ";
+    $qs .= "          modern.tok_id, token.trans AS tok_trans, ";
+    $qs .= "          error_types.name as error ";
+    $qs .= "   FROM   {$this->db}.token ";
+    $qs .= "     LEFT JOIN {$this->db}.modern ON modern.tok_id=token.id ";
+    $qs .= "     LEFT JOIN {$this->db}.mod2error ON modern.id=mod2error.mod_id ";
+    $qs .= "     LEFT JOIN {$this->db}.error_types ON mod2error.error_id=error_types.id ";
+    // Layout-Info mit JOINen?
+    $qs .= "   WHERE  token.text_id='{$fileid}' ";
+    $qs .= "   ORDER BY token.ordnr ASC, modern.id ASC) q ";
+    $qs .= "JOIN (SELECT @rownum := -1) r ";
+    $qs .= "LIMIT {$start},{$lim}";
     $query = $this->query($qs); 		
-    while($line = @mysql_fetch_array($query)){			
-      $qs = "	SELECT tag_name,tag_probability,tag_suggestion_id FROM {$this->db}.files_tags_suggestion
-					WHERE file_id='{$fileid}' AND line_id='{$line['line_id']}' AND tagtype='pos' ORDER BY tag_probability";
+
+    // this could already be included in the query above,
+    // but might get more complicated ... could speed become an issue?
+    while($line = @mysql_fetch_assoc($query)){
+      $mid = $line['id'];
+
+      $qs  = "SELECT tag.value, ts.score, ts.selected, ts.source, tt.class ";
+      $qs .= "FROM   {$this->db}.modern";
+      $qs .= "  LEFT JOIN ({$this->db}.tag_suggestion ts, {$this->db}.tag) ";
+      $qs .= "         ON (ts.tag_id=tag.id AND ts.mod_id=modern.id) ";
+      $qs .= "  LEFT JOIN {$this->db}.tagset tt ON tag.tagset_id=tt.id ";
+      $qs .= "WHERE  modern.id='{$mid}' ";
       $q = $this->query($qs);
       
-      $tag_suggestions_pos = array();
+      // prepare results for CorA---this is less flexible, but
+      // probably faster than doing it on the client side
+      $annotations = array("suggestions" => array());
       while($row = @mysql_fetch_assoc($q)){
-	$tag_suggestions_pos[] = $row;
+	if($row['class']=='norm' && $row['selected']=='1') {
+	  $annotations['norm'] = $row['value'];
+	}
+	else if($row['class']=='lemma' && $row['selected']=='1') {
+	  $annotations['lemma'] = $row['value'];
+	}
+	else if($row['class']=='POS') {
+	  $tag = $row['value'];
+	  if((substr($tag, -1)=='.') && (substr_count($tag, '.')==1)) {
+	    $pos = $tag;
+	    $morph = "";
+	  }
+	  else {
+	    $attribs = explode('.',$tag,2);
+	    $pos = $attribs[0];
+	    $morph = $attribs[1];
+	  }
+
+	  if($row['selected']=='1') {
+	    $annotations['POS'] = $pos;
+	    $annotations['morph'] = $morph;
+	  }
+	  if($row['source']=='auto') {
+	    $annotations['suggestions'][] = array('pos' => $pos,
+						  'morph' => $morph,
+						  'score' => $row['score']);
+	  }
+	}
       }
       
-      $qs = "	SELECT tag_name,tag_probability,tag_suggestion_id FROM {$this->db}.files_tags_suggestion
-					WHERE file_id='{$fileid}' AND line_id='{$line['line_id']}' AND tagtype='morph' ORDER BY tag_probability";
-      $q = $this->query($qs);
-      
-      $tag_suggestions_morph = array();
-      while($row = @mysql_fetch_assoc($q)){
-	$tag_suggestions_morph[] = $row;
-      }
-      
-      $data[$line['line_id']] = array_merge($line,array("suggestions_pos"=>$tag_suggestions_pos, "suggestions_morph"=>$tag_suggestions_morph));
+      $data[] = array_merge($line,array("anno"=>$annotations));
     }
         
     return $data;
@@ -1104,23 +1135,6 @@ class DBInterface extends DBConnector {
     return $this->query( $qs );
   }
 
-  /** Get the highest tag id from an given tagset.
-   *
-   * Retrieves the maximal id of stored tags from a given tagset.
-   *
-   * This function is called from Java Script when a user adds tags to an tagset
-   * after tag unmatches at a file import.
-   * 
-   * @param string $tagset the tagset
-   *
-   * @return string the maximal tag id
-   */
-  public function getHighestTagId($tagset){
-    $qs = "SELECT max(id) FROM {$this->db}.tagset_tags WHERE tagset='{$tagset}'";
-    $row = @mysql_fetch_array($this->query($qs));
-    return $row[0];
-  }
-  
   /** Add a list of tags as a new POS tagset. */
   public function importTagList($taglist, $tagsetname){
     $tagarray = array();

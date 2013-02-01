@@ -217,8 +217,8 @@ class SessionHandler {
 
     $lock = $this->db->openFile($fileid);
     if($lock['success']){
-      $_SESSION['currentFileId'] = $lock['data']['file_id'];
-      $_SESSION['currentName'] = $lock['data']['file_name'];
+      $_SESSION['currentFileId'] = $lock['data']['id'];
+      $_SESSION['currentName'] = $lock['data']['fullname'];
       $lock['lastPage'] = $this->calculateEditorPage($lock['lastEditedRow']);
       $lock['maxLinesNo'] = $this->getMaxLinesNo();
     }
@@ -303,11 +303,6 @@ class SessionHandler {
     return $this->db->getLines($_SESSION['currentFileId'],$start,$lim);
   }
   
-  /** Wraps DBInterface::getToken() */
-  public function getToken($fileid){
-    return $this->db->getToken($fileid);
-  }
-  
   /** Get the total number of lines for the currently open document. */
   public function getMaxLinesNo(){
     $anz = $this->db->getMaxLinesNo($_SESSION['currentFileId']);
@@ -362,8 +357,8 @@ class SessionHandler {
 	  // file already opened?
 	  $data = $this->db->getLockedFiles($user);
 	  if(!empty($data)){
-		$_SESSION['currentFileId'] = $data[0];
-		$_SESSION['currentName'] = $data[1];
+		$_SESSION['currentFileId'] = $data['file_id'];
+		$_SESSION['currentName'] = $data['file_name'];
 	  }
 
 	  //editor settings

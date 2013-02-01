@@ -162,7 +162,7 @@ class XMLHandler {
 
     // check names
     if(isset($options['name']) && !empty($options['name'])) {
-      if($this->db->queryForMetadata("file_name", $options['name'])){
+      if($this->db->queryForMetadata("fullname", $options['name'])){
 	$warnings[] = "Ein Dokument mit dem Namen '".$options['name']."' existiert bereits.";
       }
     }

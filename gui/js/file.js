@@ -122,97 +122,59 @@ var file = {
 
        Parses tagset data and builds HTML code for drop-down boxes.
     */
-    preprocessTagset: function(data, tagsetname) {
-	var posHTML = "";
-	var tags = $H(data.tags);
-	var attribs = $H(data.attribs);
-	var taglist = Object.values(tags);
-
-	taglist.sort(function(tag_a,tag_b) {
-	    var a = tag_a.shortname;
-	    var b = tag_b.shortname;
-	    return a < b ? -1 : a > b ? 1 : 0;
-	});
-
+    preprocessTagset: function(taglist) {
+	var posarray = new Array();
 	fileTagset.pos = new Array();
-	fileTagset.attribs = attribs;
 	fileTagset.morph = {};
 
-	taglist.each(function(tag) {
-	    fileTagset.pos.push(tag.shortname);
-	    posHTML += '<option value="';
-	    posHTML += tag.shortname;
-	    posHTML += '">';
-	    posHTML += tag.shortname;
-	    posHTML += "</option>";
+	Array.each(taglist, function(data) {
+	    var tag = data.value;
+	    var pos = "", morph = "";
+	    // split into POS + morph
+	    var dotidx = tag.indexOf('.');
+	    if(dotidx<0 || dotidx==(tag.length-1)) {
+		pos = tag;
+	    }
+	    else {
+		pos = tag.substr(0, dotidx);
+		morph = tag.substr(dotidx+1);
+	    }
 
-	    if (tag.link && tag.link.length > 0) {
-		var combinations = null;
-		// ensure the correct order of morphology tags
-		tag.link.sort(function(link_a,link_b) {
-		    var a = attribs[link_a].shortname;
-		    var b = attribs[link_b].shortname;
-		    return a < b ? -1 : a > b ? 1 : 0;
-		});
-		// build all valid combinations of morphology tags
-		tag.link.each(function(link) {
-		    if (!combinations) {
-			combinations = attribs[link].val;
-		    } else {
-			var updated = new Array();
-			attribs[link].val.each(function(val) {
-			    combinations.each(function(text) {
-				/* stars are replaced for the sort to
-				 * put them after alphabetic entities */
-				updated.push((text + "." + val).replace(/\*/g,"ZZZ@"));
-			    });
-			});
-			combinations = updated;
-		    }
-		});
-		// TODO: hard-coded hack! Tags shouldn't be build this
-		// way, but supplied by the server, and probably
-		// stored there as a simple list.
-		if (tagsetname == 'FNHDTS') {
-		    combinations = combinations.filter(function(tagstr) {
-			if(tagstr.contains('Pl','.')) {
-			    if(tagstr.contains('Mask','.') ||
-			       tagstr.contains('Fem','.')  ||
-			       tagstr.contains('Neut','.') ||
-			       tagstr.contains('MF','.')   ||
-			       tagstr.contains('MN','.')   ||
-			       tagstr.contains('FN','.')) {
-				return false;
-			    }
-			}
-			return true;
-		    });
-		    allstar = "ZZZ@";
-		    for (var i=1; i<tag.link.length; i++) {
-			allstar = allstar + ".ZZZ@"
-		    }
-		    combinations.push(allstar);
+	    // add POS
+	    posarray.push(pos);
+	    // add morph
+	    if(morph !== "") {
+		if(!(pos in fileTagset.morph)) {
+		    fileTagset.morph[pos] = new Array();
 		}
-		
-		// build HTML tags
-		fileTagset.morph[tag.shortname] = new Array();
-		var morphHTML = "";
-		combinations.sort();
-		combinations.each(function(combi) {
-		    combi = combi.replace(/ZZZ@/g, "*");
-		    fileTagset.morph[tag.shortname].push(combi);
+		fileTagset.morph[pos].push(morph);
+	    }
+	});
+	fileTagset.pos = posarray.unique();
+	
+	// generate HTML code
+	var posHTML = "";
+	Array.each(fileTagset.pos, function(pos) {
+	    var morphHTML = "";
+	    posHTML += '<option value="';
+	    posHTML += pos;
+	    posHTML += '">';
+	    posHTML += pos;
+	    posHTML += "</option>";
+	    if(fileTagset.morph[pos]) {
+		Array.each(fileTagset.morph[pos], function(morph) {
 		    morphHTML += '<option value="';
-		    morphHTML += combi;
+		    morphHTML += morph;
 		    morphHTML += '">';
-		    morphHTML += combi;
+		    morphHTML += morph;
 		    morphHTML += "</option>";
 		});
-
-		fileTagset.morphHTML[tag.shortname] = morphHTML;
-	    } else {
-		fileTagset.morph[tag.shortname] = new Array("--");
-		fileTagset.morphHTML[tag.shortname] = '<option value="--">--</option>';
 	    }
+	    else {
+		fileTagset.morph[pos] = new Array("--");
+		morphHTML = '<option value="--">--</option>';
+	    }
+	    fileTagset.morphHTML[pos] = morphHTML;
 	});
 	fileTagset.posHTML = posHTML;
     },
@@ -241,9 +203,9 @@ var file = {
         		            url: "request.php",
         		            async: true,
 				    method: 'get',
-				    data: {'do':'fetchTagset','name':fileData.data.tagset},
+				    data: {'do':'fetchTagset','tagset_id':fileData.data.tagset_id},
         		            onComplete: function(response){
-					ref.preprocessTagset(response, fileData.data.tagset);
+					ref.preprocessTagset(response);
 					afterLoadTagset();
         		            }
         		        }).send();
