@@ -74,7 +74,7 @@ var EditorModel = new Class({
 		if(target.hasClass('editTableError')) {
 		    new_value = target.hasClass('editTableErrorChecked') ? 0 : 1;
 		    target.toggleClass('editTableErrorChecked');
-		    ref.updateData(this_id, 'errorChk', new_value);
+		    ref.updateData(this_id, 'general_error', new_value);
 		} else if(target.hasClass('editTableProgress')) {
 		    new_value = target.hasClass('editTableProgressChecked') ? false : true;
 		    ref.updateProgress(this_id, new_value);
@@ -88,12 +88,12 @@ var EditorModel = new Class({
 		var parent = target.getParent('td');
 		var new_value = target.getSelected()[0].get('value');
 		if (parent.hasClass("editTable_POS")) {
-		    ref.updateData(this_id, 'tag_POS', new_value);
+		    ref.updateData(this_id, 'anno_POS', new_value);
 		    ref.renderMorphOptions(this_id, target.getParent('tr'), new_value);
 		    if (userdata.showInputErrors)
 			ref.updateInputError(target.getParent('tr'));
 		} else if (parent.hasClass("editTable_Morph")) {
-		    ref.updateData(this_id, 'tag_morph', new_value);
+		    ref.updateData(this_id, 'anno_morph', new_value);
 		    if (userdata.showInputErrors)
 			ref.updateInputError(target.getParent('tr'));
 		}
@@ -107,10 +107,10 @@ var EditorModel = new Class({
 		var parent = target.getParent('td');
 		var new_value = target.get('value');
 		if (parent.hasClass("editTable_Norm")) {
-		    ref.updateData(this_id, 'tag_norm', new_value);
+		    ref.updateData(this_id, 'anno_norm', new_value);
 		    ref.updateProgress(this_id, true);
 		} else if (parent.hasClass("editTable_Lemma")) {
-		    ref.updateData(this_id, 'lemma', new_value);
+		    ref.updateData(this_id, 'anno_lemma', new_value);
 		    ref.updateProgress(this_id, true);
 		} else if (parent.hasClass("editTable_Comment")) {
 		    ref.updateData(this_id, 'comment', new_value);
@@ -225,9 +225,9 @@ var EditorModel = new Class({
 	}
 
 	line = this.data[id];
-	if (line.anno.suggestions) {
+	if (line.suggestions) {
 	    suggestions = new Element('optgroup', {'label': 'Vorgeschlagene Tags', 'class': 'lineSuggestedTag'});
-	    line.anno.suggestions.each(function(opt){
+	    line.suggestions.each(function(opt){
 		suggestions.grab(new Element('option',{
 		    html: opt.morph+" ("+opt.score+")",
 		    value: opt.morph,
@@ -238,8 +238,8 @@ var EditorModel = new Class({
 
 	mselect.empty();
 	mselect.grab(new Element('option',{
-	    html: line.anno.morph,
-	    value: line.anno.morph,
+	    html: line.anno_morph,
+	    value: line.anno_morph,
 	    selected: 'selected',
 	    'class': 'lineSuggestedTag'
 	}),'top');
@@ -580,11 +580,12 @@ var EditorModel = new Class({
 	    } else {
 		tr.getElement('div.editTableProgress').removeClass('editTableProgressChecked');
 	    }
-	    if (line.error != null && line.error == "general error") {
+	    if (line.general_error != null && line.general_error == 1) {
 		tr.getElement('div.editTableError').addClass('editTableErrorChecked');
 	    } else {
 		tr.getElement('div.editTableError').removeClass('editTableErrorChecked');
 	    }
+	    tr.getElement('.editTable_tok_trans').set('html', line.trans);
 	    tr.getElement('.editTable_token').set('html', line.utf);
 	    tr.getElement('.editTable_tokenid').set('html', i+1);
 	    tr.getElement('.editTable_Comment input').set('value', line.comment); // XXXXXX
@@ -592,16 +593,16 @@ var EditorModel = new Class({
 	    // build annotation elements
 	    var norm_tr = tr.getElement('.editTable_Norm input');
 	    if(norm_tr != null && norm_tr != undefined) {
-		norm_tr.set('value', line.anno.norm);
+		norm_tr.set('value', line.anno_norm);
 	    }
-	    tr.getElement('.editTable_Lemma input').set('value', line.anno.lemma);
+	    tr.getElement('.editTable_Lemma input').set('value', line.anno_lemma);
 
             // POS
 	    posopt = tr.getElement('.editTable_POS select');
 	    posopt.getElements('.lineSuggestedTag').destroy();
-	    if(line.anno.suggestions.length>0) {
+	    if(line.suggestions.length>0) {
 		optgroup = new Element('optgroup', {'label': 'Vorgeschlagene Tags', 'class': 'lineSuggestedTag'});
-		line.anno.suggestions.each(function(opt){
+		line.suggestions.each(function(opt){
 		    optgroup.grab(new Element('option',{
 			html: opt.POS+" ("+opt.score+")",
 			value: opt.POS,
@@ -611,15 +612,15 @@ var EditorModel = new Class({
 		posopt.grab(optgroup, 'top');
 	    }
 	    if(sie){ // this should never happen with the new DB, I guess?
-		if(line.anno.POS && !pos.contains(line.anno.POS)) {
+		if(line.anno_POS && !pos.contains(line.anno_POS)) {
 		    posopt.addClass(iec);
 		} else {
 		    posopt.removeClass(iec);
 		}
 	    }
 	    posopt.grab(new Element('option',{
-		html: line.anno.POS,
-		value: line.anno.POS,
+		html: line.anno_POS,
+		value: line.anno_POS,
 		selected: 'selected',
 		'class': 'lineSuggestedTag'
 	    }),'top');
@@ -627,23 +628,23 @@ var EditorModel = new Class({
             // Morph
 	    mselect = tr.getElement('.editTable_Morph select');
 	    mselect.empty();
-	    mselect.grab(new Element('option',{html: line.anno.morph,
-					       value: line.anno.morph,
+	    mselect.grab(new Element('option',{html: line.anno_morph,
+					       value: line.anno_morph,
 					       selected: 'selected',
 					       'class': 'lineSuggestedTag'
 					      }));
-	    if(sie && line.anno.POS){
-		if(morph[line.anno.POS]==null
-		   || !morph[line.anno.POS].contains(line.anno.morph)) {
+	    if(sie && line.anno_POS){
+		if(morph[line.anno_POS]==null
+		   || !morph[line.anno_POS].contains(line.anno_morph)) {
 		    mselect.addClass(iec);
 		} else {
 		    mselect.removeClass(iec);
 		}
 	    }
 
-	    if (line.anno.suggestions.length>0) {
+	    if (line.suggestions.length>0) {
 		optgroup = new Element('optgroup', {'label': 'Vorgeschlagene Tags', 'class': 'lineSuggestedTag'});
-		line.anno.suggestions.each(function(opt){
+		line.suggestions.each(function(opt){
 		    optgroup.grab(new Element('option',{
 			html: opt.morph+" ("+opt.score+")",
 			value: opt.morph,
@@ -653,9 +654,9 @@ var EditorModel = new Class({
 		mselect.grab(optgroup);
 	    }
 
-	    if (line.anno.POS!=null) {
-		mselect.grab(new Element('optgroup', {'label': "Alle Tags für '"+line.anno.POS+"'",
-						      html: morphhtml[line.anno.POS]}));
+	    if (line.anno_POS!=null) {
+		mselect.grab(new Element('optgroup', {'label': "Alle Tags für '"+line.anno_POS+"'",
+						      html: morphhtml[line.anno_POS]}));
 	    }
 	}
 
@@ -750,7 +751,7 @@ var EditorModel = new Class({
        to the database.
      */
     saveData: function() {
-	var req, cl, data, save, line, tp, tm;
+	var req, cl, data, save, line, tp, tm, ler;
 	var ref = this;
 	var spin = this.spinner;
 
@@ -761,21 +762,22 @@ var EditorModel = new Class({
 
 	for (var i=0, len=cl.length; i<len; i++) {
 	    line=data[cl[i]];
-	    tp = line.tag_POS==null ? "" : line.tag_POS;
-	    tm = line.tag_morph==null ? "" : line.tag_morph;
+	    tp = line.anno_POS==null ? "" : line.anno_POS;
+	    tm = line.anno_morph==null ? "" : line.anno_morph;
 	    save.push({
-		line_id: line.line_id,
-		errorChk: line.errorChk,
-		lemma: line.lemma,
-		tag_POS: tp, //.replace(/\s[\d\.]+/g,""),
-		tag_morph: tm, //.replace(/\s[\d\.]+/g,""),
-		tag_norm: line.tag_norm,
+		id: line.id,
+		general_error: line.general_error,
+		anno_lemma: line.anno_lemma,
+		anno_POS: tp, //.replace(/\s[\d\.]+/g,""),
+		anno_morph: tm, //.replace(/\s[\d\.]+/g,""),
+		anno_norm: line.anno_norm,
 		comment: line.comment
 	    });
 	}
 
+	var ler = data[this.lastEditedRow].id;
 	req = new Request.JSON({
-	    url: 'request.php?do=saveData&lastEditedRow='+this.lastEditedRow,
+	    url: 'request.php?do=saveData&lastEditedRow='+ler,
 	    onSuccess: function(status,xml) {
 		var title="", message="", textarea="";
 
@@ -815,7 +817,7 @@ var EditorModel = new Class({
 	    onFailure: function(xhr) {
 		new mBox.Modal({
 		    title: 'Speichern fehlgeschlagen',
-		    content: 'Das Speichern der Datei war nicht erfolgreich! Server lieferte folgende Antwort: "'+xhr+'".'
+		    content: 'Das Speichern der Datei war nicht erfolgreich! Server lieferte folgende Antwort: "'+xhr.responseText+'" ('+xhr.statusText+').'
 		}).open();
 		spin.hide();
 		$('overlay').hide();

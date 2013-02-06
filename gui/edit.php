@@ -22,7 +22,8 @@
 			<th class="editTable_progress">P</th>
 			<th class="editTable_tokenid">#</th>
 			<th class="editTable_error">E</th>
-			<th class="editTable_token">Token</th>
+                        <th class="editTable_tok_trans">Token (Trans)</th>
+                        <th class="editTable_token">Token (UTF)</th>
    <?php if($_SESSION["normvisible"]): ?>
 			<th class="editTable_Norm">Normalisierte Form</th>
    <?php endif; ?>
@@ -42,6 +43,7 @@
 			<td class="editTable_error">
 			    <div class="editTableError"></div>
 			</td>
+			<td class="editTable_tok_trans"></td>
 			<td class="editTable_token"></td>
    <?php if($_SESSION["normvisible"]): ?>
 			<td class="editTable_Norm">

@@ -13,9 +13,7 @@
 /** The database settings. */
 require_once 'globals.php';
 
-/** Exception when an SQL query fails; currently only used by @c
- *  LongSQLQuery class.
- */
+/** Exception when an SQL query fails. */
 class SQLQueryException extends Exception { }
 
 /** Class enabling arbitrarily long SQL queries by breaking them up
@@ -27,13 +25,15 @@ class LongSQLQuery {
   private $db;         /**< The database connector to be used. */
   private $len;
   private $qa;
+  private $delim;
 
-  public function __construct($db, $head="", $tail="") {
+  public function __construct($db, $head="", $tail="", $delim=", ") {
     $this->db   = $db;
     $this->head = $head;
     $this->tail = $tail;
     $this->len  = strlen($head) + strlen($tail) + 2;
     $this->qa   = array();
+    $this->delim = $delim;
   }
 
   /** Append a new list (i.e., comma-separated) item to the query. */
@@ -54,7 +54,7 @@ class LongSQLQuery {
     if(empty($this->qa)){ return False; }
 
     $query  = $this->head . ' ';
-    $query .= implode(', ', $this->qa);
+    $query .= implode($this->delim, $this->qa);
     $query .= ' ' . $this->tail;
 
     if(!$this->db->query($query)){
@@ -79,7 +79,7 @@ class DBConnector {
   private $db_server   = DB_SERVER;   /**< Name of the server to connect to. */
   private $db_user     = DB_USER;     /**< Username to be used for database access. */
   private $db_password = DB_PASSWORD; /**< Password to be used for database access. */
-  public  $db          = MAIN_DB;     /**< Name of the database to be used. */
+  private $db          = MAIN_DB;     /**< Name of the database to be used. */
   private $transaction = false;
 
   /** Create a new DBConnector.
@@ -105,6 +105,10 @@ class DBConnector {
    */
   public function setDefaultDatabase( $name ) {
     $this->db = $name;
+  }
+
+  public function getDatabase() {
+    return $this->db;
   }
 
   /** Select a database.
@@ -149,7 +153,6 @@ class DBConnector {
    * @return The result of the respective @c mysql_query() command.
    */
    public function query( $query ) { 
-     $this->selectDatabase( $this->db );
      return mysql_query( $query, $this->dbobj ); 
    }
 
@@ -162,7 +165,7 @@ class DBConnector {
    * @param string $query Query string in SQL syntax.
    * @return The result of the respective @c mysql_query() command.
    */
-  protected function criticalQuery($query) {
+  public function criticalQuery($query) {
     $status = $this->query($query);
     if (!$status) {
       if ($this->transaction) {
@@ -204,15 +207,26 @@ class DBConnector {
  * or more SQL queries be sent to the database, these queries should
  * be encapsulated in a member function of this class.
  */
-class DBInterface extends DBConnector {
+class DBInterface {
+  private $dbconn;
+  private $db;
 
   /** Create a new DBInterface.
    *
    * Also sets the default database to the MAIN_DB constant.
    */
-  function __construct() {
-    parent::__construct();
-    $this->setDefaultDatabase( MAIN_DB );
+  function __construct($dbconn) {
+    $this->dbconn = $dbconn;
+    $this->dbconn->setDefaultDatabase( MAIN_DB );
+    $this->db = MAIN_DB;
+  }
+
+  private function query($query) {
+    return $this->dbconn->query($query);
+  }
+
+  private function criticalQuery($query) {
+    return $this->dbconn->criticalQuery($query);
   }
 
   /** Return the hash of a given password string. */
@@ -234,7 +248,7 @@ class DBInterface extends DBConnector {
     $qs = "SELECT `id`, name, admin, lastactive FROM {$this->db}.users "
       . "WHERE name='{$user}' AND password='{$pw_hash}' AND `id`!=1 LIMIT 1";
     $query = $this->query( $qs );
-    return @mysql_fetch_array( $query );
+    return @mysql_fetch_assoc( $query );
   }
 
   /** Get user info by id.
@@ -243,7 +257,7 @@ class DBInterface extends DBConnector {
     $qs = "SELECT `id`, name, admin, lastactive FROM {$this->db}.users "
       . "WHERE `id`={$uid}";
     $query = $this->query( $qs );
-    return @mysql_fetch_array( $query );
+    return @mysql_fetch_assoc( $query );
   }
   
   /** Get user info by name.
@@ -252,7 +266,7 @@ class DBInterface extends DBConnector {
     $qs = "SELECT `id`, name, admin, lastactive FROM {$this->db}.users "
       . "WHERE name='{$uname}'";
     $query = $this->query( $qs );
-    return @mysql_fetch_array( $query );
+    return @mysql_fetch_assoc( $query );
   }
 
   /** Get user ID by name.  Often used because formerly, users were
@@ -263,7 +277,7 @@ class DBInterface extends DBConnector {
   public function getUserIDFromName($uname) {
     $qs = "SELECT `id` FROM {$this->db}.users WHERE name='{$uname}'";
     $query = $this->query( $qs );
-    $row = @mysql_fetch_array( $query );
+    $row = @mysql_fetch_assoc( $query );
     return $row['id'];
   }
 
@@ -289,7 +303,7 @@ class DBInterface extends DBConnector {
     $qs = "SELECT `id`, name, admin, lastactive FROM {$this->db}.users WHERE `id`!=1";
     $query = $this->query( $qs );
     $users = array();
-    while ( @$row = mysql_fetch_array($query) ) {
+    while ( @$row = mysql_fetch_assoc($query) ) {
       $users[] = $row;
     }
     return $users;
@@ -306,7 +320,7 @@ class DBInterface extends DBConnector {
     $result = array();
     $qs = "SELECT * FROM {$this->db}.tagset WHERE `class`='POS' ORDER BY `name`";
     $query = $this->query($qs);
-    while ( @$row = mysql_fetch_array( $query, $this->dbobj ) ) {
+    while ( @$row = mysql_fetch_assoc( $query, $this->dbobj ) ) {
       $data = array();
       $data["shortname"] = $row["id"];
       $data["longname"] = $row["name"];
@@ -329,7 +343,7 @@ class DBInterface extends DBConnector {
     $qs  = "SELECT `id`, `value`, `needs_revision` FROM {$this->db}.tag ";
     $qs .= "WHERE `tagset_id`='{$tagset}' ORDER BY `value`";
     $query = $this->query($qs);
-    while ( @$row = mysql_fetch_array( $query, $this->dbobj ) ) {
+    while ( @$row = mysql_fetch_assoc( $query, $this->dbobj ) ) {
       $tags[] = array('id' => $row['id'],
 		      'value' => $row['value'],
 		      'needs_revision' => $row['needs_revision']);
@@ -381,7 +395,7 @@ class DBInterface extends DBConnector {
    * @return The result of the corresponding @c mysql_query() command
    */
   public function changeProjectUsers($pid, $userlist) {
-    $this->startTransaction();
+    $this->dbconn->startTransaction();
     $qs = "DELETE FROM {$this->db}.user2project WHERE project_id='".$pid."'";
     $message = "";
     $status = $this->query($qs);
@@ -397,15 +411,15 @@ class DBInterface extends DBConnector {
 	$status = $this->query($qs);
       }
       if ($status) {
-	$this->commitTransaction();
+	$this->dbconn->commitTransaction();
       } else {
 	$message = mysql_error();
-	$this->rollback();
+	$this->dbconn->rollback();
       }
     }
     else {
       $message = mysql_error();
-      $this->rollback();
+      $this->dbconn->rollback();
     }
     return array('success' => $status, 'message' => $message);
   }
@@ -474,7 +488,7 @@ class DBInterface extends DBConnector {
    * @return An error message if insertion failed, False otherwise
    */
   public function insertNewDocument(&$options, &$data){
-    $this->startTransaction();
+    $this->dbconn->startTransaction();
 
     // Insert metadata
     $metadata  = "INSERT INTO {$this->db}.files_metadata ";
@@ -493,7 +507,7 @@ class DBInterface extends DBConnector {
     if(!$this->query($metadata)){
       $errstr = "Fehler beim Schreiben in 'files_metadata':\n" .
 	mysql_errno() . ": " . mysql_error() . "\n";
-      $this->rollback();
+      $this->dbconn->rollback();
       return $errstr;
     }
 
@@ -518,7 +532,7 @@ class DBInterface extends DBConnector {
 
     try {
       foreach($data as $index=>$token){
-	$token = $this->escapeSQL($token);
+	$token = $this->dbconn->escapeSQL($token);
 	$qs = "('{$file_id}', {$index}, '".
 	  mysql_real_escape_string($token['id'])."', '".
 	  mysql_real_escape_string($token['form'])."', '".
@@ -528,7 +542,7 @@ class DBInterface extends DBConnector {
 	  mysql_real_escape_string($token['lemma'])."', '".
 	  mysql_real_escape_string($token['comment'])."')";
 	$status = $data_table->append($qs);
-	if($status){ $this->rollback(); return $status; }
+	if($status){ $this->dbconn->rollback(); return $status; }
 	foreach($token['suggestions'] as $sugg){
 	  $qs = "('{$file_id}', {$index}, ".$sugg['index'].
 	    ", '".$sugg['type']."', '".
@@ -536,26 +550,26 @@ class DBInterface extends DBConnector {
 	    "', ".$sugg['score'].", '".
 	    mysql_real_escape_string($token['lemma'])."')";
 	  $status = $sugg_table->append($qs);
-	  if($status){ $this->rollback(); return $status; }
+	  if($status){ $this->dbconn->rollback(); return $status; }
 	}
 	if(!empty($token['error'])){
 	  $qs = "('{$file_id}', {$index}, '@@global@@', '".
 	    $token['error']."')";
 	  $status = $err_table->append($qs);
-	  if($status){ $this->rollback(); return $status; }
+	  if($status){ $this->dbconn->rollback(); return $status; }
 	}
       }
       $status = $data_table->flush();
-      if($status){ $this->rollback(); return $status; }
+      if($status){ $this->dbconn->rollback(); return $status; }
       $status = $sugg_table->flush();
-      if($status){ $this->rollback(); return $status; }
+      if($status){ $this->dbconn->rollback(); return $status; }
       $status = $err_table->flush();
-      if($status){ $this->rollback(); return $status; }
+      if($status){ $this->dbconn->rollback(); return $status; }
 
       $this->unlockFile($file_id, "@@@system@@@");
-      $this->commitTransaction();
+      $this->dbconn->commitTransaction();
     } catch (SQLQueryException $e) {
-      $this->rollback();
+      $this->dbconn->rollback();
       return "Fehler beim Importieren der Daten:\n" . $e . "\n";
     }
     
@@ -647,6 +661,28 @@ class DBInterface extends DBConnector {
     return $this->query($qs);
   }
   
+
+  /** Get tagsets associated with a file.
+   *
+   * Retrieves a list of tagsets with their respective class for the
+   * given file.
+   */
+  public function getTagsetsForFile($fileid) {
+    $qs  = "SELECT ts.id, ts.class ";
+    $qs .= "FROM   {$this->db}.text2tagset ttt ";
+    $qs .= "  LEFT JOIN {$this->db}.tagset ts  ON ts.id=ttt.tagset_id ";
+    $qs .= "WHERE  ttt.text_id='{$fileid}'";
+    $q = $this->query($qs);
+    $qerr = mysql_error();
+    if($qerr) { return $qerr; }
+
+    $tslist = array();
+    while($row = @mysql_fetch_assoc($q)) {
+      $tslist[] = $row;
+    }
+    return $tslist;
+  }
+
   /** Open a file.
    *
    * Retrieves metadata and users progress data for the given file.
@@ -734,28 +770,28 @@ class DBInterface extends DBConnector {
    * @return bool @c true 
    */	
   public function deleteFile($fileid){
-    $this->startTransaction();
+    $this->dbconn->startTransaction();
     $this->lockFile($fileid, "system");
     
     $qs = "	DELETE FROM {$this->db}.files_metadata WHERE file_id='{$fileid}'";
-    if(!$this->query($qs)) { $this->rollback(); return "Query for metadata failed."; }
+    if(!$this->query($qs)) { $this->dbconn->rollback(); return "Query for metadata failed."; }
     
     $qs = "	DELETE FROM {$this->db}.files_tags_suggestion WHERE file_id='{$fileid}'";							 
-    if(!$this->query($qs)) { $this->rollback(); return "Query for tags_suggestion failed."; }
+    if(!$this->query($qs)) { $this->dbconn->rollback(); return "Query for tags_suggestion failed."; }
     
     $qs = "	DELETE FROM {$this->db}.files_data WHERE file_id='{$fileid}'";
-    if(!$this->query($qs)) { $this->rollback(); return "Query for data failed."; }
+    if(!$this->query($qs)) { $this->dbconn->rollback(); return "Query for data failed."; }
     
     $qs = "DELETE FROM {$this->db}.files_errors WHERE file_id='{$fileid}'";
-    if(!$this->query($qs)) { $this->rollback(); return "Query for errors failed."; }
+    if(!$this->query($qs)) { $this->dbconn->rollback(); return "Query for errors failed."; }
     
     $qs = "DELETE FROM {$this->db}.files_progress WHERE file_id='{$fileid}'";
-    if(!$this->query($qs)) { $this->rollback(); return "Query for progress failed."; }
+    if(!$this->query($qs)) { $this->dbconn->rollback(); return "Query for progress failed."; }
     
     $qs = "DELETE FROM {$this->db}.files_locked WHERE file_id='{$fileid}'";
     $this->query($qs);
     
-    $this->commitTransaction();
+    $this->dbconn->commitTransaction();
     
     return false;
   }
@@ -982,12 +1018,9 @@ class DBInterface extends DBConnector {
 
     $qs  = "SELECT q.*, @rownum := @rownum + 1 AS num FROM ";
     $qs .= "  (SELECT modern.id, modern.trans, modern.utf, ";
-    $qs .= "          modern.tok_id, token.trans AS tok_trans, ";
-    $qs .= "          error_types.name as error ";
+    $qs .= "          modern.tok_id, token.trans AS full_trans ";
     $qs .= "   FROM   {$this->db}.token ";
     $qs .= "     LEFT JOIN {$this->db}.modern ON modern.tok_id=token.id ";
-    $qs .= "     LEFT JOIN {$this->db}.mod2error ON modern.id=mod2error.mod_id ";
-    $qs .= "     LEFT JOIN {$this->db}.error_types ON mod2error.error_id=error_types.id ";
     // Layout-Info mit JOINen?
     $qs .= "   WHERE  token.text_id='{$fileid}' ";
     $qs .= "   ORDER BY token.ordnr ASC, modern.id ASC) q ";
@@ -995,11 +1028,30 @@ class DBInterface extends DBConnector {
     $qs .= "LIMIT {$start},{$lim}";
     $query = $this->query($qs); 		
 
-    // this could already be included in the query above,
-    // but might get more complicated ... could speed become an issue?
+    /* The following loop separately performs all queries on a
+       line-by-line basis that can potentially return more than one
+       result row.  Integrating this in the SELECT above might yield
+       better performance, but will be more complicated to process (as
+       the 1:1 relation between rows and modern tokens is no longer
+       guaranteed).  Change this only if performance becomes an issue.
+     */
     while($line = @mysql_fetch_assoc($query)){
       $mid = $line['id'];
 
+      // Error annotations
+      $qs  = "SELECT error_types.name ";
+      $qs .= "FROM   {$this->db}.modern ";
+      $qs .= "  LEFT JOIN {$this->db}.mod2error ON modern.id=mod2error.mod_id ";
+      $qs .= "  LEFT JOIN {$this->db}.error_types ON mod2error.error_id=error_types.id ";
+      $qs .= "WHERE  modern.id='{$mid}'";
+      $q = $this->query($qs);
+      while($row = @mysql_fetch_assoc($q)) {
+	if($row['name']=='general error') {
+	  $line['general_error'] = 1;
+	}
+      }
+
+      // Annotations
       $qs  = "SELECT tag.value, ts.score, ts.selected, ts.source, tt.class ";
       $qs .= "FROM   {$this->db}.modern";
       $qs .= "  LEFT JOIN ({$this->db}.tag_suggestion ts, {$this->db}.tag) ";
@@ -1010,13 +1062,13 @@ class DBInterface extends DBConnector {
       
       // prepare results for CorA---this is less flexible, but
       // probably faster than doing it on the client side
-      $annotations = array("suggestions" => array());
+      $line['suggestions'] = array();
       while($row = @mysql_fetch_assoc($q)){
 	if($row['class']=='norm' && $row['selected']=='1') {
-	  $annotations['norm'] = $row['value'];
+	  $line['anno_norm'] = $row['value'];
 	}
 	else if($row['class']=='lemma' && $row['selected']=='1') {
-	  $annotations['lemma'] = $row['value'];
+	  $line['anno_lemma'] = $row['value'];
 	}
 	else if($row['class']=='POS') {
 	  $tag = $row['value'];
@@ -1031,18 +1083,18 @@ class DBInterface extends DBConnector {
 	  }
 
 	  if($row['selected']=='1') {
-	    $annotations['POS'] = $pos;
-	    $annotations['morph'] = $morph;
+	    $line['anno_POS'] = $pos;
+	    $line['anno_morph'] = $morph;
 	  }
 	  if($row['source']=='auto') {
-	    $annotations['suggestions'][] = array('pos' => $pos,
-						  'morph' => $morph,
-						  'score' => $row['score']);
+	    $line['suggestions'][] = array('POS' => $pos,
+					   'morph' => $morph,
+					   'score' => $row['score']);
 	  }
 	}
       }
       
-      $data[] = array_merge($line,array("anno"=>$annotations));
+      $data[] = $line;
     }
         
     return $data;
@@ -1052,8 +1104,17 @@ class DBInterface extends DBConnector {
    *
    * This function is called from the session handler during the
    * saving process.  
+   *
+   * Important: Empty annotations in $lines will cause the respective
+   * entry in the database to be deleted (if any), but missing
+   * annotations will cause no modifications in the database. Illegal
+   * POS tags or POS+morph combinations are ignored, and the
+   * respective DB entry is not modified.
    * 
    * @param string $fileid the file id
+   * @param string $lasteditedrow the id of the mod which
+   *               should receive the progress marker
+   * @param array  $lines an array of mods to be saved
    *
    * @return @bool the result of the mysql query
    */ 		
@@ -1062,55 +1123,235 @@ class DBInterface extends DBConnector {
     if(!$locked['success']) {
       return "lock failed";
     }
-    
-    $this->startTransaction();
-    
-    // data insertion query
-    $qhead  = "INSERT INTO {$this->db}.files_data (file_id, line_id, ";
-    $qhead .= "lemma, tag_POS, tag_morph, tag_norm, comment) VALUES";
-    $qtail  = "ON DUPLICATE KEY UPDATE lemma=VALUES(lemma), ";
-    $qtail .= "tag_POS=VALUES(tag_POS), tag_morph=VALUES(tag_morph), ";
-    $qtail .= "tag_norm=VALUES(tag_norm), comment=VALUES(comment)";
-    $query  = new LongSQLQuery($this, $qhead, $qtail);
-    // error highlighting query
-    $eonhd  = "INSERT INTO {$this->db}.files_errors (file_id, ";
-    $eonhd .= "line_id, user, value) VALUES";
-    $eontl  = "ON DUPLICATE KEY UPDATE user='@@global@@'";
-    $erron  = new LongSQLQuery($this, $eonhd, $eontl);
-    // error un-highlighting query
-    $eofhd  = "DELETE FROM {$this->db}.files_errors WHERE ";
-    $eofhd .= "file_id='{$fileid}' AND line_id IN (";
-    $eoftl  = ")";
-    $erroff = new LongSQLQuery($this, $eofhd, $eoftl);
-    
-    // build and perform the queries!
-    try {
-      foreach ($lines as $line) {
-	$qs  = "('{$fileid}', '".$line["line_id"]."', '".$line["lemma"];
-	$qs .= "', '".$line["tag_POS"]."', '".$line["tag_morph"]."', '";
-	$qs .= $line["tag_norm"]."', '".$line["comment"]."')";
-	$query->append($qs);
-	if($line["errorChk"]=="0" || $line["errorChk"]==null) {
-	  $erroff->append($line["line_id"]);
-	} else {
-	  $erron->append("('{$fileid}', '".$line["line_id"]."', '@@global@@', '".
-			 $line["errorChk"]."')");
+
+    $idlist = array();
+    $pos_tags = array();    // maps tags to tag IDs
+    $tagset_ids = array();  // maps tagset classes to tagset IDs
+
+    /* Check if all IDs belong to the currently opened document
+       (--this is done because IDs are managed on the client side and
+       therefore could potentially be manipulated)
+    */
+    foreach($lines as $line) {
+      $idlist[] = $line['id'];
+    }
+    $modchk  = "SELECT modern.id FROM {$this->db}.modern ";
+    $modchk .= "LEFT JOIN {$this->db}.token ON modern.tok_id=token.id ";
+    $modchk .= "LEFT JOIN {$this->db}.text  ON token.text_id=text.id ";
+    $modchk .= "WHERE text.id='{$fileid}' AND modern.id IN (";
+    $modchk .= implode(',', $idlist);
+    $modchk .= ")";
+    $modchq  = $this->query($modchk);
+    $modchn  = mysql_num_rows($modchq);
+    if($modchn!=count($idlist)) {
+      $diff = count($idlist) - $modchn;
+      return "Ein interner Fehler ist aufgetreten (Code: 1074).  Die Anfrage enthielt {$diff} ungültige Token-ID(s) für das derzeit geöffnete Dokument.";
+    }
+
+    /* Get tagset information for currently opened document */
+    $tslist = $this->getTagsetsForFile($fileid);
+    if(!is_array($tslist)) {
+      return "Ein interner Fehler ist aufgetreten (Code: 1075).  Die Datenbank meldete:\n{$tslist}";
+    }
+    foreach($tslist as $tagset) {
+      $tagset_ids[$tagset['class']] = $tagset['id'];
+    }
+    $hasnorm = array_key_exists('norm', $tagset_ids);
+    $haslemma = array_key_exists('lemma', $tagset_ids);
+    $haspos = array_key_exists('POS', $tagset_ids);
+    // POS
+    if($haspos) {
+      $qstr  = "SELECT `id`, `value` FROM {$this->db}.tag ";
+      $qstr .= "WHERE `tagset_id`='" . $tagset_ids['POS'] . "'";
+      $q = $this->query($qstr);
+      $qerr = mysql_error();
+      if($qerr) {
+	return "Ein interner Fehler ist aufgetreten (Code: 1076).  Die Datenbank meldete:\n{$qerr}";
+      }
+      while($row = @mysql_fetch_assoc($q)) {
+	$pos_tags[$row['value']] = $row['id'];
+      }
+    }
+
+    $updatetag = array();    // array with tags to be updated
+    $inserttag = array();    // array with tags to be inserted
+    $deletetag = array();    // array with tags to be deleted
+    $insertts  = array();    // array with inserts/updates to tag_suggestion table
+    $deletets  = array();    // array with tag_suggestions to be deleted
+
+    foreach($lines as $line) {
+      /* Get currently selected annotations */
+      $selected = array();
+      $qstr  = "SELECT ts.id, ts.tag_id, ts.source, tag.value, tagset.class ";
+      $qstr .= "FROM   {$this->db}.tag_suggestion ts ";
+      $qstr .= "  LEFT JOIN {$this->db}.tag ON tag.id=ts.tag_id ";
+      $qstr .= "  LEFT JOIN {$this->db}.tagset ON tagset.id=tag.tagset_id ";
+      $qstr .= "WHERE  ts.selected=1 AND ts.mod_id='" . $line['id'] . "'";
+      $q = $this->query($qstr);
+      $qerr = mysql_error();
+      if($qerr) {
+	$this->dbconn->rollback();
+	return "Ein interner Fehler ist aufgetreten (Code: 1077).  Die Datenbank meldete:\n{$qerr}";
+      }
+      while($row = @mysql_fetch_assoc($q)) {
+	$selected[$row['class']] = $row;
+      }
+
+      /* Fill arrays with new annotations */
+      if($hasnorm && array_key_exists('anno_norm', $line)) {
+	$tagvalue = $line['anno_norm'];
+	if(!empty($tagvalue)) {
+	  if(array_key_exists('norm', $selected)) {
+	    $tagid = $selected['norm']['tag_id'];
+	    $updatetag[] = "('{$tagid}', '{$tagvalue}')";
+	  }
+	  else {
+	    $inserttag[] = array("query" => "('{$tagvalue}', 0, '" . $tagset_ids['norm'] . "')",
+				 "line_id" => $line['id']);
+	  }
+	}
+	else if(array_key_exists('norm', $selected)) {
+	  $deletetag[] = $selected['norm']['tag_id'];
 	}
       }
-      $query->flush();
-      $erron->flush();
-      $erroff->flush();
-      $this->commitTransaction();
-    } catch (SQLQueryException $e) {
-      $this->rollback();
-      return $e->getMessage();
+      if($haslemma && array_key_exists('anno_lemma', $line)) {
+	$tagvalue = $line['anno_lemma'];
+	if(!empty($tagvalue)) {
+	  if(array_key_exists('lemma', $selected)) {
+	    $tagid = $selected['lemma']['tag_id'];
+	    $updatetag[] = "('{$tagid}', '{$tagvalue}')";
+	  }
+	  else {
+	    $inserttag[] = array("query" => "('{$tagvalue}', 0, '" . $tagset_ids['lemma'] . "')",
+				 "line_id" => $line['id']);
+	  }
+	}
+	else if(array_key_exists('lemma', $selected)) {
+	  $deletetag[] = $selected['lemma']['tag_id'];
+	}
+      }
+      if($haspos && array_key_exists('anno_POS', $line)) {
+	if(array_key_exists('anno_morph', $line) && !empty($line['anno_morph'])) {
+	  $tagvalue = $line['anno_POS'] . "." . $line['anno_morph'];
+	} else {
+	  $tagvalue = $line['anno_POS'];
+	}
+	if(!empty($tagvalue)) {
+	  if(array_key_exists($tagvalue, $pos_tags)) { // legal POS tag?
+	    $newid = $pos_tags[$tagvalue];
+	    if(array_key_exists('POS', $selected)) {
+	      $tagid = $selected['POS']['tag_id'];
+	      if($tagid !== $newid) { // change required?
+		if($selected['POS']['source'] == 'auto') {
+		  // deselect
+		  $tsstr  = "('" . $selected['POS']['id'] . "', 0, 'auto', ";
+		  $tsstr .= "'{$tagid}', '" . $line['id'] . "')";
+		  $insertts[] = $tsstr;
+		} else {
+		  // delete
+		  $deletets[] = $selected['POS']['id'];
+		}
+		// insert
+		$tsstr  = "(NULL, 1, 'user', '{$newid}', '" . $line['id'] . "')";
+		$insertts[] = $tsstr;
+	      }
+	    }
+	    else {
+	      // simply insert
+	      $tsstr  = "(NULL, 1, 'user', '{$newid}', '" . $line['id'] . "')";
+	      $insertts[] = $tsstr;
+	    }
+	  }
+	}
+	else if(array_key_exists('POS', $selected)) {
+	  if($selected['POS']['source'] == 'auto') {
+	    // deselect
+	    $tsstr  = "('" . $selected['POS']['id'] . "', 0, 'auto', ";
+	    $tsstr .= "'{$tagid}', '" . $line['id'] . "')";
+	    $insertts[] = $tsstr;
+	  } else {
+	    // delete
+	    $deletets[] = $selected['POS']['id'];
+	  }
+	}
+      }
     }
+
+    /* Only now, perform all INSERTs/DELETEs/UPDATEs */
+
+    $this->dbconn->startTransaction();
+
+    try {
+      if(!empty($updatetag)) {
+	$qstr  = "INSERT INTO {$this->db}.tag (`id`, `value`) VALUES ";
+	$qstr .= implode(",", $updatetag);
+	$qstr .= " ON DUPLICATE KEY UPDATE `value`=VALUES(value)";
+	$q = $this->query($qstr);
+	$qerr = mysql_error();
+	if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
+      }
+      if(!empty($inserttag)) {
+	foreach($inserttag as $insertdata) {
+	  $qstr = "INSERT INTO {$this->db}.tag (`value`, `needs_revision`, `tagset_id`)";
+	  $qstr .= "VALUES " . $insertdata['query'];
+	  $q = $this->query($qstr);
+	  $qerr = mysql_error();
+	  if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
+	  $q = $this->query("SELECT LAST_INSERT_ID()");
+	  $row = mysql_fetch_row($q);
+	  $newid = $row[0];
+	  $tsstr  = "(NULL, 1, 'user', '{$newid}', '" . $insertdata['line_id'] . "')";
+	  $insertts[] = $tsstr;
+	}
+      }
+      if(!empty($deletetag)) {
+	$qstr  = "DELETE FROM {$this->db}.tag_suggestion WHERE `tag_id` IN ('";
+	$qstr .= implode("','", $deletetag);
+	$qstr .= "')";
+	$q = $this->query($qstr);
+	$qerr = mysql_error();
+	if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
+	$qstr  = "DELETE FROM {$this->db}.tag WHERE `id` IN ('";
+	$qstr .= implode("','", $deletetag);
+	$qstr .= "')";
+	$q = $this->query($qstr);
+	$qerr = mysql_error();
+	if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
+      }
+      if(!empty($insertts)) {
+	$qstr  = "INSERT INTO {$this->db}.tag_suggestion ";
+	$qstr .= " (`id`, `selected`, `source`, `tag_id`, `mod_id`) VALUES ";
+	$qstr .= implode(",", $insertts);
+	$qstr .= " ON DUPLICATE KEY UPDATE `selected`=VALUES(selected), ";
+	$qstr .= "                        `tag_id`=VALUES(tag_id)";
+	$q = $this->query($qstr);
+	$qerr = mysql_error();
+	if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
+      }
+      if(!empty($deletets)) {
+	$qstr  = "DELETE FROM {$this->db}.tag_suggestion WHERE `id` IN ('";
+	$qstr .= implode("','", $deletets);
+	$qstr .= "')";
+	$q = $this->query($qstr);
+	$qerr = mysql_error();
+	if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
+      }
+    }
+    catch(SQLQueryException $e) {
+      $this->dbconn->rollback();
+      return "Ein interner Fehler ist aufgetreten (Code: 1080).  Die Datenbank meldete:\n" . $e->getMessage();
+    }
+
+    // ERROR MARKERS & MARK LAST POSITION still missing!
+
+
+    $this->dbconn->commitTransaction();
     
     // finally, one last query...
-    $result = $this->markLastPosition($fileid,$lasteditedrow,'@@global@@');
-    if (!$result) {
-      return mysql_errno().": ".mysql_error();
-    }
+    //    $result = $this->markLastPosition($fileid,$lasteditedrow,'@@global@@');
+    //    if (!$result) {
+    //      return mysql_errno().": ".mysql_error();
+    //    }
     
     return False;
   }
@@ -1204,7 +1445,7 @@ class DBInterface extends DBConnector {
     
     // otherwise, perform the import
     try{
-      $this->startTransaction();
+      $this->dbconn->startTransaction();
       $qs  = "INSERT INTO {$this->db}.tagset (name, set_type, class) ";
       $qs .= "VALUES ('{$tagsetname}', 'closed', 'POS')";
       if(!$this->query($qs)) {
@@ -1219,9 +1460,9 @@ class DBInterface extends DBConnector {
 	$query->append($qs);
       }
       $query->flush();
-      $this->commitTransaction();
+      $this->dbconn->commitTransaction();
     } catch (SQLQueryException $e) {
-      $this->rollback();
+      $this->dbconn->rollback();
       return array("success"=>false, "errors"=>array($e->getMessage()));
     }
     

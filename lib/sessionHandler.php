@@ -30,7 +30,8 @@ class SessionHandler {
     session_name("PHPSESSID_CORA");
     @session_start();
 
-    $this->db = new DBInterface();
+    $dbconn = new DBConnector();
+    $this->db = new DBInterface($dbconn);
     $this->xml = new XMLHandler($this->db);
 
     $defaults = array( "lang"        => DEFAULT_LANGUAGE,
