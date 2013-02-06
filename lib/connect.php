@@ -710,14 +710,16 @@ class DBInterface {
       $lock['lastEditedRow'] = -1;
       if(!empty($cmid)) {
 	// calculate position of currentmod_id
-	$qs  = "SELECT x.id, @rownum := @rownum + 1 AS position FROM ";
-	$qs .= " (SELECT a.id FROM ({$this->db}.modern a, {$this->db}.token b) ";
-	$qs .= "  WHERE a.tok_id=b.id ORDER BY b.ordnr ASC, a.id ASC) x ";
-	$qs .= "JOIN (SELECT @rownum := 0) r ";
-	$qs .= "WHERE x.id = '{$cmid}'";
+	$qs  = "SELECT position FROM ";
+	$qs .= " (SELECT x.id, @rownum := @rownum + 1 AS position FROM ";
+	$qs .= "   (SELECT a.id FROM ({$this->db}.modern a, {$this->db}.token b) ";
+	$qs .= "    WHERE a.tok_id=b.id AND b.text_id='{$fileid}' ";
+	$qs .= "    ORDER BY b.ordnr ASC, a.id ASC) x ";
+	$qs .= "  JOIN (SELECT @rownum := 0) r) y ";
+	$qs .= "WHERE y.id = '{$cmid}'";
 	if($q = $this->query($qs)){
 	  $row = @mysql_fetch_assoc($q,$this->dbobj);
-	  $lock['lastEditedRow'] = $row['position'];
+	  $lock['lastEditedRow'] = intval($row['position']) - 1;
 	}
       }
       $lock['data'] = $metadata;
@@ -1072,9 +1074,9 @@ class DBInterface {
 	}
 	else if($row['class']=='POS') {
 	  $tag = $row['value'];
-	  if((substr($tag, -1)=='.') && (substr_count($tag, '.')==1)) {
+	  if((substr($tag, -1)=='.') || (substr_count($tag, '.')==0)) {
 	    $pos = $tag;
-	    $morph = "";
+	    $morph = "--";
 	  }
 	  else {
 	    $attribs = explode('.',$tag,2);
@@ -1098,6 +1100,17 @@ class DBInterface {
     }
         
     return $data;
+  }
+
+  /** Retrieves error types and indexes them by name. */
+  public function getErrorTypes() {
+    $qs = "SELECT * FROM {$this->db}.error_types";
+    $q = $this->query($qs);
+    $errortypes = array();
+    while($row = @mysql_fetch_assoc($q)) {
+      $errortypes[$row['name']] = $row['id'];
+    }
+    return $errortypes;
   }
 
   /** Saves changed lines.
@@ -1149,6 +1162,12 @@ class DBInterface {
     }
 
     /* Get tagset information for currently opened document */
+    $errortypes = $this->getErrorTypes();
+    if(array_key_exists('general error', $errortypes)) {
+      $error_general = $errortypes['general error'];
+    } else {
+      $error_general = false;
+    }
     $tslist = $this->getTagsetsForFile($fileid);
     if(!is_array($tslist)) {
       return "Ein interner Fehler ist aufgetreten (Code: 1075).  Die Datenbank meldete:\n{$tslist}";
@@ -1178,6 +1197,8 @@ class DBInterface {
     $deletetag = array();    // array with tags to be deleted
     $insertts  = array();    // array with inserts/updates to tag_suggestion table
     $deletets  = array();    // array with tag_suggestions to be deleted
+    $inserterr = array();
+    $deleteerr = array();
 
     foreach($lines as $line) {
       /* Get currently selected annotations */
@@ -1198,6 +1219,7 @@ class DBInterface {
       }
 
       /* Fill arrays with new annotations */
+      // Norm
       if($hasnorm && array_key_exists('anno_norm', $line)) {
 	$tagvalue = $line['anno_norm'];
 	if(!empty($tagvalue)) {
@@ -1214,6 +1236,7 @@ class DBInterface {
 	  $deletetag[] = $selected['norm']['tag_id'];
 	}
       }
+      // Lemma
       if($haslemma && array_key_exists('anno_lemma', $line)) {
 	$tagvalue = $line['anno_lemma'];
 	if(!empty($tagvalue)) {
@@ -1230,6 +1253,7 @@ class DBInterface {
 	  $deletetag[] = $selected['lemma']['tag_id'];
 	}
       }
+      // POS
       if($haspos && array_key_exists('anno_POS', $line)) {
 	if(array_key_exists('anno_morph', $line) && !empty($line['anno_morph'])) {
 	  $tagvalue = $line['anno_POS'] . "." . $line['anno_morph'];
@@ -1275,6 +1299,19 @@ class DBInterface {
 	  }
 	}
       }
+
+      if(array_key_exists('general_error', $line)) {
+	if($error_general) {
+	  if(intval($line['general_error']) == 1) {
+	    $inserterr[] = "('" . $line['id'] . "', '" . $error_general . "')";
+	  }
+	  else {
+	    // hack ...
+	    $deleteerr[] = "(`mod_id`='" . $line['id'] . "' AND `error_id`='" . $error_general . "')";
+	  }
+	}
+      }
+
     }
 
     /* Only now, perform all INSERTs/DELETEs/UPDATEs */
@@ -1336,6 +1373,21 @@ class DBInterface {
 	$qerr = mysql_error();
 	if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
       }
+      if(!empty($deleteerr)) {
+	$qstr  = "DELETE FROM {$this->db}.mod2error WHERE ";
+	$qstr .= implode(" OR ", $deleteerr);
+	$q = $this->query($qstr);
+	$qerr = mysql_error();
+	if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
+      }
+      if(!empty($inserterr)) {
+	$qstr  = "INSERT IGNORE INTO {$this->db}.mod2error ";
+	$qstr .= "  (`mod_id`, `error_id`) VALUES ";
+	$qstr .= implode(", ", $inserterr);
+	$q = $this->query($qstr);
+	$qerr = mysql_error();
+	if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
+      }
     }
     catch(SQLQueryException $e) {
       $this->dbconn->rollback();
@@ -1348,10 +1400,7 @@ class DBInterface {
     $this->dbconn->commitTransaction();
     
     // finally, one last query...
-    //    $result = $this->markLastPosition($fileid,$lasteditedrow,'@@global@@');
-    //    if (!$result) {
-    //      return mysql_errno().": ".mysql_error();
-    //    }
+    $result = $this->markLastPosition($fileid,$lasteditedrow);
     
     return False;
   }
@@ -1361,18 +1410,15 @@ class DBInterface {
    *
    * Progress is shown by a green bar at the left side of the editor and indicates the last line for which changes have been made.
    *
-   * CAUTION: This no longer works on a per-user, but rather on a per-file basis.
-   *
-   * This function is called by the session handler during the saving process.
+   * This function is called during the saving process.
    * 
    * @param string $file the file id
-   * @param string $line the line id
-   * @param string $user the username (currently not used)
+   * @param string $line the current mod id
    *
    * @return bool the result of the mysql query
    */
-  public function markLastPosition($file,$line,$user){
-    $qs = "INSERT INTO {$this->db}.files_progress (file_id,new_line_id,user) VALUES ('{$file}','{$line}','@@global@@') ON DUPLICATE KEY UPDATE old_line_id=new_line_id,new_line_id='{$line}'";
+  public function markLastPosition($fileid,$line){
+    $qs = "UPDATE {$this->db}.text SET `currentmod_id`='{$line}' WHERE `id`='{$fileid}'";
     return $this->query( $qs );
   }
 
