@@ -76,9 +76,6 @@ class LongSQLQuery {
  */
 class DBConnector {
   private $dbobj;                     /**< Database object as returned by @c mysql_connect(). */
-  private $db_server   = DB_SERVER;   /**< Name of the server to connect to. */
-  private $db_user     = DB_USER;     /**< Username to be used for database access. */
-  private $db_password = DB_PASSWORD; /**< Password to be used for database access. */
   private $db          = MAIN_DB;     /**< Name of the database to be used. */
   private $transaction = false;
 
@@ -87,8 +84,9 @@ class DBConnector {
    * Creates a new SQL connection using the access information
    * hard-coded into this class.
    */
-  function __construct() {
-    $this->dbobj = @mysql_connect( $this->db_server, $this->db_user, $this->db_password );
+  function __construct($db_server, $db_user, $db_password, $db_name) {
+      $this->dbobj = mysql_connect( $db_server, $db_user, $db_password );
+      $this->db = $db_name;
   }
 
   /** Check if a connection exists.
@@ -120,14 +118,14 @@ class DBConnector {
   protected function selectDatabase( $name ) {
     $status = mysql_select_db( $name, $this->dbobj );
     if ($status) {
-      mysql_query( "SET NAMES 'utf8'", $this->dbobj ); 
+      $this->query( "SET NAMES 'utf8'", $this->dbobj ); 
     }
     return $status;
   }
 
   /** Start an SQL transaction. */
   public function startTransaction() {
-    $status = mysql_query( "START TRANSACTION", $this->dbobj );
+    $status = $this->query( "START TRANSACTION", $this->dbobj );
     if ($status) {
       $status = $this->selectDatabase( $this->db );
       $this->transaction = true;
@@ -138,13 +136,13 @@ class DBConnector {
   /** Commits an SQL transaction. */
   public function commitTransaction() {
     $this->transaction = false;
-    return mysql_query( "COMMIT", $this->dbobj );
+    return $this->query( "COMMIT", $this->dbobj );
   }
 
   /** Rollback an SQL transaction. */
   public function rollback() {
     $this->transaction = false;
-    return mysql_query( "ROLLBACK", $this->dbobj );
+    return $this->query( "ROLLBACK", $this->dbobj );
   }
 
   /** Perform a database query.
@@ -217,8 +215,7 @@ class DBInterface {
    */
   function __construct($dbconn) {
     $this->dbconn = $dbconn;
-    $this->dbconn->setDefaultDatabase( MAIN_DB );
-    $this->db = MAIN_DB;
+    $this->db = $this->dbconn->getDefaultDatabase();
   }
 
   private function query($query) {
@@ -1520,3 +1517,4 @@ class DBInterface {
 
 
 ?>
+

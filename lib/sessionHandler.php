@@ -30,7 +30,7 @@ class SessionHandler {
     session_name("PHPSESSID_CORA");
     @session_start();
 
-    $dbconn = new DBConnector();
+    $dbconn = new DBConnector(DB_SERVER, DB_USER, DB_PASSWORD, MAIN_DB);
     $this->db = new DBInterface($dbconn);
     $this->xml = new XMLHandler($this->db);
 
