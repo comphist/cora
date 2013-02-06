@@ -101,7 +101,7 @@ class DBConnector {
    *
    * @param string $name Name of the database to be set as default.
    */
-  public function setDefaultDatabase( $name ) {
+  public function setDatabase( $name ) {
     $this->db = $name;
   }
 
@@ -215,7 +215,7 @@ class DBInterface {
    */
   function __construct($dbconn) {
     $this->dbconn = $dbconn;
-    $this->db = $this->dbconn->getDefaultDatabase();
+    $this->db = $this->dbconn->getDatabase();
   }
 
   private function query($query) {
