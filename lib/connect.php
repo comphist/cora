@@ -154,6 +154,30 @@ class DBConnector {
      return mysql_query( $query, $this->dbobj ); 
    }
 
+  /** Fetch an associative array from a query result
+   *
+   * @param result of a call to $this->query
+   * @return associative array
+   */
+  public function fetch_assoc($result) {
+      return mysql_fetch_assoc($result);
+  }
+
+  /** Fetch an enumerated array from a query result
+   *
+   * in the standard php mysql api, fetch_row fetches an array,
+   * while fetch_array fetches an array, hash, or both. why this is,
+   * nobody knows, but it is believed to be made this way to drive
+   * programmers deliberately crazy.
+   */
+  public function fetch_array($result) {
+      return mysql_fetch_row($result);
+  }
+
+  public function fetch($result) {
+      return mysql_fetch_array($result);
+  }
+
   /** Perform a critical database query.
    *
    * Executes a database query which is always expected to succeed and
@@ -245,7 +269,7 @@ class DBInterface {
     $qs = "SELECT `id`, name, admin, lastactive FROM {$this->db}.users "
       . "WHERE name='{$user}' AND password='{$pw_hash}' AND `id`!=1 LIMIT 1";
     $query = $this->query( $qs );
-    return @mysql_fetch_assoc( $query );
+    return $this->dbconn->fetch_assoc( $query );
   }
 
   /** Get user info by id.
@@ -254,7 +278,7 @@ class DBInterface {
     $qs = "SELECT `id`, name, admin, lastactive FROM {$this->db}.users "
       . "WHERE `id`={$uid}";
     $query = $this->query( $qs );
-    return @mysql_fetch_assoc( $query );
+    return $this->dbconn->fetch_assoc( $query );
   }
   
   /** Get user info by name.
@@ -263,7 +287,7 @@ class DBInterface {
     $qs = "SELECT `id`, name, admin, lastactive FROM {$this->db}.users "
       . "WHERE name='{$uname}'";
     $query = $this->query( $qs );
-    return @mysql_fetch_assoc( $query );
+    return $this->dbconn->fetch_assoc( $query );
   }
 
   /** Get user ID by name.  Often used because formerly, users were
@@ -274,7 +298,7 @@ class DBInterface {
   public function getUserIDFromName($uname) {
     $qs = "SELECT `id` FROM {$this->db}.users WHERE name='{$uname}'";
     $query = $this->query( $qs );
-    $row = @mysql_fetch_assoc( $query );
+    $row = $this->dbconn->fetch_assoc( $query );
     return $row['id'];
   }
 
@@ -288,7 +312,7 @@ class DBInterface {
 	$qs = "SELECT lines_per_page, lines_context, "
 	    . "columns_order, columns_hidden, show_error "
 	    . "FROM {$this->db}.users WHERE name='{$user}'";
-	return @mysql_fetch_assoc( $this->query( $qs ) );
+	return $this->dbconn->fetch_assoc( $this->query( $qs ) );
   }
 
   /** Get a list of all users.
@@ -300,7 +324,7 @@ class DBInterface {
     $qs = "SELECT `id`, name, admin, lastactive FROM {$this->db}.users WHERE `id`!=1";
     $query = $this->query( $qs );
     $users = array();
-    while ( @$row = mysql_fetch_assoc($query) ) {
+    while ( @$row = $this->dbconn->fetch_assoc($query) ) {
       $users[] = $row;
     }
     return $users;
@@ -317,7 +341,7 @@ class DBInterface {
     $result = array();
     $qs = "SELECT * FROM {$this->db}.tagset WHERE `class`='POS' ORDER BY `name`";
     $query = $this->query($qs);
-    while ( @$row = mysql_fetch_assoc( $query, $this->dbobj ) ) {
+    while ( @$row = $this->dbconn->fetch_assoc( $query, $this->dbobj ) ) {
       $data = array();
       $data["shortname"] = $row["id"];
       $data["longname"] = $row["name"];
@@ -340,7 +364,7 @@ class DBInterface {
     $qs  = "SELECT `id`, `value`, `needs_revision` FROM {$this->db}.tag ";
     $qs .= "WHERE `tagset_id`='{$tagset}' ORDER BY `value`";
     $query = $this->query($qs);
-    while ( @$row = mysql_fetch_assoc( $query, $this->dbobj ) ) {
+    while ( @$row = $this->dbconn->fetch_assoc( $query, $this->dbobj ) ) {
       $tags[] = array('id' => $row['id'],
 		      'value' => $row['value'],
 		      'needs_revision' => $row['needs_revision']);
@@ -458,7 +482,7 @@ class DBInterface {
   public function toggleUserStatus($username, $statusname) {
     $qs = "SELECT {$statusname} FROM {$this->db}.users WHERE name='{$username}'";
     $query = $this->query($qs);
-    @$row = mysql_fetch_array($query, $this->dbobj);
+    @$row = $this->dbconn->fetch($query, $this->dbobj);
     if (!$row)
       return false;
     $status = ($row[$statusname] == 1) ? 0 : 1;
@@ -473,7 +497,7 @@ class DBInterface {
     $qs  = "SELECT * FROM {$this->db}.text ";
     $qs .= "WHERE {$metakey}='{$metavalue}'";
     $query = $this->query($qs);
-    @$row = mysql_fetch_array($query, $this->dbobj);
+    @$row = $this->dbconn->fetch($query, $this->dbobj);
     return $row;
   }
 
@@ -607,7 +631,7 @@ class DBInterface {
       $qs .= "FROM {$this->db}.locks a, {$this->db}.users b ";
       $qs .= "WHERE a.text_id={$fileid} AND a.user_id=b.id";
       $query = $this->query($qs);
-      @$row = mysql_fetch_row( $query, $this->dbobj );
+      @$row = $this->dbconn->fetch_array( $query, $this->dbobj );
       return array("success" => false, "lock" => $row);
     }
     // otherwise, perform the lock
@@ -630,7 +654,7 @@ class DBInterface {
     $qs  = "SELECT a.text_id as 'file_id', b.fullname as 'file_name' ";
     $qs .= "FROM {$this->db}.locks a, {$this->db}.text b ";
     $qs .= "WHERE a.user_id='{$userid}' AND a.text_id=b.text_id LIMIT 1";
-    return @mysql_fetch_assoc($this->query($qs));
+    return $this->dbconn->fetch_assoc($this->query($qs));
   }
   
   /** Unlock a file for the current user.
@@ -674,7 +698,7 @@ class DBInterface {
     if($qerr) { return $qerr; }
 
     $tslist = array();
-    while($row = @mysql_fetch_assoc($q)) {
+    while($row = $this->dbconn->fetch_assoc($q)) {
       $tslist[] = $row;
     }
     return $tslist;
@@ -702,7 +726,7 @@ class DBInterface {
     $qs .= "         ON (ttt.tagset_id=tagset.id AND ttt.text_id=text.id) ";
     $qs .= "WHERE  text.id='{$fileid}' AND tagset.class='POS'";
     if($query = $this->query($qs)){
-      $metadata = @mysql_fetch_assoc($query);
+      $metadata = $this->dbconn->fetch_assoc($query);
       $cmid = $metadata['currentmod_id'];
       $lock['lastEditedRow'] = -1;
       if(!empty($cmid)) {
@@ -715,7 +739,7 @@ class DBInterface {
 	$qs .= "  JOIN (SELECT @rownum := 0) r) y ";
 	$qs .= "WHERE y.id = '{$cmid}'";
 	if($q = $this->query($qs)){
-	  $row = @mysql_fetch_assoc($q,$this->dbobj);
+	  $row = $this->dbconn->fetch_assoc($q,$this->dbobj);
 	  $lock['lastEditedRow'] = intval($row['position']) - 1;
 	}
       }
@@ -741,7 +765,7 @@ class DBInterface {
     $qs  = "SELECT a.fullname FROM ({$this->db}.text a, {$this->db}.user2project b) ";
     $qs .= "WHERE a.id='{$fileid}' AND b.user_id='{$uid}' AND a.project_id=b.project_id";
     $q = $this->query($qs);
-    if(@mysql_fetch_row($q,$this->dbobj)) {
+    if($this->dbconn->fetch_array($q,$this->dbobj)) {
       return true;
     } else {
       return false;
@@ -816,7 +840,7 @@ class DBInterface {
       . "ORDER BY sigle, fullname";
     $query = $this->query($qs); 
     $files = array();
-    while ( @$row = mysql_fetch_array( $query, $this->dbobj ) ) {
+    while ( @$row = $this->dbconn->fetch( $query, $this->dbobj ) ) {
       $files[] = $row;
     }
     return $files;
@@ -846,7 +870,7 @@ class DBInterface {
       . "ORDER BY sigle, fullname";
     $query = $this->query($qs); 
     $files = array();
-    while ( @$row = mysql_fetch_array( $query, $this->dbobj ) ) {
+    while ( @$row = $this->dbconn->fetch( $query, $this->dbobj ) ) {
       $files[] = $row;
     }
     return $files;
@@ -864,7 +888,7 @@ class DBInterface {
     $qs = "SELECT * FROM {$this->db}.project ORDER BY name";
     $query = $this->query($qs); 
     $projects = array();
-    while ( @$row = mysql_fetch_array( $query, $this->dbobj ) ) {
+    while ( @$row = $this->dbconn->fetch( $query, $this->dbobj ) ) {
       $projects[] = $row;
     }
     return $projects;
@@ -880,7 +904,7 @@ class DBInterface {
     $qs = "SELECT * FROM {$this->db}.user2project";
     $query = $this->query($qs); 
     $projects = array();
-    while ( @$row = mysql_fetch_array( $query, $this->dbobj ) ) {
+    while ( @$row = $this->dbconn->fetch( $query, $this->dbobj ) ) {
       $user = $this->getUserById($row["user_id"]);
       $projects[] = array("project_id" => $row["project_id"],
 			  "username" => $user["name"]);
@@ -899,7 +923,7 @@ class DBInterface {
     $qs = "SELECT a.* FROM ({$this->db}.project a, {$this->db}.user2project b) WHERE (a.id=b.project_id AND b.user_id='{$uid}') ORDER BY project_id";
     $query = $this->query($qs); 
     $projects = array();
-    while ( @$row = mysql_fetch_array( $query, $this->dbobj ) ) {
+    while ( @$row = $this->dbconn->fetch( $query, $this->dbobj ) ) {
       $projects[] = $row;
     }
     return $projects;
@@ -973,7 +997,7 @@ class DBInterface {
     $qs .= "LEFT JOIN {$this->db}.modern ON modern.tok_id=token.id ";
     $qs .= "WHERE token.text_id='{$fileid}'";
     if($query = $this->query($qs)){
-      $row = mysql_fetch_row($query);
+      $row = $this->dbconn->fetch_array($query);
       return $row[0];
     }		
     return 0;
@@ -986,7 +1010,7 @@ class DBInterface {
     $qs = "SELECT a.*, b.value AS 'errorChk' FROM {$this->db}.files_data a LEFT JOIN {$this->db}.files_errors b ON (a.file_id=b.file_id AND a.line_id=b.line_id) WHERE a.file_id='{$fileid}' ORDER BY line_id";
     $query = $this->query($qs);
     $data = array();
-    while($row = @mysql_fetch_assoc($query,$this->dbobj)){
+    while($row = $this->dbconn->fetch_assoc($query,$this->dbobj)){
       $data[] = $row;
     }
     return $data;
@@ -998,7 +1022,7 @@ class DBInterface {
     $q = $this->query($qs);
     
     $tag_suggestions = array();
-    while($row = @mysql_fetch_assoc($q)){
+    while($row = $this->dbconn->fetch_assoc($q)){
       $tag_suggestions[] = $row;
     }
     return $tag_suggestions;
@@ -1034,7 +1058,7 @@ class DBInterface {
        the 1:1 relation between rows and modern tokens is no longer
        guaranteed).  Change this only if performance becomes an issue.
      */
-    while($line = @mysql_fetch_assoc($query)){
+    while($line = $this->dbconn->fetch_assoc($query)){
       $mid = $line['id'];
 
       // Error annotations
@@ -1044,7 +1068,7 @@ class DBInterface {
       $qs .= "  LEFT JOIN {$this->db}.error_types ON mod2error.error_id=error_types.id ";
       $qs .= "WHERE  modern.id='{$mid}'";
       $q = $this->query($qs);
-      while($row = @mysql_fetch_assoc($q)) {
+      while($row = $this->dbconn->fetch_assoc($q)) {
 	if($row['name']=='general error') {
 	  $line['general_error'] = 1;
 	}
@@ -1062,7 +1086,7 @@ class DBInterface {
       // prepare results for CorA---this is less flexible, but
       // probably faster than doing it on the client side
       $line['suggestions'] = array();
-      while($row = @mysql_fetch_assoc($q)){
+      while($row = $this->dbconn->fetch_assoc($q)){
 	if($row['class']=='norm' && $row['selected']=='1') {
 	  $line['anno_norm'] = $row['value'];
 	}
@@ -1104,7 +1128,7 @@ class DBInterface {
     $qs = "SELECT * FROM {$this->db}.error_types";
     $q = $this->query($qs);
     $errortypes = array();
-    while($row = @mysql_fetch_assoc($q)) {
+    while($row = $this->dbconn->fetch_assoc($q)) {
       $errortypes[$row['name']] = $row['id'];
     }
     return $errortypes;
@@ -1184,7 +1208,7 @@ class DBInterface {
       if($qerr) {
 	return "Ein interner Fehler ist aufgetreten (Code: 1076).  Die Datenbank meldete:\n{$qerr}";
       }
-      while($row = @mysql_fetch_assoc($q)) {
+      while($row = $this->dbconn->fetch_assoc($q)) {
 	$pos_tags[$row['value']] = $row['id'];
       }
     }
@@ -1211,7 +1235,7 @@ class DBInterface {
 	$this->dbconn->rollback();
 	return "Ein interner Fehler ist aufgetreten (Code: 1077).  Die Datenbank meldete:\n{$qerr}";
       }
-      while($row = @mysql_fetch_assoc($q)) {
+      while($row = $this->dbconn->fetch_assoc($q)) {
 	$selected[$row['class']] = $row;
       }
 
@@ -1332,7 +1356,7 @@ class DBInterface {
 	  $qerr = mysql_error();
 	  if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
 	  $q = $this->query("SELECT LAST_INSERT_ID()");
-	  $row = mysql_fetch_row($q);
+	  $row = $this->dbconn->fetch_array($q);
 	  $newid = $row[0];
 	  $tsstr  = "(NULL, 1, 'user', '{$newid}', '" . $insertdata['line_id'] . "')";
 	  $insertts[] = $tsstr;
