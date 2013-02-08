@@ -1,7 +1,7 @@
 <?php
 require_once "PHPUnit/Extensions/Database/TestCase.php";
 require_once "../lib/connect.php";
-require_once "array_dataset.php";
+//require_once "array_dataset.php";
 
 /** Base class for all DB Tests */
 abstract class Cora_Tests_DbTestCase 
@@ -158,10 +158,77 @@ class interfaceTest extends Cora_Tests_DbTestCase {
         $this->assertEquals("7/6,6/7",
             $this->getConnection()->createQueryTable("settings",
             "SELECT columns_order FROM users WHERE name='test';")->getValue(0, "columns_order"));
-
-        //$this->dbi->markLastPosition($file, $line, $uname);
+        $this->assertFalse($this->dbi->setUserSetting("test", "invalid_field", "somevalue"));
 
         // toggleNormStatus
+        // isAllowedToDeleteFile($fid, $user)
+        // isAllowedToOpenFile($fid, $user)
+    }
+
+    public function testTextOperations() {
+        $expected_t1 = array(
+            "id" => "3",
+            "sigle" => "t1",
+            "fullname" => "test-dummy",
+            "project_id" => "1",
+            "created" => "2013-01-22 14:30:30",
+            "creator_id" => "1",
+            "changed" => "0000-00-00 00:00:00",
+            "changer_id" => "3",
+            "currentmod_id" => null,
+            "header" => null
+        );
+        $expected_t2 = array(
+            "id" => "4",
+            "sigle" => "t2",
+            "fullname" => "yet another dummy",
+            "project_id" => "1",
+            "created" => "2013-01-31 13:13:20",
+            "creator_id" => "1",
+            "changed" => "0000-00-00 00:00:00",
+            "changer_id" => "1",
+            "currentmod_id" => null,
+            "header" => null
+        );
+
+        //$actual = $this->dbi->queryForMetadata("sigle", "t1");
+        //$this->assertEquals($expected_t1, $actual);
+        //$actual = $this->dbi->queryForMetadata("fullname", "yet another dummy");
+        //$this->assertEquals($expected_t2, $actual);
+
+        $this->dbi->markLastPosition("3", "2");
+        $this->assertEquals("2",
+            $this->getConnection()->createQueryTable("currentpos",
+            "SELECT currentmod_id FROM text WHERE id=3;")->getValue(0, "currentmod_id"));
+
+
+        //$this->assertEquals(array($expected_t1),
+        //                    $this->dbi->getLockedFiles("bollmann"));
+
+        $lock_result = $this->dbi->lockFile("4", "test");
+        $this->assertTrue($lock_result["success"]);
+        $this->assertEquals("5",
+            $this->getConnection()->createQueryTable("testlock",
+            "SELECT text_id FROM locks WHERE user_id=3;")->getValue(0, "text_id"));
+
+        $this->dbi->unlockFile("3", "bollmann", "true");
+        $this->assertEquals("0",
+            $this->getConnection()->createQueryTable("locks",
+            "SELECT * FROM locks;")->getRowCount());
+
+        //unlockFile($fid,$uname,$force);
+        //unlockFile($fid);
+
+        //insertNewDocument($options, $data);
+        //openFile($fid);
+        //deleteFile($fid);
+        //getFiles();
+        //getFilesForUser($uname);
+        //getMaxLinesNo($fid);
+        //getAllLines($fid);
+        //getAllSuggestions($fid, $line_id);
+        //getLines($fid, $from, $num);
+        //saveLines($fid, $lasteditedrow, $lines);
     }
 
 }
