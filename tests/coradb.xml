@@ -1,0 +1,3514 @@
+<?xml version="1.0"?>
+<!--
+     Florian Petran 02/2013
+     created using
+     mysqldump - -xml -t -uroot -p cora > coradb.xml
+     only the dashes in front of xml need to be together, but that
+     screws with my syntax highlighting.
+-->
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<database name="cora">
+	<table_data name="users">
+	<row>
+		<field name="id">1</field>
+		<field name="name">system</field>
+		<field name="password"></field>
+		<field name="admin">1</field>
+		<field name="lines_per_page">30</field>
+		<field name="lines_context">5</field>
+		<field name="columns_order" xsi:nil="true" />
+		<field name="columns_hidden" xsi:nil="true" />
+		<field name="show_error">1</field>
+		<field name="lastactive">2013-01-16 14:22:57</field>
+	</row>
+	<row>
+		<field name="id">3</field>
+		<field name="name">bollmann</field>
+		<field name="password">4d8902ba9a9130dbf55947e88393bd47</field>
+		<field name="admin">1</field>
+		<field name="lines_per_page">30</field>
+		<field name="lines_context">5</field>
+		<field name="columns_order">7/6,6/7</field>
+		<field name="columns_hidden"></field>
+		<field name="show_error">1</field>
+		<field name="lastactive">2013-02-04 11:29:04</field>
+	</row>
+	<row>
+		<field name="id">5</field>
+		<field name="name">test</field>
+		<field name="password">68358d5d9cbbf39fe571ba41f26524b6</field>
+		<field name="admin">0</field>
+		<field name="lines_per_page">30</field>
+		<field name="lines_context">5</field>
+		<field name="columns_order" xsi:nil="true" />
+		<field name="columns_hidden" xsi:nil="true" />
+		<field name="show_error">1</field>
+		<field name="lastactive">2013-01-22 15:38:32</field>
+	</row>
+	</table_data>
+	<table_data name="text">
+	<row>
+		<field name="id">3</field>
+		<field name="sigle">t1</field>
+		<field name="fullname">test-dummy</field>
+		<field name="project_id">1</field>
+		<field name="created">2013-01-22 14:30:30</field>
+		<field name="creator_id">1</field>
+		<field name="changed">0000-00-00 00:00:00</field>
+		<field name="changer_id">3</field>
+		<field name="currentmod_id" xsi:nil="true" />
+		<field name="header" xsi:nil="true" />
+	</row>
+	<row>
+		<field name="id">4</field>
+		<field name="sigle">t2</field>
+		<field name="fullname">yet another dummy</field>
+		<field name="project_id">1</field>
+		<field name="created">2013-01-31 13:13:20</field>
+		<field name="creator_id">1</field>
+		<field name="changed">0000-00-00 00:00:00</field>
+		<field name="changer_id">1</field>
+		<field name="currentmod_id" xsi:nil="true" />
+		<field name="header" xsi:nil="true" />
+	</row>
+	</table_data>
+	<table_data name="locks">
+	<row>
+		<field name="id">183</field>
+		<field name="user_id">3</field>
+		<field name="text_id">3</field>
+		<field name="lockdate">2013-02-05 13:00:40</field>
+	</row>
+	</table_data>
+	<table_data name="col">
+	<row>
+		<field name="id">1</field>
+		<field name="page_id">1</field>
+		<field name="num">0</field>
+		<field name="name" xsi:nil="true" />
+	</row>
+	<row>
+		<field name="id">2</field>
+		<field name="page_id">2</field>
+		<field name="num">0</field>
+		<field name="name" xsi:nil="true" />
+	</row>
+	<row>
+		<field name="id">3</field>
+		<field name="page_id">2</field>
+		<field name="num">0</field>
+		<field name="name" xsi:nil="true" />
+	</row>
+	</table_data>
+	<table_data name="comment">
+	</table_data>
+	<table_data name="token">
+	<row>
+		<field name="id">1</field>
+		<field name="text_id">3</field>
+		<field name="trans">*{A*4}n$helm%9</field>
+		<field name="ordnr">1</field>
+	</row>
+	<row>
+		<field name="id">2</field>
+		<field name="text_id">3</field>
+		<field name="trans">pi$t||u||s</field>
+		<field name="ordnr">2</field>
+	</row>
+	<row>
+		<field name="id">3</field>
+		<field name="text_id">3</field>
+		<field name="trans">aller#lieb$tev</field>
+		<field name="ordnr">3</field>
+	</row>
+	<row>
+		<field name="id">4</field>
+		<field name="text_id">3</field>
+		<field name="trans">vunf=tusent#vnd#vierhundert#vn-(=)sechzig</field>
+		<field name="ordnr">4</field>
+	</row>
+	<row>
+		<field name="id">5</field>
+		<field name="text_id">3</field>
+		<field name="trans">kunnen.(.)</field>
+		<field name="ordnr">5</field>
+	</row>
+	<row>
+		<field name="id">6</field>
+		<field name="text_id">4</field>
+		<field name="trans">test</field>
+		<field name="ordnr">1</field>
+	</row>
+	</table_data>
+	<table_data name="user2project">
+	<row>
+		<field name="user_id">3</field>
+		<field name="project_id">1</field>
+	</row>
+	</table_data>
+	<table_data name="dipl">
+	<row>
+		<field name="id">1</field>
+		<field name="tok_id">1</field>
+		<field name="line_id">1</field>
+		<field name="utf">Anshelm'</field>
+		<field name="trans">*{A*4}n$helm%9</field>
+	</row>
+	<row>
+		<field name="id">2</field>
+		<field name="tok_id">2</field>
+		<field name="line_id">2</field>
+		<field name="utf">pistus</field>
+		<field name="trans">pi$t||u||s</field>
+	</row>
+	<row>
+		<field name="id">3</field>
+		<field name="tok_id">3</field>
+		<field name="line_id">3</field>
+		<field name="utf">aller</field>
+		<field name="trans">aller#</field>
+	</row>
+	<row>
+		<field name="id">4</field>
+		<field name="tok_id">3</field>
+		<field name="line_id">3</field>
+		<field name="utf">liebstev</field>
+		<field name="trans">lieb$tev</field>
+	</row>
+	<row>
+		<field name="id">5</field>
+		<field name="tok_id">4</field>
+		<field name="line_id">3</field>
+		<field name="utf">vunf=</field>
+		<field name="trans">vunf=</field>
+	</row>
+	<row>
+		<field name="id">6</field>
+		<field name="tok_id">4</field>
+		<field name="line_id">4</field>
+		<field name="utf">tusent</field>
+		<field name="trans">tusent#</field>
+	</row>
+	<row>
+		<field name="id">7</field>
+		<field name="tok_id">4</field>
+		<field name="line_id">4</field>
+		<field name="utf">vnd</field>
+		<field name="trans">vnd#</field>
+	</row>
+	<row>
+		<field name="id">8</field>
+		<field name="tok_id">4</field>
+		<field name="line_id">4</field>
+		<field name="utf">vierhundert</field>
+		<field name="trans">vierhundert#</field>
+	</row>
+	<row>
+		<field name="id">9</field>
+		<field name="tok_id">4</field>
+		<field name="line_id">4</field>
+		<field name="utf">vn</field>
+		<field name="trans">vn-(=)</field>
+	</row>
+	<row>
+		<field name="id">10</field>
+		<field name="tok_id">4</field>
+		<field name="line_id">5</field>
+		<field name="utf">sechzig</field>
+		<field name="trans">sechzig</field>
+	</row>
+	<row>
+		<field name="id">11</field>
+		<field name="tok_id">5</field>
+		<field name="line_id">5</field>
+		<field name="utf">kunnen.</field>
+		<field name="trans">kunnen.(.)</field>
+	</row>
+	</table_data>
+	<table_data name="error_types">
+	<row>
+		<field name="id">1</field>
+		<field name="name">general error</field>
+	</row>
+	<row>
+		<field name="id">2</field>
+		<field name="name">inflection</field>
+	</row>
+	</table_data>
+	<table_data name="line">
+	<row>
+		<field name="id">1</field>
+		<field name="col_id">1</field>
+		<field name="num">1</field>
+		<field name="name" xsi:nil="true" />
+	</row>
+	<row>
+		<field name="id">2</field>
+		<field name="col_id">1</field>
+		<field name="num">2</field>
+		<field name="name" xsi:nil="true" />
+	</row>
+	<row>
+		<field name="id">3</field>
+		<field name="col_id">1</field>
+		<field name="num">3</field>
+		<field name="name" xsi:nil="true" />
+	</row>
+	<row>
+		<field name="id">4</field>
+		<field name="col_id">1</field>
+		<field name="num">4</field>
+		<field name="name" xsi:nil="true" />
+	</row>
+	<row>
+		<field name="id">5</field>
+		<field name="col_id">1</field>
+		<field name="num">5</field>
+		<field name="name" xsi:nil="true" />
+	</row>
+	<row>
+		<field name="id">6</field>
+		<field name="col_id">2</field>
+		<field name="num">1</field>
+		<field name="name" xsi:nil="true" />
+	</row>
+	<row>
+		<field name="id">7</field>
+		<field name="col_id">2</field>
+		<field name="num">2</field>
+		<field name="name" xsi:nil="true" />
+	</row>
+	<row>
+		<field name="id">8</field>
+		<field name="col_id">3</field>
+		<field name="num">1</field>
+		<field name="name" xsi:nil="true" />
+	</row>
+	<row>
+		<field name="id">9</field>
+		<field name="col_id">3</field>
+		<field name="num">2</field>
+		<field name="name" xsi:nil="true" />
+	</row>
+	</table_data>
+	<table_data name="mod2error">
+	<row>
+		<field name="mod_id">7</field>
+		<field name="error_id">1</field>
+	</row>
+	<row>
+		<field name="mod_id">3</field>
+		<field name="error_id">1</field>
+	</row>
+	<row>
+		<field name="mod_id">3</field>
+		<field name="error_id">2</field>
+	</row>
+	</table_data>
+	<table_data name="modern">
+	<row>
+		<field name="id">1</field>
+		<field name="tok_id">1</field>
+		<field name="trans">*{A*4}n$helm%9</field>
+		<field name="ascii">Anshelmus</field>
+		<field name="utf">Anshelm'</field>
+	</row>
+	<row>
+		<field name="id">2</field>
+		<field name="tok_id">2</field>
+		<field name="trans">pi$t||</field>
+		<field name="ascii">pist</field>
+		<field name="utf">pist</field>
+	</row>
+	<row>
+		<field name="id">3</field>
+		<field name="tok_id">2</field>
+		<field name="trans">u||</field>
+		<field name="ascii">u</field>
+		<field name="utf">u</field>
+	</row>
+	<row>
+		<field name="id">4</field>
+		<field name="tok_id">2</field>
+		<field name="trans">s</field>
+		<field name="ascii">s</field>
+		<field name="utf">s</field>
+	</row>
+	<row>
+		<field name="id">5</field>
+		<field name="tok_id">3</field>
+		<field name="trans">aller#lieb$tev</field>
+		<field name="ascii">allerliebstev</field>
+		<field name="utf">allerliebstev</field>
+	</row>
+	<row>
+		<field name="id">6</field>
+		<field name="tok_id">4</field>
+		<field name="trans">vunf=tusent#vnd#vierhundert#vn-(=)sechzig</field>
+		<field name="ascii">vunftusentvndvierhundertvndsechzig</field>
+		<field name="utf">vunftusentvndvierhundertvnsechzig</field>
+	</row>
+	<row>
+		<field name="id">7</field>
+		<field name="tok_id">5</field>
+		<field name="trans">kunnen</field>
+		<field name="ascii">kunnen</field>
+		<field name="utf">kunnen</field>
+	</row>
+	<row>
+		<field name="id">8</field>
+		<field name="tok_id">5</field>
+		<field name="trans">.</field>
+		<field name="ascii">.</field>
+		<field name="utf">.</field>
+	</row>
+	<row>
+		<field name="id">9</field>
+		<field name="tok_id">5</field>
+		<field name="trans">(.)</field>
+		<field name="ascii">.</field>
+		<field name="utf">.</field>
+	</row>
+	<row>
+		<field name="id">13</field>
+		<field name="tok_id">6</field>
+		<field name="trans">test</field>
+		<field name="ascii">test</field>
+		<field name="utf">test</field>
+	</row>
+	<row>
+		<field name="id">14</field>
+		<field name="tok_id">6</field>
+		<field name="trans">foo</field>
+		<field name="ascii">foo</field>
+		<field name="utf">foo</field>
+	</row>
+	</table_data>
+	<table_data name="page">
+	<row>
+		<field name="id">1</field>
+		<field name="name">1</field>
+		<field name="side">r</field>
+		<field name="text_id">3</field>
+		<field name="num">0</field>
+	</row>
+	<row>
+		<field name="id">2</field>
+		<field name="name">1</field>
+		<field name="side">v</field>
+		<field name="text_id">3</field>
+		<field name="num">0</field>
+	</row>
+	</table_data>
+	<table_data name="project">
+	<row>
+		<field name="id">1</field>
+		<field name="name">Default-Gruppe</field>
+	</row>
+	</table_data>
+	<table_data name="shifttags">
+	</table_data>
+	<table_data name="text2tagset">
+	<row>
+		<field name="text_id">3</field>
+		<field name="tagset_id">1</field>
+		<field name="complete">0</field>
+	</row>
+	<row>
+		<field name="text_id">4</field>
+		<field name="tagset_id">1</field>
+		<field name="complete">0</field>
+	</row>
+	</table_data>
+	<table_data name="tag_suggestion">
+	<row>
+		<field name="id">3</field>
+		<field name="score" xsi:nil="true" />
+		<field name="selected">1</field>
+		<field name="source">user</field>
+		<field name="tag_id">499</field>
+		<field name="mod_id">4</field>
+	</row>
+	<row>
+		<field name="id">4</field>
+		<field name="score" xsi:nil="true" />
+		<field name="selected">1</field>
+		<field name="source">user</field>
+		<field name="tag_id">219</field>
+		<field name="mod_id">5</field>
+	</row>
+	<row>
+		<field name="id">5</field>
+		<field name="score">0.97</field>
+		<field name="selected">1</field>
+		<field name="source">auto</field>
+		<field name="tag_id">497</field>
+		<field name="mod_id">1</field>
+	</row>
+	</table_data>
+	<table_data name="tag">
+	<row>
+		<field name="id">1</field>
+		<field name="value">$,</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">2</field>
+		<field name="value">$.</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">3</field>
+		<field name="value">$(</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">4</field>
+		<field name="value">ADJA.*.*.*.*</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">5</field>
+		<field name="value">ADJA.*.*.Akk.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">6</field>
+		<field name="value">ADJA.Comp.*.Akk.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">7</field>
+		<field name="value">ADJA.Comp.*.Dat.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">8</field>
+		<field name="value">ADJA.Comp.Fem.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">9</field>
+		<field name="value">ADJA.Comp.Fem.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">10</field>
+		<field name="value">ADJA.Comp.Fem.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">11</field>
+		<field name="value">ADJA.Comp.Fem.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">12</field>
+		<field name="value">ADJA.Comp.*.Gen.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">13</field>
+		<field name="value">ADJA.Comp.Masc.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">14</field>
+		<field name="value">ADJA.Comp.Masc.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">15</field>
+		<field name="value">ADJA.Comp.Masc.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">16</field>
+		<field name="value">ADJA.Comp.Masc.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">17</field>
+		<field name="value">ADJA.Comp.Neut.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">18</field>
+		<field name="value">ADJA.Comp.Neut.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">19</field>
+		<field name="value">ADJA.Comp.Neut.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">20</field>
+		<field name="value">ADJA.Comp.Neut.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">21</field>
+		<field name="value">ADJA.Comp.*.Nom.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">22</field>
+		<field name="value">ADJA.*.*.Dat.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">23</field>
+		<field name="value">ADJA.*.Fem.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">24</field>
+		<field name="value">ADJA.*.Fem.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">25</field>
+		<field name="value">ADJA.*.Fem.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">26</field>
+		<field name="value">ADJA.*.Fem.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">27</field>
+		<field name="value">ADJA.*.*.Gen.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">28</field>
+		<field name="value">ADJA.*.Masc.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">29</field>
+		<field name="value">ADJA.*.Masc.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">30</field>
+		<field name="value">ADJA.*.Masc.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">31</field>
+		<field name="value">ADJA.*.Masc.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">32</field>
+		<field name="value">ADJA.*.Neut.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">33</field>
+		<field name="value">ADJA.*.Neut.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">34</field>
+		<field name="value">ADJA.*.Neut.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">35</field>
+		<field name="value">ADJA.*.Neut.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">36</field>
+		<field name="value">ADJA.*.*.Nom.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">37</field>
+		<field name="value">ADJA.Pos.*.Akk.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">38</field>
+		<field name="value">ADJA.Pos.*.Dat.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">39</field>
+		<field name="value">ADJA.Pos.Fem.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">40</field>
+		<field name="value">ADJA.Pos.Fem.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">41</field>
+		<field name="value">ADJA.Pos.Fem.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">42</field>
+		<field name="value">ADJA.Pos.Fem.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">43</field>
+		<field name="value">ADJA.Pos.*.Gen.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">44</field>
+		<field name="value">ADJA.Pos.Masc.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">45</field>
+		<field name="value">ADJA.Pos.Masc.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">46</field>
+		<field name="value">ADJA.Pos.Masc.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">47</field>
+		<field name="value">ADJA.Pos.Masc.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">48</field>
+		<field name="value">ADJA.Pos.Neut.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">49</field>
+		<field name="value">ADJA.Pos.Neut.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">50</field>
+		<field name="value">ADJA.Pos.Neut.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">51</field>
+		<field name="value">ADJA.Pos.Neut.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">52</field>
+		<field name="value">ADJA.Pos.*.Nom.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">53</field>
+		<field name="value">ADJA.Sup.*.Akk.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">54</field>
+		<field name="value">ADJA.Sup.*.Dat.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">55</field>
+		<field name="value">ADJA.Sup.Fem.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">56</field>
+		<field name="value">ADJA.Sup.Fem.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">57</field>
+		<field name="value">ADJA.Sup.Fem.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">58</field>
+		<field name="value">ADJA.Sup.Fem.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">59</field>
+		<field name="value">ADJA.Sup.*.Gen.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">60</field>
+		<field name="value">ADJA.Sup.Masc.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">61</field>
+		<field name="value">ADJA.Sup.Masc.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">62</field>
+		<field name="value">ADJA.Sup.Masc.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">63</field>
+		<field name="value">ADJA.Sup.Masc.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">64</field>
+		<field name="value">ADJA.Sup.Neut.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">65</field>
+		<field name="value">ADJA.Sup.Neut.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">66</field>
+		<field name="value">ADJA.Sup.Neut.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">67</field>
+		<field name="value">ADJA.Sup.Neut.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">68</field>
+		<field name="value">ADJA.Sup.*.Nom.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">69</field>
+		<field name="value">ADJD.*</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">70</field>
+		<field name="value">ADJD.Comp</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">71</field>
+		<field name="value">ADJD.Pos</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">72</field>
+		<field name="value">ADJD.Sup</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">73</field>
+		<field name="value">ADV</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">74</field>
+		<field name="value">APPO.Akk</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">75</field>
+		<field name="value">APPO.Dat</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">76</field>
+		<field name="value">APPO.Gen</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">77</field>
+		<field name="value">APPO.Nom</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">78</field>
+		<field name="value">APPR._</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">79</field>
+		<field name="value">APPR.Akk</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">80</field>
+		<field name="value">APPRART.Fem.Akk</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">81</field>
+		<field name="value">APPRART.Fem.Dat</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">82</field>
+		<field name="value">APPRART.Fem.Gen</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">83</field>
+		<field name="value">APPRART.Fem.Nom</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">84</field>
+		<field name="value">APPRART.Masc.Akk</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">85</field>
+		<field name="value">APPRART.Masc.Dat</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">86</field>
+		<field name="value">APPRART.Masc.Gen</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">87</field>
+		<field name="value">APPRART.Masc.Nom</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">88</field>
+		<field name="value">APPRART.Neut.Akk</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">89</field>
+		<field name="value">APPRART.Neut.Dat</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">90</field>
+		<field name="value">APPRART.Neut.Gen</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">91</field>
+		<field name="value">APPRART.Neut.Nom</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">92</field>
+		<field name="value">APPR.Dat</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">93</field>
+		<field name="value">APPR.Gen</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">94</field>
+		<field name="value">APPR.Nom</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">95</field>
+		<field name="value">APZR</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">96</field>
+		<field name="value">ART.Def.*.Akk.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">97</field>
+		<field name="value">ART.Def.*.Dat.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">98</field>
+		<field name="value">ART.Def.Fem.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">99</field>
+		<field name="value">ART.Def.Fem.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">100</field>
+		<field name="value">ART.Def.Fem.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">101</field>
+		<field name="value">ART.Def.Fem.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">102</field>
+		<field name="value">ART.Def.*.Gen.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">103</field>
+		<field name="value">ART.Def.Masc.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">104</field>
+		<field name="value">ART.Def.Masc.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">105</field>
+		<field name="value">ART.Def.Masc.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">106</field>
+		<field name="value">ART.Def.Masc.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">107</field>
+		<field name="value">ART.Def.Neut.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">108</field>
+		<field name="value">ART.Def.Neut.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">109</field>
+		<field name="value">ART.Def.Neut.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">110</field>
+		<field name="value">ART.Def.Neut.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">111</field>
+		<field name="value">ART.Def.*.Nom.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">112</field>
+		<field name="value">ART.Indef.*.Akk.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">113</field>
+		<field name="value">ART.Indef.*.Dat.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">114</field>
+		<field name="value">ART.Indef.Fem.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">115</field>
+		<field name="value">ART.Indef.Fem.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">116</field>
+		<field name="value">ART.Indef.Fem.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">117</field>
+		<field name="value">ART.Indef.Fem.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">118</field>
+		<field name="value">ART.Indef.*.Gen.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">119</field>
+		<field name="value">ART.Indef.Masc.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">120</field>
+		<field name="value">ART.Indef.Masc.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">121</field>
+		<field name="value">ART.Indef.Masc.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">122</field>
+		<field name="value">ART.Indef.Masc.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">123</field>
+		<field name="value">ART.Indef.Neut.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">124</field>
+		<field name="value">ART.Indef.Neut.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">125</field>
+		<field name="value">ART.Indef.Neut.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">126</field>
+		<field name="value">ART.Indef.Neut.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">127</field>
+		<field name="value">ART.Indef.*.Nom.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">128</field>
+		<field name="value">CARD</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">129</field>
+		<field name="value">FM</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">130</field>
+		<field name="value">ITJ</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">131</field>
+		<field name="value">KOKOM</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">132</field>
+		<field name="value">KON</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">133</field>
+		<field name="value">KOUI</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">134</field>
+		<field name="value">KOUS</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">135</field>
+		<field name="value">NE._._._</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">136</field>
+		<field name="value">NE.*.Akk.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">137</field>
+		<field name="value">NE.*.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">138</field>
+		<field name="value">NE.*.Dat.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">139</field>
+		<field name="value">NE.*.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">140</field>
+		<field name="value">NE.Fem.Akk.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">141</field>
+		<field name="value">NE.Fem.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">142</field>
+		<field name="value">NE.Fem.Dat.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">143</field>
+		<field name="value">NE.Fem.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">144</field>
+		<field name="value">NE.Fem.Gen.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">145</field>
+		<field name="value">NE.Fem.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">146</field>
+		<field name="value">NE.Fem.Nom.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">147</field>
+		<field name="value">NE.Fem.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">148</field>
+		<field name="value">NE.*.Gen.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">149</field>
+		<field name="value">NE.*.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">150</field>
+		<field name="value">NE.Masc.Akk.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">151</field>
+		<field name="value">NE.Masc.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">152</field>
+		<field name="value">NE.Masc.Dat.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">153</field>
+		<field name="value">NE.Masc.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">154</field>
+		<field name="value">NE.Masc.Gen.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">155</field>
+		<field name="value">NE.Masc.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">156</field>
+		<field name="value">NE.Masc.Nom.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">157</field>
+		<field name="value">NE.Masc.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">158</field>
+		<field name="value">NE.Neut.Akk.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">159</field>
+		<field name="value">NE.Neut.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">160</field>
+		<field name="value">NE.Neut.Dat.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">161</field>
+		<field name="value">NE.Neut.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">162</field>
+		<field name="value">NE.Neut.Gen.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">163</field>
+		<field name="value">NE.Neut.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">164</field>
+		<field name="value">NE.Neut.Nom.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">165</field>
+		<field name="value">NE.Neut.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">166</field>
+		<field name="value">NE.*.Nom.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">167</field>
+		<field name="value">NE.*.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">168</field>
+		<field name="value">NN.*.Akk.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">169</field>
+		<field name="value">NN.*.Dat.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">170</field>
+		<field name="value">NN.Fem.Akk.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">171</field>
+		<field name="value">NN.Fem.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">172</field>
+		<field name="value">NN.Fem.Dat.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">173</field>
+		<field name="value">NN.Fem.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">174</field>
+		<field name="value">NN.Fem.Gen.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">175</field>
+		<field name="value">NN.Fem.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">176</field>
+		<field name="value">NN.Fem.Nom.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">177</field>
+		<field name="value">NN.Fem.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">178</field>
+		<field name="value">NN.*.Gen.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">179</field>
+		<field name="value">NN.Masc.Akk.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">180</field>
+		<field name="value">NN.Masc.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">181</field>
+		<field name="value">NN.Masc.Dat.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">182</field>
+		<field name="value">NN.Masc.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">183</field>
+		<field name="value">NN.Masc.Gen.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">184</field>
+		<field name="value">NN.Masc.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">185</field>
+		<field name="value">NN.Masc.Nom.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">186</field>
+		<field name="value">NN.Masc.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">187</field>
+		<field name="value">NN.Neut.Akk.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">188</field>
+		<field name="value">NN.Neut.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">189</field>
+		<field name="value">NN.Neut.Dat.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">190</field>
+		<field name="value">NN.Neut.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">191</field>
+		<field name="value">NN.Neut.Gen.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">192</field>
+		<field name="value">NN.Neut.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">193</field>
+		<field name="value">NN.Neut.Nom.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">194</field>
+		<field name="value">NN.Neut.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">195</field>
+		<field name="value">NN.*.Nom.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">196</field>
+		<field name="value">PAV</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">197</field>
+		<field name="value">PDAT.*.Akk.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">198</field>
+		<field name="value">PDAT.*.Dat.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">199</field>
+		<field name="value">PDAT.Fem.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">200</field>
+		<field name="value">PDAT.Fem.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">201</field>
+		<field name="value">PDAT.Fem.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">202</field>
+		<field name="value">PDAT.Fem.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">203</field>
+		<field name="value">PDAT.*.Gen.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">204</field>
+		<field name="value">PDAT.Masc.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">205</field>
+		<field name="value">PDAT.Masc.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">206</field>
+		<field name="value">PDAT.Masc.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">207</field>
+		<field name="value">PDAT.Masc.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">208</field>
+		<field name="value">PDAT.Neut.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">209</field>
+		<field name="value">PDAT.Neut.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">210</field>
+		<field name="value">PDAT.Neut.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">211</field>
+		<field name="value">PDAT.Neut.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">212</field>
+		<field name="value">PDAT.*.Nom.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">213</field>
+		<field name="value">PDS.*.Akk.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">214</field>
+		<field name="value">PDS.*.Dat.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">215</field>
+		<field name="value">PDS.Fem.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">216</field>
+		<field name="value">PDS.Fem.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">217</field>
+		<field name="value">PDS.Fem.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">218</field>
+		<field name="value">PDS.Fem.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">219</field>
+		<field name="value">PDS.*.Gen.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">220</field>
+		<field name="value">PDS.Masc.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">221</field>
+		<field name="value">PDS.Masc.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">222</field>
+		<field name="value">PDS.Masc.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">223</field>
+		<field name="value">PDS.Masc.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">224</field>
+		<field name="value">PDS.Neut.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">225</field>
+		<field name="value">PDS.Neut.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">226</field>
+		<field name="value">PDS.Neut.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">227</field>
+		<field name="value">PDS.Neut.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">228</field>
+		<field name="value">PDS.*.Nom.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">229</field>
+		<field name="value">PIAT.*.*.*</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">230</field>
+		<field name="value">PIAT.*.Akk.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">231</field>
+		<field name="value">PIAT.*.Dat.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">232</field>
+		<field name="value">PIAT.Fem.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">233</field>
+		<field name="value">PIAT.Fem.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">234</field>
+		<field name="value">PIAT.Fem.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">235</field>
+		<field name="value">PIAT.Fem.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">236</field>
+		<field name="value">PIAT.*.Gen.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">237</field>
+		<field name="value">PIAT.Masc.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">238</field>
+		<field name="value">PIAT.Masc.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">239</field>
+		<field name="value">PIAT.Masc.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">240</field>
+		<field name="value">PIAT.Masc.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">241</field>
+		<field name="value">PIAT.Neut.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">242</field>
+		<field name="value">PIAT.Neut.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">243</field>
+		<field name="value">PIAT.Neut.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">244</field>
+		<field name="value">PIAT.Neut.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">245</field>
+		<field name="value">PIAT.*.Nom.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">246</field>
+		<field name="value">PIS.*.*.*</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">247</field>
+		<field name="value">PIS.*.Akk.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">248</field>
+		<field name="value">PIS.*.Dat.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">249</field>
+		<field name="value">PIS.Fem.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">250</field>
+		<field name="value">PIS.Fem.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">251</field>
+		<field name="value">PIS.Fem.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">252</field>
+		<field name="value">PIS.Fem.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">253</field>
+		<field name="value">PIS.*.Gen.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">254</field>
+		<field name="value">PIS.Masc.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">255</field>
+		<field name="value">PIS.Masc.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">256</field>
+		<field name="value">PIS.Masc.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">257</field>
+		<field name="value">PIS.Masc.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">258</field>
+		<field name="value">PIS.Neut.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">259</field>
+		<field name="value">PIS.Neut.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">260</field>
+		<field name="value">PIS.Neut.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">261</field>
+		<field name="value">PIS.Neut.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">262</field>
+		<field name="value">PIS.*.Nom.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">263</field>
+		<field name="value">PPER.*.*.*.*</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">264</field>
+		<field name="value">PPER.1.Pl.*.Akk</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">265</field>
+		<field name="value">PPER.1.Pl.*.Dat</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">266</field>
+		<field name="value">PPER.1.Pl.*.Gen</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">267</field>
+		<field name="value">PPER.1.Pl.*.Nom</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">268</field>
+		<field name="value">PPER.1.Sg.*.Akk</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">269</field>
+		<field name="value">PPER.1.Sg.*.Dat</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">270</field>
+		<field name="value">PPER.1.Sg.*.Gen</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">271</field>
+		<field name="value">PPER.1.Sg.*.Nom</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">272</field>
+		<field name="value">PPER.2.Pl.*.Akk</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">273</field>
+		<field name="value">PPER.2.Pl.*.Dat</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">274</field>
+		<field name="value">PPER.2.Pl.*.Gen</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">275</field>
+		<field name="value">PPER.2.Pl.*.Nom</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">276</field>
+		<field name="value">PPER.2.Sg.*.Akk</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">277</field>
+		<field name="value">PPER.2.Sg.*.Dat</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">278</field>
+		<field name="value">PPER.2.Sg.*.Gen</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">279</field>
+		<field name="value">PPER.2.Sg.*.Nom</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">280</field>
+		<field name="value">PPER.3.Pl.*.Akk</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">281</field>
+		<field name="value">PPER.3.Pl.*.Dat</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">282</field>
+		<field name="value">PPER.3.Pl.*.Gen</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">283</field>
+		<field name="value">PPER.3.Pl.*.Nom</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">284</field>
+		<field name="value">PPER.3.Sg.Fem.Akk</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">285</field>
+		<field name="value">PPER.3.Sg.Fem.Dat</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">286</field>
+		<field name="value">PPER.3.Sg.Fem.Gen</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">287</field>
+		<field name="value">PPER.3.Sg.Fem.Nom</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">288</field>
+		<field name="value">PPER.3.Sg.Masc.Akk</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">289</field>
+		<field name="value">PPER.3.Sg.Masc.Dat</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">290</field>
+		<field name="value">PPER.3.Sg.Masc.Gen</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">291</field>
+		<field name="value">PPER.3.Sg.Masc.Nom</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">292</field>
+		<field name="value">PPER.3.Sg.Neut.Akk</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">293</field>
+		<field name="value">PPER.3.Sg.Neut.Dat</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">294</field>
+		<field name="value">PPER.3.Sg.Neut.Gen</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">295</field>
+		<field name="value">PPER.3.Sg.Neut.Nom</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">296</field>
+		<field name="value">PPOSAT.*.Akk.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">297</field>
+		<field name="value">PPOSAT.*.Dat.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">298</field>
+		<field name="value">PPOSAT.Fem.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">299</field>
+		<field name="value">PPOSAT.Fem.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">300</field>
+		<field name="value">PPOSAT.Fem.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">301</field>
+		<field name="value">PPOSAT.Fem.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">302</field>
+		<field name="value">PPOSAT.*.Gen.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">303</field>
+		<field name="value">PPOSAT.Masc.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">304</field>
+		<field name="value">PPOSAT.Masc.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">305</field>
+		<field name="value">PPOSAT.Masc.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">306</field>
+		<field name="value">PPOSAT.Masc.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">307</field>
+		<field name="value">PPOSAT.Neut.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">308</field>
+		<field name="value">PPOSAT.Neut.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">309</field>
+		<field name="value">PPOSAT.Neut.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">310</field>
+		<field name="value">PPOSAT.Neut.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">311</field>
+		<field name="value">PPOSAT.*.Nom.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">312</field>
+		<field name="value">PPOSS.*.Akk.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">313</field>
+		<field name="value">PPOSS.*.Dat.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">314</field>
+		<field name="value">PPOSS.Fem.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">315</field>
+		<field name="value">PPOSS.Fem.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">316</field>
+		<field name="value">PPOSS.Fem.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">317</field>
+		<field name="value">PPOSS.Fem.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">318</field>
+		<field name="value">PPOSS.*.Gen.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">319</field>
+		<field name="value">PPOSS.Masc.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">320</field>
+		<field name="value">PPOSS.Masc.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">321</field>
+		<field name="value">PPOSS.Masc.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">322</field>
+		<field name="value">PPOSS.Masc.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">323</field>
+		<field name="value">PPOSS.Neut.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">324</field>
+		<field name="value">PPOSS.Neut.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">325</field>
+		<field name="value">PPOSS.Neut.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">326</field>
+		<field name="value">PPOSS.Neut.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">327</field>
+		<field name="value">PPOSS.*.Nom.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">328</field>
+		<field name="value">PRELAT</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">329</field>
+		<field name="value">PRELS.*.Akk.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">330</field>
+		<field name="value">PRELS.*.Dat.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">331</field>
+		<field name="value">PRELS.Fem.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">332</field>
+		<field name="value">PRELS.Fem.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">333</field>
+		<field name="value">PRELS.Fem.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">334</field>
+		<field name="value">PRELS.Fem.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">335</field>
+		<field name="value">PRELS.*.Gen.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">336</field>
+		<field name="value">PRELS.Masc.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">337</field>
+		<field name="value">PRELS.Masc.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">338</field>
+		<field name="value">PRELS.Masc.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">339</field>
+		<field name="value">PRELS.Masc.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">340</field>
+		<field name="value">PRELS.Neut.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">341</field>
+		<field name="value">PRELS.Neut.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">342</field>
+		<field name="value">PRELS.Neut.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">343</field>
+		<field name="value">PRELS.Neut.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">344</field>
+		<field name="value">PRELS.*.Nom.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">345</field>
+		<field name="value">PRF.*.*.*</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">346</field>
+		<field name="value">PRF.1.Pl.Akk</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">347</field>
+		<field name="value">PRF.1.Pl.Dat</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">348</field>
+		<field name="value">PRF.1.Pl.Gen</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">349</field>
+		<field name="value">PRF.1.Pl.Nom</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">350</field>
+		<field name="value">PRF.1.Sg.Akk</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">351</field>
+		<field name="value">PRF.1.Sg.Dat</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">352</field>
+		<field name="value">PRF.1.Sg.Gen</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">353</field>
+		<field name="value">PRF.1.Sg.Nom</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">354</field>
+		<field name="value">PRF.2.Pl.Akk</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">355</field>
+		<field name="value">PRF.2.Pl.Dat</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">356</field>
+		<field name="value">PRF.2.Pl.Gen</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">357</field>
+		<field name="value">PRF.2.Pl.Nom</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">358</field>
+		<field name="value">PRF.2.Sg.Akk</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">359</field>
+		<field name="value">PRF.2.Sg.Dat</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">360</field>
+		<field name="value">PRF.2.Sg.Gen</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">361</field>
+		<field name="value">PRF.2.Sg.Nom</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">362</field>
+		<field name="value">PRF.3.Pl.Akk</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">363</field>
+		<field name="value">PRF.3.Pl.Dat</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">364</field>
+		<field name="value">PRF.3.Pl.Gen</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">365</field>
+		<field name="value">PRF.3.Pl.Nom</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">366</field>
+		<field name="value">PRF.3.Sg.Akk</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">367</field>
+		<field name="value">PRF.3.Sg.Dat</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">368</field>
+		<field name="value">PRF.3.Sg.Gen</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">369</field>
+		<field name="value">PRF.3.Sg.Nom</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">370</field>
+		<field name="value">PTKA</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">371</field>
+		<field name="value">PTKANT</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">372</field>
+		<field name="value">PTKNEG</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">373</field>
+		<field name="value">PTKVZ</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">374</field>
+		<field name="value">PTKZU</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">375</field>
+		<field name="value">PWAT.*.*.*</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">376</field>
+		<field name="value">PWAT.*.Akk.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">377</field>
+		<field name="value">PWAT.*.Dat.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">378</field>
+		<field name="value">PWAT.Fem.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">379</field>
+		<field name="value">PWAT.Fem.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">380</field>
+		<field name="value">PWAT.Fem.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">381</field>
+		<field name="value">PWAT.Fem.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">382</field>
+		<field name="value">PWAT.*.Gen.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">383</field>
+		<field name="value">PWAT.Masc.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">384</field>
+		<field name="value">PWAT.Masc.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">385</field>
+		<field name="value">PWAT.Masc.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">386</field>
+		<field name="value">PWAT.Masc.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">387</field>
+		<field name="value">PWAT.Neut.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">388</field>
+		<field name="value">PWAT.Neut.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">389</field>
+		<field name="value">PWAT.Neut.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">390</field>
+		<field name="value">PWAT.Neut.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">391</field>
+		<field name="value">PWAT.*.Nom.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">392</field>
+		<field name="value">PWAV</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">393</field>
+		<field name="value">PWS.*.Akk.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">394</field>
+		<field name="value">PWS.*.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">395</field>
+		<field name="value">PWS.*.Dat.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">396</field>
+		<field name="value">PWS.*.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">397</field>
+		<field name="value">PWS.Fem.Akk.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">398</field>
+		<field name="value">PWS.Fem.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">399</field>
+		<field name="value">PWS.Fem.Dat.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">400</field>
+		<field name="value">PWS.Fem.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">401</field>
+		<field name="value">PWS.Fem.Gen.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">402</field>
+		<field name="value">PWS.Fem.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">403</field>
+		<field name="value">PWS.Fem.Nom.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">404</field>
+		<field name="value">PWS.Fem.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">405</field>
+		<field name="value">PWS.*.Gen.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">406</field>
+		<field name="value">PWS.*.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">407</field>
+		<field name="value">PWS.Masc.Akk.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">408</field>
+		<field name="value">PWS.Masc.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">409</field>
+		<field name="value">PWS.Masc.Dat.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">410</field>
+		<field name="value">PWS.Masc.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">411</field>
+		<field name="value">PWS.Masc.Gen.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">412</field>
+		<field name="value">PWS.Masc.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">413</field>
+		<field name="value">PWS.Masc.Nom.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">414</field>
+		<field name="value">PWS.Masc.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">415</field>
+		<field name="value">PWS.Neut.Akk.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">416</field>
+		<field name="value">PWS.Neut.Akk.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">417</field>
+		<field name="value">PWS.Neut.Dat.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">418</field>
+		<field name="value">PWS.Neut.Dat.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">419</field>
+		<field name="value">PWS.Neut.Gen.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">420</field>
+		<field name="value">PWS.Neut.Gen.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">421</field>
+		<field name="value">PWS.Neut.Nom.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">422</field>
+		<field name="value">PWS.Neut.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">423</field>
+		<field name="value">PWS.*.Nom.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">424</field>
+		<field name="value">PWS.*.Nom.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">425</field>
+		<field name="value">TRUNC</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">426</field>
+		<field name="value">VAFIN.1.Pl.Past.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">427</field>
+		<field name="value">VAFIN.1.Pl.Past.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">428</field>
+		<field name="value">VAFIN.1.Pl.Pres.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">429</field>
+		<field name="value">VAFIN.1.Pl.Pres.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">430</field>
+		<field name="value">VAFIN.1.Sg.Past.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">431</field>
+		<field name="value">VAFIN.1.Sg.Past.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">432</field>
+		<field name="value">VAFIN.1.Sg.Pres.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">433</field>
+		<field name="value">VAFIN.1.Sg.Pres.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">434</field>
+		<field name="value">VAFIN.2.Pl.Past.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">435</field>
+		<field name="value">VAFIN.2.Pl.Past.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">436</field>
+		<field name="value">VAFIN.2.Pl.Pres.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">437</field>
+		<field name="value">VAFIN.2.Pl.Pres.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">438</field>
+		<field name="value">VAFIN.2.Sg.Past.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">439</field>
+		<field name="value">VAFIN.2.Sg.Past.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">440</field>
+		<field name="value">VAFIN.2.Sg.Pres.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">441</field>
+		<field name="value">VAFIN.2.Sg.Pres.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">442</field>
+		<field name="value">VAFIN.3.Pl.Past.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">443</field>
+		<field name="value">VAFIN.3.Pl.Past.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">444</field>
+		<field name="value">VAFIN.3.Pl.Pres.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">445</field>
+		<field name="value">VAFIN.3.Pl.Pres.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">446</field>
+		<field name="value">VAFIN.3.Sg.Past.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">447</field>
+		<field name="value">VAFIN.3.Sg.Past.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">448</field>
+		<field name="value">VAFIN.3.Sg.Pres.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">449</field>
+		<field name="value">VAFIN.3.Sg.Pres.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">450</field>
+		<field name="value">VAIMP.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">451</field>
+		<field name="value">VAIMP.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">452</field>
+		<field name="value">VAINF</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">453</field>
+		<field name="value">VAPP</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">454</field>
+		<field name="value">VMFIN.1.Pl.Past.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">455</field>
+		<field name="value">VMFIN.1.Pl.Past.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">456</field>
+		<field name="value">VMFIN.1.Pl.Pres.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">457</field>
+		<field name="value">VMFIN.1.Pl.Pres.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">458</field>
+		<field name="value">VMFIN.1.Sg.Past.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">459</field>
+		<field name="value">VMFIN.1.Sg.Past.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">460</field>
+		<field name="value">VMFIN.1.Sg.Pres.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">461</field>
+		<field name="value">VMFIN.1.Sg.Pres.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">462</field>
+		<field name="value">VMFIN.2.Pl.Past.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">463</field>
+		<field name="value">VMFIN.2.Pl.Past.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">464</field>
+		<field name="value">VMFIN.2.Pl.Pres.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">465</field>
+		<field name="value">VMFIN.2.Pl.Pres.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">466</field>
+		<field name="value">VMFIN.2.Sg.Past.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">467</field>
+		<field name="value">VMFIN.2.Sg.Past.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">468</field>
+		<field name="value">VMFIN.2.Sg.Pres.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">469</field>
+		<field name="value">VMFIN.2.Sg.Pres.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">470</field>
+		<field name="value">VMFIN.3.Pl.Past.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">471</field>
+		<field name="value">VMFIN.3.Pl.Past.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">472</field>
+		<field name="value">VMFIN.3.Pl.Pres.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">473</field>
+		<field name="value">VMFIN.3.Pl.Pres.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">474</field>
+		<field name="value">VMFIN.3.Sg.Past.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">475</field>
+		<field name="value">VMFIN.3.Sg.Past.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">476</field>
+		<field name="value">VMFIN.3.Sg.Pres.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">477</field>
+		<field name="value">VMFIN.3.Sg.Pres.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">478</field>
+		<field name="value">VMINF</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">479</field>
+		<field name="value">VMPP</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">480</field>
+		<field name="value">VVFIN.1.Pl.Past.Ind</field>
+		<field name="needs_revision">1</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">481</field>
+		<field name="value">VVFIN.1.Pl.Past.Konj</field>
+		<field name="needs_revision">1</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">482</field>
+		<field name="value">VVFIN.1.Pl.Pres.Ind</field>
+		<field name="needs_revision">1</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">483</field>
+		<field name="value">VVFIN.1.Pl.Pres.Konj</field>
+		<field name="needs_revision">1</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">484</field>
+		<field name="value">VVFIN.1.Sg.Past.Ind</field>
+		<field name="needs_revision">1</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">485</field>
+		<field name="value">VVFIN.1.Sg.Past.Konj</field>
+		<field name="needs_revision">1</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">486</field>
+		<field name="value">VVFIN.1.Sg.Pres.Ind</field>
+		<field name="needs_revision">1</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">487</field>
+		<field name="value">VVFIN.1.Sg.Pres.Konj</field>
+		<field name="needs_revision">1</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">488</field>
+		<field name="value">VVFIN.2.Pl.Past.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">489</field>
+		<field name="value">VVFIN.2.Pl.Past.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">490</field>
+		<field name="value">VVFIN.2.Pl.Pres.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">491</field>
+		<field name="value">VVFIN.2.Pl.Pres.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">492</field>
+		<field name="value">VVFIN.2.Sg.Past.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">493</field>
+		<field name="value">VVFIN.2.Sg.Past.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">494</field>
+		<field name="value">VVFIN.2.Sg.Pres.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">495</field>
+		<field name="value">VVFIN.2.Sg.Pres.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">496</field>
+		<field name="value">VVFIN.3.Pl.Past.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">497</field>
+		<field name="value">VVFIN.3.Pl.Past.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">498</field>
+		<field name="value">VVFIN.3.Pl.Pres.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">499</field>
+		<field name="value">VVFIN.3.Pl.Pres.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">500</field>
+		<field name="value">VVFIN.3.Sg.Past.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">501</field>
+		<field name="value">VVFIN.3.Sg.Past.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">502</field>
+		<field name="value">VVFIN.3.Sg.Pres.Ind</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">503</field>
+		<field name="value">VVFIN.3.Sg.Pres.Konj</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">504</field>
+		<field name="value">VVIMP.Pl</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">505</field>
+		<field name="value">VVIMP.Sg</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">506</field>
+		<field name="value">VVINF</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">507</field>
+		<field name="value">VVIZU</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">508</field>
+		<field name="value">VVPP</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	<row>
+		<field name="id">509</field>
+		<field name="value">XY</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">1</field>
+	</row>
+	</table_data>
+	<table_data name="tagset">
+	<row>
+		<field name="id">1</field>
+		<field name="name">ImportTest</field>
+		<field name="set_type">closed</field>
+		<field name="class">POS</field>
+	</row>
+	</table_data>
+</database>
+</mysqldump>

@@ -2,8 +2,9 @@
 <phpunit>
     <php>
         <var name="DB_DSN" value="mysql:dbname=coratest;host=localhost"/>
-        <var name="DB_USER" value="root"/>
-        <var name="DB_PASSWD" value="hansolo9"/>
+        <var name="DB_USER" value="cora"/>
+        <var name="DB_PASSWD" value="trustthetext"/>
         <var name="DB_DBNAME" value="coratest"/>
+        <var name="DB_ROOTPW" value="hansolo9"/>
     </php>
 </phpunit>

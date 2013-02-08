@@ -1,8 +1,16 @@
 <?php
+/** unit tests for connect php
+ *  02/2012 Florian Petran
+ *  TODO
+ *  - refactor the fixture - it takes too long to run the tests
+ *  - base on dbunit - methods writing to the database currently
+ *    test against the output of methods reading from it, while
+ *    the database state should be tested separately
+ **/
 require_once "PHPUnit/Framework/TestCase.php";
 require_once "../lib/connect.php";
 
-class connectTest extends PHPUnit_Framework_TestCase {
+class DBInterfaceTest extends PHPUnit_Framework_TestCase {
     protected $dbi;
     protected $dbc;
     protected $mysqlcall;
@@ -69,25 +77,59 @@ class connectTest extends PHPUnit_Framework_TestCase {
     */
 
     public function testUserActions() {
+        // create user
+        $this->dbi->createUser("anselm", "blabla", "0");
+        $created = $this->dbi->getUserByName("anselm");
+        $this->assertEquals($created["name"], "anselm");
+        $this->assertEquals($created["id"], "6");
+        $this->assertEquals($created["admin"], "0");
 
-        createUser($name, $passwd, $admin);
-        changePassword($name, $passwd);
-        changeProjectUsers($pid, $users);
-        deleteUser($name);
-        toggleAdminStatus($name);
+        //changePassword($name, $passwd);
+        //changeProjectUsers($pid, $users);
 
-        $this->dbi->getUserSettings($name);
-        setUserSettings($uname, $linesperpage, $linescontext);
-        setUserSetting($uname, $key, $value);
+        $this->dbi->deleteUser("bollmann");
+        $this->assertEquals(null, $this->dbi->getUserByName("bollmann"));
 
-        markLastPosition($file, $line, $uname);
+        $this->dbi->toggleAdminStatus("test");
+        $user = $this->dbi->getUserByName("test");
+        $this->assertEquals(1, $user["admin"]);
+
+        $this->dbi->toggleAdminStatus("test");
+        $user = $this->dbi->getUserByName("test");
+        $this->assertEquals(0, $user["admin"]);
+    }
+
+    public function testUserSettings() {
+        $test_settings = array("lines_per_page" => "30",
+                               "lines_context" => "5",
+                               "columns_order" => null,
+                               "columns_hidden" => null,
+                               "show_error" => "1");
+
+        $this->assertEquals($test_settings,
+                            $this->dbi->getUserSettings("test"));
+
+        $test_settings["lines_per_page"] = "50";
+        $test_settings["lines_context"] = "3";
+        $this->dbi->setUserSettings("test", "50", "3");
+
+        $this->assertEquals($test_settings,
+                            $this->dbi->getUserSettings("test"));
+
+        $this->dbi->setUserSetting("test", "columns_order", "7/6,6/7");
+        $test_settings["columns_order"] = "7/6,6/7";
+        $this->assertEquals($test_settings,
+                            $this->dbi->getUserSettings("test"));
+
+
+        //$this->dbi->markLastPosition($file, $line, $uname);
 
         // toggleNormStatus
-
-        $this->assertEquals(1, 1);
     }
+
     /*
     public function testDocument() {
+        insertNewDocument
         queryForMetadata($key, $value); // e.g. find doc by sigle or name
         insertNewDocument($options, $data);
         lockFile($fid, $uname);
@@ -111,13 +153,17 @@ class connectTest extends PHPUnit_Framework_TestCase {
         isAllowedToDeleteFile($fid, $user);
         isAllowedToOpenFile($fid, $user);
     }
+     */
     public function testProjects() {
-        getProjects();
-        getProjectUsers();
-        getProjectsForUser();
-        createProject($name);
-        deleteProject($pid);
+        $this->assertEquals(array(array("id" => "1",
+                                  "name" => "Default-Gruppe")),
+                            $this->dbi->getProjects());
+        //$this->dbi->getProjectUsers();
+        //$this->dbi->getProjectsForUser();
+        //$this->dbi->createProject($name);
+        //$this->dbi->deleteProject($pid);
     }
+/*
     public function testTagsAndTagsets() {
         getAllSuggestions($fid, $line_id);
         importTaglist($taglist, $tagset_name);
