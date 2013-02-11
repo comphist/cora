@@ -102,9 +102,13 @@ class XMLHandler {
   /** Process shift tag information. */
   private function processShiftTags(&$node, &$document) {
     $shifttags = array();
+    $type_to_letter = array("rub" => "R",
+			    "title" => "T",
+			    "lat" => "L");
     foreach($node->children() as $tagnode) {
       $shifttag = array();
-      $shifttag['type']  = $tagnode->getName();
+      $shifttag['type'] = $tagnode->getName();
+      $shifttag['type_letter'] = $type_to_letter[$shifttag['type']];
       $shifttag['range'] = $this->parseRange($tagnode['range']);
       $shifttags[] = $shifttag;
     }
@@ -137,7 +141,7 @@ class XMLHandler {
       $modern['utf']    = $modnode['utf'];
       $modern['parent_xml_id'] = $thistokid;
       // first, parse all automatic suggestions
-      if($modnode->suggestions->children() as $suggnode) {
+      foreach($modnode->suggestions->children() as $suggnode) {
 	$sugg = array('source' => 'auto', 'selected' => 0);
 	$sugg['type']   = $suggnode->getName();
 	$sugg['tag']    = $suggnode['tag'];

@@ -1492,9 +1492,9 @@ class DBInterface {
     foreach($tagsets as $tagset) {
       $tagset_ids[$tagset['class']] = $tagset['id'];
     }
-    $tagset_ids['POS'] = $options['tagset'];
+    $tagset_ids['pos'] = $options['tagset'];
     // Load POS tagset
-    $tagset_pos = $this->getTagsetByValue($tagset_ids['POS']);
+    $tagset_pos = $this->getTagsetByValue($tagset_ids['pos']);
 
     // Start insertions
     $this->dbconn->startTransaction();
@@ -1518,7 +1518,7 @@ class DBInterface {
     // Table 'text2tagset'
     $qstr  = "INSERT INTO {$this->db}.text2tagset ";
     $qstr .= "  (`text_id`, `tagset_id`, `complete`) VALUES ";
-    $qstr .= "('{$fileid}', '" . $tagset_ids['POS'] . "', 0)";
+    $qstr .= "('{$fileid}', '" . $tagset_ids['pos'] . "', 0)";
     if(array_key_exists('norm', $tagset_ids)) {
       $qstr .= ", ('{$fileid}', '" . $tagset_ids['norm'] . "', 0)";
     }
@@ -1648,7 +1648,7 @@ class DBInterface {
     foreach($moderns as $mod) {
       foreach($mod['tags'] as $sugg) {
 	// for POS tags, just refer to the respective tag ID
-	if($sugg['type']==='POS') {
+	if($sugg['type']==='pos') {
 	  if(!array_key_exists($sugg['tag'], $tagset_pos)) {
 	    $this->dbconn->rollback();
 	    return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1099). Der folgende POS-Tag ist ungültig: " . $sugg['tag'];
@@ -1685,7 +1685,7 @@ class DBInterface {
     $shifttags = $data->getShifttags();
     foreach($shifttags as $shtag) {
       $qarr[] = "('" . $shtag['db_range'][0] . "', '" . $shtag['db_range'][1] . "', '"
-	. mysql_real_escape_string($shtag['type']) . "')";
+	. $shtag['type_letter'] . "')";
     }
     $qstr .= implode(",", $qarr);
     $q = $this->query($qstr);
