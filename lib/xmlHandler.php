@@ -70,29 +70,29 @@ class XMLHandler {
     // pages
     foreach($node->page as $pagenode) {
       $page = array();
-      $page['xml_id'] = $pagenode['id'];
-      $page['side']   = $pagenode['side'];
-      $page['name']   = $pagenode['no'];
+      $page['xml_id'] = (string) $pagenode['id'];
+      $page['side']   = (string) $pagenode['side'];
+      $page['name']   = (string) $pagenode['no'];
       $page['num']    = ++$pagecount;
-      $page['range']  = $this->parseRange($pagenode['range']);
+      $page['range']  = $this->parseRange((string) $pagenode['range']);
       $pages[] = $page;
     }
     // columns
     foreach($node->column as $colnode) {
       $column = array();
-      $column['xml_id'] = $colnode['id'];
-      $column['name']   = $colnode['name'];
+      $column['xml_id'] = (string) $colnode['id'];
+      $column['name']   = (string) $colnode['name'];
       $column['num']    = ++$colcount;
-      $column['range']  = $this->parseRange($colnode['range']);
+      $column['range']  = $this->parseRange((string) $colnode['range']);
       $columns[] = $column;
     }
     // lines
     foreach($node->line as $linenode) {
       $line = array();
-      $line['xml_id'] = $linenode['id'];
-      $line['name']   = $linenode['name'];
+      $line['xml_id'] = (string) $linenode['id'];
+      $line['name']   = (string) $linenode['name'];
       $line['num']    = ++$linecount;
-      $line['range']  = $this->parseRange($linenode['range']);
+      $line['range']  = $this->parseRange((string) $linenode['range']);
       $lines[] = $line;
     }
 
@@ -109,7 +109,7 @@ class XMLHandler {
       $shifttag = array();
       $shifttag['type'] = $tagnode->getName();
       $shifttag['type_letter'] = $type_to_letter[$shifttag['type']];
-      $shifttag['range'] = $this->parseRange($tagnode['range']);
+      $shifttag['range'] = $this->parseRange((string) $tagnode['range']);
       $shifttags[] = $shifttag;
     }
     $document->setShiftTags($shifttags);
@@ -117,42 +117,42 @@ class XMLHandler {
 
   private function processToken(&$node, &$tokcount, &$t, &$d, &$m) {
     $token = array();
-    $thistokid       = $node['id'];
-    $token['xml_id'] = $node['id'];
-    $token['trans']  = $node['trans'];
+    $thistokid       = (string) $node['id'];
+    $token['xml_id'] = (string) $node['id'];
+    $token['trans']  = (string) $node['trans'];
     $token['ordnr']  = $tokcount;
     $t[] = $token;
     // diplomatic tokens
     foreach($node->dipl as $diplnode) {
       $dipl = array();
-      $dipl['xml_id'] = $diplnode['id'];
-      $lastdiplid     = $diplnode['id'];
-      $dipl['trans']  = $diplnode['trans'];
-      $dipl['utf']    = $diplnode['utf'];
+      $dipl['xml_id'] = (string) $diplnode['id'];
+      $lastdiplid     = (string) $diplnode['id'];
+      $dipl['trans']  = (string) $diplnode['trans'];
+      $dipl['utf']    = (string) $diplnode['utf'];
       $dipl['parent_tok_xml_id'] = $thistokid;
       $d[] = $dipl;
     }
     // modern tokens
     foreach($node->mod as $modnode) {
       $modern = array('tags' => array());
-      $modern['xml_id'] = $modnode['id'];
-      $modern['trans']  = $modnode['trans'];
-      $modern['ascii']  = $modnode['ascii'];
-      $modern['utf']    = $modnode['utf'];
+      $modern['xml_id'] = (string) $modnode['id'];
+      $modern['trans']  = (string) $modnode['trans'];
+      $modern['ascii']  = (string) $modnode['ascii'];
+      $modern['utf']    = (string) $modnode['utf'];
       $modern['parent_xml_id'] = $thistokid;
       // first, parse all automatic suggestions
       foreach($modnode->suggestions->children() as $suggnode) {
 	$sugg = array('source' => 'auto', 'selected' => 0);
 	$sugg['type']   = $suggnode->getName();
-	$sugg['tag']    = $suggnode['tag'];
-	$sugg['score']  = $suggnode['score'];
+	$sugg['tag']    = (string) $suggnode['tag'];
+	$sugg['score']  = (string) $suggnode['score'];
 	$modern['tags'][] = $sugg;
       }
       // then, parse all selected annotations
       foreach($modnode->children() as $annonode) {
 	$annotype = $annonode->getName();
 	if($annotype!=='suggestions') {
-	  $annotag  = $annonode['tag'];
+	  $annotag  = (string) $annonode['tag'];
 	  $found = false;
 	  // loop over all suggestions to check whether the annotation
 	  // is included there, and if so, select it
@@ -207,10 +207,10 @@ class XMLHandler {
 	$this->processShiftTags($node, $document);
       }
       else if ($reader->name == 'comment') {
-	$document->addComment(null, $lastdiplid, (string)$node, $node['type']);
+	$document->addComment(null, $lastdiplid, (string) $node, (string) $node['type']);
       }
       else if ($reader->name == 'token') {
-	$lastdiplid = $this->processToken($node, ++$tokcount, $tokens, $dipls, $modern);
+	$lastdiplid = $this->processToken($node, ++$tokcount, $tokens, $dipls, $moderns);
       }
     }
 

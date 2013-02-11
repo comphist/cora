@@ -225,7 +225,7 @@ class RequestHandler {
 
 	  case "importXMLFile":
 	    $errmsg = $this->checkFileUpload($_FILES['xmlFile']);
-	    if(!$errmsg) {
+	    if($errmsg) {
 	      echo json_encode(array("success"=>false,
 				     "errors"=>array("Fehler beim Upload: ".$errmsg)));
 	      exit;

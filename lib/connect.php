@@ -365,6 +365,8 @@ class DBInterface {
     $query = $this->query($qs);
     while ( @$row = $this->dbconn->fetch_assoc( $query, $this->dbobj ) ) {
       $data = array();
+      $data["id"] = $row["id"];
+      $data["class"] = $row["class"];
       $data["shortname"] = $row["id"];
       $data["longname"] = $row["name"];
       $result[] = $data;
@@ -404,7 +406,7 @@ class DBInterface {
    */
   public function getTagsetByValue($tagset) {
     $tags = array();
-    $qs = "SELECT `id`, `value`, FROM {$this->db}.tag WHERE `tagset_id`='{$tagset}'";
+    $qs = "SELECT `id`, `value` FROM {$this->db}.tag WHERE `tagset_id`='{$tagset}'";
     $query = $this->query($qs);
     while ( @$row = $this->dbconn->fetch_assoc( $query, $this->dbobj ) ) {
       $tags[$row['value']] = $row['id'];
@@ -1643,6 +1645,7 @@ class DBInterface {
     $qstr  = "INSERT INTO {$this->db}.tag_suggestion ";
     $qstr .= "  (`score`, `selected`, `source`, `tag_id`, `mod_id`) VALUES ";
     $qarr  = array();
+    $moderns = $data->getModerns();
     $tistr  = "INSERT INTO {$this->db}.tag ";
     $tistr .= "  (`value`, `needs_revision`, `tagset_id`) VALUES ";
     foreach($moderns as $mod) {
