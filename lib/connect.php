@@ -12,6 +12,7 @@
 
 /** The database settings. */
 require_once 'globals.php';
+require_once 'documentModel.php';
 
 /** Exception when an SQL query fails. */
 class SQLQueryException extends Exception { }
@@ -26,7 +27,7 @@ class LongSQLQuery {
   private $len;
   private $qa;
   private $delim;
-
+ 
   public function __construct($db, $head="", $tail="", $delim=", ") {
     $this->db   = $db;
     $this->head = $head;
@@ -78,6 +79,7 @@ class DBConnector {
   private $dbobj;                     /**< Database object as returned by @c mysql_connect(). */
   private $db          = MAIN_DB;     /**< Name of the database to be used. */
   private $transaction = false;
+  private $lasterror   = null;
 
   /** Create a new DBConnector.
    *
@@ -176,6 +178,21 @@ class DBConnector {
 
   public function fetch($result) {
       return mysql_fetch_array($result);
+  }
+
+  /** Fetch ID of last inserted record.
+   *
+   * Calls the SQL command instead of PHP's mysql_insert_id as we are
+   * dealing with BIGINTs, which might cause problems otherwise.
+   */
+  public function last_insert_id() {
+    $q = $this->query("SELECT LAST_INSERT_ID()");
+    $r = $this->fetch_array($q);
+    return $r[0];
+  }
+
+  public function last_error() {
+    return mysql_error();
   }
 
   /** Perform a critical database query.
@@ -332,14 +349,19 @@ class DBInterface {
 
   /** Get a list of all tagsets.
    *
-   * @param string $lang A language code (@c de or @c en)
+   * @param string $class Class of the tagset, or false if all classes
    *
    * @return A list of associative arrays, containing the names
    * and IDs of the tagset.
    */
-  public function getTagsets() {
+  public function getTagsets($class="POS") {
     $result = array();
-    $qs = "SELECT * FROM {$this->db}.tagset WHERE `class`='POS' ORDER BY `name`";
+    if(!$class) {
+      $qs = "SELECT * FROM {$this->db}.tagset ORDER BY `name`";
+    }
+    else {
+      $qs = "SELECT * FROM {$this->db}.tagset WHERE `class`='{$class}' ORDER BY `name`";
+    }
     $query = $this->query($qs);
     while ( @$row = $this->dbconn->fetch_assoc( $query, $this->dbobj ) ) {
       $data = array();
@@ -360,7 +382,6 @@ class DBInterface {
    */
   public function getTagset( $tagset ) {
     $tags = array();
-
     $qs  = "SELECT `id`, `value`, `needs_revision` FROM {$this->db}.tag ";
     $qs .= "WHERE `tagset_id`='{$tagset}' ORDER BY `value`";
     $query = $this->query($qs);
@@ -369,7 +390,25 @@ class DBInterface {
 		      'value' => $row['value'],
 		      'needs_revision' => $row['needs_revision']);
     }
-    
+    return $tags;
+  }
+
+  /** Build and return an array containing a full tagset.
+   *
+   * This function retrieves all valid tags of a given tagset; the
+   * difference to the @c getTagset() is that this function returns an
+   * array mapping tags to their IDs in the database, which is useful
+   * when importing new documents.
+   *
+   * @param string $tagset The id of the tagset to be retrieved
+   */
+  public function getTagsetByValue($tagset) {
+    $tags = array();
+    $qs = "SELECT `id`, `value`, FROM {$this->db}.tag WHERE `tagset_id`='{$tagset}'";
+    $query = $this->query($qs);
+    while ( @$row = $this->dbconn->fetch_assoc( $query, $this->dbobj ) ) {
+      $tags[$row['value']] = $row['id'];
+    }
     return $tags;
   }
 
@@ -499,102 +538,6 @@ class DBInterface {
     $query = $this->query($qs);
     @$row = $this->dbconn->fetch($query, $this->dbobj);
     return $row;
-  }
-
-  /** Insert a new document.
-   *
-   * @param array $options Metadata for the document
-   * @param array $data Document data
-   *
-   * @return An error message if insertion failed, False otherwise
-   */
-  public function insertNewDocument(&$options, &$data){
-    $this->dbconn->startTransaction();
-
-    // Insert metadata
-    $metadata  = "INSERT INTO {$this->db}.files_metadata ";
-    $metadata .= "(file_name, sigle, byUser, created, tagset, ext_id, ";
-    $metadata .= "POS_tagged, morph_tagged, norm, project_id) VALUES ('";
-    $metadata .= mysql_real_escape_string($options['name']) . "', '";
-    $metadata .= mysql_real_escape_string($options['sigle']) . "', '";
-    $metadata .= $_SESSION['user'] . "', CURRENT_TIMESTAMP, '";
-    $metadata .= mysql_real_escape_string($options['tagset']) . "', '";
-    $metadata .= mysql_real_escape_string($options['ext_id']) . "', ";
-    $metadata .= $options['POS_tagged'] . ", ";
-    $metadata .= $options['morph_tagged'] . ", ";
-    $metadata .= $options['norm'] . ", ";
-    $metadata .= $options['project'] . ")";
-
-    if(!$this->query($metadata)){
-      $errstr = "Fehler beim Schreiben in 'files_metadata':\n" .
-	mysql_errno() . ": " . mysql_error() . "\n";
-      $this->dbconn->rollback();
-      return $errstr;
-    }
-
-    $file_id = mysql_insert_id(); 
-    $this->lockFile($file_id, "@@@system@@@");
-
-    if(!empty($options['progress'])) {
-      $this->markLastPosition($file_id,$options['progress'],'@@global@@');
-    }
-
-    // Insert data
-    $data_head  = "INSERT INTO {$this->db}.files_data (file_id, line_id, ext_id,";
-    $data_head .= "token, tag_POS, tag_morph, tag_norm, lemma, comment) VALUES";
-    $data_table = new LongSQLQuery($this, $data_head, "");
-    $sugg_head  = "INSERT INTO {$this->db}.files_tags_suggestion ";
-    $sugg_head .= "(file_id, line_id, tag_suggestion_id, tagtype, ";
-    $sugg_head .= "tag_name, tag_probability, lemma) VALUES"; 
-    $sugg_table = new LongSQLQuery($this, $sugg_head, "");
-    $err_head   = "INSERT INTO {$this->db}.files_errors ";
-    $err_head  .= "(file_id, line_id, user, value) VALUES";
-    $err_table  = new LongSQLQuery($this, $err_head, "");
-
-    try {
-      foreach($data as $index=>$token){
-	$token = $this->dbconn->escapeSQL($token);
-	$qs = "('{$file_id}', {$index}, '".
-	  mysql_real_escape_string($token['id'])."', '".
-	  mysql_real_escape_string($token['form'])."', '".
-	  mysql_real_escape_string($token['pos'])."', '".
-	  mysql_real_escape_string($token['morph'])."', '".
-	  mysql_real_escape_string($token['norm'])."', '".
-	  mysql_real_escape_string($token['lemma'])."', '".
-	  mysql_real_escape_string($token['comment'])."')";
-	$status = $data_table->append($qs);
-	if($status){ $this->dbconn->rollback(); return $status; }
-	foreach($token['suggestions'] as $sugg){
-	  $qs = "('{$file_id}', {$index}, ".$sugg['index'].
-	    ", '".$sugg['type']."', '".
-	    mysql_real_escape_string($sugg['value']).
-	    "', ".$sugg['score'].", '".
-	    mysql_real_escape_string($token['lemma'])."')";
-	  $status = $sugg_table->append($qs);
-	  if($status){ $this->dbconn->rollback(); return $status; }
-	}
-	if(!empty($token['error'])){
-	  $qs = "('{$file_id}', {$index}, '@@global@@', '".
-	    $token['error']."')";
-	  $status = $err_table->append($qs);
-	  if($status){ $this->dbconn->rollback(); return $status; }
-	}
-      }
-      $status = $data_table->flush();
-      if($status){ $this->dbconn->rollback(); return $status; }
-      $status = $sugg_table->flush();
-      if($status){ $this->dbconn->rollback(); return $status; }
-      $status = $err_table->flush();
-      if($status){ $this->dbconn->rollback(); return $status; }
-
-      $this->unlockFile($file_id, "@@@system@@@");
-      $this->dbconn->commitTransaction();
-    } catch (SQLQueryException $e) {
-      $this->dbconn->rollback();
-      return "Fehler beim Importieren der Daten:\n" . $e . "\n";
-    }
-    
-    return False;
   }
 
   /** Lock a file for editing.
@@ -920,7 +863,7 @@ class DBInterface {
   public function getProjectsForUser($uname){
     $user = $this->getUserByName($uname);
     $uid  = $user["id"];
-    $qs = "SELECT a.* FROM ({$this->db}.project a, {$this->db}.user2project b) WHERE (a.id=b.project_id AND b.user_id='{$uid}') ORDER BY project_id";
+    $qs = "SELECT a.* FROM ({$this->db}.project a, {$this->db}.user2project b) WHERE (a.id=b.project_id AND b.user_id='{$uid}') ORDER BY `id`";
     $query = $this->query($qs); 
     $projects = array();
     while ( @$row = $this->dbconn->fetch( $query, $this->dbobj ) ) {
@@ -1415,9 +1358,6 @@ class DBInterface {
       return "Ein interner Fehler ist aufgetreten (Code: 1080).  Die Datenbank meldete:\n" . $e->getMessage();
     }
 
-    // ERROR MARKERS & MARK LAST POSITION still missing!
-
-
     $this->dbconn->commitTransaction();
     
     // finally, one last query...
@@ -1536,7 +1476,246 @@ class DBInterface {
     // done!
     return array("success"=>true, "warnings"=>$warnings);
   }
-  
+
+
+  /** Insert a new document.
+   *
+   * @param array $options Metadata for the document
+   * @param array $data A CoraDocument object
+   *
+   * @return An error message if insertion failed, False otherwise
+   */
+  public function insertNewDocument(&$options, &$data){
+    // Find tagset IDs
+    $tagset_ids = array();
+    $tagsets = $this->getTagsets(null);
+    foreach($tagsets as $tagset) {
+      $tagset_ids[$tagset['class']] = $tagset['id'];
+    }
+    $tagset_ids['POS'] = $options['tagset'];
+    // Load POS tagset
+    $tagset_pos = $this->getTagsetByValue($tagset_ids['POS']);
+
+    // Start insertions
+    $this->dbconn->startTransaction();
+
+    // Table 'text'
+    $qstr  = "INSERT INTO {$this->db}.text ";
+    $qstr .= "  (`sigle`, `fullname`, `project_id`, `created`, `creator_id`, ";
+    $qstr .= "   `currentmod_id`, `header`) VALUES ";
+    $qstr .= "('" . mysql_real_escape_string($options['sigle']) . "', ";
+    $qstr .= "'" . mysql_real_escape_string($options['name']) . "', ";
+    $qstr .= "'" . $options['project'] . "', CURRENT_TIMESTAMP, ";
+    $qstr .= "'" . $_SESSION['user_id'] . "', NULL, ";
+    $qstr .= "'" . mysql_real_escape_string($data->getHeader()) . "')";
+    $q = $this->query($qstr);
+    if($qerr = $this->dbconn->last_error()) {
+      $this->dbconn->rollback();
+      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1091).\n" . $qerr;
+    }
+    $fileid = $this->dbconn->last_insert_id();
+
+    // Table 'text2tagset'
+    $qstr  = "INSERT INTO {$this->db}.text2tagset ";
+    $qstr .= "  (`text_id`, `tagset_id`, `complete`) VALUES ";
+    $qstr .= "('{$fileid}', '" . $tagset_ids['POS'] . "', 0)";
+    if(array_key_exists('norm', $tagset_ids)) {
+      $qstr .= ", ('{$fileid}', '" . $tagset_ids['norm'] . "', 0)";
+    }
+    if(array_key_exists('lemma', $tagset_ids)) {
+      $qstr .= ", ('{$fileid}', '" . $tagset_ids['lemma'] . "', 0)";
+    }
+    $q = $this->query($qstr);
+    if($qerr = $this->dbconn->last_error()) {
+      $this->dbconn->rollback();
+      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1092).\n" . $qerr;
+    }
+    
+    /* Note: The next blocks all follow a very similar structure. Can
+       we refactor this into a loop? */
+
+    // Table 'page'
+    $qstr  = "INSERT INTO {$this->db}.page (`name`, `side`, `text_id`, `num`) VALUES ";
+    $qarr  = array();
+    $pages = $data->getPages();
+    foreach($pages as $page) {
+      $qarr[] = "('" . mysql_real_escape_string($page['name']) . "', '" 
+	. mysql_real_escape_string($page['side']) . "', '{$fileid}', '" 
+	. $page['num'] . "')";
+    }
+    $qstr .= implode(",", $qarr);
+    $q = $this->query($qstr);
+    if($qerr = $this->dbconn->last_error()) {
+      $this->dbconn->rollback();
+      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1093).\n" . $qerr;
+    }
+    $first_id = $this->dbconn->last_insert_id();
+    $data->fillPageIDs($first_id);
+
+    // Table 'col'
+    $qstr  = "INSERT INTO {$this->db}.col (`name`, `num`, `page_id`) VALUES ";
+    $qarr  = array();
+    $cols  = $data->getColumns();
+    foreach($cols as $col) {
+      $qarr[] = "('" . mysql_real_escape_string($col['name']) . "', '" 
+	. $col['num'] . "', '" . $col['parent_db_id'] . "')";
+    }
+    $qstr .= implode(",", $qarr);
+    $q = $this->query($qstr);
+    if($qerr = $this->dbconn->last_error()) {
+      $this->dbconn->rollback();
+      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1094).\n" . $qerr;
+    }
+    $first_id = $this->dbconn->last_insert_id();
+    $data->fillColumnIDs($first_id);
+    
+    // Table 'line'
+    $qstr  = "INSERT INTO {$this->db}.line (`name`, `num`, `col_id`) VALUES ";
+    $qarr  = array();
+    $lines = $data->getLines();
+    foreach($lines as $line) {
+      $qarr[] = "('" . mysql_real_escape_string($line['name']) . "', '" 
+	. $line['num'] . "', '"	. $line['parent_db_id'] . "')";
+    }
+    $qstr .= implode(",", $qarr);
+    $q = $this->query($qstr);
+    if($qerr = $this->dbconn->last_error()) {
+      $this->dbconn->rollback();
+      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1095).\n" . $qerr;
+    }
+    $first_id = $this->dbconn->last_insert_id();
+    $data->fillLineIDs($first_id);
+    
+    // Table 'token'
+    $qstr  = "INSERT INTO {$this->db}.token (`trans`, `ordnr`, `text_id`) VALUES ";
+    $qarr  = array();
+    $tokens = $data->getTokens();
+    foreach($tokens as $token) {
+      $qarr[] = "('" . mysql_real_escape_string($token['trans']) . "', '" 
+	. $token['ordnr'] . "', '{$fileid}')";
+    }
+    $qstr .= implode(",", $qarr);
+    $q = $this->query($qstr);
+    if($qerr = $this->dbconn->last_error()) {
+      $this->dbconn->rollback();
+      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1096).\n" . $qerr;
+    }
+    $first_id = $this->dbconn->last_insert_id();
+    $data->fillTokenIDs($first_id);
+
+    // Table 'dipl'
+    $qstr  = "INSERT INTO {$this->db}.dipl (`trans`, `utf`, `tok_id`, `line_id`) VALUES ";
+    $qarr  = array();
+    $dipls = $data->getDipls();
+    foreach($dipls as $dipl) {
+      $qarr[] = "('" . mysql_real_escape_string($dipl['trans']) . "', '" 
+	. mysql_real_escape_string($dipl['utf']) . "', '"
+	. $dipl['parent_tok_db_id'] . "', '" . $dipl['parent_line_db_id'] . "')";
+    }
+    $qstr .= implode(",", $qarr);
+    $q = $this->query($qstr);
+    if($qerr = $this->dbconn->last_error()) {
+      $this->dbconn->rollback();
+      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1097).\n" . $qerr;
+    }
+    $first_id = $this->dbconn->last_insert_id();
+    $data->fillDiplIDs($first_id);
+
+    // Table 'modern'
+    $qstr  = "INSERT INTO {$this->db}.modern (`trans`, `utf`, `ascii`, `tok_id`) VALUES ";
+    $qarr  = array();
+    $moderns = $data->getModerns();
+    foreach($moderns as $mod) {
+      $qarr[] = "('" . mysql_real_escape_string($mod['trans']) . "', '" 
+	. mysql_real_escape_string($mod['utf']) . "', '"
+	. mysql_real_escape_string($mod['ascii']) . "', '" . $mod['parent_db_id'] . "')";
+    }
+    $qstr .= implode(",", $qarr);
+    $q = $this->query($qstr);
+    if($qerr = $this->dbconn->last_error()) {
+      $this->dbconn->rollback();
+      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1098).\n" . $qerr;
+    }
+    $first_id = $this->dbconn->last_insert_id();
+    $data->fillModernIDs($first_id);
+
+    // Table 'tag_suggestion'
+    $qstr  = "INSERT INTO {$this->db}.tag_suggestion ";
+    $qstr .= "  (`score`, `selected`, `source`, `tag_id`, `mod_id`) VALUES ";
+    $qarr  = array();
+    $tistr  = "INSERT INTO {$this->db}.tag ";
+    $tistr .= "  (`value`, `needs_revision`, `tagset_id`) VALUES ";
+    foreach($moderns as $mod) {
+      foreach($mod['tags'] as $sugg) {
+	// for POS tags, just refer to the respective tag ID
+	if($sugg['type']==='POS') {
+	  if(!array_key_exists($sugg['tag'], $tagset_pos)) {
+	    $this->dbconn->rollback();
+	    return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1099). Der folgende POS-Tag ist ungültig: " . $sugg['tag'];
+	  }
+	  $tag_id = $tagset_pos[$sugg['tag']];
+	}
+	// for all other tags, create a new tag entry first
+	else {
+	  $tqstr = $tistr . "('" . mysql_real_escape_string($sugg['tag']) . "', 0, '"
+	    . $tagset_ids[$sugg['type']] . "')";
+	  $tq = $this->query($tqstr);
+	  if($qerr = $this->dbconn->last_error()) {
+	    $this->dbconn->rollback();
+	    return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1100).\n" . $qerr;
+	  }
+	  $tag_id = $this->dbconn->last_insert_id();
+	}
+	// then append the proper values
+	$qarr[] = "('" . $sugg['score'] . "', '" . $sugg['selected'] . "', '"
+	  . $sugg['source'] . "', '{$tag_id}', '" . $mod['db_id'] . "')";
+      }
+    }
+    $qstr .= implode(",", $qarr);
+    $q = $this->query($qstr);
+    if($qerr = $this->dbconn->last_error()) {
+      $this->dbconn->rollback();
+      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1101).\n" . $qerr;
+    }
+
+    // Table 'shifttags'
+    $qstr  = "INSERT INTO {$this->db}.shifttags ";
+    $qstr .= "  (`tok_from`, `tok_to`, `tag_type`) VALUES ";
+    $qarr  = array();
+    $shifttags = $data->getShifttags();
+    foreach($shifttags as $shtag) {
+      $qarr[] = "('" . $shtag['db_range'][0] . "', '" . $shtag['db_range'][1] . "', '"
+	. mysql_real_escape_string($shtag['type']) . "')";
+    }
+    $qstr .= implode(",", $qarr);
+    $q = $this->query($qstr);
+    if($qerr = $this->dbconn->last_error()) {
+      $this->dbconn->rollback();
+      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1102).\n" . $qerr;
+    }
+
+    // Table 'comment'
+    $qstr  = "INSERT INTO {$this->db}.comment ";
+    $qstr .= "  (`tok_id`, `value`, `comment_type`) VALUES ";
+    $qarr  = array();
+    $comments = $data->getComments();
+    foreach($comments as $comment) {
+      $qarr[] = "('" . $comment['parent_db_id'] . "', '" 
+	. mysql_real_escape_string($comment['text']) . "', '"
+	. mysql_real_escape_string($comment['type']) . "')";
+    }
+    $qstr .= implode(",", $qarr);
+    $q = $this->query($qstr);
+    if($qerr = $this->dbconn->last_error()) {
+      $this->dbconn->rollback();
+      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1103).\n" . $qerr;
+    }
+
+    $this->dbconn->commitTransaction();
+    
+    return False;
+  }
+
 }
 
 

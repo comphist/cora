@@ -92,7 +92,7 @@ $tagsets = $sh->getTagsetList();
 		<label for="project">Projekt: </label>
 		<select name="project" size="1">
 			<?php foreach($projects as $set):?>
-			<option value="<?php echo $set['project_id'];?>"><?php echo "{$set['project_name']}";?></option>
+			<option value="<?php echo $set['id'];?>"><?php echo "{$set['name']}";?></option>
 			<?php endforeach;?>
 		</select>
 		</p>

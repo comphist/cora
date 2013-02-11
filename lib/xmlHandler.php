@@ -4,8 +4,11 @@
  * Import and export of files as XML data.
  *
  * @author Marcel Bollmann
- * @date May 2012
+ * @date May 2012, updated February 2013
  */
+
+require_once( "documentModel.php" );
+
 
 class XMLHandler {
 
@@ -32,119 +35,184 @@ class XMLHandler {
   }
 
   /** Process header information. */
-  private function processXMLHeader(&$reader, &$options, &$format) {
+  private function processXMLHeader(&$reader, &$options) {
     $doc = new DOMDocument();
-    $format = '';
     while ($reader->read()) {
-      if ($reader->name == 'cora') {
-	$format = 'cora';
-	break;
-      }
       if ($reader->name == 'text') {
-	$format = 'hist';
-	$textnode = simplexml_import_dom($doc->importNode($reader->expand(), true));
+	$header = simplexml_import_dom($doc->importNode($reader->expand(), true));
 	if (isset($header['id']) && !empty($header['id'])
 	    && (!isset($options['ext_id']) || empty($options['ext_id']))) {
 	  $options['ext_id'] = (string) $header['id'];
 	}
-	break;
+	return False;
       }
     }
-    if(empty($format)) {
-      return "XML-Format nicht erkannt (erwarte cora- oder text-Tag).";
+    return "XML-Format nicht erkannt: <text>-Tag nicht gefunden.";
+  }
+
+  /** Parses a range string ("t1..t4" or just "t1") into an array
+      containing beginning and end of the range. */
+  private function parseRange($range) {
+    $x = explode("..", $range);
+    $start = $x[0];
+    $end = (isset($x[1]) ? $x[1] : $x[0]);
+    return array($start, $end);
+  }
+
+  /** Process layout information. */
+  private function processLayoutInformation(&$node, &$document) {
+    $pages = array();
+    $columns = array();
+    $lines = array();
+    $pagecount = 0;
+    $colcount = 0;
+    $linecount = 0;
+    // pages
+    foreach($node->page as $pagenode) {
+      $page = array();
+      $page['xml_id'] = $pagenode['id'];
+      $page['side']   = $pagenode['side'];
+      $page['name']   = $pagenode['no'];
+      $page['num']    = ++$pagecount;
+      $page['range']  = $this->parseRange($pagenode['range']);
+      $pages[] = $page;
     }
-    if($format !== 'cora') {
-      return False; // header tag is only mandatory for CorA format
+    // columns
+    foreach($node->column as $colnode) {
+      $column = array();
+      $column['xml_id'] = $colnode['id'];
+      $column['name']   = $colnode['name'];
+      $column['num']    = ++$colcount;
+      $column['range']  = $this->parseRange($colnode['range']);
+      $columns[] = $column;
+    }
+    // lines
+    foreach($node->line as $linenode) {
+      $line = array();
+      $line['xml_id'] = $linenode['id'];
+      $line['name']   = $linenode['name'];
+      $line['num']    = ++$linecount;
+      $line['range']  = $this->parseRange($linenode['range']);
+      $lines[] = $line;
     }
 
-    // any data before the header is skipped!
-    while ($reader->read() && $reader->name !== 'header');
-    if ($reader->name !== 'header') { // EOF reached
-      return "XML-Fehler: CorA-Format erkannt, aber header-Tag nicht gefunden.";
+    $document->setLayoutInfo($pages, $columns, $lines);
+  }
+
+  /** Process shift tag information. */
+  private function processShiftTags(&$node, &$document) {
+    $shifttags = array();
+    foreach($node->children() as $tagnode) {
+      $shifttag = array();
+      $shifttag['type']  = $tagnode->getName();
+      $shifttag['range'] = $this->parseRange($tagnode['range']);
+      $shifttags[] = $shifttag;
     }
-    $header = simplexml_import_dom($doc->importNode($reader->expand(), true));
-    $this->setOptionsFromHeader($header, $options);
-    return False;
+    $document->setShiftTags($shifttags);
+  }
+
+  private function processToken(&$node, &$tokcount, &$t, &$d, &$m) {
+    $token = array();
+    $thistokid       = $node['id'];
+    $token['xml_id'] = $node['id'];
+    $token['trans']  = $node['trans'];
+    $token['ordnr']  = $tokcount;
+    $t[] = $token;
+    // diplomatic tokens
+    foreach($node->dipl as $diplnode) {
+      $dipl = array();
+      $dipl['xml_id'] = $diplnode['id'];
+      $lastdiplid     = $diplnode['id'];
+      $dipl['trans']  = $diplnode['trans'];
+      $dipl['utf']    = $diplnode['utf'];
+      $dipl['parent_tok_xml_id'] = $thistokid;
+      $d[] = $dipl;
+    }
+    // modern tokens
+    foreach($node->mod as $modnode) {
+      $modern = array('tags' => array());
+      $modern['xml_id'] = $modnode['id'];
+      $modern['trans']  = $modnode['trans'];
+      $modern['ascii']  = $modnode['ascii'];
+      $modern['utf']    = $modnode['utf'];
+      $modern['parent_xml_id'] = $thistokid;
+      // first, parse all automatic suggestions
+      if($modnode->suggestions->children() as $suggnode) {
+	$sugg = array('source' => 'auto', 'selected' => 0);
+	$sugg['type']   = $suggnode->getName();
+	$sugg['tag']    = $suggnode['tag'];
+	$sugg['score']  = $suggnode['score'];
+	$modern['tags'][] = $sugg;
+      }
+      // then, parse all selected annotations
+      foreach($modnode->children() as $annonode) {
+	$annotype = $annonode->getName();
+	if($annotype!=='suggestions') {
+	  $annotag  = $annonode['tag'];
+	  $found = false;
+	  // loop over all suggestions to check whether the annotation
+	  // is included there, and if so, select it
+	  foreach($modern['tags'] as &$sugg) {
+	    if($sugg['type']==$annotype && $sugg['tag']==$annotag) {
+	      $sugg['selected'] = 1;
+	      $found = true;
+	      break;
+	    }
+	  }
+	  unset($sugg);
+	  // if it is not, create a new entry for it
+	  if(!$found) {
+	    $sugg = array('source' => 'user', 'selected' => 1, 'score' => null);
+	    $sugg['type'] = $annotype;
+	    $sugg['tag']  = $annotag;
+	    $modern['tags'][] = $sugg;
+	  }
+	}
+      }
+      $m[] = $modern;
+    }
+    return $lastdiplid;
   }
 
   /** Process XML data. */
-  private function processXMLData(&$reader, &$options, $format) {
+  private function processXMLData(&$reader, &$options) {
     $doc = new DOMDocument();
-    $data = array();
+    $document = new CoraDocument($options);
 
-    if ($format == 'cora') {
-      $tokenname = 'token';
-    } else if ($format == 'hist') {
-      $tokenname = 'mod';
-    }
+    $tokens  = array();
+    $dipls   = array();
+    $moderns = array();
+    $tokcount = 0;
+    $lastdiplid = null;
 
     while ($reader->read()) {
       // only handle opening tags
       if ($reader->nodeType!==XMLReader::ELEMENT) { continue; }
 
-      if ($reader->name == 'cora-header' && $format == 'hist') {
-	$node = simplexml_import_dom($doc->importNode($reader->expand(), true));
+      $node = simplexml_import_dom($doc->importNode($reader->expand(), true));
+      if ($reader->name == 'cora-header') {
 	$this->setOptionsFromHeader($node, $options);
       }
-      else if ($reader->name == $tokenname) {
-	$node = simplexml_import_dom($doc->importNode($reader->expand(), true));
-	$token = array();
-	// some of these can possibly be empty
-	$token['id'] = $node['id'];
-	if ($format == 'cora') {
-	  $token['error']   = $node['error'];
-	  $token['form']    = $node->form['dipl'];
-	  $token['norm']    = $node->form['norm'];
-	  $token['lemma']   = $node->lemma['inst'];
-	  $token['pos']     = $node->pos['inst'];
-	  $token['morph']   = $node->infl['val'];
-	  $token['comment'] = $node->comment;
-	}
-	else if ($format == 'hist') {
-	  $token['error']   = $node['cora-error'];
-	  $token['form']    = $node['utf'];
-	  $token['norm']    = $node->norm['tag'];
-	  $token['lemma']   = $node->lemma['tag'];
-	  $token['pos']     = $node->pos['tag'];
-	  $token['morph']   = $node->morph['tag'];
-	  $token['comment'] = $node->{'cora-comment'};
-	}
-	if (empty($token['morph']) || $token['morph'] == "" ) {
-	  $token['morph'] = "--";
-	}
-	$suggs = array();
-	$posindex = 0;
-	$morphindex = 0;
-	foreach($node->suggestions->pos as $sugg){
-	  $val = ($format=='hist') ? 'tag' : 'inst';
-	  $suggs[] = array('type'=>'pos',
-			   'value'=>$sugg[$val],
-			   'score'=>$sugg['score'],
-			   'index'=>$posindex++);
-	}
-	if ($format == 'cora') {
-	  foreach($node->suggestions->infl as $sugg){
-	    $suggs[] = array('type'=>'morph',
-			     'value'=>$sugg['val'],
-			     'score'=>$sugg['score'],
-			     'index'=>$morphindex++);
-	  }
-	} else if ($format == 'hist') {
-	  foreach($node->suggestions->morph as $sugg){
-	    $suggs[] = array('type'=>'morph',
-			     'value'=>$sugg['tag'],
-			     'score'=>$sugg['score'],
-			     'index'=>$morphindex++);
-	  }
-	}
-	$token['suggestions'] = $suggs;
-	$data[] = $token;
+      else if ($reader->name == 'header') {
+	$document->setHeader((string)$node);
       }
-      // could add further 'if' statements to process <boundary>
-      // elements, <page> groupings, etc.
+      else if ($reader->name == 'layoutinfo') {
+	$this->processLayoutInformation($node, $document);
+      }
+      else if ($reader->name == 'shifttags') {
+	$this->processShiftTags($node, $document);
+      }
+      else if ($reader->name == 'comment') {
+	$document->addComment(null, $lastdiplid, (string)$node, $node['type']);
+      }
+      else if ($reader->name == 'token') {
+	$lastdiplid = $this->processToken($node, ++$tokcount, $tokens, $dipls, $modern);
+      }
     }
 
-    return $data;
+    $document->setTokens($tokens, $dipls, $moderns);
+    $document->mapRangesToIDs();
+    return $document;
   }
 
   /** Check if data should be considered normalized, POS-tagged,
@@ -152,107 +220,7 @@ class XMLHandler {
    *  conform to the chosen tagset.
    */
   private function checkIntegrity(&$options, &$data) {
-    $lines  = 0;
-    $norm   = 0;
-    $pos    = 0;
-    $morph  = 0;
     $warnings = array();
-    $posset   = array();
-    $morphset = array();
-
-    // check names
-    if(isset($options['name']) && !empty($options['name'])) {
-      if($this->db->queryForMetadata("fullname", $options['name'])){
-	$warnings[] = "Ein Dokument mit dem Namen '".$options['name']."' existiert bereits.";
-      }
-    }
-
-    if(isset($options['sigle']) && !empty($options['sigle'])) {
-      if($this->db->queryForMetadata("sigle", $options['sigle'])){
-	$warnings[] = "Ein Dokument mit der Sigle '".$options['sigle']."' existiert bereits.";
-      }
-    }
-
-    // load tagset
-    if(isset($options['tagset']) && !empty($options['tagset'])){
-      // @hack hardcoded language:
-      $tagset = $this->db->getTagset($options['tagset'], 'de');
-      if(empty($tagset)){
-	$warnings[] = "Tagset '".$options['tagset']
-	  ."' existiert nicht oder ist leer.";
-      } else {
-	$attribs = array();
-	foreach($tagset['attribs'] as $id=>$attrib){
-	  $attribs[$attrib['shortname']] = $id;
-	}
-	ksort($attribs);
-	// collect POS tags in a list
-	foreach($tagset['tags'] as $id=>$tag){
-	  $posset[] = (string) $tag['shortname'];
-	  // build all valid morph tag combinations
-	  $combinations = array();
-	  foreach($attribs as $att_name=>$att_id){
-	    if(in_array($att_id, $tag['link'])){
-	      if(empty($combinations)){
-		$combinations = $tagset['attribs'][$att_id]['val'];
-	      } else {
-		$newcomb = array();
-		foreach($combinations as $prev){
-		  foreach($tagset['attribs'][$att_id]['val'] as $next) {
-		    $newcomb[] = $prev.".".$next;
-		  }
-		}
-		$combinations = $newcomb;
-	      }
-	    }
-	  }
-	  if(empty($combinations)) { $combinations = array("--"); }
-	  $morphset[$tag['shortname']] = $combinations;
-	}
-      }
-    } else {
-      $tagset = False;
-    }
-
-    // check data
-    foreach($data as $line_id=>$token){
-      $lines++;
-      $poserror = False;
-      if(!empty($token['norm'])) { $norm++; }
-      if($tagset && !empty($token['pos'])) { 
-	$pos++;
-	$postag = (string) $token['pos'];
-	if(!in_array($postag, $posset)){
-	  $warning = "Token ".$line_id;
-	  if(!empty($token['id'])) {
-	    $warning = $warning . " (" . $token['id'] . ")";
-	  }
-	  $warning = $warning . ": '" . $postag ."' ist kein gültiger POS-Tag.";
-	  $warnings[] = $warning;
-	  $poserror = True;
-	}
-	if(!empty($token['morph'])) { 
-	  $morph++;
-	  $morphtag = (string) $token['morph'];
-	  if(!$poserror && !empty($morphset[$postag]) &&
-	     !in_array($morphtag,$morphset[$postag])) {
-	    $warning = "Token ".$line_id;
-	    if(!empty($token['id'])) {
-	      $warning = $warning . " (" . $token['id'] . ")";
-	    }
-	    $warning = $warning.": '".$morphtag
-	      ."' ist kein gültiger Morphologie-Tag für Wortart '"
-	      .$postag."'.";
-	    $warnings[] = $warning;
-	  }
-	}
-      }
-    }
-
-    $threshold = 0.9 * $lines;
-    $options['norm'] = ($norm>$threshold) ? 1 : 0;
-    $options['POS_tagged'] = ($pos>$threshold) ? 1 : 0;
-    $options['morph_tagged'] = ($morph>$threshold) ? 1 : 0;
 
     return $warnings;
   }
@@ -292,10 +260,18 @@ class XMLHandler {
     $format = '';
     $xmlerror = $this->processXMLHeader($reader, $options, $format);
     if($xmlerror){
+      $reader->close();
       return array("success"=>False, 
 		   "errors"=>array($xmlerror));
     }
-    $data = $this->processXMLData($reader, $options, $format);
+    try {
+      $data = $this->processXMLData($reader, $options, $format);
+    }
+    catch (DocumentValueException $e) {
+      $reader->close();
+      return array("success"=>False,
+		   "errors"=>array($e->getMessage()));
+    }
     $reader->close();
 
     // check for data integrity
