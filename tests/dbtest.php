@@ -481,16 +481,16 @@ class interfaceTest extends Cora_Tests_DbTestCase {
         $this->assertEquals("0", $this->dbi->getMaxLinesNo("5"));
         $this->assertEquals("0", $this->dbi->getMaxLinesNo("512"));
 
-        // XXX
-        //$this->assertEquals($lines_expected,
-                            //$this->dbi->getAllLines("3"));
-
         //insertNewDocument($options, $data);
         //getAllSuggestions($fid, $line_id);
         //saveLines($fid, $lasteditedrow, $lines);
     }
 
-    /* XXX
+    public function testGetAllLines() {
+        $this->assertEquals($lines_expected,
+                            $this->dbi->getAllLines("3"));
+    }
+
     public function testDeleteFile() {
         $this->dbi->deleteFile("3");
         // TODO of course it needs to test if the tokens, etc. are also
@@ -499,7 +499,6 @@ class interfaceTest extends Cora_Tests_DbTestCase {
         $this->assertEquals(0,
             $this->query("SELECT * FROM cora.text WHERE ID=3")->getRowCount());
     }
-    */
 
 }
 
