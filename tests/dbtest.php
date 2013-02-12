@@ -486,10 +486,27 @@ class interfaceTest extends Cora_Tests_DbTestCase {
         //saveLines($fid, $lasteditedrow, $lines);
     }
 
+    public function testProjects() {
+        $this->assertEquals(array(
+                                array('id' => '1', 'name' => 'Default-Gruppe')
+                            ),
+                            $this->dbi->getProjects());
+        $this->assertEquals(array(array('project_id' => '1', 'username' => 'bollmann')),
+                            $this->dbi->getProjectUsers());
+
+        $this->assertEquals(array(array('id' => '1', 'name' => 'Default-Gruppe')),
+                            $this->dbi->getProjectsForUser("bollmann"));
+        //getProjectsForUser("bollmann");
+        //createProject("testproject");
+        //deleteProject("2");
+    }
+
+    /*
     public function testGetAllLines() {
         $this->assertEquals($lines_expected,
                             $this->dbi->getAllLines("3"));
     }
+     */
 
     public function testDeleteFile() {
         $this->dbi->deleteFile("3");

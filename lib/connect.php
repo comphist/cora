@@ -836,7 +836,7 @@ class DBInterface {
     $qs = "SELECT * FROM {$this->db}.project ORDER BY name";
     $query = $this->query($qs); 
     $projects = array();
-    while ( $row = $this->dbconn->fetch( $query ) ) {
+    while ( $row = $this->dbconn->fetch_assoc( $query ) ) {
       $projects[] = $row;
     }
     return $projects;
@@ -871,7 +871,7 @@ class DBInterface {
     $qs = "SELECT a.* FROM ({$this->db}.project a, {$this->db}.user2project b) WHERE (a.id=b.project_id AND b.user_id='{$uid}') ORDER BY `id`";
     $query = $this->query($qs); 
     $projects = array();
-    while ( $row = $this->dbconn->fetch( $query ) ) {
+    while ( $row = $this->dbconn->fetch_assoc( $query ) ) {
       $projects[] = $row;
     }
     return $projects;
