@@ -84,6 +84,8 @@ abstract class Cora_Tests_DbTestCase
         return $result->errorInfo();
     }
 
+    public function startTransaction() {}
+
     // copypasta from DBConnector
     public function last_insert_id() {
         $q = $this->query("SELECT LAST_INSERT_ID()");
@@ -454,9 +456,17 @@ class interfaceTest extends Cora_Tests_DbTestCase {
         $this->assertEquals("0", $this->dbi->getMaxLinesNo("5"));
 
         //insertNewDocument($options, $data);
-        //deleteFile($fid);
         //getAllSuggestions($fid, $line_id);
         //saveLines($fid, $lasteditedrow, $lines);
+    }
+
+    public function testDeleteFile() {
+        $this->dbi->deleteFile("3");
+        // TODO of course it needs to test if the tokens, etc. are also
+        // deleted, but cora relies on fk constraints for that, which are
+        // ignored in our test db
+        $this->assertEquals(0,
+            $this->query("SELECT * FROM cora.text WHERE ID=3")->getRowCount());
     }
 
 }
