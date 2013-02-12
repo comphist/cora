@@ -218,6 +218,18 @@ class interfaceTest extends Cora_Tests_DbTestCase {
             "creator_id" => "1",
             "changed" => "0000-00-00 00:00:00",
             "changer_id" => "1",
+            "currentmod_id" => "14",
+            "header" => null
+        );
+        $expected_t3 = array(
+            "id" => "5",
+            "sigle" => "t3",
+            "fullname" => "dummy without tokens",
+            "project_id" => "1",
+            "created" => "2013-01-31 13:13:20",
+            "creator_id" => "1",
+            "changed" => "0000-00-00 00:00:00",
+            "changer_id" => "1",
             "currentmod_id" => null,
             "header" => null
         );
@@ -227,17 +239,34 @@ class interfaceTest extends Cora_Tests_DbTestCase {
         $actual = $this->dbi->queryForMetadata("fullname", "yet another dummy");
         $this->assertEquals($expected_t2, $actual);
 
+
+        $this->assertEquals(array('file_id' => '3', 'file_name' => 'test-dummy'),
+                            $this->dbi->getLockedFiles("bollmann"));
+
+        // getFiles also gives lots of names for display purposes
+        $getfiles_expected = array(
+            array_merge($expected_t1, array('project_name' => 'Default-Gruppe',
+                                            'opened' => 'bollmann',
+                                            'creator_name' => 'system',
+                                            'changer_name' => 'bollmann')),
+            array_merge($expected_t2, array('project_name' => 'Default-Gruppe',
+                                            'opened' => null,
+                                            'creator_name' => 'system',
+                                            'changer_name' => 'system')),
+            array_merge($expected_t3, array('project_name' => 'Default-Gruppe',
+                                            'opened' => null,
+                                            'creator_name' => 'system',
+                                            'changer_name' => 'system'))
+        );
+
+        $this->assertEquals($getfiles_expected, $this->dbi->getFiles());
+        $this->assertEquals($getfiles_expected,
+                            $this->dbi->getFilesForUser("bollmann"));
+
         $this->dbi->markLastPosition("3", "2");
         $this->assertEquals("2",
             $this->getConnection()->createQueryTable("currentpos",
             "SELECT currentmod_id FROM text WHERE id=3;")->getValue(0, "currentmod_id"));
-
-
-        $this->assertEquals(array($expected_t1),
-                            $this->dbi->getLockedFiles("bollmann"));
-
-        //getFiles();
-        //getFilesForUser($uname);
     }
 
     public function testLockUnlock() {
@@ -315,7 +344,6 @@ class interfaceTest extends Cora_Tests_DbTestCase {
 
         $_SESSION["user"] = "test";
         $_SESSION["user_id"] = "5";
-        //$this->query("UPDATE coratest.text SET currentmod_id=1 WHERE id=4");
         $this->assertEquals(
             array("lastEditedRow" => 1,
                   "data" => array('id' => '4',
@@ -434,9 +462,6 @@ class interfaceTest extends Cora_Tests_DbTestCase {
             ));
 
         $this->assertEquals($lines_expected,
-                            $this->dbi->getAllLines("3"));
-
-        $this->assertEquals($lines_expected,
                             $this->dbi->getLines("3", "0", "10"));
 
         $lines_chunk = array_chunk($lines_expected, 3);
@@ -454,6 +479,10 @@ class interfaceTest extends Cora_Tests_DbTestCase {
 
         $this->assertEquals("9", $this->dbi->getMaxLinesNo("3"));
         $this->assertEquals("0", $this->dbi->getMaxLinesNo("5"));
+        $this->assertEquals("0", $this->dbi->getMaxLinesNo("512"));
+
+        $this->assertEquals($lines_expected,
+                            $this->dbi->getAllLines("3"));
 
         //insertNewDocument($options, $data);
         //getAllSuggestions($fid, $line_id);
