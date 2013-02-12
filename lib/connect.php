@@ -546,7 +546,7 @@ class DBInterface {
     $qs  = "SELECT * FROM {$this->db}.text ";
     $qs .= "WHERE {$metakey}='{$metavalue}'";
     $query = $this->query($qs);
-    $row = $this->dbconn->fetch($query);
+    $row = $this->dbconn->fetch_assoc($query);
     return $row;
   }
 
@@ -606,7 +606,7 @@ class DBInterface {
     $userid = $user['id'];
     $qs  = "SELECT a.text_id as 'file_id', b.fullname as 'file_name' ";
     $qs .= "FROM {$this->db}.locks a, {$this->db}.text b ";
-    $qs .= "WHERE a.user_id='{$userid}' AND a.text_id=b.text_id LIMIT 1";
+    $qs .= "WHERE a.user_id='{$userid}' AND a.text_id=b.id LIMIT 1";
     return $this->dbconn->fetch_assoc($this->query($qs));
   }
   
@@ -666,45 +666,40 @@ class DBInterface {
    * @param string $fileid file id
    *
    * @return an @em array with at least the file meta data. If exists, the user's last edited row is also transmitted.
-   */		
+   */
   public function openFile($fileid){
     $locked = $this->lockFile($fileid, $_SESSION["user"]);
     if(!$locked['success']) {
       return array('success' => false);
     }
-    
+
     $qs  = "SELECT text.*, tagset.id AS 'tagset_id' ";
     $qs .= "FROM   ({$this->db}.text, {$this->db}.tagset) ";
     $qs .= "  LEFT JOIN {$this->db}.text2tagset ttt ";
     $qs .= "         ON (ttt.tagset_id=tagset.id AND ttt.text_id=text.id) ";
     $qs .= "WHERE  text.id='{$fileid}' AND tagset.class='POS'";
-    if($query = $this->query($qs)){
-      $metadata = $this->dbconn->fetch_assoc($query);
-      $cmid = $metadata['currentmod_id'];
-      $lock['lastEditedRow'] = -1;
-      if(!empty($cmid)) {
-	// calculate position of currentmod_id
-	$qs  = "SELECT position FROM ";
-	$qs .= " (SELECT x.id, @rownum := @rownum + 1 AS position FROM ";
-	$qs .= "   (SELECT a.id FROM ({$this->db}.modern a, {$this->db}.token b) ";
-	$qs .= "    WHERE a.tok_id=b.id AND b.text_id='{$fileid}' ";
-	$qs .= "    ORDER BY b.ordnr ASC, a.id ASC) x ";
-	$qs .= "  JOIN (SELECT @rownum := 0) r) y ";
-	$qs .= "WHERE y.id = '{$cmid}'";
-	if($q = $this->query($qs)){
-	  $row = $this->dbconn->fetch_assoc($q);
-	  $lock['lastEditedRow'] = intval($row['position']) - 1;
-	}
+    $metadata = $this->dbconn->fetch_assoc($this->query($qs));
+    $cmid = $metadata['currentmod_id'];
+    $lock['lastEditedRow'] = -1;
+    if(!empty($cmid)) {
+      // calculate position of currentmod_id
+      $qs  = "SELECT position FROM ";
+      $qs .= " (SELECT x.id, @rownum := @rownum + 1 AS position FROM ";
+      $qs .= "   (SELECT a.id FROM ({$this->db}.modern a, {$this->db}.token b) ";
+      $qs .= "    WHERE a.tok_id=b.id AND b.text_id='{$fileid}' ";
+      $qs .= "    ORDER BY b.ordnr ASC, a.id ASC) x ";
+      $qs .= "  JOIN (SELECT @rownum := 0) r) y ";
+      $qs .= "WHERE y.id = '{$cmid}'";
+      if($q = $this->query($qs)){
+        $row = $this->dbconn->fetch_assoc($q);
+        $lock['lastEditedRow'] = intval($row['position']) - 1;
       }
-      $lock['data'] = $metadata;
-      $lock['success'] = true;
-    } else {
-      $lock['success'] = false;
     }
-    
-    return $lock;		
+    $lock['data'] = $metadata;
+    $lock['success'] = true;
+    return $lock;
   }
-  
+
   /** Check whether a user is allowed to open a file.
    *
    * @param string $fileid file id
@@ -793,7 +788,7 @@ class DBInterface {
       . "ORDER BY sigle, fullname";
     $query = $this->query($qs); 
     $files = array();
-    while ( $row = $this->dbconn->fetch( $query ) ) {
+    while ( $row = $this->dbconn->fetch_assoc( $query ) ) {
       $files[] = $row;
     }
     return $files;
@@ -823,7 +818,7 @@ class DBInterface {
       . "ORDER BY sigle, fullname";
     $query = $this->query($qs); 
     $files = array();
-    while ( $row = $this->dbconn->fetch( $query ) ) {
+    while ( $row = $this->dbconn->fetch_assoc( $query ) ) {
       $files[] = $row;
     }
     return $files;
@@ -949,11 +944,8 @@ class DBInterface {
     $qs  = "SELECT COUNT(modern.id) FROM {$this->db}.token ";
     $qs .= "LEFT JOIN {$this->db}.modern ON modern.tok_id=token.id ";
     $qs .= "WHERE token.text_id='{$fileid}'";
-    if($query = $this->query($qs)){
-      $row = $this->dbconn->fetch_array($query);
-      return $row[0];
-    }		
-    return 0;
+    $row = $this->dbconn->fetch_array($this->query($qs));
+    return $row[0];
   }
   
   /** Retrieve all lines from a file, including error data,
