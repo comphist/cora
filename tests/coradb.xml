@@ -68,6 +68,18 @@
 		<field name="creator_id">1</field>
 		<field name="changed">0000-00-00 00:00:00</field>
 		<field name="changer_id">1</field>
+                <field name="currentmod_id">14</field>
+		<field name="header" xsi:nil="true" />
+	</row>
+	<row>
+		<field name="id">5</field>
+		<field name="sigle">t3</field>
+		<field name="fullname">dummy without tokens</field>
+		<field name="project_id">1</field>
+		<field name="created">2013-01-31 13:13:20</field>
+		<field name="creator_id">1</field>
+		<field name="changed">0000-00-00 00:00:00</field>
+		<field name="changer_id">1</field>
 		<field name="currentmod_id" xsi:nil="true" />
 		<field name="header" xsi:nil="true" />
 	</row>

@@ -95,7 +95,7 @@ abstract class Cora_Tests_DbTestCase
 
 class interfaceTest extends Cora_Tests_DbTestCase {
     protected $dbi;
-    protected $mysqlcall;
+    protected $backupGlobalsBlacklist = array('_SESSION');
 
     protected function setUp() {
         $this->dbi = new DBInterface($this);
@@ -139,6 +139,9 @@ class interfaceTest extends Cora_Tests_DbTestCase {
     }
     public function testUserActions() {
         // create user
+        // creating a user that already exists should fail
+        $this->assertFalse($this->dbi->createUser("test", "blabla", "0"));
+
         $this->dbi->createUser("anselm", "blabla", "0");
         $expected = $this->createXMLDataSet("created_user.xml");
 
@@ -191,7 +194,7 @@ class interfaceTest extends Cora_Tests_DbTestCase {
         // isAllowedToOpenFile($fid, $user)
     }
 
-    public function testTextOperations() {
+    public function testTextQuery() {
         $expected_t1 = array(
             "id" => "3",
             "sigle" => "t1",
@@ -217,10 +220,10 @@ class interfaceTest extends Cora_Tests_DbTestCase {
             "header" => null
         );
 
-        //$actual = $this->dbi->queryForMetadata("sigle", "t1");
-        //$this->assertEquals($expected_t1, $actual);
-        //$actual = $this->dbi->queryForMetadata("fullname", "yet another dummy");
-        //$this->assertEquals($expected_t2, $actual);
+        $actual = $this->dbi->queryForMetadata("sigle", "t1");
+        $this->assertEquals($expected_t1, $actual);
+        $actual = $this->dbi->queryForMetadata("fullname", "yet another dummy");
+        $this->assertEquals($expected_t2, $actual);
 
         $this->dbi->markLastPosition("3", "2");
         $this->assertEquals("2",
@@ -228,32 +231,231 @@ class interfaceTest extends Cora_Tests_DbTestCase {
             "SELECT currentmod_id FROM text WHERE id=3;")->getValue(0, "currentmod_id"));
 
 
-        //$this->assertEquals(array($expected_t1),
-        //                    $this->dbi->getLockedFiles("bollmann"));
+        $this->assertEquals(array($expected_t1),
+                            $this->dbi->getLockedFiles("bollmann"));
 
+        //getFiles();
+        //getFilesForUser($uname);
+    }
+
+    public function testLockUnlock() {
+        // locking a file that doesn't exist
+        // TODO currently this will succeed since the test db doesn't have
+        // fk constraints.
+        //$lock_result = $this->dbi->lockFile("512", "test");
+        //$this->assertEquals(array(),
+                            //$lock_result);
+
+        // locking a file that is already locked returns info on the lock
+        $lock_result = $this->dbi->lockFile("3", "test");
+        $this->assertEquals(array("success" => false,
+                                  "lock" => array("2013-02-05 13:00:40",
+                                                  "bollmann")),
+                            $lock_result);
+        // check if the database still has the lock belonging to bollmann
+        $this->assertEquals("3",
+            $this->getConnection()->createQueryTable("testlock",
+            "SELECT user_id FROM locks WHERE text_id=3;")->getValue(0, "user_id"));
+
+
+        // test force unlock with specification of user name
         $this->dbi->unlockFile("3", "bollmann", "true");
         $this->assertEquals("0",
             $this->getConnection()->createQueryTable("locks",
-            "SELECT * FROM locks;")->getRowCount());
+            "SELECT * FROM locks WHERE text_id=3;")->getRowCount());
 
+        // test locking a new file
         $lock_result = $this->dbi->lockFile("4", "test");
-        $this->assertTrue($lock_result["success"]);
+        $this->assertEquals(array("success" => true, "lockCounts" => 0),
+                            $lock_result);
         $this->assertEquals("4",
             $this->getConnection()->createQueryTable("testlock",
             "SELECT text_id FROM locks WHERE user_id=5;")->getValue(0, "text_id"));
 
-        //unlockFile($fid,$uname,$force);
-        //unlockFile($fid);
+        // test unlocking with force=false
+        // fake login as bollmann
+        $_SESSION["user_id"] = "3";
+        // this should fail
+        $lock_result = $this->dbi->unlockFile("4");
+        $this->assertEquals("1",
+            $this->getConnection()->createQueryTable("testlock",
+            "SELECT * FROM locks WHERE text_id=4;")->getRowCount());
+
+        // fake login as test
+        $_SESSION["user_id"] = "5";
+        // this should succeed
+        $lock_result = $this->dbi->unlockFile("4");
+        $this->assertEquals("0",
+            $this->getConnection()->createQueryTable("testlock",
+            "SELECT * FROM locks WHERE text_id=4;")->getRowCount());
+    }
+
+    public function testOpenText() {
+        // test file opening
+        $_SESSION["user"] = "bollmann";
+        $_SESSION["user_id"] = "3";
+        $this->assertEquals(
+            array("lastEditedRow" => -1,
+                  "data" => array('id' => '3',
+                                  'sigle' => 't1',
+                                  'fullname' => 'test-dummy',
+                                  'project_id' => '1',
+                                  'created' => '2013-01-22 14:30:30',
+                                  'creator_id' => '1',
+                                  'changed' => '0000-00-00 00:00:00',
+                                  'changer_id' => '3',
+                                  'currentmod_id' => null,
+                                  'header' => null,
+                                  'tagset_id' => '1'),
+                  "success" => true),
+            $this->dbi->openFile("3")
+        );
+
+        $_SESSION["user"] = "test";
+        $_SESSION["user_id"] = "5";
+        //$this->query("UPDATE coratest.text SET currentmod_id=1 WHERE id=4");
+        $this->assertEquals(
+            array("lastEditedRow" => 1,
+                  "data" => array('id' => '4',
+                                  'sigle' => 't2',
+                                  'fullname' => 'yet another dummy',
+                                  'project_id' => '1',
+                                  'created' => '2013-01-31 13:13:20',
+                                  'creator_id' => '1',
+                                  'changed' => '0000-00-00 00:00:00',
+                                  'changer_id' => '1',
+                                  'currentmod_id' => '14',
+                                  'header' => null,
+                                  'tagset_id' => '1'),
+                  "success" => true),
+            $this->dbi->openFile("4")
+        );
+
+        // opening a file that's already opened by someone else must fail
+        $this->assertEquals(array("success" => false),
+                            $this->dbi->openFile("3"));
+    }
+    public function testGetLines() {
+        $lines_expected = array(
+           array (
+                'id' => '1',
+                'trans' => '*{A*4}n$helm%9',
+                'utf' => 'Anshelm\'',
+                'tok_id' => '1',
+                'full_trans' => '*{A*4}n$helm%9',
+                'num' => '0',
+                'suggestions' => array (
+                    array ( 'POS' => 'VVFIN',
+                            'morph' => '3.Pl.Past.Konj',
+                            'score' => '0.97')
+                ),
+                'anno_POS' => 'VVFIN',
+                'anno_morph' => '3.Pl.Past.Konj'
+            ),
+            array(
+                'id'          => '2',
+                'trans'       => 'pi$t||',
+                'utf'         => 'pist',
+                'tok_id'      => '2',
+                'full_trans'  => 'pi$t||u||s',
+                'num'         => '1',
+                'suggestions' => array()
+            ),
+            array(
+                'id'          => '3',
+                'trans'       => 'u||',
+                'utf'         => 'u',
+                'tok_id'      => '2',
+                'full_trans'  => 'pi$t||u||s',
+                'num'         => '2',
+                'general_error' => 1,
+                'suggestions' => array()
+            ),
+            array(
+                'id'          => '4',
+                'trans'       => 's',
+                'utf'         => 's',
+                'tok_id'      => '2',
+                'full_trans'  => 'pi$t||u||s',
+                'num'         => '3',
+                'suggestions' => array(),
+                'anno_POS'    => 'VVFIN',
+                'anno_morph'  => '3.Pl.Pres.Konj'
+            ),
+            array(
+                'id'          => '5',
+                'trans'       => 'aller#lieb$tev',
+                'utf'         => 'allerliebstev',
+                'tok_id'      => '3',
+                'full_trans'  => 'aller#lieb$tev',
+                'num'         => '4',
+                'suggestions' => array(),
+                'anno_POS'    => 'PDS',
+                'anno_morph'  => '*.Gen.Pl'
+            ),
+            array(
+                'id'          => '6',
+                'trans'       => 'vunf=tusent#vnd#vierhundert#vn-(=)sechzig',
+                'utf'         => 'vunftusentvndvierhundertvnsechzig',
+                'tok_id'      => '4',
+                'full_trans'  => 'vunf=tusent#vnd#vierhundert#vn-(=)sechzig',
+                'num'         => '5',
+                'suggestions' => array()
+            ),
+            array(
+                'id' => '7',
+                'trans' => 'kunnen',
+                'utf' => 'kunnen',
+                'tok_id' => '5',
+                'full_trans' => 'kunnen.(.)',
+                'num' => '6',
+                'general_error' => 1,
+                'suggestions' => Array ()
+            ),
+            array(
+                'id' => '8',
+                'trans' => '.',
+                'utf' => '.',
+                'tok_id' => '5',
+                'full_trans' => 'kunnen.(.)',
+                'num' => '7',
+                'suggestions' => Array ()
+            ),
+            array(
+                'id' => '9',
+                'trans' => '(.)',
+                'utf' => '.',
+                'tok_id' => '5',
+                'full_trans' => 'kunnen.(.)',
+                'num' => '8',
+                'suggestions' => Array ()
+            ));
+
+        $this->assertEquals($lines_expected,
+                            $this->dbi->getAllLines("3"));
+
+        $this->assertEquals($lines_expected,
+                            $this->dbi->getLines("3", "0", "10"));
+
+        $lines_chunk = array_chunk($lines_expected, 3);
+        $this->assertEquals($lines_chunk[0],
+                            $this->dbi->getLines("3", "0", "3"));
+        $this->assertEquals($lines_chunk[1],
+                            $this->dbi->getLines("3", "3", "3"));
+
+        // querying over the maximum lines number gives an empty array
+        $this->assertEquals(array(),
+                            $this->dbi->getLines("3", "500", "10"));
+        // querying a file that has no tokens gives an empty array as well
+        $this->assertEquals(array(),
+                            $this->dbi->getLines("5", "0", "10"));
+
+        $this->assertEquals("9", $this->dbi->getMaxLinesNo("3"));
+        $this->assertEquals("0", $this->dbi->getMaxLinesNo("5"));
 
         //insertNewDocument($options, $data);
-        //openFile($fid);
         //deleteFile($fid);
-        //getFiles();
-        //getFilesForUser($uname);
-        //getMaxLinesNo($fid);
-        //getAllLines($fid);
         //getAllSuggestions($fid, $line_id);
-        //getLines($fid, $from, $num);
         //saveLines($fid, $lasteditedrow, $lines);
     }
 
