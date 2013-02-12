@@ -79,7 +79,7 @@ class DBConnector {
   private $dbobj;                     /**< Database object as returned by @c mysql_connect(). */
   private $db          = MAIN_DB;     /**< Name of the database to be used. */
   private $transaction = false;
-  private $lasterror   = null;
+  private $last_error   = null;
 
   /** Create a new DBConnector.
    *
@@ -178,6 +178,14 @@ class DBConnector {
 
   public function fetch($result) {
       return mysql_fetch_array($result);
+  }
+
+  public function row_count($result = null) {
+      if ($result === null) {
+          return mysql_affected_rows();
+      } else {
+          return mysql_num_rows($result);
+      }
   }
 
   /** Fetch ID of last inserted record.
@@ -475,12 +483,12 @@ class DBInterface {
       if ($status) {
 	$this->dbconn->commitTransaction();
       } else {
-	$message = mysql_error();
+	$message = $this->dbconn->last_error();
 	$this->dbconn->rollback();
       }
     }
     else {
-      $message = mysql_error();
+      $message = $this->dbconn->last_error();
       $this->dbconn->rollback();
     }
     return array('success' => $status, 'message' => $message);
@@ -566,11 +574,11 @@ class DBInterface {
     $user = $this->getUserIDFromName($uname);
     $qs = "DELETE FROM {$this->db}.locks WHERE user_id={$user}";
     $this->query($qs);
-    $locksCount = mysql_affected_rows();
+    $locksCount = $this->dbconn->row_count();
     // then, check if file is still/already locked
     $qs = "SELECT * FROM {$this->db}.locks WHERE text_id={$fileid}";
     $result = $this->query($qs);
-    if(mysql_num_rows($result)>0) {
+    if($this->dbconn->row_count($result)>0) {
       // if file is locked, return info about user currently locking the file
       $qs  = "SELECT a.lockdate as 'locked_since', b.name as 'locked_by' ";
       $qs .= "FROM {$this->db}.locks a, {$this->db}.users b ";
@@ -639,7 +647,7 @@ class DBInterface {
     $qs .= "  LEFT JOIN {$this->db}.tagset ts  ON ts.id=ttt.tagset_id ";
     $qs .= "WHERE  ttt.text_id='{$fileid}'";
     $q = $this->query($qs);
-    $qerr = mysql_error();
+    $qerr = $this->dbconn->last_error();
     if($qerr) { return $qerr; }
 
     $tslist = array();
@@ -882,7 +890,7 @@ class DBInterface {
   public function createProject($name){
     $qs = "INSERT INTO {$this->db}.project (`name`) VALUES ('{$name}')";
     $query = $this->query($qs);
-    return mysql_insert_id();
+    return $this->dbconn->last_insert_id();
   }
   
   /** Deletes a project.  Will fail unless no document is
@@ -1121,7 +1129,7 @@ class DBInterface {
     $modchk .= implode(',', $idlist);
     $modchk .= ")";
     $modchq  = $this->query($modchk);
-    $modchn  = mysql_num_rows($modchq);
+    $modchn  = $this->dbconn->row_count($modchq);
     if($modchn!=count($idlist)) {
       $diff = count($idlist) - $modchn;
       return "Ein interner Fehler ist aufgetreten (Code: 1074).  Die Anfrage enthielt {$diff} ungültige Token-ID(s) für das derzeit geöffnete Dokument.";
@@ -1149,7 +1157,7 @@ class DBInterface {
       $qstr  = "SELECT `id`, `value` FROM {$this->db}.tag ";
       $qstr .= "WHERE `tagset_id`='" . $tagset_ids['POS'] . "'";
       $q = $this->query($qstr);
-      $qerr = mysql_error();
+      $qerr = $this->dbconn->last_error();
       if($qerr) {
 	return "Ein interner Fehler ist aufgetreten (Code: 1076).  Die Datenbank meldete:\n{$qerr}";
       }
@@ -1175,7 +1183,7 @@ class DBInterface {
       $qstr .= "  LEFT JOIN {$this->db}.tagset ON tagset.id=tag.tagset_id ";
       $qstr .= "WHERE  ts.selected=1 AND ts.mod_id='" . $line['id'] . "'";
       $q = $this->query($qstr);
-      $qerr = mysql_error();
+      $qerr = $this->dbconn->last_error();
       if($qerr) {
 	$this->dbconn->rollback();
 	return "Ein interner Fehler ist aufgetreten (Code: 1077).  Die Datenbank meldete:\n{$qerr}";
@@ -1290,7 +1298,7 @@ class DBInterface {
 	$qstr .= implode(",", $updatetag);
 	$qstr .= " ON DUPLICATE KEY UPDATE `value`=VALUES(value)";
 	$q = $this->query($qstr);
-	$qerr = mysql_error();
+	$qerr = $this->dbconn->last_error();
 	if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
       }
       if(!empty($inserttag)) {
@@ -1298,7 +1306,7 @@ class DBInterface {
 	  $qstr = "INSERT INTO {$this->db}.tag (`value`, `needs_revision`, `tagset_id`)";
 	  $qstr .= "VALUES " . $insertdata['query'];
 	  $q = $this->query($qstr);
-	  $qerr = mysql_error();
+	  $qerr = $this->dbconn->last_error();
 	  if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
 	  $q = $this->query("SELECT LAST_INSERT_ID()");
 	  $row = $this->dbconn->fetch_array($q);
@@ -1312,13 +1320,13 @@ class DBInterface {
 	$qstr .= implode("','", $deletetag);
 	$qstr .= "')";
 	$q = $this->query($qstr);
-	$qerr = mysql_error();
+	$qerr = $this->dbconn->last_error();
 	if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
 	$qstr  = "DELETE FROM {$this->db}.tag WHERE `id` IN ('";
 	$qstr .= implode("','", $deletetag);
 	$qstr .= "')";
 	$q = $this->query($qstr);
-	$qerr = mysql_error();
+	$qerr = $this->dbconn->last_error();
 	if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
       }
       if(!empty($insertts)) {
@@ -1328,7 +1336,7 @@ class DBInterface {
 	$qstr .= " ON DUPLICATE KEY UPDATE `selected`=VALUES(selected), ";
 	$qstr .= "                        `tag_id`=VALUES(tag_id)";
 	$q = $this->query($qstr);
-	$qerr = mysql_error();
+	$qerr = $this->dbconn->last_error();
 	if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
       }
       if(!empty($deletets)) {
@@ -1336,14 +1344,14 @@ class DBInterface {
 	$qstr .= implode("','", $deletets);
 	$qstr .= "')";
 	$q = $this->query($qstr);
-	$qerr = mysql_error();
+	$qerr = $this->dbconn->last_error();
 	if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
       }
       if(!empty($deleteerr)) {
 	$qstr  = "DELETE FROM {$this->db}.mod2error WHERE ";
 	$qstr .= implode(" OR ", $deleteerr);
 	$q = $this->query($qstr);
-	$qerr = mysql_error();
+	$qerr = $this->dbconn->last_error();
 	if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
       }
       if(!empty($inserterr)) {
@@ -1351,7 +1359,7 @@ class DBInterface {
 	$qstr .= "  (`mod_id`, `error_id`) VALUES ";
 	$qstr .= implode(", ", $inserterr);
 	$q = $this->query($qstr);
-	$qerr = mysql_error();
+	$qerr = $this->dbconn->last_error();
 	if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
       }
     }
@@ -1458,9 +1466,9 @@ class DBInterface {
       $qs  = "INSERT INTO {$this->db}.tagset (name, set_type, class) ";
       $qs .= "VALUES ('{$tagsetname}', 'closed', 'POS')";
       if(!$this->query($qs)) {
-	return array("success"=>false, "errors"=>array(mysql_error()));
+	return array("success"=>false, "errors"=>array($this->dbconn->last_error()));
       }
-      $tagsetid = mysql_insert_id();
+      $tagsetid = $this->dbconn->last_insert_id();
       $qhead  = "INSERT INTO {$this->db}.tag (`value`, `needs_revision`, ";
       $qhead .= "`tagset_id`) VALUES";
       $query  = new LongSQLQuery($this, $qhead, '');

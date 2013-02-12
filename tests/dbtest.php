@@ -8,6 +8,7 @@ abstract class Cora_Tests_DbTestCase
     extends PHPUnit_Extensions_Database_TestCase {
     static private $pdo = null;
     private $conn = null;
+    private $lastquery = null;
 
     final public function getConnection() {
         if ($this->conn === null) {
@@ -52,8 +53,14 @@ abstract class Cora_Tests_DbTestCase
 
     public function query($qs) {
         //return $this->getConnection()->createQueryTable("result",$qs);
-        return $this->getConnection()->getConnection()->query($qs);
+        $this->lastquery = $this->getConnection()->getConnection()->query($qs);
+        return $this->lastquery;
     }
+
+    public function criticalQuery($qs) {
+        return $this->query($qs);
+    }
+
     public function fetch($result) {
         //return $result->getRow($result->getRowCount()-1);
         return $result->fetch();
@@ -63,6 +70,25 @@ abstract class Cora_Tests_DbTestCase
     }
     public function fetch_array($result) {
         return $result->fetch(PDO::FETCH_NUM);
+    }
+
+    public function row_count($result = null) {
+        if ($result === null) {
+            return $this->lastquery->rowCount();
+        } else {
+            return $result->rowCount();
+        }
+    }
+
+    public function last_error($result) {
+        return $result->errorInfo();
+    }
+
+    // copypasta from DBConnector
+    public function last_insert_id() {
+        $q = $this->query("SELECT LAST_INSERT_ID()");
+        $r = $this->fetch_array($q);
+        return $r[0];
     }
 }
 
@@ -205,16 +231,16 @@ class interfaceTest extends Cora_Tests_DbTestCase {
         //$this->assertEquals(array($expected_t1),
         //                    $this->dbi->getLockedFiles("bollmann"));
 
-        $lock_result = $this->dbi->lockFile("4", "test");
-        $this->assertTrue($lock_result["success"]);
-        $this->assertEquals("5",
-            $this->getConnection()->createQueryTable("testlock",
-            "SELECT text_id FROM locks WHERE user_id=3;")->getValue(0, "text_id"));
-
         $this->dbi->unlockFile("3", "bollmann", "true");
         $this->assertEquals("0",
             $this->getConnection()->createQueryTable("locks",
             "SELECT * FROM locks;")->getRowCount());
+
+        $lock_result = $this->dbi->lockFile("4", "test");
+        $this->assertTrue($lock_result["success"]);
+        $this->assertEquals("4",
+            $this->getConnection()->createQueryTable("testlock",
+            "SELECT text_id FROM locks WHERE user_id=5;")->getValue(0, "text_id"));
 
         //unlockFile($fid,$uname,$force);
         //unlockFile($fid);
