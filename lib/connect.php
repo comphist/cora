@@ -349,7 +349,7 @@ class DBInterface {
     $qs = "SELECT `id`, name, admin, lastactive FROM {$this->db}.users WHERE `id`!=1";
     $query = $this->query( $qs );
     $users = array();
-    while ( @$row = $this->dbconn->fetch_assoc($query) ) {
+    while ( $row = $this->dbconn->fetch_assoc($query) ) {
       $users[] = $row;
     }
     return $users;
@@ -371,7 +371,7 @@ class DBInterface {
       $qs = "SELECT * FROM {$this->db}.tagset WHERE `class`='{$class}' ORDER BY `name`";
     }
     $query = $this->query($qs);
-    while ( @$row = $this->dbconn->fetch_assoc( $query, $this->dbobj ) ) {
+    while ( $row = $this->dbconn->fetch_assoc($query) ) {
       $data = array();
       $data["id"] = $row["id"];
       $data["class"] = $row["class"];
@@ -395,7 +395,7 @@ class DBInterface {
     $qs  = "SELECT `id`, `value`, `needs_revision` FROM {$this->db}.tag ";
     $qs .= "WHERE `tagset_id`='{$tagset}' ORDER BY `value`";
     $query = $this->query($qs);
-    while ( @$row = $this->dbconn->fetch_assoc( $query, $this->dbobj ) ) {
+    while ( $row = $this->dbconn->fetch_assoc( $query ) ) {
       $tags[] = array('id' => $row['id'],
 		      'value' => $row['value'],
 		      'needs_revision' => $row['needs_revision']);
@@ -416,7 +416,7 @@ class DBInterface {
     $tags = array();
     $qs = "SELECT `id`, `value` FROM {$this->db}.tag WHERE `tagset_id`='{$tagset}'";
     $query = $this->query($qs);
-    while ( @$row = $this->dbconn->fetch_assoc( $query, $this->dbobj ) ) {
+    while ( $row = $this->dbconn->fetch_assoc( $query ) ) {
       $tags[$row['value']] = $row['id'];
     }
     return $tags;
@@ -531,7 +531,7 @@ class DBInterface {
   public function toggleUserStatus($username, $statusname) {
     $qs = "SELECT {$statusname} FROM {$this->db}.users WHERE name='{$username}'";
     $query = $this->query($qs);
-    @$row = $this->dbconn->fetch($query, $this->dbobj);
+    $row = $this->dbconn->fetch($query);
     if (!$row)
       return false;
     $status = ($row[$statusname] == 1) ? 0 : 1;
@@ -546,7 +546,7 @@ class DBInterface {
     $qs  = "SELECT * FROM {$this->db}.text ";
     $qs .= "WHERE {$metakey}='{$metavalue}'";
     $query = $this->query($qs);
-    @$row = $this->dbconn->fetch($query, $this->dbobj);
+    $row = $this->dbconn->fetch($query);
     return $row;
   }
 
@@ -584,7 +584,7 @@ class DBInterface {
       $qs .= "FROM {$this->db}.locks a, {$this->db}.users b ";
       $qs .= "WHERE a.text_id={$fileid} AND a.user_id=b.id";
       $query = $this->query($qs);
-      @$row = $this->dbconn->fetch_array( $query, $this->dbobj );
+      $row = $this->dbconn->fetch_array( $query );
       return array("success" => false, "lock" => $row);
     }
     // otherwise, perform the lock
@@ -692,7 +692,7 @@ class DBInterface {
 	$qs .= "  JOIN (SELECT @rownum := 0) r) y ";
 	$qs .= "WHERE y.id = '{$cmid}'";
 	if($q = $this->query($qs)){
-	  $row = $this->dbconn->fetch_assoc($q,$this->dbobj);
+	  $row = $this->dbconn->fetch_assoc($q);
 	  $lock['lastEditedRow'] = intval($row['position']) - 1;
 	}
       }
@@ -718,7 +718,7 @@ class DBInterface {
     $qs  = "SELECT a.fullname FROM ({$this->db}.text a, {$this->db}.user2project b) ";
     $qs .= "WHERE a.id='{$fileid}' AND b.user_id='{$uid}' AND a.project_id=b.project_id";
     $q = $this->query($qs);
-    if($this->dbconn->fetch_array($q,$this->dbobj)) {
+    if($this->dbconn->fetch_array($q)) {
       return true;
     } else {
       return false;
@@ -793,7 +793,7 @@ class DBInterface {
       . "ORDER BY sigle, fullname";
     $query = $this->query($qs); 
     $files = array();
-    while ( @$row = $this->dbconn->fetch( $query, $this->dbobj ) ) {
+    while ( $row = $this->dbconn->fetch( $query ) ) {
       $files[] = $row;
     }
     return $files;
@@ -823,7 +823,7 @@ class DBInterface {
       . "ORDER BY sigle, fullname";
     $query = $this->query($qs); 
     $files = array();
-    while ( @$row = $this->dbconn->fetch( $query, $this->dbobj ) ) {
+    while ( $row = $this->dbconn->fetch( $query ) ) {
       $files[] = $row;
     }
     return $files;
@@ -841,7 +841,7 @@ class DBInterface {
     $qs = "SELECT * FROM {$this->db}.project ORDER BY name";
     $query = $this->query($qs); 
     $projects = array();
-    while ( @$row = $this->dbconn->fetch( $query, $this->dbobj ) ) {
+    while ( $row = $this->dbconn->fetch( $query ) ) {
       $projects[] = $row;
     }
     return $projects;
@@ -857,7 +857,7 @@ class DBInterface {
     $qs = "SELECT * FROM {$this->db}.user2project";
     $query = $this->query($qs); 
     $projects = array();
-    while ( @$row = $this->dbconn->fetch( $query, $this->dbobj ) ) {
+    while ( $row = $this->dbconn->fetch( $query ) ) {
       $user = $this->getUserById($row["user_id"]);
       $projects[] = array("project_id" => $row["project_id"],
 			  "username" => $user["name"]);
@@ -876,7 +876,7 @@ class DBInterface {
     $qs = "SELECT a.* FROM ({$this->db}.project a, {$this->db}.user2project b) WHERE (a.id=b.project_id AND b.user_id='{$uid}') ORDER BY `id`";
     $query = $this->query($qs); 
     $projects = array();
-    while ( @$row = $this->dbconn->fetch( $query, $this->dbobj ) ) {
+    while ( $row = $this->dbconn->fetch( $query ) ) {
       $projects[] = $row;
     }
     return $projects;
@@ -963,7 +963,7 @@ class DBInterface {
     $qs = "SELECT a.*, b.value AS 'errorChk' FROM {$this->db}.files_data a LEFT JOIN {$this->db}.files_errors b ON (a.file_id=b.file_id AND a.line_id=b.line_id) WHERE a.file_id='{$fileid}' ORDER BY line_id";
     $query = $this->query($qs);
     $data = array();
-    while($row = $this->dbconn->fetch_assoc($query,$this->dbobj)){
+    while($row = $this->dbconn->fetch_assoc($query)){
       $data[] = $row;
     }
     return $data;
