@@ -992,15 +992,16 @@ class DBInterface {
   public function getLines($fileid,$start,$lim){		
     $data = array();
 
-    $qs  = "SELECT q.*, @rownum := @rownum + 1 AS num FROM ";
-    $qs .= "  (SELECT modern.id, modern.trans, modern.utf, ";
-    $qs .= "          modern.tok_id, token.trans AS full_trans ";
-    $qs .= "   FROM   {$this->db}.token ";
-    $qs .= "     LEFT JOIN {$this->db}.modern ON modern.tok_id=token.id ";
+    $qs  = "SELECT x.* FROM ";
+    $qs .= "  (SELECT q.*, @rownum := @rownum + 1 AS num FROM ";
+    $qs .= "    (SELECT modern.id, modern.trans, modern.utf, ";
+    $qs .= "            modern.tok_id, token.trans AS full_trans ";
+    $qs .= "     FROM   {$this->db}.token ";
+    $qs .= "       LEFT JOIN {$this->db}.modern ON modern.tok_id=token.id ";
     // Layout-Info mit JOINen?
-    $qs .= "   WHERE  token.text_id='{$fileid}' ";
-    $qs .= "   ORDER BY token.ordnr ASC, modern.id ASC) q ";
-    $qs .= "JOIN (SELECT @rownum := -1) r ";
+    $qs .= "     WHERE  token.text_id='{$fileid}' ";
+    $qs .= "     ORDER BY token.ordnr ASC, modern.id ASC) q ";
+    $qs .= "   JOIN (SELECT @rownum := -1) r) x ";
     $qs .= "LIMIT {$start},{$lim}";
     $query = $this->query($qs); 		
 
