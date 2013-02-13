@@ -681,10 +681,10 @@ class DBInterface {
     }
 
     $qs  = "SELECT text.*, tagset.id AS 'tagset_id' ";
-    $qs .= "FROM   ({$this->db}.text, {$this->db}.tagset) ";
-    $qs .= "  LEFT JOIN {$this->db}.text2tagset ttt ";
-    $qs .= "         ON (ttt.tagset_id=tagset.id AND ttt.text_id=text.id) ";
-    $qs .= "WHERE  text.id='{$fileid}' AND tagset.class='POS'";
+    $qs .= "FROM   ({$this->db}.text, {$this->db}.text2tagset ttt) ";
+    $qs .= "  LEFT JOIN {$this->db}.tagset ";
+    $qs .= "         ON ttt.tagset_id=tagset.id ";
+    $qs .= "WHERE  text.id='{$fileid}' AND tagset.class='POS' AND ttt.text_id='{$fileid}'";
     $metadata = $this->dbconn->fetch_assoc($this->query($qs));
     $cmid = $metadata['currentmod_id'];
     $lock['lastEditedRow'] = -1;
