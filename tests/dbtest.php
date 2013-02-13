@@ -85,6 +85,7 @@ abstract class Cora_Tests_DbTestCase
     }
 
     public function startTransaction() {}
+    public function commitTransaction() {}
 
     // copypasta from DBConnector
     public function last_insert_id() {
@@ -153,7 +154,6 @@ class interfaceTest extends Cora_Tests_DbTestCase {
                                     "SELECT id,name,admin FROM users WHERE name='anselm';"));
 
         //changePassword($name, $passwd);
-        //changeProjectUsers($pid, $users);
 
         $this->dbi->deleteUser("anselm");
         $this->assertEquals(0, $this->getConnection()->createQueryTable("users",
@@ -496,9 +496,28 @@ class interfaceTest extends Cora_Tests_DbTestCase {
 
         $this->assertEquals(array(array('id' => '1', 'name' => 'Default-Gruppe')),
                             $this->dbi->getProjectsForUser("bollmann"));
-        //getProjectsForUser("bollmann");
-        //createProject("testproject");
-        //deleteProject("2");
+
+        $this->dbi->createProject("testproject");
+        $expected = $this->createXMLDataSet("created_project.xml");
+
+        $this->assertTablesEqual($expected->getTable("project"),
+            $this->getConnection()->createQueryTable("project",
+            "SELECT * FROM project WHERE name='testproject'"));
+
+        $this->dbi->deleteProject("2");
+        $this->assertEquals("0",
+            $this->getConnection()->createQueryTable("project",
+            "SELECT * FROM project WHERE id=2")->getRowCount());
+
+        // this should be false, but it isn't because of missing fk
+        // constraints TODO
+        //$this->assertFalse($this->dbi->deleteProject("1"));
+
+        $users = array("test");
+        $this->dbi->changeProjectUsers("1", $users);
+        $this->assertEquals("1",
+            $this->getConnection()->createQueryTable("projectusers",
+            "SELECT * FROM user2project WHERE user_id=5 AND project_id=1")->getRowCount());
     }
 
     /*
