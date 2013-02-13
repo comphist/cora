@@ -387,13 +387,20 @@ class DBInterface {
    * This function retrieves all valid tags of a given tagset.
    *
    * @param string $tagset The id of the tagset to be retrieved
+   * @param string $limit String argument containing "none" or "legal", 
+   *                 indicating whether tags marked with "needs_revision"
+   *                 should be included or not
    *
    * @return An associative @em array containing the tagset information.
    */
-  public function getTagset( $tagset ) {
+  public function getTagset($tagset, $limit="none") {
     $tags = array();
     $qs  = "SELECT `id`, `value`, `needs_revision` FROM {$this->db}.tag ";
-    $qs .= "WHERE `tagset_id`='{$tagset}' ORDER BY `value`";
+    $qs .= "WHERE `tagset_id`='{$tagset}' ";
+    if($limit=='legal') {
+      $qs .= "AND `needs_revision`=0 ";
+    }
+    $qs .= "ORDER BY `value`";
     $query = $this->query($qs);
     while ( $row = $this->dbconn->fetch_assoc( $query ) ) {
       $tags[] = array('id' => $row['id'],
@@ -1464,7 +1471,7 @@ class DBInterface {
       $tagsetid = $this->dbconn->last_insert_id();
       $qhead  = "INSERT INTO {$this->db}.tag (`value`, `needs_revision`, ";
       $qhead .= "`tagset_id`) VALUES";
-      $query  = new LongSQLQuery($this, $qhead, '');
+      $query  = new LongSQLQuery($this->dbconn, $qhead, '');
       foreach($tagarray as $tagname => $tagnc) {
 	$qs = "('" . $tagname . "', " . ($tagnc ? '1' : '0') . ", {$tagsetid})";
 	$query->append($qs);

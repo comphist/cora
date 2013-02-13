@@ -417,7 +417,7 @@ var tagset_editor = {
 		 }
 		}
 	    );
-	    request.get({'do': 'fetchTagset', 'tagset_id': tagset});	    
+	    request.get({'do': 'fetchTagset', 'tagset_id': tagset, 'limit': 'none'});
 	});
     },
 

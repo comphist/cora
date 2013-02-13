@@ -266,16 +266,11 @@ class RequestHandler {
 	  case "getHighestTagId": echo $this->sh->getHighestTagId(self::escapeSQL($get["tagset"]));
 	    exit;
 	    
-	  case "fetchTagset": $data = $this->sh->getTagset(self::escapeSQL($get["tagset_id"]));
+	  case "fetchTagset":
+	    $data = $this->sh->getTagset(self::escapeSQL($get["tagset_id"]), $get["limit"]);
 	    echo json_encode($data);
 	    exit;
-	    
-	  case "getTagsetTags": $data = $this->sh->getTagset(self::escapeSQL($get["tagset"]));
-	    foreach($data as $tag){
-	      echo "<option>".trim($tag['value'])."</option>";
-	    }
-	    exit;
-	    
+
 	  case "createUser":    $status = $this->sh->createUser(
 								self::escapeSQL($post["username"]),
 								self::escapeSQL($post["password"]),

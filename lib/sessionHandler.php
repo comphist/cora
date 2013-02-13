@@ -83,8 +83,8 @@ class SessionHandler {
   }
 
   /** Wraps DBInterface::getTagset(). */
-  public function getTagset($tagset) {
-    return $this->db->getTagset($tagset);
+  public function getTagset($tagset, $limit) {
+    return $this->db->getTagset($tagset, $limit);
   }
 
   /** Wraps DBInterface::getUserList(), checking for administrator
