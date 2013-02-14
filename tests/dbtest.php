@@ -386,7 +386,8 @@ class interfaceTest extends Cora_Tests_DbTestCase {
                             'score' => '0.97')
                 ),
                 'anno_POS' => 'VVFIN',
-                'anno_morph' => '3.Pl.Past.Konj'
+                'anno_morph' => '3.Pl.Past.Konj',
+                'comment' => null
             ),
             array(
                 'id'          => '2',
@@ -401,7 +402,8 @@ class interfaceTest extends Cora_Tests_DbTestCase {
                            'score' => null)
                 ),
                 'anno_POS'    => "PPOSAT",
-                'anno_morph'  => "Fem.Nom.Sg"
+                'anno_morph'  => "Fem.Nom.Sg",
+                'comment' => null
             ),
             array(
                 'id'          => '3',
@@ -411,7 +413,8 @@ class interfaceTest extends Cora_Tests_DbTestCase {
                 'full_trans'  => 'pi$t||u||s',
                 'num'         => '2',
                 'general_error' => 1,
-                'suggestions' => array()
+                'suggestions' => array(),
+                'comment' => null
             ),
             array(
                 'id'          => '4',
@@ -422,7 +425,8 @@ class interfaceTest extends Cora_Tests_DbTestCase {
                 'num'         => '3',
                 'suggestions' => array(),
                 'anno_POS'    => 'VVFIN',
-                'anno_morph'  => '3.Pl.Pres.Konj'
+                'anno_morph'  => '3.Pl.Pres.Konj',
+                'comment' => null
             ),
             array(
                 'id'          => '5',
@@ -434,7 +438,8 @@ class interfaceTest extends Cora_Tests_DbTestCase {
                 'suggestions' => array(),
                 'anno_POS'    => 'PDS',
                 'anno_morph'  => '*.Gen.Pl',
-                'anno_lemma'  => 'lemma'
+                'anno_lemma'  => 'lemma',
+                'comment' => null
             ),
             array(
                 'id'          => '6',
@@ -444,7 +449,8 @@ class interfaceTest extends Cora_Tests_DbTestCase {
                 'full_trans'  => 'vunf=tusent#vnd#vierhundert#vn-(=)sechzig',
                 'num'         => '5',
                 'suggestions' => array(),
-                'anno_norm'   => 'norm'
+                'anno_norm'   => 'norm',
+                'comment' => null
             ),
             array(
                 'id' => '7',
@@ -455,7 +461,8 @@ class interfaceTest extends Cora_Tests_DbTestCase {
                 'num' => '6',
                 'general_error' => 1,
                 'suggestions' => Array (),
-                'anno_lemma' => 'deletedlemma'
+                'anno_lemma' => 'deletedlemma',
+                'comment' => null
             ),
             array(
                 'id' => '8',
@@ -464,7 +471,8 @@ class interfaceTest extends Cora_Tests_DbTestCase {
                 'tok_id' => '5',
                 'full_trans' => 'kunnen.(.)',
                 'num' => '7',
-                'suggestions' => Array ()
+                'suggestions' => Array (),
+                'comment' => null
             ),
             array(
                 'id' => '9',
@@ -474,7 +482,8 @@ class interfaceTest extends Cora_Tests_DbTestCase {
                 'full_trans' => 'kunnen.(.)',
                 'num' => '8',
                 'suggestions' => Array (),
-                'anno_norm' => 'deletednorm'
+                'anno_norm' => 'deletednorm',
+                'comment' => null
             ));
 
         $this->assertEquals($lines_expected,
