@@ -80,12 +80,18 @@ abstract class Cora_Tests_DbTestCase
         }
     }
 
-    public function last_error($result) {
-        return $result->errorInfo();
+    public function last_error($result = null) {
+        if ($result == null) {
+            $errinfo = $this->lastquery->errorInfo();
+            return $errinfo[0] != "00000";
+        }
+        $errinfo = $result->errorInfo();
+        return $errinfo[0] != "00000";
     }
 
     public function startTransaction() {}
     public function commitTransaction() {}
+    public function rollback() {}
 
     // copypasta from DBConnector
     public function last_insert_id() {
@@ -389,7 +395,13 @@ class interfaceTest extends Cora_Tests_DbTestCase {
                 'tok_id'      => '2',
                 'full_trans'  => 'pi$t||u||s',
                 'num'         => '1',
-                'suggestions' => array()
+                'suggestions' => array(
+                    array( 'POS' => 'PPOSAT',
+                           'morph' => 'Fem.Nom.Sg',
+                           'score' => null)
+                ),
+                'anno_POS'    => "PPOSAT",
+                'anno_morph'  => "Fem.Nom.Sg"
             ),
             array(
                 'id'          => '3',
@@ -421,7 +433,8 @@ class interfaceTest extends Cora_Tests_DbTestCase {
                 'num'         => '4',
                 'suggestions' => array(),
                 'anno_POS'    => 'PDS',
-                'anno_morph'  => '*.Gen.Pl'
+                'anno_morph'  => '*.Gen.Pl',
+                'anno_lemma'  => 'lemma'
             ),
             array(
                 'id'          => '6',
@@ -430,7 +443,8 @@ class interfaceTest extends Cora_Tests_DbTestCase {
                 'tok_id'      => '4',
                 'full_trans'  => 'vunf=tusent#vnd#vierhundert#vn-(=)sechzig',
                 'num'         => '5',
-                'suggestions' => array()
+                'suggestions' => array(),
+                'anno_norm'   => 'norm'
             ),
             array(
                 'id' => '7',
@@ -440,7 +454,8 @@ class interfaceTest extends Cora_Tests_DbTestCase {
                 'full_trans' => 'kunnen.(.)',
                 'num' => '6',
                 'general_error' => 1,
-                'suggestions' => Array ()
+                'suggestions' => Array (),
+                'anno_lemma' => 'deletedlemma'
             ),
             array(
                 'id' => '8',
@@ -458,7 +473,8 @@ class interfaceTest extends Cora_Tests_DbTestCase {
                 'tok_id' => '5',
                 'full_trans' => 'kunnen.(.)',
                 'num' => '8',
-                'suggestions' => Array ()
+                'suggestions' => Array (),
+                'anno_norm' => 'deletednorm'
             ));
 
         $this->assertEquals($lines_expected,
@@ -529,6 +545,51 @@ class interfaceTest extends Cora_Tests_DbTestCase {
                             $this->dbi->getAllLines("3"));
     }
      */
+
+    public function testSaveLines() {
+        //saveLines($fid, $lastedited, $lines);
+        $_SESSION["user"] = "bollmann";
+        $result = $this->dbi->saveLines("3", "9",
+            array(
+                array('id' => '2',
+                      'anno_POS' => 'PPOSS',
+                      'anno_morph' => 'Fem.Nom.Sg'),
+                array('id' => '3',
+                      'anno_POS' => 'VVFIN',
+                      'anno_morph' => '3.Pl.Past.Konj'),
+                array('id' => '4',
+                      'anno_POS' => null),
+                array('id' => '5',
+                      'anno_POS' => 'VVPP',
+                      'anno_lemma' => 'newlemma'),
+                array('id' => '6',
+                      'anno_norm' => 'newnorm'),
+                array('id' => '7',
+                      'anno_POS' => 'NN',
+                      'anno_morph' => 'Neut.Dat.Pl',
+                      'general_error' => false,
+                      'anno_lemma' => null),
+                array('id' => '8',
+                      'anno_norm' => 'bla',
+                      'general_error' => true),
+                array('id' => '9',
+                      'anno_morph' => 'Neut.Nom.Sg',
+                      'anno_lemma' => 'blatest',
+                      'anno_norm' => "")
+            ));
+        $this->assertFalse($result);
+        $expected = $this->createXMLDataset("saved_lines.xml");
+        $this->assertTablesEqual($expected->getTable("tag_suggestion"),
+            $this->getConnection()->createQueryTable("tag_suggestion",
+             "SELECT id,selected,source,tag_id,mod_id "
+            ."FROM tag_suggestion WHERE mod_id > 2 and mod_id < 9"));
+        $this->assertTablesEqual($expected->getTable("tag"),
+            $this->getConnection()->createQueryTable("tag",
+            "SELECT * FROM tag WHERE id > 509"));
+        $this->assertTablesEqual($expected->getTable("mod2error"),
+            $this->getConnection()->createQueryTable("mod2error",
+            "SELECT * FROM mod2error WHERE mod_id IN (7, 8, 9)"));
+    }
 
     public function testDeleteFile() {
         $this->dbi->deleteFile("3");

@@ -427,12 +427,30 @@
 		<field name="complete">0</field>
 	</row>
 	<row>
+		<field name="text_id">3</field>
+		<field name="tagset_id">2</field>
+		<field name="complete">0</field>
+	</row>
+	<row>
+		<field name="text_id">3</field>
+		<field name="tagset_id">3</field>
+		<field name="complete">0</field>
+	</row>
+	<row>
 		<field name="text_id">4</field>
 		<field name="tagset_id">1</field>
 		<field name="complete">0</field>
 	</row>
 	</table_data>
 	<table_data name="tag_suggestion">
+	<row>
+		<field name="id">2</field>
+		<field name="score" xsi:nil="true" />
+		<field name="selected">1</field>
+		<field name="source">auto</field>
+		<field name="tag_id">301</field>
+		<field name="mod_id">2</field>
+	</row>
 	<row>
 		<field name="id">3</field>
 		<field name="score" xsi:nil="true" />
@@ -456,6 +474,38 @@
 		<field name="source">auto</field>
 		<field name="tag_id">497</field>
 		<field name="mod_id">1</field>
+	</row>
+	<row>
+		<field name="id">6</field>
+		<field name="score" xsi:nil="true"/>
+		<field name="selected">1</field>
+		<field name="source">auto</field>
+		<field name="tag_id">510</field>
+		<field name="mod_id">6</field>
+	</row>
+	<row>
+		<field name="id">7</field>
+		<field name="score" xsi:nil="true"/>
+		<field name="selected">1</field>
+		<field name="source">auto</field>
+		<field name="tag_id">511</field>
+		<field name="mod_id">5</field>
+	</row>
+	<row>
+		<field name="id">8</field>
+		<field name="score" xsi:nil="true"/>
+		<field name="selected">1</field>
+		<field name="source">auto</field>
+		<field name="tag_id">512</field>
+		<field name="mod_id">7</field>
+	</row>
+	<row>
+		<field name="id">9</field>
+		<field name="score" xsi:nil="true"/>
+		<field name="selected">1</field>
+		<field name="source">auto</field>
+		<field name="tag_id">513</field>
+		<field name="mod_id">9</field>
 	</row>
 	</table_data>
 	<table_data name="tag">
@@ -3513,6 +3563,30 @@
 		<field name="needs_revision">0</field>
 		<field name="tagset_id">1</field>
 	</row>
+	<row>
+		<field name="id">510</field>
+		<field name="value">norm</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">2</field>
+	</row>
+	<row>
+		<field name="id">511</field>
+		<field name="value">lemma</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">3</field>
+	</row>
+	<row>
+		<field name="id">512</field>
+		<field name="value">deletedlemma</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">3</field>
+	</row>
+	<row>
+		<field name="id">513</field>
+		<field name="value">deletednorm</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">2</field>
+	</row>
 	</table_data>
 	<table_data name="tagset">
 	<row>
@@ -3521,6 +3595,18 @@
 		<field name="set_type">closed</field>
 		<field name="class">POS</field>
 	</row>
+        <row>
+            <field name="id">2</field>
+            <field name="name">NormTest</field>
+            <field name="set_type">open</field>
+            <field name="class">norm</field>
+        </row>
+        <row>
+            <field name="id">3</field>
+            <field name="name">LemmaTest</field>
+            <field name="set_type">open</field>
+            <field name="class">lemma</field>
+        </row>
 	</table_data>
 </database>
 </mysqldump>
