@@ -769,6 +769,7 @@ var EditorModel = new Class({
 	var req, cl, data, save, line, tp, tm, ler;
 	var ref = this;
 	var spin = this.spinner;
+	spin.message = "Speichere...";
 
 	cl = this.changedLines;
 	if (cl==null) { return true; }
@@ -871,17 +872,74 @@ var EditorModel = new Class({
      */
     editToken: function(tok_id) {
 	var ref = this;
+	var old_token = this.data[tok_id]['full_trans'];
+	var spin = this.spinner;
+	spin.message = "Bitte warten...";
+	// TODO: on a successful change, the data array has to be
+	// updated accordingly
 	var performEdit = function(mbox) {
 	    var new_token = $('editTokenBox').get('value').trim();
 	    if(!new_token) {
 		alert("Transkription darf nicht leer sein!");
 		return false;
 	    }
-	    alert("Funktion nicht implementiert.");
+	    if(new_token == old_token) {
+		mbox.close();
+		return false;
+	    }
+	    $('overlay').show();
+	    spin.show();
+	    new Request.JSON({
+		url: 'request.php',
+		async: true,
+		onSuccess: function(response, text) {
+		    var title="", message="", textarea="";
+		    if (status!=null && status.success) {
+			mbox.close();
+			new mBox.Notice({
+			    type: 'ok',
+			    content: 'Bearbeiten erfolgreich.',
+			    position: { x: 'right' }
+			});
+		    }
+		    else {
+			if (status==null) {
+			    message = 'Die Änderung der Transkription war nicht erfolgreich.  Es ist ein unbekannter Fehler aufgetreten.';
+			}
+			else {
+			    message = 'Die Änderung der Transkription war nicht erfolgreich.';
+			    for(var i=0;i<status.errors.length;i++){
+				textarea += status.errors[i] + "\n";
+			    }
+			}
+			
+			if(textarea!='') {
+			    $('saveErrorPopup').getElement('p').set('html', message);
+			    $('saveErrorPopup').getElement('textarea').set('html', textarea);
+			    message = 'saveErrorPopup';
+			}
+			new mBox.Modal({
+			    title: 'Änderung der Transkription fehlgeschlagen',
+			    content: message,
+			    buttons: [ {title: "OK"} ]
+			}).open();
+		    }
+		    spin.hide();
+		    $('overlay').hide();
+		},
+		onFailure: function(xhr) {
+		    new mBox.Modal({
+			title: 'Bearbeiten fehlgeschlagen',
+			content: 'Ein interner Fehler ist aufgetreten. Server lieferte folgende Antwort: "'+xhr.responseText+'" ('+xhr.statusText+').'
+		    }).open();
+		    spin.hide();
+		    $('overlay').hide();
+		}
+	    }).get({'do': 'editToken', 'token_id': tok_id, 'value': new_token});
 	    mbox.close();
 	}
 
-	$('editTokenBox').set('value', this.data[tok_id]['full_trans']);
+	$('editTokenBox').set('value', old_token);
 	new mBox.Modal({
 	    title: 'Transkription bearbeiten',
 	    content: 'editTokenForm',
@@ -895,7 +953,6 @@ var EditorModel = new Class({
 	    ],
 	    onOpenComplete: function() {
 		$('editTokenBox').focus();
-		$('editTokenBox').select();
 	    },
 	}).open();
     }
