@@ -126,7 +126,6 @@ class XMLHandler {
     foreach($node->dipl as $diplnode) {
       $dipl = array();
       $dipl['xml_id'] = (string) $diplnode['id'];
-      $lastdiplid     = (string) $diplnode['id'];
       $dipl['trans']  = (string) $diplnode['trans'];
       $dipl['utf']    = (string) $diplnode['utf'];
       $dipl['parent_tok_xml_id'] = $thistokid;
@@ -175,7 +174,7 @@ class XMLHandler {
       }
       $m[] = $modern;
     }
-    return $lastdiplid;
+    return $thistokid;
   }
 
   /** Process XML data. */
@@ -187,7 +186,7 @@ class XMLHandler {
     $dipls   = array();
     $moderns = array();
     $tokcount = 0;
-    $lastdiplid = null;
+    $lasttokid = null;
 
     while ($reader->read()) {
       // only handle opening tags
@@ -207,10 +206,10 @@ class XMLHandler {
 	$this->processShiftTags($node, $document);
       }
       else if ($reader->name == 'comment') {
-	$document->addComment(null, $lastdiplid, (string) $node, (string) $node['type']);
+	$document->addComment(null, $lasttokid, (string) $node, (string) $node['type']);
       }
       else if ($reader->name == 'token') {
-	$lastdiplid = $this->processToken($node, ++$tokcount, $tokens, $dipls, $moderns);
+	$lasttokid = $this->processToken($node, ++$tokcount, $tokens, $dipls, $moderns);
       }
     }
 

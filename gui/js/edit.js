@@ -603,7 +603,7 @@ var EditorModel = new Class({
 	    tr.getElement('.editTable_tok_trans').set('html', line.trans);
 	    tr.getElement('.editTable_token').set('html', line.utf);
 	    tr.getElement('.editTable_tokenid').set('html', i+1);
-	    tr.getElement('.editTable_Comment input').set('value', line.comment); // XXXXXX
+	    tr.getElement('.editTable_Comment input').set('value', line.comment);
 
 	    // build annotation elements
 	    var norm_tr = tr.getElement('.editTable_Norm input');

@@ -987,9 +987,14 @@ class DBInterface {
     $qs  = "SELECT x.* FROM ";
     $qs .= "  (SELECT q.*, @rownum := @rownum + 1 AS num FROM ";
     $qs .= "    (SELECT modern.id, modern.trans, modern.utf, ";
-    $qs .= "            modern.tok_id, token.trans AS full_trans ";
+    $qs .= "            modern.tok_id, token.trans AS full_trans, ";
+    $qs .= "            c1.value AS comment "; // ,c2.value AS k_comment
     $qs .= "     FROM   {$this->db}.token ";
-    $qs .= "       LEFT JOIN {$this->db}.modern ON modern.tok_id=token.id ";
+    $qs .= "       LEFT JOIN {$this->db}.modern  ON modern.tok_id=token.id ";
+    $qs .= "       LEFT JOIN {$this->db}.comment c1 ON  c1.tok_id=token.id ";
+    $qs .= "             AND c1.subtok_id=modern.id AND c1.comment_type='C' ";
+    //$qs .= "       LEFT JOIN {$this->db}.comment c2 ON  c2.tok_id=token.id ";
+    //$qs .= "                                        AND c2.comment_type='K' ";
     // Layout-Info mit JOINen?
     $qs .= "     WHERE  token.text_id='{$fileid}' ";
     $qs .= "     ORDER BY token.ordnr ASC, modern.id ASC) q ";
@@ -1107,17 +1112,24 @@ class DBInterface {
     $idlist = array();
     $pos_tags = array();    // maps tags to tag IDs
     $tagset_ids = array();  // maps tagset classes to tagset IDs
+    $comment_ids = array(); // maps modern IDs to comment IDs (of 'C' type comments)
+    $token_ids = array();   // maps modern IDs to token IDs
 
     /* Check if all IDs belong to the currently opened document
        (--this is done because IDs are managed on the client side and
        therefore could potentially be manipulated)
+       -- also, hijacked this to extract comment information
     */
     foreach($lines as $line) {
       $idlist[] = $line['id'];
     }
-    $modchk  = "SELECT modern.id FROM {$this->db}.modern ";
-    $modchk .= "LEFT JOIN {$this->db}.token ON modern.tok_id=token.id ";
-    $modchk .= "LEFT JOIN {$this->db}.text  ON token.text_id=text.id ";
+    $modchk  = "SELECT modern.id, comment.id AS comment_id, token.id AS token_id ";
+    $modchk .= "FROM {$this->db}.modern ";
+    $modchk .= "  LEFT JOIN {$this->db}.token   ON modern.tok_id=token.id ";
+    $modchk .= "  LEFT JOIN {$this->db}.text    ON token.text_id=text.id ";
+    $modchk .= "  LEFT JOIN {$this->db}.comment ON comment.tok_id=token.id ";
+    $modchk .= "                               AND comment.subtok_id=modern.id ";
+    $modchk .= "                               AND comment.comment_type='C' ";
     $modchk .= "WHERE text.id='{$fileid}' AND modern.id IN (";
     $modchk .= implode(',', $idlist);
     $modchk .= ")";
@@ -1126,6 +1138,10 @@ class DBInterface {
     if($modchn!=count($idlist)) {
       $diff = count($idlist) - $modchn;
       return "Ein interner Fehler ist aufgetreten (Code: 1074).  Die Anfrage enthielt {$diff} ungültige Token-ID(s) für das derzeit geöffnete Dokument.";
+    }
+    while($row = $this->dbconn->fetch_assoc($modchq)) {
+      $comment_ids[$row['id']] = $row['comment_id'];
+      $token_ids[$row['id']]   = $row['token_id'];
     }
 
     /* Get tagset information for currently opened document */
@@ -1166,6 +1182,8 @@ class DBInterface {
     $deletets  = array();    // array with tag_suggestions to be deleted
     $inserterr = array();
     $deleteerr = array();
+    $insertcom = array();    // array with comments to be inserted
+    $deletecom = array();
 
     foreach($lines as $line) {
       /* Get currently selected annotations */
@@ -1267,6 +1285,7 @@ class DBInterface {
 	}
       }
 
+      // Error annotation
       if(array_key_exists('general_error', $line)) {
 	if($error_general) {
 	  if(intval($line['general_error']) == 1) {
@@ -1276,6 +1295,22 @@ class DBInterface {
 	    // hack ...
 	    $deleteerr[] = "(`mod_id`='" . $line['id'] . "' AND `error_id`='" . $error_general . "')";
 	  }
+	}
+      }
+
+      // CorA comment
+      if(array_key_exists('comment', $line)) {
+	$comment_id = $comment_ids[$line['id']];
+	if($comment_id==null || empty($comment_id)) {
+	  $comment_id = "NULL";
+	} else {
+	  $comment_id = "'{$comment_id}'";
+	  if(empty($line['comment'])) {
+	    $deletecom[] = $comment_id;
+	  }
+	}
+	if(!empty($line['comment'])) {
+	  $insertcom[] = "({$comment_id}, '" . $token_ids[$line['id']] . "', '" . mysql_real_escape_string($line['comment']) . "', 'C', '" . $line['id'] . "')";
 	}
       }
 
@@ -1327,7 +1362,7 @@ class DBInterface {
 	$qstr .= " (`id`, `selected`, `source`, `tag_id`, `mod_id`) VALUES ";
 	$qstr .= implode(",", $insertts);
 	$qstr .= " ON DUPLICATE KEY UPDATE `selected`=VALUES(selected), ";
-	$qstr .= "                        `tag_id`=VALUES(tag_id)";
+	$qstr .= "                         `tag_id`=VALUES(tag_id)";
 	$q = $this->query($qstr);
 	$qerr = $this->dbconn->last_error();
 	if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
@@ -1351,6 +1386,23 @@ class DBInterface {
 	$qstr  = "INSERT IGNORE INTO {$this->db}.mod2error ";
 	$qstr .= "  (`mod_id`, `error_id`) VALUES ";
 	$qstr .= implode(", ", $inserterr);
+	$q = $this->query($qstr);
+	$qerr = $this->dbconn->last_error();
+	if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
+      }
+      if(!empty($insertcom)) {
+	$qstr  = "INSERT INTO {$this->db}.comment ";
+	$qstr .= "  (`id`, `tok_id`, `value`, `comment_type`, `subtok_id`) VALUES ";
+	$qstr .= implode(",", $insertcom);
+	$qstr .= " ON DUPLICATE KEY UPDATE `value`=VALUES(value)";
+	$q = $this->query($qstr);
+	$qerr = $this->dbconn->last_error();
+	if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
+      }
+      if(!empty($deletecom)) {
+	$qstr  = "DELETE FROM {$this->db}.comment WHERE `id` IN (";
+	$qstr .= implode(", ", $deletecom);
+	$qstr .= ")";
 	$q = $this->query($qstr);
 	$qerr = $this->dbconn->last_error();
 	if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
