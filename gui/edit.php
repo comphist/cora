@@ -74,6 +74,14 @@
      <label for="jumpTo">Zeilennummer: </label>
      <input id="jumpToBox" type="text" name="jumpTo" placeholder="" size="6" />
    </div>
+
+   <div id="editTokenForm">
+   <p>
+     <label for="editToken">Transkription: </label>
+     <input id="editTokenBox" type="text" name="editToken" placeholder="" />
+   </p>
+   <p><strong>Achtung!</strong> blah blah blah ...</p>
+   </div>
 </div>	
 
 </div>

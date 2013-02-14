@@ -117,6 +117,21 @@ var EditorModel = new Class({
 		}
 	    }
 	);
+	et.addEvent(
+	    'dblclick:relay(td)',
+	    function(event, target) {
+		var this_id = target.getParent('tr').get('id').substr(5);
+		if (target.hasClass("editTable_token") ||
+		    target.hasClass("editTable_tok_trans")) {
+		    // we don't want text to get selected here:
+		    if (window.getSelection)
+			window.getSelection().removeAllRanges();
+		    else if (document.selection)
+			document.selection.empty();
+		    ref.editToken(this_id);
+		}
+	    }
+	);
 
 	/* activate extra menu bar */
 	mr = $('menuRight');
@@ -844,6 +859,45 @@ var EditorModel = new Class({
 	} else {
 	    return true;
 	}
+    },
+
+    /* Function: editToken
+
+       Display a pop-up with the option to edit the transcription of a
+       token.
+
+       Parameters:
+         tok_id - The line ID of the token to be edited
+     */
+    editToken: function(tok_id) {
+	var ref = this;
+	var performEdit = function(mbox) {
+	    var new_token = $('editTokenBox').get('value').trim();
+	    if(!new_token) {
+		alert("Transkription darf nicht leer sein!");
+		return false;
+	    }
+	    alert("Funktion nicht implementiert.");
+	    mbox.close();
+	}
+
+	$('editTokenBox').set('value', this.data[tok_id]['full_trans']);
+	new mBox.Modal({
+	    title: 'Transkription bearbeiten',
+	    content: 'editTokenForm',
+	    buttons: [
+		{title: 'Abbrechen', addClass: 'mform'},
+		{title: 'OK', addClass: 'mform button_green',
+		 event: function() {
+		     performEdit(this);
+		 }
+		}
+	    ],
+	    onOpenComplete: function() {
+		$('editTokenBox').focus();
+		$('editTokenBox').select();
+	    },
+	}).open();
     }
 
 });
