@@ -504,7 +504,7 @@ class interfaceTest extends Cora_Tests_DbTestCase {
             $this->getConnection()->createQueryTable("project",
             "SELECT * FROM project WHERE name='testproject'"));
 
-        $this->dbi->deleteProject("2");
+        $this->assertTrue($this->dbi->deleteProject("2"));
         $this->assertEquals("0",
             $this->getConnection()->createQueryTable("project",
             "SELECT * FROM project WHERE id=2")->getRowCount());
@@ -512,6 +512,9 @@ class interfaceTest extends Cora_Tests_DbTestCase {
         // this should be false, but it isn't because of missing fk
         // constraints TODO
         //$this->assertFalse($this->dbi->deleteProject("1"));
+        //$this->assertGreaterThan("0",
+            //$this->getConnection()->createQueryTable("project",
+            //"SELECT * FROM project WHERE id=1")->getRowCount());
 
         $users = array("test");
         $this->dbi->changeProjectUsers("1", $users);

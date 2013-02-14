@@ -95,7 +95,7 @@ class DBConnector {
    * @return @c true if there is a database connection
    */
   public function isConnected() {
-    if (!$this->dbobj) {return false;} else {return true;}
+      return ($this->dbobj) ? true : false;
   }
 
   /** Set the default database. The name of the default database
@@ -720,11 +720,7 @@ class DBInterface {
     $qs  = "SELECT a.fullname FROM ({$this->db}.text a, {$this->db}.user2project b) ";
     $qs .= "WHERE a.id='{$fileid}' AND b.user_id='{$uid}' AND a.project_id=b.project_id";
     $q = $this->query($qs);
-    if($this->dbconn->fetch_array($q)) {
-      return true;
-    } else {
-      return false;
-    }
+    return ($this->dbconn->fetch_array($q)) ? true : false;
   }
   
   /** Check whether a user is allowed to delete a file.
@@ -903,10 +899,7 @@ class DBInterface {
    */
   public function deleteProject($pid){
     $qs = "DELETE FROM {$this->db}.project WHERE `id`={$pid}";
-    if($this->query($qs)) {
-      return True;
-    }
-    return False;
+    return ($this->query($qs)) ? true : false;
   }
   
   /** Save settings for given user.

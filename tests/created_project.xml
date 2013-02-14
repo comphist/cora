@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<dataset>
+    <table name="project">
+        <column>id</column>
+        <column>name</column>
+        <row>
+            <value>2</value>
+            <value>testproject</value>
+        </row>
+    </table>
+</dataset>
