@@ -385,4 +385,4 @@ CREATE TABLE `users` (
 
 -- Dump completed on 2013-02-06  4:25:47
 
-GRANT ALL PRIVILEGES ON coratest.* TO 'cora'@'localhost' IDENTIFIED BY 'trustthetext';
+GRANT UPDATE,INSERT,DELETE,SELECT ON coratest.* TO 'cora'@'localhost' IDENTIFIED BY 'trustthetext';
