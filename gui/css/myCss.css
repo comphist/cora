@@ -794,6 +794,10 @@ div#fileImportForm p {
     max-width: 31em;
 }
 
+div#editTokenForm p {
+    max-width: 31em;
+}
+
 div#changePasswordFormDiv label {
     display: inline-block;
     width: 11em;

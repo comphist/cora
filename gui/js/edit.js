@@ -887,15 +887,17 @@ var EditorModel = new Class({
 		mbox.close();
 		return false;
 	    }
+	    // spaces are treated as line breaks atm
+	    new_token = new_token.replace(" ", "\n");
 	    $('overlay').show();
 	    spin.show();
 	    new Request.JSON({
 		url: 'request.php',
 		async: true,
-		onSuccess: function(response, text) {
+		onSuccess: function(status, text) {
 		    var title="", message="", textarea="";
+		    mbox.close();
 		    if (status!=null && status.success) {
-			mbox.close();
 			new mBox.Notice({
 			    type: 'ok',
 			    content: 'Bearbeiten erfolgreich.',
@@ -921,7 +923,12 @@ var EditorModel = new Class({
 			new mBox.Modal({
 			    title: 'Änderung der Transkription fehlgeschlagen',
 			    content: message,
-			    buttons: [ {title: "OK"} ]
+			    buttons: [ {title: "OK"} ],
+			    options: {fade: {close: false}},
+			    onCloseComplete: function() {
+				mbox.options.fade.open = false;
+				mbox.open();
+			    }
 			}).open();
 		    }
 		    spin.hide();
@@ -940,7 +947,7 @@ var EditorModel = new Class({
 	}
 
 	$('editTokenBox').set('value', old_token);
-	new mBox.Modal({
+	var editTokenBox = new mBox.Modal({
 	    title: 'Transkription bearbeiten',
 	    content: 'editTokenForm',
 	    buttons: [
@@ -954,7 +961,15 @@ var EditorModel = new Class({
 	    onOpenComplete: function() {
 		$('editTokenBox').focus();
 	    },
-	}).open();
+	});
+	$('editTokenBox').removeEvents('keydown');
+	$('editTokenBox').addEvent('keydown', function(event) {
+	    if(event.key == "enter") {
+		performEdit(editTokenBox);
+	    }
+	});
+	editTokenBox.open();
+
     }
 
 });

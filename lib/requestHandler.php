@@ -156,6 +156,7 @@ class RequestHandler {
    * of the request is sent via GET or POST.
    *
    * Supports the following GET requests (as values of @c do):
+   * *** THIS LIST IS NO LONGER UP-TO-DATE ***
    * @arg @c getHighestTagId - Retrieve maximal tag id from specified tagset
    * @arg @c lockTagset - Lock the tagset specified in @c name
    * @arg @c unlockTagset - Unlock the tagset specified in @c name
@@ -348,12 +349,14 @@ class RequestHandler {
 	    echo json_encode($status);
 	    exit;
 	      
-	  case "copyTagset":	exit;
-	    
 	  case "saveEditorUserSettings": return $this->sh->setUserSettings(self::escapeSQL($get['noPageLines']),self::escapeSQL($get['contextLines'])); exit;
 	    
 	  case "setUserEditorSetting": return $this->sh->setUserSetting(self::escapeSQL($get['name']),self::escapeSQL($get['value'])); exit;
 	    
+
+	  case "editToken":
+	    echo json_encode($this->sh->editToken($get['token_id'], $get['value']));
+	    exit;
 	    
 	  default:           self::returnError(400, "Unknown request: " + $get["do"]);
 	  }

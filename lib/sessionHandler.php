@@ -9,6 +9,7 @@
 
 require_once( "connect.php" );
 require_once( "xmlHandler.php" );
+require_once( "commandHandler.php" );
 
 /** Manages session-specific data.
  *
@@ -20,6 +21,7 @@ require_once( "xmlHandler.php" );
 class SessionHandler {
   private $db; /**< A DBInterface object. */
   private $xml; /**< An XMLHandler object. */
+  private $ch; /**< A CommandHandler object. */
 
   /** Create a new SessionHandler.
    *
@@ -33,6 +35,7 @@ class SessionHandler {
     $dbconn = new DBConnector(DB_SERVER, DB_USER, DB_PASSWORD, MAIN_DB);
     $this->db = new DBInterface($dbconn);
     $this->xml = new XMLHandler($this->db);
+    $this->ch = new CommandHandler();
 
     $defaults = array( "lang"        => DEFAULT_LANGUAGE,
 		       "loggedIn"    => false,
@@ -285,6 +288,7 @@ class SessionHandler {
     if ($_SESSION["admin"]) {
       return array("success" => $this->db->deleteProject($name));
     }
+    return array("success" => false);
   }
 
   /** Wraps DBInterface::getLines(), calculating start line and limit first */
@@ -334,6 +338,41 @@ class SessionHandler {
   public function getHighestTagId($tagset){
     return $this->db->getHighestTagId($tagset);
   }
+
+  /** Edit transcription in the database.
+   *
+   * @param string $tokenid ID of the token to be edited
+   * @param string $value   New transcription for the token
+   */
+  public function editToken($tokenid, $value) {
+    // call the check script
+    $check = $this->ch->checkToken($value);
+    if(!empty($check)) {
+      array_unshift($check, "Bei der Prüfung der Transkription ist ein Fehler aufgetreten.", "");
+      return array("success" => false, "errors" => $check);
+    }
+    // call the conversion script(s)
+    $errors = array();
+    $converted = $this->ch->convertToken($value, $errors);
+    if(!empty($errors)) {
+      array_unshift($errors, "Bei der Konvertierung des Tokens ist ein Fehler aufgetreten.", "");
+      return array("success" => false, "errors" => $errors);
+    }
+
+    foreach($converted as $type => $convarray) {
+      $errors[] = $type . ":";
+      foreach($convarray as $line) {
+	$errors[] = "  " . $line;
+      }
+    }
+    return array("success" => false, "errors" => $errors);
+
+
+    // then, call a DBInterface function to make the change
+    //    return array("success" => true);
+    return array("success" => false, "errors" => array("Not implemented"));
+  }
+
 
   /** Perform user login.
    *

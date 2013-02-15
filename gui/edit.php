@@ -78,9 +78,10 @@
    <div id="editTokenForm">
    <p>
      <label for="editToken">Transkription: </label>
-     <input id="editTokenBox" type="text" name="editToken" placeholder="" />
+     <input id="editTokenBox" type="text" name="editToken" size="42" placeholder="" />
    </p>
-   <p><strong>Achtung!</strong> blah blah blah ...</p>
+   <p><strong>Achtung!</strong> Leerzeichen in der Transkription werden als Zeilenumbrüche interpretiert und dürfen <strong>nur</strong> nach einem Trennzeichen (<code>=</code> oder <code>(=)</code>) benutzt werden.</p>
+   <p>Neue Token können derzeit noch nicht hinzugefügt werden.</p>
    </div>
 </div>	
 
