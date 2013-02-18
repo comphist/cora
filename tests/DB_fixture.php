@@ -18,6 +18,15 @@ class TruncateOperation extends PHPUnit_Extensions_Database_Operation_Truncate {
 }
 
 /** Base class for all Database Related Tests
+ *
+ * 02/2012 Florian Petran
+ *
+ * TODO
+ * currently, the tests are wildly inefficient and take forever to run, because
+ * of the FOREIGN_KEY_CHECKS query at each setUp operation. if there is no help
+ * from the citizens of #phpunit, i'll make one fixture for testing with foreign
+ * keys, and one without, so that all the FK tests can be moved to their own fixture,
+ * and the rest can run quicker.
  */
 abstract class Cora_Tests_DbTestCase
     extends PHPUnit_Extensions_Database_TestCase {

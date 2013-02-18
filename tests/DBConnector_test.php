@@ -2,6 +2,21 @@
 require_once "DB_fixture.php";
 require_once "../lib/connect.php";
 
+/** Tests for DBConnector
+ *
+ * 02/2013 Florian Petran
+ *
+ * tests for the DBConnector object, that encapsulates DB Queries and such.
+ * Note that all of these tests are very expensive, since they involve lots
+ * of Database connecting.
+ *
+ * TODO
+ * last_error()
+ * escapeSQL()
+ * criticalQuery($query)
+ *      criticalQuery can't be entirely tested since it involves a die() statement.
+ *      refactoring is needed there.
+ */
 class Cora_Tests_DBConnector_test extends Cora_Tests_DbTestCase {
     protected $dbc;
     protected $backupGlobalsBlacklist = array('_SESSION');

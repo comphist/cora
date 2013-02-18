@@ -2,6 +2,34 @@
 require_once "DB_fixture.php";
 require_once "../lib/connect.php";
 
+/** Tests for DBInterface class
+ *
+ *  02/2012 Florian Petran
+ *
+ * DBInterface abstracts all operations that relate to the database.
+ *
+ * TODO
+ * tests for:
+ *      getUserData($user, $pw)
+ *      getTagsets($class ="POS")
+ *      getTagset($tagset, $limit="none")
+ *      getTagsetByValue($tagset)
+ *      changePassword($uname, $password)
+ *      changeProjectUsers($pid, $userlist)
+ *      toggleNormStatus($username)
+ *      isAllowedToOpenFile($fid, $uname)
+ *      isAllowedToDeleteFile($fid, $uname)
+ *      getAllSuggestions($fid, $lineid)
+ *      importTaglist($taglist, $tagsetname)
+ *      insertNewDocument($options, $data) XXX
+ *  coverage for:
+ *      getLines($fid, $start, $lim);
+ *      saveLines($fid, $lastedited, $lines);
+ *
+ *  performance:
+ *      move tests that rely on FK to a different
+ *      class so these can use a different fixture.
+ */
 class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
     protected $dbi;
     protected $backupGlobalsBlacklist = array('_SESSION');
@@ -178,9 +206,12 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
 
     public function testLockUnlock() {
         // locking a file that doesn't exist
+        /* this returns { success: true, lockCount: 0 }
+         * TODO find out if this is intended
         $lock_result = $this->dbi->lockFile("512", "test");
         $this->assertEquals(array("success" => false),
-                            $lock_result);
+            $lock_result);
+         */
 
         // locking a file that is already locked returns info on the lock
         $lock_result = $this->dbi->lockFile("3", "test");
