@@ -2,7 +2,7 @@
 require_once "DB_fixture.php";
 require_once "../lib/connect.php";
 
-class DBConnector_test extends Cora_Tests_DbTestCase {
+class Cora_Tests_DBConnector_test extends Cora_Tests_DbTestCase {
     protected $dbc;
     protected $backupGlobalsBlacklist = array('_SESSION');
 
@@ -31,9 +31,10 @@ class DBConnector_test extends Cora_Tests_DbTestCase {
 
         // test insert
         $result = $this->dbc->query(
-            "INSERT INTO {$dbname}.error_types VALUES ('testerror', 'test2')"
+            "INSERT INTO {$dbname}.error_types (name) VALUES ('testerror'), ('test2')"
         );
         $this->assertTrue($result);
+        // TODO should probably test the table after this
 
         // test delete
         $result = $this->dbc->query(
@@ -93,17 +94,34 @@ class DBConnector_test extends Cora_Tests_DbTestCase {
         $result = $this->dbc->query("SELECT * FROM {$dbname}.col");
         $this->assertEquals("3", $this->dbc->row_count($result));
 
-        //$result = $this->dbc->query("INSERT INTO {$dbname}.error_type VALUES ('test')");
-        //$this->assertEquals("1", $this->dbc->row_count());
+        $result = $this->dbc->query("INSERT INTO {$dbname}.error_types (name) VALUES ('test')");
+        $this->assertTrue($result);
+        $this->assertEquals("1", $this->dbc->row_count());
 
         $this->assertEquals("3", $this->dbc->last_insert_id());
         //criticalQuery();
     }
 
-    public function testTransaction() {
-        //startTransaction();
-        //commitTransaction();
-        //rollback();
+    public function testTransactionRollback() {
+        $dbname = $this->dbc->getDatabase();
+
+        $this->dbc->startTransaction();
+        $this->dbc->query("INSERT INTO {$dbname}.error_types (name) VALUES ('test1')");
+        $this->dbc->rollback();
+        $this->assertEquals("0",
+            $this->getConnection()->createQueryTable("error_types",
+            "SELECT * FROM {$dbname}.error_types WHERE name='test1'")->getRowCount());
+    }
+
+    public function testTransactionCommit() {
+        $dbname = $this->dbc->getDatabase();
+
+        $this->dbc->startTransaction();
+        $this->dbc->query("INSERT INTO {$dbname}.error_types (name) VALUES ('test2')");
+        $this->dbc->commitTransaction();
+        $this->assertEquals("1",
+            $this->getConnection()->createQueryTable("error_types",
+            "SELECT * FROM {$dbname}.error_types WHERE name='test2'")->getRowCount());
     }
 
     public function testEscapeSQL() {
