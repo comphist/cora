@@ -4,11 +4,36 @@
  */
 require_once "PHPUnit/Extensions/Database/TestCase.php";
 
+/**
+ * Disable foreign key checks temporarily
+ * see http://stackoverflow.com/questions/10331445/phpunit-and-mysql-truncation-error
+ */
+class TruncateOperation extends PHPUnit_Extensions_Database_Operation_Truncate {
+    public function execute(PHPUnit_Extensions_Database_DB_IDatabaseConnection $connection,
+                            PHPUnit_Extensions_Database_DataSet_IDataSet $dataset) {
+        $connection->getConnection()->query("SET foreign_key_checks = 0");
+        parent::execute($connection, $dataset);
+        $connection->getConnection()->query("SET foreign_key_checks = 1");
+    }
+}
+
+/** Base class for all Database Related Tests
+ */
 abstract class Cora_Tests_DbTestCase
     extends PHPUnit_Extensions_Database_TestCase {
     static private $pdo = null;
     private $conn = null;
     private $lastquery = null;
+
+
+    public function getSetUpOperation() {
+        $cascadeTruncates = false;
+
+        return new PHPUnit_Extensions_Database_Operation_Composite(array(
+            new TruncateOperation($cascadeTruncates),
+            PHPUnit_Extensions_Database_Operation_Factory::INSERT()
+        ));
+    }
 
     final public function getConnection() {
         if ($this->conn === null) {
@@ -29,21 +54,18 @@ abstract class Cora_Tests_DbTestCase
     }
 
     /** Create the coratest db and fill it with structure.
-     *
-     * Note that coratest is set to MyISAM engine, since the
-     * FK constraints make it difficult to fill the db otherwise.
-     * XXX
      */
     public static function setUpBeforeClass() {
-        $mysqlcall = "mysql -uroot -p{$GLOBALS["DB_ROOTPW"]} ";
-        system($mysqlcall." < coratest-setup.sql");
+        $mysqlcall = "mysql -uroot -p{$GLOBALS["DB_ROOTPW"]}";
+        system("echo CREATE DATABASE {$GLOBALS["DB_DBNAME"]} | ".$mysqlcall);
         system($mysqlcall." {$GLOBALS["DB_DBNAME"]} < coratest.sql" );
     }
 
     /** Drop the coratest db
      */
     public static function tearDownAFterClass() {
-        system("mysql -uroot -p{$GLOBALS["DB_ROOTPW"]} < coratest-teardown.sql");
+        system("echo DROP DATABASE {$GLOBALS["DB_DBNAME"]} |"
+              ." mysql -uroot -p{$GLOBALS["DB_ROOTPW"]}");
     }
 
     //////////////////// from here on mockup of DBConnector /////////////////////
@@ -53,8 +75,12 @@ abstract class Cora_Tests_DbTestCase
 
     public function query($qs) {
         //return $this->getConnection()->createQueryTable("result",$qs);
-        $this->lastquery = $this->getConnection()->getConnection()->query($qs);
-        return $this->lastquery;
+        try {
+            $this->lastquery = $this->getConnection()->getConnection()->query($qs);
+            return $this->lastquery;
+        } catch(Exception $e) {
+            return false;
+        }
     }
 
     public function criticalQuery($qs) {

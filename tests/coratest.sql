@@ -30,7 +30,7 @@ CREATE TABLE `col` (
   PRIMARY KEY (`id`),
   KEY `page_id` (`page_id`),
   CONSTRAINT `col_ibfk_1` FOREIGN KEY (`page_id`) REFERENCES `page` (`id`) ON DELETE CASCADE
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -49,7 +49,7 @@ CREATE TABLE `comment` (
   PRIMARY KEY (`id`),
   KEY `tok_id` (`tok_id`),
   CONSTRAINT `comment_ibfk_1` FOREIGN KEY (`tok_id`) REFERENCES `token` (`id`) ON DELETE CASCADE
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -70,7 +70,7 @@ CREATE TABLE `dipl` (
   KEY `line_id` (`line_id`),
   CONSTRAINT `dipl_ibfk_1` FOREIGN KEY (`tok_id`) REFERENCES `token` (`id`) ON DELETE CASCADE,
   CONSTRAINT `dipl_ibfk_2` FOREIGN KEY (`line_id`) REFERENCES `line` (`id`) ON DELETE CASCADE
-) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -84,7 +84,7 @@ CREATE TABLE `error_types` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -102,7 +102,7 @@ CREATE TABLE `line` (
   PRIMARY KEY (`id`),
   KEY `col_id` (`col_id`),
   CONSTRAINT `line_ibfk_1` FOREIGN KEY (`col_id`) REFERENCES `col` (`id`) ON DELETE CASCADE
-) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -122,7 +122,7 @@ CREATE TABLE `locks` (
   KEY `text_id` (`text_id`),
   CONSTRAINT `locks_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `locks_ibfk_2` FOREIGN KEY (`text_id`) REFERENCES `text` (`id`) ON DELETE CASCADE
-) ENGINE=MyISAM AUTO_INCREMENT=184 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=184 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -139,7 +139,7 @@ CREATE TABLE `mod2error` (
   KEY `m2e_ibfk_2` (`error_id`),
   CONSTRAINT `m2e_ibfk_1` FOREIGN KEY (`mod_id`) REFERENCES `modern` (`id`) ON DELETE CASCADE,
   CONSTRAINT `m2e_ibfk_2` FOREIGN KEY (`error_id`) REFERENCES `error_types` (`id`) ON DELETE CASCADE
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -158,7 +158,7 @@ CREATE TABLE `modern` (
   PRIMARY KEY (`id`),
   KEY `tok_id` (`tok_id`),
   CONSTRAINT `modern_ibfk_1` FOREIGN KEY (`tok_id`) REFERENCES `token` (`id`) ON DELETE CASCADE
-) ENGINE=MyISAM AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -177,7 +177,7 @@ CREATE TABLE `page` (
   PRIMARY KEY (`id`),
   KEY `text_id` (`text_id`),
   CONSTRAINT `page_ibfk_1` FOREIGN KEY (`text_id`) REFERENCES `text` (`id`) ON DELETE CASCADE
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -191,7 +191,7 @@ CREATE TABLE `project` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -211,7 +211,7 @@ CREATE TABLE `shifttags` (
   KEY `tok_to` (`tok_to`),
   CONSTRAINT `shifttags_ibfk_1` FOREIGN KEY (`tok_from`) REFERENCES `token` (`id`) ON DELETE CASCADE,
   CONSTRAINT `shifttags_ibfk_2` FOREIGN KEY (`tok_to`) REFERENCES `token` (`id`) ON DELETE CASCADE
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -229,7 +229,7 @@ CREATE TABLE `tag` (
   PRIMARY KEY (`id`),
   KEY `tagset_id` (`tagset_id`),
   CONSTRAINT `tag_ibfk_1` FOREIGN KEY (`tagset_id`) REFERENCES `tagset` (`id`) ON DELETE CASCADE
-) ENGINE=MyISAM AUTO_INCREMENT=515 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=515 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -252,7 +252,7 @@ CREATE TABLE `tag_suggestion` (
   KEY `mod_id` (`mod_id`),
   CONSTRAINT `tagsuggestion_ibfk_1` FOREIGN KEY (`tag_id`) REFERENCES `tag` (`id`),
   CONSTRAINT `tag_suggestion_ibfk_1` FOREIGN KEY (`mod_id`) REFERENCES `modern` (`id`) ON DELETE CASCADE
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -268,7 +268,7 @@ CREATE TABLE `tagset` (
   `set_type` enum('open','closed') NOT NULL,
   `class` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -294,7 +294,7 @@ CREATE TABLE `text` (
   KEY `changer_id` (`changer_id`),
   KEY `project_id` (`project_id`),
   CONSTRAINT `text_ibfk_2` FOREIGN KEY (`project_id`) REFERENCES `project` (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -312,7 +312,7 @@ CREATE TABLE `text2tagset` (
   KEY `tagset_id` (`tagset_id`),
   CONSTRAINT `text2tagset_ibfk_1` FOREIGN KEY (`text_id`) REFERENCES `text` (`id`) ON DELETE CASCADE,
   CONSTRAINT `text2tagset_ibfk_2` FOREIGN KEY (`tagset_id`) REFERENCES `tagset` (`id`) ON DELETE CASCADE
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -330,7 +330,7 @@ CREATE TABLE `token` (
   PRIMARY KEY (`id`),
   KEY `text_id` (`text_id`),
   CONSTRAINT `token_ibfk_1` FOREIGN KEY (`text_id`) REFERENCES `text` (`id`) ON DELETE CASCADE
-) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -347,7 +347,7 @@ CREATE TABLE `user2project` (
   KEY `project_id` (`project_id`),
   CONSTRAINT `user2project_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `user2project_ibfk_2` FOREIGN KEY (`project_id`) REFERENCES `project` (`id`) ON DELETE CASCADE
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -370,7 +370,7 @@ CREATE TABLE `users` (
   `lastactive` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

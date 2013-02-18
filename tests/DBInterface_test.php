@@ -2,7 +2,7 @@
 require_once "DB_fixture.php";
 require_once "../lib/connect.php";
 
-class interfaceTest extends Cora_Tests_DbTestCase {
+class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
     protected $dbi;
     protected $backupGlobalsBlacklist = array('_SESSION');
 
@@ -46,6 +46,7 @@ class interfaceTest extends Cora_Tests_DbTestCase {
         $this->assertEquals(array($user_bollmann, $user_test),
                             $this->dbi->getUserList());
     }
+
     public function testUserActions() {
         // create user
         // creating a user that already exists should fail
@@ -177,11 +178,9 @@ class interfaceTest extends Cora_Tests_DbTestCase {
 
     public function testLockUnlock() {
         // locking a file that doesn't exist
-        // TODO currently this will succeed since the test db doesn't have
-        // fk constraints.
-        //$lock_result = $this->dbi->lockFile("512", "test");
-        //$this->assertEquals(array(),
-                            //$lock_result);
+        $lock_result = $this->dbi->lockFile("512", "test");
+        $this->assertEquals(array("success" => false),
+                            $lock_result);
 
         // locking a file that is already locked returns info on the lock
         $lock_result = $this->dbi->lockFile("3", "test");
@@ -434,12 +433,10 @@ class interfaceTest extends Cora_Tests_DbTestCase {
             $this->getConnection()->createQueryTable("project",
             "SELECT * FROM project WHERE id=2")->getRowCount());
 
-        // this should be false, but it isn't because of missing fk
-        // constraints TODO
-        //$this->assertFalse($this->dbi->deleteProject("1"));
-        //$this->assertGreaterThan("0",
-            //$this->getConnection()->createQueryTable("project",
-            //"SELECT * FROM project WHERE id=1")->getRowCount());
+        $this->assertFalse($this->dbi->deleteProject("1"));
+        $this->assertEquals("1",
+            $this->getConnection()->createQueryTable("project",
+            "SELECT * FROM project WHERE id=1")->getRowCount());
 
         $users = array("test");
         $this->dbi->changeProjectUsers("1", $users);
@@ -500,14 +497,15 @@ class interfaceTest extends Cora_Tests_DbTestCase {
             "SELECT * FROM mod2error WHERE mod_id IN (7, 8, 9)"));
     }
 
+    /*
     public function testDeleteFile() {
         $this->dbi->deleteFile("3");
         // TODO of course it needs to test if the tokens, etc. are also
         // deleted, but cora relies on fk constraints for that, which are
         // ignored in our test db
         $this->assertEquals(0,
-            $this->query("SELECT * FROM cora.text WHERE ID=3")->getRowCount());
-    }
+            $this->query("SELECT * FROM {$GLOBALS["DB_DBNAME"]}.text WHERE ID=3")->getRowCount());
+    }*/
 
 }
 
