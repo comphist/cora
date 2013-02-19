@@ -3,87 +3,153 @@ require_once "../lib/documentModel.php";
 
 /**
  * TODO
- *      setLayoutInfo($pages="", $columns="", $lines="")
  *      mapRangesToIDs()
- *      fillModernIDs($first_id)
- *      fillDiplIDs($first_id)
- *      fillTokenIDs($first_id)
- *      fillLineIDs($first_id)
- *      fillColumnIDs($first_id)
- *      fillPageIDs($first_id)
  *      addComment($tok_id, $xml_id, $text, $type)
+ *      setShiftTags($shifttags)
  */
+
+
+
 class Cora_Tests_CoraDocument_test extends PHPUnit_Framework_TestCase {
+    protected $test_data = array(
+        "pages" => array( // page
+                        array( "xml_id" => "p1",
+                               "side" => 'v',
+                               'range' => array('c1', 'c1'),
+                               'no' => '42')
+                    ),
+        "columns" => array( // column
+                        array('xml_id' => 'c1',
+                              'parent_xml_id' => 'p1',
+                              'range' => array('l1', 'l2'))
+                    ),
+        "lines" => array( // lines
+                        array('xml_id' => 'l1',
+                              'parent_xml_id' => 'c1',
+                              'name' => '01',
+                              'range' => array('t1_d1', 't2_d2')),
+                        array('xml_id' => 'l2',
+                              'parent_xml_id' => 'c1',
+                              'name' => '02',
+                              'range' => array('t3_d1', 't3_d1'))
+                    ),
+        "tokens" => array( // tokens
+                        array("db_id" => "",
+                              "xml_id" => "t1",
+                              '$ol|tu'),
+                        array("db_id" => "",
+                              "xml_id" => "t2",
+                              'ge#e$$en'),
+                        array("db_id" => "",
+                              "xml_id" => "t3",
+                              "Anshelm/(.)")
+                    ),
+        "dipls" => array( // dipl
+                        array("db_id" => "",
+                              "xml_id" => "t1_d1",
+                              "parent_tok_xml_id" => "t1",
+                              "parent_line_xml_id" => "l1",
+                              "\$ol|tu"),
+                        array("db_id" => "",
+                              "xml_id" => "t2_d1",
+                              "parent_tok_xml_id" => "t2",
+                              "parent_line_xml_id" => "l1",
+                              "ge#"),
+                        array("db_id" => "",
+                              "xml_id" => "t2_d2",
+                              "parent_tok_xml_id" => "t2",
+                              "parent_line_xml_id" => "l1",
+                              'e$$en'),
+                        array("db_id" => "",
+                              "xml_id" => "t3_d1",
+                              "parent_tok_xml_id" => "t3",
+                              "parent_line_xml_id" => "l2",
+                              "Anshelm/")
+                   ),
+        "mods" => array( // mod
+                        array("db_id" => "",
+                              "xml_id" => "t1_m1",
+                              "parent_xml_id" => "t1",
+                              '$ol'),
+                        array("db_id" => "",
+                              "xml_id" => "t1_m2",
+                              "parent_xml_id" => "t1",
+                              'tu'),
+                        array("db_id" => "",
+                              "xml_id" => "t2_m1",
+                              "parent_xml_id" => "t1",
+                              'ge#e$$en'),
+                        array("db_id" => "",
+                              "xml_id" => "t3_m1",
+                              "parent_xml_id" => "t1",
+                              'Anshelm'),
+                        array("db_id" => "",
+                              "xml_id" => "t3_m2",
+                              "parent_xml_id" => "t1",
+                              '/'),
+                        array("db_id" => "",
+                              "xml_id" => "t3_m3",
+                              "parent_xml_id" => "t1",
+                              '(.)')
+                )
+    );
     protected $cd;
 
     protected function setUp() {
         $options = array('sigle' => 't1', 'name' => 'testdocument');
         $this->cd = new CoraDocument($options);
-        $this->cd->setTokens(
-        array(
-            array(
-                "db_id" => "1",
-                "xml_id" => "1",
-                "All|so"),
-            array(
-                "db_id" => "2",
-                "xml_id" => "2",
-                "sprach#ete"),
-            array(
-                "db_id" => "4",
-                "xml_id" => "4",
-                "Anshelmus")
-        ),
-        array(
-            array(
-                "db_id" => "5",
-                "xml_id" => "5",
-                "parent_tok_xml_id" => "1",
-                "Allso"),
-            array(
-                "db_id" => "6",
-                "xml_id" => "6",
-                "parent_tok_xml_id" => "2",
-                "sprach"),
-            array(
-                "db_id" => "7",
-                "xml_id" => "7",
-                "parent_tok_xml_id" => "2",
-                "ete"),
-            array(
-                "db_id" => "8",
-                "xml_id" => "8",
-                "parent_tok_xml_id" => "4",
-                "Anshelmus")
-        ),
-        array(
-            array(
-                "db_id" => "9",
-                "xml_id" => "9",
-                "parent_tok_xml_id" => "1",
-                "All"),
-            array(
-                "db_id" => "10",
-                "xml_id" => "10",
-                "parent_tok_xml_id" => "1",
-                "so"),
-            array(
-                "db_id" => "11",
-                "xml_id" => "11",
-                "parent_tok_xml_id" => "2",
-                "sprachete"),
-            array(
-                "db_id" => "12",
-                "xml_id" => "12",
-                "parent_tok_xml_id" => "4",
-                "Anshelmus"))
-        );
+        $this->cd->setLayoutInfo($this->test_data["pages"],
+                                 $this->test_data["columns"],
+                                 $this->test_data["lines"]);
+        $this->cd->setTokens($this->test_data["tokens"],
+                             $this->test_data["dipls"],
+                             $this->test_data["mods"]);
     }
 
-    public function testFillIDs() {
+    /** assert id consistency
+     */
+    private function idAsserts($actual, $start_id, $expected_length) {
+        $this->assertEquals($expected_length, count($actual));
+        $this->assertEquals($start_id, $actual[0]["db_id"]);
+        $this->assertEquals($start_id + $expected_length - 1,
+                            $actual[$expected_length-1]["db_id"]);
+    }
+
+    //////////////// tests ///////////////////////
+    public function testLineIDs() {
+        $this->cd->fillLineIDs("1");
+        $this->idAsserts($this->cd->getLines(), 1, 2);
+    }
+
+    public function testColumnIDs() {
+        $this->cd->fillColumnIDs("2");
+        $this->idAsserts($this->cd->getColumns(), 2, 1);
+    }
+
+    public function testPageIDs() {
+        $this->cd->fillPageIDs("3");
+        $this->idAsserts($this->cd->getPages(), 3, 1);
+    }
+
+    public function testModernIDs() {
         $this->cd->fillModernIDs("5");
+        $this->idAsserts($this->cd->getModerns(), 5, 6);
+    }
+
+    public function testDiplIDs() {
         $this->cd->fillDiplIDs("10");
+        $this->idAsserts($this->cd->getDipls(), 10, 4);
+    }
+
+    public function testTokenIDs() {
         $this->cd->fillTokenIDs("8");
+        $this->idAsserts($this->cd->getTokens(), 8, 3);
+    }
+
+    public function testComment() {
+        $this->cd->mapRangesToIDs();
+
+        $this->cd->addComment("8", "t1", "Hier grosser Tintenfleck", "K");
 
         $this->assertTrue(true);
 
