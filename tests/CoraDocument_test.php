@@ -106,53 +106,91 @@ class Cora_Tests_CoraDocument_test extends PHPUnit_Framework_TestCase {
                              $this->test_data["mods"]);
     }
 
+    /////////////// custom asserts //////////////////////////////////////////
+
     /** assert id consistency
+     *
+     * check if the length of actual matches the expected length.
+     * check if the IDs are consecutive numbers starting with expected
+     * start_id.
      */
-    private function idAsserts($actual, $start_id, $expected_length) {
+    private function assertIDsConsistent($actual, $start_id, $expected_length) {
         $this->assertEquals($expected_length, count($actual));
-        $this->assertEquals($start_id, $actual[0]["db_id"]);
-        $this->assertEquals($start_id + $expected_length - 1,
-                            $actual[$expected_length-1]["db_id"]);
+        for ($i = 0; $i < $expected_length; ++$i) {
+            $this->assertEquals($start_id + $i, $actual[$i]["db_id"]);
+        }
     }
+
+    /** assert equality of ranges
+     */
+    private function assertRangesEqual($actual, $expected) {
+        for ($i = 0; $i < count($actual); ++$i) {
+            $this->assertEquals(
+                $expected[$i][0],
+                $actual[$i]["range"][0]
+            );
+            $this->assertEquals(
+                $expected[$i][1],
+                $actual[$i]["range"][1]
+            );
+        }
+    }
+
 
     //////////////// tests ///////////////////////
     public function testLineIDs() {
         $this->cd->fillLineIDs("1");
-        $this->idAsserts($this->cd->getLines(), 1, 2);
+        $this->assertIDsConsistent($this->cd->getLines(), 1, 2);
     }
 
     public function testColumnIDs() {
         $this->cd->fillColumnIDs("2");
-        $this->idAsserts($this->cd->getColumns(), 2, 1);
+        $this->assertIDsConsistent($this->cd->getColumns(), 2, 1);
     }
 
     public function testPageIDs() {
         $this->cd->fillPageIDs("3");
-        $this->idAsserts($this->cd->getPages(), 3, 1);
+        $this->assertIDsConsistent($this->cd->getPages(), 3, 1);
     }
 
     public function testModernIDs() {
         $this->cd->fillModernIDs("5");
-        $this->idAsserts($this->cd->getModerns(), 5, 6);
+        $this->assertIDsConsistent($this->cd->getModerns(), 5, 6);
     }
 
     public function testDiplIDs() {
         $this->cd->fillDiplIDs("10");
-        $this->idAsserts($this->cd->getDipls(), 10, 4);
+        $this->assertIDsConsistent($this->cd->getDipls(), 10, 4);
     }
 
     public function testTokenIDs() {
         $this->cd->fillTokenIDs("8");
-        $this->idAsserts($this->cd->getTokens(), 8, 3);
+        $this->assertIDsConsistent($this->cd->getTokens(), 8, 3);
     }
 
-    public function testComment() {
+    public function testRangeToID() {
+        $this->cd->fillTokenIDs("8")
+                 ->fillDiplIDs("10")
+                 ->fillModernIDs("5")
+                 ->fillPageIDs("3")
+                 ->fillColumnIDs("2")
+                 ->fillLineIDs("1")
+                 ->addComment("8", "t1", "Hier grosser Tintenfleck", "K")
+                 ->setShiftTags(array(
+                     array('range' => array('t1', 't2'), 'type' => 'rub'),
+                     array('range' => array('t3', 't3'), 'type' => 'title')
+                 ));
+
         $this->cd->mapRangesToIDs();
 
-        $this->cd->addComment("8", "t1", "Hier grosser Tintenfleck", "K");
+        $this->assertRangesEqual($this->cd->getPages(), array(array(0, 1)));
 
+        // things that have ranges:
+        // - page
+        // - column
+        // - line
+        // - shift tag
         $this->assertTrue(true);
-
     }
 }
 ?>
