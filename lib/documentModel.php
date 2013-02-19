@@ -177,6 +177,7 @@ class CoraDocument {
 					 ."', but found column '" . $currentcol['xml_id'] . "'.");
       }
       do {
+        $currentcol = $this->columns[$currentcol_idx];
 	if(!$currentcol) {
 	  throw new DocumentValueException("Out of columns for page '" . $currentpage['xml_id'] . "'.");
 	}
@@ -187,45 +188,47 @@ class CoraDocument {
 					   ."', but found line '" . $currentline['xml_id'] . "'.");
 	}
 	do {
+          $currentline = $this->lines[$currentline_idx];
 	  if(!$currentline) {
 	    throw new DocumentValueException("Out of lines for column '" . $currentcol['xml_id'] . "'.");
 	  }
 	  $this->lines[$currentline_idx]['parent_xml_id'] = $currentcol['xml_id'];
 	  $lastlineid  = $currentline['xml_id'];
-	  $currentline = $this->lines[++$currentline_idx];
+          ++$currentline_idx;
 	} while($lastlineid !== $colend);
 	$lastcolid  = $currentcol['xml_id'];
-	$currentcol = $this->columns[++$currentcol_idx];
+	++$currentcol_idx;
       } while($lastcolid !== $pageend);
     }
     unset($currentpage);
-    if($currentcol) {
+    if($currentcol_idx < count($this->columns)) {
       throw new DocumentValueException("No pages left at column '" . $currentcol['xml_id'] . "'.");
     }
-    if($currentline) {
+    if($currentline_idx < count($this->columns)) {
       throw new DocumentValueException("No pages left at line '" . $currentline['xml_id'] . "'.");
     }
 
     // map diplomatic tokens to lines (done separately mainly for legibility)
     $currentdipl_idx = 0;
-    $currentdipl = $this->dipls[0];
     foreach($this->lines as &$currentline) {
+      $currentdipl = $this->dipls[$currentdipl_idx];
       list($linestart, $lineend) = $currentline['range'];
       if($currentdipl['xml_id'] !== $linestart) {
 	throw new DocumentValueException("Expected dipl '{$linestart}' for line '" . $currentline['xml_id']
 					 ."', but found dipl '" . $currentdipl['xml_id'] . "'.");
       }
       do {
+        $currentdipl = $this->dipls[$currentdipl_idx];
 	if(!$currentdipl) {
 	  throw new DocumentValueException("Out of diplomatic tokens for line '" . $currentline['xml_id'] . "'.");
 	}
 	$this->dipls[$currentdipl_idx]['parent_line_xml_id'] = $currentline['xml_id'];
 	$lastdiplid  = $currentdipl['xml_id'];
-	$currentdipl = $this->dipls[++$currentdipl_idx];
+	++$currentdipl_idx;
       } while($lastdiplid !== $lineend);
     }
     unset($currentline);
-    if($currentdipl) {
+    if($currentdipl_idx < count($this->dipls)) {
       throw new DocumentValueException("No lines left at diplomatic token '" . $currentdipl['xml_id'] . "'.");
     }
   }
