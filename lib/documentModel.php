@@ -49,6 +49,7 @@ class CoraDocument {
     $comment['text']   = $text;
     $comment['type']   = $type;
     $this->comments[] = $comment;
+    return $this;
   }
 
   /** Update array with database IDs of pages.
@@ -70,6 +71,7 @@ class CoraDocument {
       $column['parent_db_id'] = $xmltodb[$column['parent_xml_id']];
     }
     unset($column);
+    return $this;
   }
 
   /** Update array with database IDs of columns.
@@ -87,6 +89,7 @@ class CoraDocument {
       $line['parent_db_id'] = $xmltodb[$line['parent_xml_id']];
     }
     unset($line);
+    return $this;
   }
 
   /** Update array with database IDs of lines.
@@ -104,6 +107,7 @@ class CoraDocument {
       $dipl['parent_line_db_id'] = $xmltodb[$dipl['parent_line_xml_id']];
     }
     unset($dipl);
+    return $this;
   }
 
   /** Update array with database IDs of tokens.
@@ -132,6 +136,7 @@ class CoraDocument {
 				 $xmltodb[$shtag['range'][1]]);
     }
     unset($shtag);
+    return $this;
   }
 
   /** Update array with database IDs of dipls.
@@ -149,6 +154,7 @@ class CoraDocument {
       $comment['parent_db_id'] = $xmltodb[$comment['parent_xml_id']];
     }
     unset($comment);
+    return $this;
   }
 
   /** Update array with database IDs of moderns.
@@ -159,6 +165,7 @@ class CoraDocument {
       $mod['db_id'] = $id++;
     }
     unset($mod);
+    return $this;
   }
 
 
@@ -231,6 +238,7 @@ class CoraDocument {
     if($currentdipl_idx < count($this->dipls)) {
       throw new DocumentValueException("No lines left at diplomatic token '" . $currentdipl['xml_id'] . "'.");
     }
+    return $this;
   }
 
 
@@ -238,6 +246,7 @@ class CoraDocument {
 
   function setHeader($value) {
     $this->header = $value;
+    return $this;
   }
 
   function getHeader() {
@@ -256,6 +265,7 @@ class CoraDocument {
     if(!empty($lines)) {
       $this->lines = $lines;
     }
+    return $this;
   }
 
   public function getPages() {
@@ -287,6 +297,7 @@ class CoraDocument {
    */
   public function setShiftTags($shifttags) {
     $this->shifttags = $shifttags;
+    return $this;
   }
 
   /** Set token arrays directly.
@@ -295,6 +306,7 @@ class CoraDocument {
     $this->tokens  = $toks;
     $this->dipls   = $dipls;
     $this->moderns = $mods;
+    return $this;
   }
 
 }
