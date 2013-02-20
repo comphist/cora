@@ -178,7 +178,7 @@ class Cora_Tests_CoraDocument_test extends PHPUnit_Framework_TestCase {
                      array('range' => array('t3', 't3'), 'type' => 'title')
                  ))
                  ->fillTokenIDs("8")
-                 ->addComment("10", "t1_d1", "Hier grosser Tintenfleck", "K")
+                 ->addComment("", "t1_d1", "Hier grosser Tintenfleck", "K")
                  ->fillDiplIDs("10")
                  ->fillModernIDs("5")
                  ->fillPageIDs("3")
