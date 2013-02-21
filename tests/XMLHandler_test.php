@@ -36,7 +36,7 @@ class Cora_Tests_XMLHandler_test extends PHPUnit_Framework_TestCase {
     protected $test_data;
 
     protected function setUp() {
-        $test_data = get_XMLHandler_data();
+        $this->test_data = get_XMLHandler_data();
         $this->dbi = new Cora_Tests_DBInterface_Mock();
         $this->xh = new XMLHandler($this->dbi);
     }
