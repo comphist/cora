@@ -17,7 +17,7 @@ require_once "../lib/connect.php";
  *      criticalQuery can't be entirely tested since it involves a die() statement.
  *      refactoring is needed there.
  */
-class Cora_Tests_DBConnector_test extends Cora_Tests_DbTestCase {
+class Cora_Tests_DBConnector_test extends Cora_Tests_DbTestCase_FKAware {
     protected $dbc;
     protected $backupGlobalsBlacklist = array('_SESSION');
 

@@ -4,29 +4,17 @@
  */
 require_once "PHPUnit/Extensions/Database/TestCase.php";
 
-/**
- * Disable foreign key checks temporarily
- * see http://stackoverflow.com/questions/10331445/phpunit-and-mysql-truncation-error
- */
-class TruncateOperation extends PHPUnit_Extensions_Database_Operation_Truncate {
-    public function execute(PHPUnit_Extensions_Database_DB_IDatabaseConnection $connection,
-                            PHPUnit_Extensions_Database_DataSet_IDataSet $dataset) {
-        $connection->getConnection()->query("SET foreign_key_checks = 0");
-        parent::execute($connection, $dataset);
-        $connection->getConnection()->query("SET foreign_key_checks = 1");
-    }
-}
-
 /** Base class for all Database Related Tests
  *
  * 02/2012 Florian Petran
  *
- * TODO
- * currently, the tests are wildly inefficient and take forever to run, because
- * of the FOREIGN_KEY_CHECKS query at each setUp operation. if there is no help
- * from the citizens of #phpunit, i'll make one fixture for testing with foreign
- * keys, and one without, so that all the FK tests can be moved to their own fixture,
- * and the rest can run quicker.
+ * This class serves a dual purpose. First, it provides DB access
+ * and DB related asserts for the tests, and second, it provides
+ * a mockup of DBConnector for all classes that need it.
+ *
+ * This version of the fixture uses a DB with MyISAM tables to
+ * speed up testing. As such, tests that require foreign keys
+ * can't be done here.
  */
 abstract class Cora_Tests_DbTestCase
     extends PHPUnit_Extensions_Database_TestCase {
@@ -34,20 +22,9 @@ abstract class Cora_Tests_DbTestCase
     private $conn = null;
     private $lastquery = null;
 
-
-    public function getSetUpOperation() {
-        $cascadeTruncates = false;
-
-        return new PHPUnit_Extensions_Database_Operation_Composite(array(
-            new TruncateOperation($cascadeTruncates),
-            PHPUnit_Extensions_Database_Operation_Factory::INSERT()
-        ));
-    }
-
     final public function getConnection() {
         if ($this->conn === null) {
             if (self::$pdo == null) {
-                //self::$pdo = new PDO("sqlite::memory:");
                 self::$pdo = new PDO($GLOBALS["DB_DSN"],
                                      $GLOBALS["DB_USER"],
                                      $GLOBALS["DB_PASSWD"]);
@@ -67,7 +44,7 @@ abstract class Cora_Tests_DbTestCase
     public static function setUpBeforeClass() {
         $mysqlcall = "mysql -uroot -p{$GLOBALS["DB_ROOTPW"]}";
         system("echo CREATE DATABASE {$GLOBALS["DB_DBNAME"]} | ".$mysqlcall);
-        system($mysqlcall." {$GLOBALS["DB_DBNAME"]} < coratest.sql" );
+        system($mysqlcall." {$GLOBALS["DB_DBNAME"]} < coratest-myisam.sql" );
     }
 
     /** Drop the coratest db
@@ -134,6 +111,52 @@ abstract class Cora_Tests_DbTestCase
         $r = $this->fetch_array($q);
         return $r[0];
     }
+}
+
+/**
+ * Disable foreign key checks temporarily
+ * see http://stackoverflow.com/questions/10331445/phpunit-and-mysql-truncation-error
+ */
+class TruncateOperation extends PHPUnit_Extensions_Database_Operation_Truncate {
+    public function execute(PHPUnit_Extensions_Database_DB_IDatabaseConnection $connection,
+                            PHPUnit_Extensions_Database_DataSet_IDataSet $dataset) {
+        $connection->getConnection()->query("SET foreign_key_checks = 0");
+        parent::execute($connection, $dataset);
+        $connection->getConnection()->query("SET foreign_key_checks = 1");
+    }
+}
+
+/** FK Aware Database Fixture.
+ *
+ * 02/2012 Florian Petran
+ *
+ * FK need special attention, because MySQL >=5.5 doesn't allow
+ * truncate operations on InnoDB Tables with foreign keys, yet
+ * setting the FK checks on and off for each setUp inflates 
+ * test running time. So any tests that need FK should subclass this,
+ * while others subclass just Cora_Tests_DbTestCase
+ */
+class Cora_Tests_DbTestCase_FKAware
+    extends Cora_Tests_DbTestCase {
+    private $db_skeleton = "coratest-innobdb.sql";
+
+    public function getSetUpOperation() {
+        $cascadeTruncates = false;
+
+        return new PHPUnit_Extensions_Database_Operation_Composite(array(
+            new TruncateOperation($cascadeTruncates),
+            PHPUnit_Extensions_Database_Operation_Factory::INSERT()
+        ));
+    }
+
+    /** Create the coratest db and fill it with structure.
+     */
+    public static function setUpBeforeClass() {
+        $mysqlcall = "mysql -uroot -p{$GLOBALS["DB_ROOTPW"]}";
+        system("echo CREATE DATABASE {$GLOBALS["DB_DBNAME"]} | ".$mysqlcall);
+        system($mysqlcall." {$GLOBALS["DB_DBNAME"]} < coratest-innodb.sql" );
+    }
+
 }
 
 ?>
