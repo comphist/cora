@@ -1516,8 +1516,9 @@
      for($i = 0; $i < $diplcount; $i++) { // loop by index because three arrays are involved
        $diplid = (isset($olddipl[$i]) ? $olddipl[$i]['id'] : "NULL");
        $dipltrans = $converted['dipl_trans'][$i];
-       $diplinsert[] = "({$diplid}, {$tokenid}, " . $lineids[$currentline] . ", '" 
-	 . $converted['dipl_utf'][$i] . "', '{$dipltrans}')";
+       $diplinsert[] = "({$diplid}, {$tokenid}, " . mysql_real_escape_string($lineids[$currentline]) . ", '" 
+	 . mysql_real_escape_string($converted['dipl_utf'][$i]) . "', '"
+	 . mysql_real_escape_string($dipltrans) . "')";
        if(substr($dipltrans, -1)==='=' || substr($dipltrans, -3)==='(=)') {
 	 $currentline++;
        }
@@ -1541,8 +1542,9 @@
      $modcount  = count($converted['mod_trans']);
      for($j = 0; $j < $modcount; $j++) {
        $modid = (isset($oldmod[$j]) ? $oldmod[$j]['id'] : "NULL");
-       $modinsert[] = "({$modid}, {$tokenid}, '" . $converted['mod_trans'][$j] . "', '"
-	 . $converted['mod_ascii'][$j] . "', '" . $converted['mod_utf'][$j] . "')";
+       $modinsert[] = "({$modid}, {$tokenid}, '" . mysql_real_escape_string($converted['mod_trans'][$j]) . "', '"
+	 . mysql_real_escape_string($converted['mod_ascii'][$j]) . "', '"
+	 . mysql_real_escape_string($converted['mod_utf'][$j]) . "')";
      }
      // are there mods that need to be deleted?
      while(isset($oldmod[$j])) {
@@ -1612,7 +1614,8 @@
        }
      }
      // token
-     $qs = "UPDATE {$this->db}.token SET `trans`='{$toktrans}' WHERE `id`={$tokenid}";
+     $qs = "UPDATE {$this->db}.token SET `trans`='"
+       . mysql_real_escape_string($toktrans) . "' WHERE `id`={$tokenid}";
      $q = $this->query($qs);
      $qerr = $this->dbconn->last_error($q);
      if($qerr) {
@@ -1624,8 +1627,7 @@
 
      $this->dbconn->commitTransaction();
 
-     $errors[] = "Success! (so far...)";
-     return array("success" => false, "errors" => $errors);
+     return array("success" => true, "oldmodcount" => count($oldmod), "newmodcount" => $modcount);
    }
 
   /** Add a list of tags as a new POS tagset. */

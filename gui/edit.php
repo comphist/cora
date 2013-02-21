@@ -76,11 +76,13 @@
    </div>
 
    <div id="editTokenForm">
+   <p id="editTokenWarning" class="error_text"><strong>Achtung!</strong> Es gibt in diesem Dokument noch ungespeicherte Änderungen, die beim Editieren dieser Transkription verloren gehen werden!</p>
    <p>
      <label for="editToken">Transkription: </label>
      <input id="editTokenBox" type="text" name="editToken" size="42" placeholder="" />
    </p>
    <p><strong>Achtung!</strong> Leerzeichen in der Transkription werden als Zeilenumbrüche interpretiert und dürfen <strong>nur</strong> nach einem Trennzeichen (<code>=</code> oder <code>(=)</code>) benutzt werden.</p>
+
    <p>Neue Token können derzeit noch nicht hinzugefügt werden.</p>
    </div>
 </div>	

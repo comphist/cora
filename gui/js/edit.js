@@ -874,10 +874,12 @@ var EditorModel = new Class({
 	var ref = this;
 	var old_token = this.data[tok_id]['full_trans'];
 	var db_id = this.data[tok_id]['tok_id'];
+	while(this.data[tok_id-1] !== undefined && this.data[tok_id-1]['tok_id'] === db_id) {
+	    // set tok_id to the first line corresponding to the token to be edited
+	    tok_id = tok_id - 1;
+	}
 	var spin = this.spinner;
 	spin.message = "Bitte warten...";
-	// TODO: on a successful change, the data array has to be
-	// updated accordingly
 	var performEdit = function(mbox) {
 	    var new_token = $('editTokenBox').get('value').trim();
 	    if(!new_token) {
@@ -901,9 +903,22 @@ var EditorModel = new Class({
 		    if (status!=null && status.success) {
 			new mBox.Notice({
 			    type: 'ok',
-			    content: 'Bearbeiten erfolgreich.',
+			    content: 'Transkription erfolgreich geändert.',
 			    position: { x: 'right' }
 			});
+			// update data array if number of mods has changed
+			var lcdiff = Number.from(status.newmodcount) - Number.from(status.oldmodcount); 
+			// delete all lines after the changed line from memory 
+			ref.data = Object.filter(ref.data, function(item, index) {
+			    return index < tok_id;
+			});
+			ref.changedLines = ref.changedLines.filter(function(val) {
+			    return val < tok_id;
+			});
+			// update line count and re-load page
+			ref.lineCount = ref.lineCount + lcdiff;
+			ref.renderPagesPanel(ref.activePage);
+			ref.displayPage(ref.activePage);
 		    }
 		    else {
 			if (status==null) {
@@ -948,6 +963,12 @@ var EditorModel = new Class({
 	}
 
 	$('editTokenBox').set('value', old_token);
+	if(this.changedLines.some(function(val) {return val >= tok_id;})) {
+	    $('editTokenWarning').show();
+	}
+	else {
+	    $('editTokenWarning').hide();
+	}
 	var editTokenBox = new mBox.Modal({
 	    title: 'Transkription bearbeiten',
 	    content: 'editTokenForm',
@@ -962,6 +983,7 @@ var EditorModel = new Class({
 	    onOpenComplete: function() {
 		$('editTokenBox').focus();
 	    },
+	    closeOnBodyClick: false
 	});
 	$('editTokenBox').removeEvents('keydown');
 	$('editTokenBox').addEvent('keydown', function(event) {
