@@ -7,4 +7,14 @@
         <var name="DB_DBNAME" value="coratest"/>
         <var name="DB_ROOTPW" value="hansolo9"/>
     </php>
+    <!--<testsuites>
+        <testsuite name="Cora Tests">
+            <directory>.</directory>
+            <file>DBConnector_test.php</file>
+            <file>DBInterface_test.php</file>
+            <file>XMLHandler_test.php</file>
+            <file>CoraDocument_test.php</file>
+            <file>Menu_test.php</file>
+        </testsuite>
+    </testsuites>-->
 </phpunit>
