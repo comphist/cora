@@ -10,10 +10,18 @@
  */
 
 require_once( "lib/globals.php" );
+require_once"lib/connect.php";
+require_once"lib/xmlHandler.php";
+require_once"lib/commandHandler.php";
 require_once( "lib/sessionHandler.php" );
 require_once( "lib/requestHandler.php" );
 
-$sh = new SessionHandler();     /**< An instance of the SessionHandler object. */
+$dbc = new DBConnector(DB_SERVER, DB_USER, DB_PASSWORD, MAIN_DB);
+$dbi = new DBInterface($dbc);
+$xml = new XMLHandler($dbi);
+$ch = new CommandHandler();
+
+$sh = new CoraSessionHandler($dbi, $xml, $ch);     /**< An instance of the SessionHandler object. */
 $rq = new RequestHandler($sh);  /**< An instance of the RequestHandler object. */
 
 if($_SESSION["loggedIn"]) {

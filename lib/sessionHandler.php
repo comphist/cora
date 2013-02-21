@@ -18,24 +18,23 @@ require_once( "commandHandler.php" );
  * (DBInterface), inserting session data and checking for
  * administrator privileges if needed.
  */
-class SessionHandler {
+class CoraSessionHandler {
   private $db; /**< A DBInterface object. */
   private $xml; /**< An XMLHandler object. */
   private $ch; /**< A CommandHandler object. */
 
-  /** Create a new SessionHandler.
+  /** Create a new CoraSessionHandler.
    *
    * Initializes a session, constructs a new DBInterface, and sets
    * defaults for various session values if required.
    */
-  function __construct() {
+  function __construct($db, $xml, $ch) {
     session_name("PHPSESSID_CORA");
-    @session_start();
+    session_start();
 
-    $dbconn = new DBConnector(DB_SERVER, DB_USER, DB_PASSWORD, MAIN_DB);
-    $this->db = new DBInterface($dbconn);
-    $this->xml = new XMLHandler($this->db);
-    $this->ch = new CommandHandler();
+    $this->db = $db;
+    $this->xml = $xml;
+    $this->ch = $ch;
 
     $defaults = array( "lang"        => DEFAULT_LANGUAGE,
 		       "loggedIn"    => false,

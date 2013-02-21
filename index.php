@@ -22,8 +22,11 @@ header( "Content-Type: text/html; charset=utf-8" );
 /* Includes */
 require_once( "lib/globals.php" );
 require_once( "lib/connect.php" );      // provides DB interface
+require_once"lib/xmlHandler.php";
+require_once"lib/commandHandler.php";
 require_once( "lib/requestHandler.php" );
 require_once( "lib/sessionHandler.php" );
+
 
 $sh;   /**< An instance of the SessionHandler object. */
 $rq;   /**< An instance of the RequestHandler object. */
@@ -32,7 +35,11 @@ $menu; /**< A Menu object containing the menu items and references to
             content.php. */
 
 /* Initiate session */
-$sh = new SessionHandler();
+$dbc = new DBConnector(DB_SERVER, DB_USER, DB_PASSWORD, MAIN_DB);
+$dbi = new DBInterface($dbc);
+$xml = new XMLHandler($dbi);
+$ch = new CommandHandler();
+$sh = new CoraSessionHandler($dbi, $xml, $ch);
 $rq = new RequestHandler( $sh );
 $rq->handleRequests($_GET, $_POST);
 
