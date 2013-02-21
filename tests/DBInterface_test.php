@@ -1,10 +1,12 @@
 <?php
 require_once "DB_fixture.php";
+require_once "test_data.php";
+
 require_once "../lib/connect.php";
 
 /** Tests for DBInterface class
  *
- *  02/2012 Florian Petran
+ *  02/2013 Florian Petran
  *
  * DBInterface abstracts all operations that relate to the database.
  *
@@ -26,42 +28,27 @@ require_once "../lib/connect.php";
  *      getLines($fid, $start, $lim);
  *      saveLines($fid, $lastedited, $lines);
  *
- *  performance:
- *      move tests that rely on FK to a different
- *      class so these can use a different fixture.
  */
 class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
     protected $dbi;
     protected $backupGlobalsBlacklist = array('_SESSION');
+    protected $expected;
 
     protected function setUp() {
         $this->dbi = new DBInterface($this);
+        $this->expected = test_data();
         parent::setUp();
     }
 
     public function testGetUser() {
-        $user_system = array("id" => "1",
-                             "name" => "system",
-                             "admin" => "1",
-                             "lastactive" => "2013-01-16 14:22:57");
-        $user_test = array("id" => "5",
-                           "name" => "test",
-                           "admin" => "0",
-                           "lastactive" => "2013-01-22 15:38:32");
-        $user_bollmann = array("id" => "3",
-                               "name" => "bollmann",
-                               "admin" => "1",
-                               "lastactive" => "2013-02-04 11:29:04");
-
-
-        $this->assertEquals($user_system,
+        $this->assertEquals($this->expected["users"]["system"],
                             $this->dbi->getUserById(1));
-        $this->assertEquals($user_test,
+        $this->assertEquals($this->expected["users"]["test"],
                             $this->dbi->getUserById(5));
 
-        $this->assertEquals($user_system,
+        $this->assertEquals($this->expected["users"]["system"],
                             $this->dbi->getUserByName('system'));
-        $this->assertEquals($user_test,
+        $this->assertEquals($this->expected["users"]["test"],
                             $this->dbi->getUserByName('test'));
 
 
@@ -71,7 +58,8 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         // TODO can't test this without the unhashed password
         // $this->dbi->getUserData($user,$pw);
 
-        $this->assertEquals(array($user_bollmann, $user_test),
+        $this->assertEquals(array($this->expected["users"]["bollmann"],
+                                  $this->expected["users"]["test"]),
                             $this->dbi->getUserList());
     }
 
@@ -104,12 +92,7 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
     }
 
     public function testUserSettings() {
-        $test_settings = array("lines_per_page" => "30",
-                               "lines_context" => "5",
-                               "columns_order" => null,
-                               "columns_hidden" => null,
-                               "show_error" => "1");
-        $this->assertEquals($test_settings,
+        $this->assertEquals($this->expected["settings"]["test"],
                             $this->dbi->getUserSettings("test"));
 
         $this->dbi->setUserSettings("test", "50", "3");
@@ -132,68 +115,21 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
     }
 
     public function testTextQuery() {
-        $expected_t1 = array(
-            "id" => "3",
-            "sigle" => "t1",
-            "fullname" => "test-dummy",
-            "project_id" => "1",
-            "created" => "2013-01-22 14:30:30",
-            "creator_id" => "1",
-            "changed" => "0000-00-00 00:00:00",
-            "changer_id" => "3",
-            "currentmod_id" => null,
-            "header" => null
-        );
-        $expected_t2 = array(
-            "id" => "4",
-            "sigle" => "t2",
-            "fullname" => "yet another dummy",
-            "project_id" => "1",
-            "created" => "2013-01-31 13:13:20",
-            "creator_id" => "1",
-            "changed" => "0000-00-00 00:00:00",
-            "changer_id" => "1",
-            "currentmod_id" => "14",
-            "header" => null
-        );
-        $expected_t3 = array(
-            "id" => "5",
-            "sigle" => "t3",
-            "fullname" => "dummy without tokens",
-            "project_id" => "1",
-            "created" => "2013-01-31 13:13:20",
-            "creator_id" => "1",
-            "changed" => "0000-00-00 00:00:00",
-            "changer_id" => "1",
-            "currentmod_id" => null,
-            "header" => null
-        );
-
         $actual = $this->dbi->queryForMetadata("sigle", "t1");
-        $this->assertEquals($expected_t1, $actual);
+        $this->assertEquals($this->expected["texts"]["t1"], $actual);
         $actual = $this->dbi->queryForMetadata("fullname", "yet another dummy");
-        $this->assertEquals($expected_t2, $actual);
+        $this->assertEquals($this->expected["texts"]["t2"], $actual);
 
 
         $this->assertEquals(array('file_id' => '3', 'file_name' => 'test-dummy'),
                             $this->dbi->getLockedFiles("bollmann"));
 
+        $getfiles_expected = array();
         // getFiles also gives lots of names for display purposes
-        $getfiles_expected = array(
-            array_merge($expected_t1, array('project_name' => 'Default-Gruppe',
-                                            'opened' => 'bollmann',
-                                            'creator_name' => 'system',
-                                            'changer_name' => 'bollmann')),
-            array_merge($expected_t2, array('project_name' => 'Default-Gruppe',
-                                            'opened' => null,
-                                            'creator_name' => 'system',
-                                            'changer_name' => 'system')),
-            array_merge($expected_t3, array('project_name' => 'Default-Gruppe',
-                                            'opened' => null,
-                                            'creator_name' => 'system',
-                                            'changer_name' => 'system'))
-        );
-
+        foreach (array("t1","t2","t3") as $textkey) {
+            $getfiles_expected[] = array_merge($this->expected["texts"][$textkey],
+                                               $this->expected["texts_extended"][$textkey]);
+        }
         $this->assertEquals($getfiles_expected, $this->dbi->getFiles());
         $this->assertEquals($getfiles_expected,
                             $this->dbi->getFilesForUser("bollmann"));
@@ -263,17 +199,8 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         $_SESSION["user_id"] = "3";
         $this->assertEquals(
             array("lastEditedRow" => -1,
-                  "data" => array('id' => '3',
-                                  'sigle' => 't1',
-                                  'fullname' => 'test-dummy',
-                                  'project_id' => '1',
-                                  'created' => '2013-01-22 14:30:30',
-                                  'creator_id' => '1',
-                                  'changed' => '0000-00-00 00:00:00',
-                                  'changer_id' => '3',
-                                  'currentmod_id' => null,
-                                  'header' => null,
-                                  'tagset_id' => '1'),
+                  "data" => array_merge($this->expected["texts"]["t1"],
+                                        array("tagset_id" => "1")),
                   "success" => true),
             $this->dbi->openFile("3")
         );
@@ -282,17 +209,8 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         $_SESSION["user_id"] = "5";
         $this->assertEquals(
             array("lastEditedRow" => 1,
-                  "data" => array('id' => '4',
-                                  'sigle' => 't2',
-                                  'fullname' => 'yet another dummy',
-                                  'project_id' => '1',
-                                  'created' => '2013-01-31 13:13:20',
-                                  'creator_id' => '1',
-                                  'changed' => '0000-00-00 00:00:00',
-                                  'changer_id' => '1',
-                                  'currentmod_id' => '14',
-                                  'header' => null,
-                                  'tagset_id' => '1'),
+                  "data" => array_merge($this->expected["texts"]["t2"],
+                                        array("tagset_id" => "1")),
                   "success" => true),
             $this->dbi->openFile("4")
         );
@@ -302,119 +220,7 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
                             $this->dbi->openFile("3"));
     }
     public function testGetLines() {
-        $lines_expected = array(
-           array (
-                'id' => '1',
-                'trans' => '*{A*4}n$helm%9',
-                'utf' => 'Anshelm\'',
-                'tok_id' => '1',
-                'full_trans' => '*{A*4}n$helm%9',
-                'num' => '0',
-                'suggestions' => array (
-                    array ( 'POS' => 'VVFIN',
-                            'morph' => '3.Pl.Past.Konj',
-                            'score' => '0.97')
-                ),
-                'anno_POS' => 'VVFIN',
-                'anno_morph' => '3.Pl.Past.Konj',
-                'comment' => null
-            ),
-            array(
-                'id'          => '2',
-                'trans'       => 'pi$t||',
-                'utf'         => 'pist',
-                'tok_id'      => '2',
-                'full_trans'  => 'pi$t||u||s',
-                'num'         => '1',
-                'suggestions' => array(
-                    array( 'POS' => 'PPOSAT',
-                           'morph' => 'Fem.Nom.Sg',
-                           'score' => null)
-                ),
-                'anno_POS'    => "PPOSAT",
-                'anno_morph'  => "Fem.Nom.Sg",
-                'comment' => null
-            ),
-            array(
-                'id'          => '3',
-                'trans'       => 'u||',
-                'utf'         => 'u',
-                'tok_id'      => '2',
-                'full_trans'  => 'pi$t||u||s',
-                'num'         => '2',
-                'general_error' => 1,
-                'suggestions' => array(),
-                'comment' => null
-            ),
-            array(
-                'id'          => '4',
-                'trans'       => 's',
-                'utf'         => 's',
-                'tok_id'      => '2',
-                'full_trans'  => 'pi$t||u||s',
-                'num'         => '3',
-                'suggestions' => array(),
-                'anno_POS'    => 'VVFIN',
-                'anno_morph'  => '3.Pl.Pres.Konj',
-                'comment' => null
-            ),
-            array(
-                'id'          => '5',
-                'trans'       => 'aller#lieb$tev',
-                'utf'         => 'allerliebstev',
-                'tok_id'      => '3',
-                'full_trans'  => 'aller#lieb$tev',
-                'num'         => '4',
-                'suggestions' => array(),
-                'anno_POS'    => 'PDS',
-                'anno_morph'  => '*.Gen.Pl',
-                'anno_lemma'  => 'lemma',
-                'comment' => null
-            ),
-            array(
-                'id'          => '6',
-                'trans'       => 'vunf=tusent#vnd#vierhundert#vn-(=)sechzig',
-                'utf'         => 'vunftusentvndvierhundertvnsechzig',
-                'tok_id'      => '4',
-                'full_trans'  => 'vunf=tusent#vnd#vierhundert#vn-(=)sechzig',
-                'num'         => '5',
-                'suggestions' => array(),
-                'anno_norm'   => 'norm',
-                'comment' => null
-            ),
-            array(
-                'id' => '7',
-                'trans' => 'kunnen',
-                'utf' => 'kunnen',
-                'tok_id' => '5',
-                'full_trans' => 'kunnen.(.)',
-                'num' => '6',
-                'general_error' => 1,
-                'suggestions' => Array (),
-                'anno_lemma' => 'deletedlemma',
-                'comment' => null
-            ),
-            array(
-                'id' => '8',
-                'trans' => '.',
-                'utf' => '.',
-                'tok_id' => '5',
-                'full_trans' => 'kunnen.(.)',
-                'num' => '7',
-                'suggestions' => Array (),
-                'comment' => null
-            ),
-            array(
-                'id' => '9',
-                'trans' => '(.)',
-                'utf' => '.',
-                'tok_id' => '5',
-                'full_trans' => 'kunnen.(.)',
-                'num' => '8',
-                'suggestions' => Array (),
-                'anno_norm' => 'deletednorm',
-                'comment' => null
-            ));
+        $lines_expected = $this->expected["lines"];
 
         $this->assertEquals($lines_expected,
                             $this->dbi->getLines("3", "0", "10"));
@@ -464,10 +270,8 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
             $this->getConnection()->createQueryTable("project",
             "SELECT * FROM project WHERE id=2")->getRowCount());
 
-        $this->assertFalse($this->dbi->deleteProject("1"));
-        $this->assertEquals("1",
-            $this->getConnection()->createQueryTable("project",
-            "SELECT * FROM project WHERE id=1")->getRowCount());
+        // deleting a project that has users attached should fail
+        // but that test is further down in the FK aware class
 
         $users = array("test");
         $this->dbi->changeProjectUsers("1", $users);
@@ -539,5 +343,30 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
     }*/
 
 }
+
+/** Tests that need FK awareness.
+ *
+ * TODO this needs to be moved to a separate file,
+ * since apparently phpunit doesn't allow more than one test
+ * class in a file.
+ */
+class Cora_Tests_DBInterface_FK_test extends Cora_Tests_DbTestCase_FKAware {
+    protected $dbi;
+    protected $backupGlobalsBlacklist = array('_SESSION');
+
+    protected function setUp() {
+        $this->dbi = new DBInterface($this);
+        parent::setUp();
+    }
+
+    public function testDeleteProjectWithUsers() {
+        $this->assertFalse($this->dbi->deleteProject("1"));
+        $this->assertEquals("1",
+            $this->getConnection()->createQueryTable("project",
+            "SELECT * FROM project WHERE id=1")->getRowCount());
+        $this->fail();
+    }
+}
+
 
 ?>

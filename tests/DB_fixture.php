@@ -6,7 +6,7 @@ require_once "PHPUnit/Extensions/Database/TestCase.php";
 
 /** Base class for all Database Related Tests
  *
- * 02/2012 Florian Petran
+ * 02/2013 Florian Petran
  *
  * This class serves a dual purpose. First, it provides DB access
  * and DB related asserts for the tests, and second, it provides
@@ -128,7 +128,7 @@ class TruncateOperation extends PHPUnit_Extensions_Database_Operation_Truncate {
 
 /** FK Aware Database Fixture.
  *
- * 02/2012 Florian Petran
+ * 02/2013 Florian Petran
  *
  * FK need special attention, because MySQL >=5.5 doesn't allow
  * truncate operations on InnoDB Tables with foreign keys, yet

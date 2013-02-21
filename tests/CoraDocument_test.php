@@ -1,4 +1,6 @@
 <?php
+require_once "test_data.php";
+
 require_once "../lib/documentModel.php";
 
 /** Tests for CoraDocument
@@ -9,86 +11,11 @@ class Cora_Tests_CoraDocument_test extends PHPUnit_Framework_TestCase {
     protected $test_data;
     // initial test data. $this->test_data is reset to the initial data
     // before each test.
-    protected $test_data_initial = array(
-        "pages" => array( // page
-                        array( "xml_id" => "p1",
-                               "side" => 'v',
-                               'range' => array('c1', 'c1'),
-                               'no' => '42')
-                    ),
-        "columns" => array( // column
-                        array('xml_id' => 'c1',
-                              'range' => array('l1', 'l2'))
-                    ),
-        "lines" => array( // lines
-                        array('xml_id' => 'l1',
-                              'name' => '01',
-                              'range' => array('t1_d1', 't2_d2')),
-                        array('xml_id' => 'l2',
-                              'name' => '02',
-                              'range' => array('t3_d1', 't3_d1'))
-                    ),
-        "tokens" => array( // tokens
-                        array("db_id" => "",
-                              "xml_id" => "t1",
-                              '$ol|tu'),
-                        array("db_id" => "",
-                              "xml_id" => "t2",
-                              'ge#e$$en'),
-                        array("db_id" => "",
-                              "xml_id" => "t3",
-                              "Anshelm/(.)")
-                    ),
-        "dipls" => array( // dipl
-                        array("db_id" => "",
-                              "xml_id" => "t1_d1",
-                              "parent_tok_xml_id" => "t1",
-                              "\$ol|tu"),
-                        array("db_id" => "",
-                              "xml_id" => "t2_d1",
-                              "parent_tok_xml_id" => "t2",
-                              "ge#"),
-                        array("db_id" => "",
-                              "xml_id" => "t2_d2",
-                              "parent_tok_xml_id" => "t2",
-                              'e$$en'),
-                        array("db_id" => "",
-                              "xml_id" => "t3_d1",
-                              "parent_tok_xml_id" => "t3",
-                              "Anshelm/")
-                   ),
-        "mods" => array( // mod
-                        array("db_id" => "",
-                              "xml_id" => "t1_m1",
-                              "parent_xml_id" => "t1",
-                              '$ol'),
-                        array("db_id" => "",
-                              "xml_id" => "t1_m2",
-                              "parent_xml_id" => "t1",
-                              'tu'),
-                        array("db_id" => "",
-                              "xml_id" => "t2_m1",
-                              "parent_xml_id" => "t2",
-                              'ge#e$$en'),
-                        array("db_id" => "",
-                              "xml_id" => "t3_m1",
-                              "parent_xml_id" => "t3",
-                              'Anshelm'),
-                        array("db_id" => "",
-                              "xml_id" => "t3_m2",
-                              "parent_xml_id" => "t3",
-                              '/'),
-                        array("db_id" => "",
-                              "xml_id" => "t3_m3",
-                              "parent_xml_id" => "t3",
-                              '(.)')
-                )
-    );
     protected $cd;
 
     protected function setUp() {
         $options = array('sigle' => 't1', 'name' => 'testdocument');
-        $this->test_data = $this->test_data_initial;
+        $this->test_data = get_CoraDocument_data();
         $this->cd = new CoraDocument($options);
         $this->cd->setLayoutInfo($this->test_data["pages"],
                                  $this->test_data["columns"],
