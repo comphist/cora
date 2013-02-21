@@ -86,7 +86,7 @@ class Menu {
 
   /** Set the menu item selected by default. */
   public function setDefaultItem( $item ) {
-    if (array_key_exists($item, $this->menu_items)) {
+    if (in_array($item, $this->menu_items)) {
       $this->default_item = $item;
     }
   }

@@ -209,7 +209,8 @@ class XMLHandler {
 	$document->addComment(null, $lasttokid, (string) $node, (string) $node['type']);
       }
       else if ($reader->name == 'token') {
-	$lasttokid = $this->processToken($node, ++$tokcount, $tokens, $dipls, $moderns);
+        ++$tokcount;
+	$lasttokid = $this->processToken($node, $tokcount, $tokens, $dipls, $moderns);
       }
     }
 
