@@ -272,6 +272,7 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
 
         // deleting a project that has users attached should fail
         // but that test is further down in the FK aware class
+        */
 
         $users = array("test");
         $this->dbi->changeProjectUsers("1", $users);
