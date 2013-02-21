@@ -873,6 +873,7 @@ var EditorModel = new Class({
     editToken: function(tok_id) {
 	var ref = this;
 	var old_token = this.data[tok_id]['full_trans'];
+	var db_id = this.data[tok_id]['tok_id'];
 	var spin = this.spinner;
 	spin.message = "Bitte warten...";
 	// TODO: on a successful change, the data array has to be
@@ -888,7 +889,7 @@ var EditorModel = new Class({
 		return false;
 	    }
 	    // spaces are treated as line breaks atm
-	    new_token = new_token.replace(" ", "\n");
+	    new_token = new_token.replace(/ /g, "\n");
 	    $('overlay').show();
 	    spin.show();
 	    new Request.JSON({
@@ -942,7 +943,7 @@ var EditorModel = new Class({
 		    spin.hide();
 		    $('overlay').hide();
 		}
-	    }).get({'do': 'editToken', 'token_id': tok_id, 'value': new_token});
+	    }).get({'do': 'editToken', 'token_id': db_id, 'value': new_token});
 	    mbox.close();
 	}
 

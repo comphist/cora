@@ -19,7 +19,7 @@ class CommandHandler {
 			    "dipl_utf"   => "-S -c utf -t historical -p delete -r delete -i leave -s leave -d leave"
 			    );
 
-  function __construct($db) {
+  function __construct() {
   }
 
   /** Create a temporary file containing the given token.

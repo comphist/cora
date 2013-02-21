@@ -345,6 +345,13 @@ class SessionHandler {
    * @param string $value   New transcription for the token
    */
   public function editToken($tokenid, $value) {
+    $errors = array();
+    // check whether tokenid belongs to currently opened file
+    $textid = $this->db->getTextIdForToken($tokenid);
+    if($textid !== $_SESSION['currentFileId']) {
+      $errors[] = "Token konnte nicht geändert werden, da es nicht zur momentan geöffneten Datei gehört.";
+      return array("success" => false, "errors" => $errors);
+    }
     // call the check script
     $check = $this->ch->checkToken($value);
     if(!empty($check)) {
@@ -352,12 +359,16 @@ class SessionHandler {
       return array("success" => false, "errors" => $check);
     }
     // call the conversion script(s)
-    $errors = array();
     $converted = $this->ch->convertToken($value, $errors);
     if(!empty($errors)) {
       array_unshift($errors, "Bei der Konvertierung des Tokens ist ein Fehler aufgetreten.", "");
       return array("success" => false, "errors" => $errors);
     }
+
+    // then, call a DBInterface function to make the change
+    $status = $this->db->editToken($textid, $tokenid, $value, $converted);
+
+    return $status;
 
     foreach($converted as $type => $convarray) {
       $errors[] = $type . ":";
@@ -368,7 +379,6 @@ class SessionHandler {
     return array("success" => false, "errors" => $errors);
 
 
-    // then, call a DBInterface function to make the change
     //    return array("success" => true);
     return array("success" => false, "errors" => array("Not implemented"));
   }
