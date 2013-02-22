@@ -1,8 +1,8 @@
 <?php
-require_once "DB_fixture.php";
-require_once "test_data.php";
+require_once"DB_fixture.php";
+require_once"data/test_data.php";
 
-require_once "../lib/connect.php";
+require_once"../lib/connect.php";
 
 /** Tests for DBInterface class
  *
@@ -15,7 +15,7 @@ require_once "../lib/connect.php";
  *      getUserData($user, $pw)
  *      getTagsets($class ="POS")
  *      getTagset($tagset, $limit="none")
- *      getTagsetByValue($tagset)
+ *      getTagsetByValue($tagset:")
  *      changePassword($uname, $password)
  *      changeProjectUsers($pid, $userlist)
  *      toggleNormStatus($username)
@@ -69,7 +69,7 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         $this->assertFalse($this->dbi->createUser("test", "blabla", "0"));
 
         $this->dbi->createUser("anselm", "blabla", "0");
-        $expected = $this->createXMLDataSet("created_user.xml");
+        $expected = $this->createXMLDataSet("data/created_user.xml");
 
         // TODO password hash breaks table equality, idk why
         $this->assertTablesEqual($expected->getTable("users"),
@@ -259,7 +259,7 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
                             $this->dbi->getProjectsForUser("bollmann"));
 
         $this->dbi->createProject("testproject");
-        $expected = $this->createXMLDataSet("created_project.xml");
+        $expected = $this->createXMLDataSet("data/created_project.xml");
 
         $this->assertTablesEqual($expected->getTable("project"),
             $this->getConnection()->createQueryTable("project",
@@ -282,7 +282,7 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
 
     /*
     public function testGetAllLines() {
-        $this->assertEquals($lines_expected,
+        $this->assertEquals($this->expected["lines"],
                             $this->dbi->getAllLines("3"));
     }
      */
@@ -319,7 +319,7 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
                       'anno_norm' => "")
             ));
         $this->assertFalse($result);
-        $expected = $this->createXMLDataset("saved_lines.xml");
+        $expected = $this->createXMLDataset("data/saved_lines.xml");
         $this->assertTablesEqual($expected->getTable("tag_suggestion"),
             $this->getConnection()->createQueryTable("tag_suggestion",
              "SELECT id,selected,source,tag_id,mod_id "
@@ -330,6 +330,13 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         $this->assertTablesEqual($expected->getTable("mod2error"),
             $this->getConnection()->createQueryTable("mod2error",
             "SELECT * FROM mod2error WHERE mod_id IN (7, 8, 9)"));
+    }
+
+    public function testTags() {
+        $actual = $this->dbi->getAllSuggestions("t1", "1");
+        $this->assertEquals(array(
+                            ),
+                            $actual);
     }
 
     /*

@@ -1,7 +1,7 @@
 <?php
-require_once "test_data.php";
+require_once"data/test_data.php";
 
-require_once "../lib/documentModel.php";
+require_once"../lib/documentModel.php";
 
 /** Tests for CoraDocument
  *

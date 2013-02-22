@@ -36,7 +36,7 @@ abstract class Cora_Tests_DbTestCase
     }
 
     final public function getDataSet() {
-        return $this->createMySQLXMLDataSet('coradb.xml');
+        return $this->createMySQLXMLDataSet('data/coradb.xml');
     }
 
     /** Create the coratest db and fill it with structure.
@@ -44,7 +44,7 @@ abstract class Cora_Tests_DbTestCase
     public static function setUpBeforeClass() {
         $mysqlcall = "mysql -uroot -p{$GLOBALS["DB_ROOTPW"]}";
         system("echo CREATE DATABASE {$GLOBALS["DB_DBNAME"]} | ".$mysqlcall);
-        system($mysqlcall." {$GLOBALS["DB_DBNAME"]} < coratest-myisam.sql" );
+        system($mysqlcall." {$GLOBALS["DB_DBNAME"]} < data/coratest-myisam.sql" );
     }
 
     /** Drop the coratest db
@@ -138,7 +138,7 @@ class TruncateOperation extends PHPUnit_Extensions_Database_Operation_Truncate {
  */
 class Cora_Tests_DbTestCase_FKAware
     extends Cora_Tests_DbTestCase {
-    private $db_skeleton = "coratest-innobdb.sql";
+    private $db_skeleton = "data/coratest-innobdb.sql";
 
     public function getSetUpOperation() {
         $cascadeTruncates = false;
@@ -154,7 +154,7 @@ class Cora_Tests_DbTestCase_FKAware
     public static function setUpBeforeClass() {
         $mysqlcall = "mysql -uroot -p{$GLOBALS["DB_ROOTPW"]}";
         system("echo CREATE DATABASE {$GLOBALS["DB_DBNAME"]} | ".$mysqlcall);
-        system($mysqlcall." {$GLOBALS["DB_DBNAME"]} < coratest-innodb.sql" );
+        system($mysqlcall." {$GLOBALS["DB_DBNAME"]} < data/coratest-innodb.sql" );
     }
 
 }

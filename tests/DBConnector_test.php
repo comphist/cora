@@ -1,6 +1,6 @@
 <?php
-require_once "DB_fixture.php";
-require_once "../lib/connect.php";
+require_once"DB_fixture.php";
+require_once"../lib/connect.php";
 
 /** Tests for DBConnector
  *

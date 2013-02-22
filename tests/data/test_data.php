@@ -487,6 +487,29 @@ function get_XMLHandler_data() {
     );
 }
 
+function get_XMLHandler_initial() {
+    return array(
+        "lines" => array(
+                       array('id' => '1',
+                            'trans' => '*{A*4}n$helm%9',
+                            'utf' => 'Anshelm\'',
+                            'tok_id' => '1',
+                            'full_trans' => '*{A*4}n$helm%9',
+                            'num' => '0',
+                            'suggestions' => array (
+                                array ( 'POS' => 'VVFIN',
+                                        'morph' => '3.Pl.Past.Konj',
+                                        'score' => '0.97')
+                            ),
+                            'anno_POS' => 'VVFIN',
+                            'anno_morph' => '3.Pl.Past.Konj',
+                            'comment' => null
+                        ),
+                    ),
+    );
+}
+
+
 /** Test data to initialize CoraDocument with
  */
 function get_CoraDocument_data() {
