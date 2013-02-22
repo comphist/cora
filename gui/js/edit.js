@@ -237,9 +237,16 @@ var EditorModel = new Class({
        Re-render the morphology tag drop-down box when POS tag
        changes.
 
-       For performance reasons, this function is currently only called
-       when the POS tag changes.  The functionality is replicated in
-       displayPage() where it is used during page rendering.
+       This function is only called when the POS tag changes.  The
+       functionality is replicated in displayPage() where it is used
+       during page rendering (but see below).
+
+       CAUTION: This function now also guarantees that only valid
+       morphology tags for the selected POS tag are displayed, and
+       auto-selects the first valid morphology tag if necessary.  This
+       is not desired during the initial page rendering, though, which
+       is another reason (besides performance) why this function
+       should not be called during page rendering!
     
        Parameters:
         id - line ID
@@ -270,6 +277,9 @@ var EditorModel = new Class({
 		    }),'top');
 		}
             });
+	    if(suggestions.getChildren().length == 0) {
+		suggestions = false;
+	    }
 	}
 
 	isvalid = this.isValidTagCombination(postag, line.anno_morph);
@@ -282,13 +292,13 @@ var EditorModel = new Class({
 		'class': 'lineSuggestedTag'
 	    }),'top');
 	}
-	if (suggestions) {
+	if(suggestions) {
 	    mselect.grab(suggestions);
 	}
 	mselect.grab(morphopt);
 	if(!isvalid) {
 	    var newmorph;
-	    if (suggestions) {
+	    if(suggestions) {
 		newmorph = suggestions.getChildren()[0];
 	    } else {
 		newmorph = morphopt.getChildren()[0];
