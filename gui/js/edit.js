@@ -157,6 +157,24 @@ var EditorModel = new Class({
 	this.activePage = start_page;
     },
 
+    /* Function: isValidTagCombination
+
+       Check whether a given combination of POS and morph tag is valid
+       with regard to the currently loaded tagset.
+
+       Parameters:
+        pos - the POS tag
+	morph - the morphology tag
+     */
+    isValidTagCombination: function(pos,morph) {
+	if(pos && morph && fileTagset.pos.contains(pos) &&
+	   fileTagset.morph[pos]!==null &&
+	   fileTagset.morph[pos].contains(morph)) {
+		return true;
+	}
+	return false;
+    },
+
     /* Function: updateInputError
 
        Visualize whether selected tags are legal values.
@@ -190,8 +208,7 @@ var EditorModel = new Class({
 		pselect.removeClass(iec);
 	    }
 
-	    if(mtag=="" || fileTagset.morph[ptag]==null ||
-	       !fileTagset.morph[ptag].contains(mtag)) {
+	    if(!this.isValidTagCombination(ptag,mtag)) {
 		mselect.addClass(iec);
 	    } else {
 		mselect.removeClass(iec);
@@ -230,42 +247,55 @@ var EditorModel = new Class({
 	postag - the new POS tag
     */
     renderMorphOptions: function(id, tr, postag) {
-	var morphopt, suggestions, line;
+	var morphopt, suggestions, line, isvalid;
+	var ref = this;
 	var mselect = tr.getElement('.editTable_Morph select');
 
-	if (postag) {
-	    //postag = postag.replace(/\s[\d\.]+/g,"");
-	    morphopt = new Element('optgroup', {'label': "Alle Tags für '"+postag+"'",
-					       'html': fileTagset.morphHTML[postag]});
+	if (!postag) {
+	    mselect.empty();
+	    return;
 	}
 
+	morphopt = new Element('optgroup', {'label': "Alle Tags für '"+postag+"'",
+					    'html': fileTagset.morphHTML[postag]});
 	line = this.data[id];
 	if (line.suggestions) {
 	    suggestions = new Element('optgroup', {'label': 'Vorgeschlagene Tags', 'class': 'lineSuggestedTag'});
 	    line.suggestions.each(function(opt){
-		suggestions.grab(new Element('option',{
-		    html: opt.morph+" ("+opt.score+")",
-		    value: opt.morph,
-		    'class': 'lineSuggestedTag'
-		}),'top');
+		if(ref.isValidTagCombination(postag, opt.morph)) {
+		    suggestions.grab(new Element('option',{
+			html: opt.morph+" ("+opt.score+")",
+			value: opt.morph,
+			'class': 'lineSuggestedTag'
+		    }),'top');
+		}
             });
 	}
 
+	isvalid = this.isValidTagCombination(postag, line.anno_morph);
 	mselect.empty();
-	mselect.grab(new Element('option',{
-	    html: line.anno_morph,
-	    value: line.anno_morph,
-	    selected: 'selected',
-	    'class': 'lineSuggestedTag'
-	}),'top');
+	if(isvalid) {
+	    mselect.grab(new Element('option',{
+		html: line.anno_morph,
+		value: line.anno_morph,
+		selected: 'selected',
+		'class': 'lineSuggestedTag'
+	    }),'top');
+	}
 	if (suggestions) {
 	    mselect.grab(suggestions);
 	}
-	if (postag) {
-	    mselect.grab(morphopt);
-	    // If there's only one legal choice for morph, select it
-	    if(morphopt.getChildren().length == 1) {
-		morphopt.getChildren()[0].set('selected', 'selected');
+	mselect.grab(morphopt);
+	if(!isvalid) {
+	    var newmorph;
+	    if (suggestions) {
+		newmorph = suggestions.getChildren()[0];
+	    } else {
+		newmorph = morphopt.getChildren()[0];
+	    }
+	    if(newmorph) {
+		this.updateData(id, 'anno_morph', newmorph.get('value'));
+		newmorph.set('selected', 'selected');
 	    }
 	}
     },
