@@ -591,7 +591,7 @@
        $qs .= "FROM {$this->db}.locks a, {$this->db}.users b ";
        $qs .= "WHERE a.text_id={$fileid} AND a.user_id=b.id";
        $query = $this->query($qs);
-       $row = $this->dbconn->fetch_array( $query );
+       $row = $this->dbconn->fetch_assoc( $query );
        return array("success" => false, "lock" => $row);
      }
      // otherwise, perform the lock
@@ -995,7 +995,6 @@
      $qs .= "             AND c1.subtok_id=modern.id AND c1.comment_type='C' ";
      //$qs .= "       LEFT JOIN {$this->db}.comment c2 ON  c2.tok_id=token.id ";
      //$qs .= "                                        AND c2.comment_type='K' ";
-     // Layout-Info mit JOINen?
      $qs .= "     WHERE  token.text_id='{$fileid}' ";
      $qs .= "     ORDER BY token.ordnr ASC, modern.id ASC) q ";
      $qs .= "   JOIN (SELECT @rownum := -1) r) x ";
@@ -1011,6 +1010,24 @@
       */
      while($line = $this->dbconn->fetch_assoc($query)){
        $mid = $line['id'];
+
+       // Layout info
+       $qs  = "SELECT l.name AS line_name, c.name AS col_name, l.num AS line_num, ";
+       $qs .= "       p.name AS page_name, p.side AS page_side, p.num AS page_num  ";
+       $qs .= "FROM   {$this->db}.dipl d ";
+       $qs .= "  LEFT JOIN {$this->db}.line l ON l.id=d.line_id ";
+       $qs .= "  LEFT JOIN {$this->db}.col  c ON c.id=l.col_id ";
+       $qs .= "  LEFT JOIN {$this->db}.page p ON p.id=c.page_id ";
+       $qs .= "WHERE  d.tok_id=" . $line['tok_id'];
+       $qs .= " ORDER BY d.id ASC LIMIT 1";
+       $q = $this->query($qs);
+       $row = $this->dbconn->fetch_assoc($q);
+       if($row) {
+	 $line['line_name'] = $row['line_name'] ? $row['line_name'] : $row['line_num'];
+	 $line['col_name']  = $row['col_name']  ? $row['col_name']  : "";
+	 $line['page_name'] = $row['page_name'] ? $row['page_name'] : $row['page_num'];
+	 $line['page_side'] = $row['page_side'] ? $row['page_side'] : "";
+       }
 
        // Error annotations
        $qs  = "SELECT error_types.name ";

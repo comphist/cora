@@ -216,8 +216,8 @@ var file = {
         		}
         	    }).get({'do': 'openFile', 'fileid': fileid});
     		} else {
-    		    var msg = "Das Dokument wird zur Zeit bereits bearbeitet:" + data.lock.locked_by + ", " +
-    			data.lock.locked_since;
+    		    var msg = "Das Dokument wird bereits bearbeitet von Benutzer '" + data.lock.locked_by + "' seit " +
+    			data.lock.locked_since + ".";
     		    alert(msg);
     		}
     	    }

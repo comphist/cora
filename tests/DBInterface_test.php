@@ -152,8 +152,8 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         // locking a file that is already locked returns info on the lock
         $lock_result = $this->dbi->lockFile("3", "test");
         $this->assertEquals(array("success" => false,
-                                  "lock" => array("2013-02-05 13:00:40",
-                                                  "bollmann")),
+                                  "lock" => array("locked_since" => "2013-02-05 13:00:40",
+                                                  "locked_by" => "bollmann")),
                             $lock_result);
         // check if the database still has the lock belonging to bollmann
         $this->assertEquals("3",

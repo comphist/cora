@@ -562,6 +562,7 @@ var EditorModel = new Class({
 	var end, start, tr, line, posopt, morphopt, mselect, trs, j;
 	var optgroup, elem;
 	var dlr, dynstart, dynend;
+	var lineinfo;
 
 	/* calculate line numbers to be displayed */
 	if (page==0) { page++; }
@@ -640,6 +641,13 @@ var EditorModel = new Class({
 	    } else {
 		tr.getElement('div.editTableError').removeClass('editTableErrorChecked');
 	    }
+	    if(line.page_name !== undefined) {
+		lineinfo = line.page_name + line.page_side + line.col_name + "," + line.line_name;
+	    }
+	    else {
+		lineinfo = "";
+	    }
+	    tr.getElement('.editTable_line').set('html', lineinfo);
 	    tr.getElement('.editTable_tok_trans').set('html', line.trans);
 	    tr.getElement('.editTable_token').set('html', line.utf);
 	    tr.getElement('.editTable_tokenid').set('html', i+1);

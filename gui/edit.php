@@ -21,6 +21,7 @@
 		<tr class="editHeadLine" id="editHeadline">
 			<th class="editTable_progress">P</th>
 			<th class="editTable_tokenid">#</th>
+			<th class="editTable_line">Zeile</th>
 			<th class="editTable_error">E</th>
                         <th class="editTable_tok_trans">Token (Trans)</th>
                         <th class="editTable_token">Token (UTF)</th>
@@ -38,7 +39,8 @@
 			    <div class="editTableProgress"></div>
 			</td>
 			<td class="editTable_tokenid">
-   <!-- currently displays line numbers, maybe we want the external id that gets written in the XML? can be changed in edit.js:displayPage() -->
+			</td>
+			<td class="editTable_line">
 			</td>
 			<td class="editTable_error">
 			    <div class="editTableError"></div>
