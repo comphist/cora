@@ -420,3 +420,12 @@ input.mform[type="submit"].button_yellow:active {
 	border-bottom:1px solid #ed9e09;
 	background:#ffb215;
 }
+
+form button.button_left:active,
+form input[type="button"].button_left:active,
+form input[type="submit"].button_left:active,
+button.mform.button_left:active,
+input.mform[type="button"].button_left:active,
+input.mform[type="submit"].button_left:active {
+    float: left;
+}

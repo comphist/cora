@@ -808,8 +808,7 @@ var EditorModel = new Class({
     saveData: function() {
 	var req, cl, data, save, line, tp, tm, ler;
 	var ref = this;
-	var spin = this.spinner;
-	spin.message = "Speichere...";
+	var spin = new Spinner($('overlay'), {message: "Speichere..."});
 
 	cl = this.changedLines;
 	if (cl==null) { return true; }
@@ -918,8 +917,8 @@ var EditorModel = new Class({
 	    // set tok_id to the first line corresponding to the token to be edited
 	    tok_id = tok_id - 1;
 	}
-	var spin = this.spinner;
-	spin.message = "Bitte warten...";
+	var spin = new Spinner($('overlay'), {message: "Bitte warten..."});
+
 	var performEdit = function(mbox) {
 	    var new_token = $('editTokenBox').get('value').trim();
 	    if(!new_token) {
@@ -1014,7 +1013,7 @@ var EditorModel = new Class({
 	    content: 'editTokenForm',
 	    buttons: [
 		{title: 'Abbrechen', addClass: 'mform'},
-		{title: 'OK', addClass: 'mform button_green',
+		{title: 'Transkription speichern', addClass: 'mform button_green',
 		 event: function() {
 		     performEdit(this);
 		 }
