@@ -104,8 +104,8 @@ class Cora_Tests_CoraDocument_test extends PHPUnit_Framework_TestCase {
                      array('range' => array('t1', 't2'), 'type' => 'rub'),
                      array('range' => array('t3', 't3'), 'type' => 'title')
                  ))
+                 ->addComment("", "t1", "Hier grosser Tintenfleck", "K")
                  ->fillTokenIDs("8")
-                 ->addComment("", "t1_d1", "Hier grosser Tintenfleck", "K")
                  ->fillDiplIDs("10")
                  ->fillModernIDs("5")
                  ->fillPageIDs("3")
@@ -144,7 +144,7 @@ class Cora_Tests_CoraDocument_test extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array(10, 10), $actual[1]["db_range"]);
 
         $actual = $this->cd->getComments();
-        $this->assertEquals("10", $actual[0]['parent_db_id']);
+        $this->assertEquals("8", $actual[0]['parent_db_id']);
     }
 
     public function testPageStartsWithCorrectColumn() {

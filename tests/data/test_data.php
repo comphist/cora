@@ -93,7 +93,11 @@ function get_DBInterface_expected() {
                             ),
                             'anno_POS' => 'VVFIN',
                             'anno_morph' => '3.Pl.Past.Konj',
-                            'comment' => null
+			     'comment' => null,
+			     'page_name' => '1',
+			     'page_side' => 'r',
+			     'col_name' => '',
+			     'line_name' => '1'
                         ),
                         array('id'          => '2',
                             'trans'       => 'pi$t||',
@@ -108,7 +112,11 @@ function get_DBInterface_expected() {
                             ),
                             'anno_POS'    => "PPOSAT",
                             'anno_morph'  => "Fem.Nom.Sg",
-                            'comment' => null
+			      'comment' => null,
+			     'page_name' => '1',
+			     'page_side' => 'r',
+			     'col_name' => '',
+			     'line_name' => '2'
                         ),
                         array('id'          => '3',
                             'trans'       => 'u||',
@@ -118,7 +126,11 @@ function get_DBInterface_expected() {
                             'num'         => '2',
                             'general_error' => 1,
                             'suggestions' => array(),
-                            'comment' => null
+			      'comment' => null,
+			     'page_name' => '1',
+			     'page_side' => 'r',
+			     'col_name' => '',
+			     'line_name' => '2'
                         ),
                         array('id'          => '4',
                             'trans'       => 's',
@@ -129,7 +141,11 @@ function get_DBInterface_expected() {
                             'suggestions' => array(),
                             'anno_POS'    => 'VVFIN',
                             'anno_morph'  => '3.Pl.Pres.Konj',
-                            'comment' => null
+			      'comment' => null,
+			     'page_name' => '1',
+			     'page_side' => 'r',
+			     'col_name' => '',
+			     'line_name' => '2'
                         ),
                         array('id'          => '5',
                             'trans'       => 'aller#lieb$tev',
@@ -141,7 +157,11 @@ function get_DBInterface_expected() {
                             'anno_POS'    => 'PDS',
                             'anno_morph'  => '*.Gen.Pl',
                             'anno_lemma'  => 'lemma',
-                            'comment' => null
+			      'comment' => null,
+			     'page_name' => '1',
+			     'page_side' => 'r',
+			     'col_name' => '',
+			     'line_name' => '3'
                         ),
                         array('id'          => '6',
                             'trans'       => 'vunf=tusent#vnd#vierhundert#vn-(=)sechzig',
@@ -151,7 +171,11 @@ function get_DBInterface_expected() {
                             'num'         => '5',
                             'suggestions' => array(),
                             'anno_norm'   => 'norm',
-                            'comment' => null
+			      'comment' => null,
+			     'page_name' => '1',
+			     'page_side' => 'r',
+			     'col_name' => '',
+			     'line_name' => '3'
                         ),
                         array('id' => '7',
                             'trans' => 'kunnen',
@@ -162,7 +186,11 @@ function get_DBInterface_expected() {
                             'general_error' => 1,
                             'suggestions' => Array (),
                             'anno_lemma' => 'deletedlemma',
-                            'comment' => null
+			      'comment' => null,
+			     'page_name' => '1',
+			     'page_side' => 'r',
+			     'col_name' => '',
+			     'line_name' => '5'
                         ),
                         array('id' => '8',
                             'trans' => '.',
@@ -171,7 +199,11 @@ function get_DBInterface_expected() {
                             'full_trans' => 'kunnen.(.)',
                             'num' => '7',
                             'suggestions' => Array (),
-                            'comment' => null
+			      'comment' => null,
+			     'page_name' => '1',
+			     'page_side' => 'r',
+			     'col_name' => '',
+			     'line_name' => '5'
                         ),
                         array('id' => '9',
                             'trans' => '(.)',
@@ -181,7 +213,11 @@ function get_DBInterface_expected() {
                             'num' => '8',
                             'suggestions' => Array (),
                             'anno_norm' => 'deletednorm',
-                            'comment' => null
+			      'comment' => null,
+			     'page_name' => '1',
+			     'page_side' => 'r',
+			     'col_name' => '',
+			     'line_name' => '5'
                         )
         )
     );
@@ -191,7 +227,7 @@ function get_DBInterface_expected() {
  * this is both the initial data for testExport() and
  * the expected data for testImport().
  */
-function get_XMLHandler_data() {
+function get_XMLHandler_expected() {
     return array(
         "moderns" => array(
                 array(
