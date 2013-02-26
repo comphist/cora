@@ -1959,15 +1959,17 @@
     $qstr .= "  (`tok_from`, `tok_to`, `tag_type`) VALUES ";
     $qarr  = array();
     $shifttags = $data->getShifttags();
-    foreach($shifttags as $shtag) {
-      $qarr[] = "('" . $shtag['db_range'][0] . "', '" . $shtag['db_range'][1] . "', '"
-	. $shtag['type_letter'] . "')";
-    }
-    $qstr .= implode(",", $qarr);
-    $q = $this->query($qstr);
-    if($qerr = $this->dbconn->last_error()) {
-      $this->dbconn->rollback();
-      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1102).\n" . $qerr;
+    if(!empty($shifttags)) {
+      foreach($shifttags as $shtag) {
+	$qarr[] = "('" . $shtag['db_range'][0] . "', '" . $shtag['db_range'][1] . "', '"
+	  . $shtag['type_letter'] . "')";
+      }
+      $qstr .= implode(",", $qarr);
+      $q = $this->query($qstr);
+      if($qerr = $this->dbconn->last_error()) {
+	$this->dbconn->rollback();
+	return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1102).\n" . $qerr;
+      }
     }
 
     // Table 'comment'
