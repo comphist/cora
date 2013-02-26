@@ -1984,7 +1984,7 @@
     $q = $this->query($qstr);
     if($qerr = $this->dbconn->last_error()) {
       $this->dbconn->rollback();
-      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1103).\n" . $qerr;
+      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1103).\n" . $qerr . "\n" . $qstr;
     }
 
     $this->dbconn->commitTransaction();

@@ -136,6 +136,11 @@ class CoraDocument {
 				 $xmltodb[$shtag['range'][1]]);
     }
     unset($shtag);
+    // comments refer to tokens
+    foreach($this->comments as &$comment) {
+      $comment['parent_db_id'] = $xmltodb[$comment['parent_xml_id']];
+    }
+    unset($comment);
     return $this;
   }
 
@@ -149,11 +154,6 @@ class CoraDocument {
       $xmltodb[$dipl['xml_id']] = $dipl['db_id'];
     }
     unset($dipl);
-    // comments refer to dipls
-    foreach($this->comments as &$comment) {
-      $comment['parent_db_id'] = $xmltodb[$comment['parent_xml_id']];
-    }
-    unset($comment);
     return $this;
   }
 
@@ -179,6 +179,10 @@ class CoraDocument {
     $currentline = $this->lines[0];
     foreach($this->pages as &$currentpage) {
       list($pagestart, $pageend) = $currentpage['range'];
+      if ($currentcol_idx >= count($this->columns)) {
+	throw new DocumentValueException("Out of columns for page '" . $currentpage['xml_id'] . "'.");
+      }
+      $currentcol = $this->columns[$currentcol_idx];
       if($currentcol['xml_id'] !== $pagestart) {
 	throw new DocumentValueException("Expected column '{$pagestart}' for page '" . $currentpage['xml_id']
 					 ."', but found column '" . $currentcol['xml_id'] . "'.");
@@ -190,6 +194,10 @@ class CoraDocument {
         $currentcol = $this->columns[$currentcol_idx];
 	$this->columns[$currentcol_idx]['parent_xml_id'] = $currentpage['xml_id'];
 	list($colstart, $colend) = $currentcol['range'];
+	if ($currentline_idx >= count($this->lines)) {
+	  throw new DocumentValueException("Out of lines for column '" . $currentcol['xml_id'] . "'.");
+	}
+	$currentline = $this->lines[$currentline_idx];
 	if($currentline['xml_id'] !== $colstart) {
 	  throw new DocumentValueException("Expected line '{$colstart}' for column '" . $currentcol['xml_id']
 					   ."', but found line '" . $currentline['xml_id'] . "'.");
