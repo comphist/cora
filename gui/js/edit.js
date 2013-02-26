@@ -175,6 +175,22 @@ var EditorModel = new Class({
 	return false;
     },
 
+    /* Function: showNotice
+
+       Displays a floating notice to indicate success.
+
+       Parameters:
+        ntype - Type of the notice ('ok' or 'error')
+        message - String to appear in the notice
+    */
+    showNotice: function(ntype, message) {
+	new mBox.Notice({
+	    type: ntype,
+	    position: {x: 'right'},
+	    content: message
+	});
+    },
+
     /* Function: updateInputError
 
        Visualize whether selected tags are legal values.
@@ -426,15 +442,9 @@ var EditorModel = new Class({
 	jumptoFunc = function(mbox) {
 	    var line_no = Number.from($('jumpToBox').value);
 	    if(line_no==null) {
-		new mBox.Notice({
-		    type: 'error', position: {x: 'right'},
-		    content: 'Bitte eine Zahl eingeben.'
-		});
+		ref.showNotice('error', 'Bitte eine Zahl eingeben.');
 	    } else if(line_no>ref.lineCount || line_no<1) {
-		new mBox.Notice({
-		    type: 'error', position: {x: 'right'},
-		    content: 'Zeilennummer existiert nicht.'
-		});
+		ref.showNotice('error', 'Zeilennummer existiert nicht.');
 	    } else {
 		var new_page = ref.displayPageByLine(line_no);
 		$('pageSelector').set('value', new_page);
@@ -846,11 +856,7 @@ var EditorModel = new Class({
 
 		if (status!=null && status.success) {
 		    ref.changedLines = new Array(); // reset "changed lines" array
-		    new mBox.Notice({
-			type: 'ok',
-			content: 'Speichern erfolgreich.',
-			position: { x: 'right' }
-		    });
+		    ref.showNotice('ok', 'Speichern erfolgreich.');
 		}
 		else {
 		    if (status==null) {
@@ -988,11 +994,7 @@ var EditorModel = new Class({
 			     onSuccess: function(status, text) {
 				 mbox.close();
 				 if (status!=null && status.success) {
-				     new mBox.Notice({
-					 type: 'ok',
-					 content: 'Token gelöscht.',
-					 position: { x: 'right' }
-				     });
+				     ref.showNotice('ok', 'Token gelöscht.');
 				     updateDataArray(-Number.from(status.oldmodcount));
 				 }
 				 else {
@@ -1036,14 +1038,9 @@ var EditorModel = new Class({
 		url: 'request.php',
 		async: true,
 		onSuccess: function(status, text) {
-		    var title="", message="", textarea="";
 		    mbox.close();
 		    if (status!=null && status.success) {
-			new mBox.Notice({
-			    type: 'ok',
-			    content: 'Transkription erfolgreich geändert.',
-			    position: { x: 'right' }
-			});
+			ref.showNotice('ok', 'Transkription erfolgreich geändert.');
 			// update data array if number of mods has changed
 			updateDataArray(Number.from(status.newmodcount)-Number.from(status.oldmodcount)); 
 		    }
