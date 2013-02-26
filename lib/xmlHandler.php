@@ -104,7 +104,9 @@ class XMLHandler {
     $shifttags = array();
     $type_to_letter = array("rub" => "R",
 			    "title" => "T",
-			    "lat" => "L");
+			    "lat" => "L",
+			    "marg" => "M",
+			    "fm" => "F");
     foreach($node->children() as $tagnode) {
       $shifttag = array();
       $shifttag['type'] = $tagnode->getName();
