@@ -120,6 +120,10 @@ p {
 	padding : 1em 1em 0 1em;
 }
 
+p:first-child {
+	padding : 0 1em 0 1em;
+}
+
 ul,
 ol {
 	padding : 1em 1em 0 3em;

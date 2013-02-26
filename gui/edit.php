@@ -77,6 +77,11 @@
      <input id="jumpToBox" type="text" name="jumpTo" placeholder="" size="6" />
    </div>
 
+   <div id="deleteTokenWarning">
+   <p class="important_text"><strong>Achtung!</strong> Diese Aktion kann nicht rückgängig gemacht werden!</p>
+   <p>Soll das Token &quot;<span id="deleteTokenToken"></span>&quot; wirklich gelöscht werden?</p>
+   </div>
+
    <div id="editTokenForm">
    <p id="editTokenWarning" class="error_text"><strong>Achtung!</strong> Es gibt in diesem Dokument noch ungespeicherte Änderungen, die beim Editieren dieser Transkription verloren gehen werden!</p>
    <p>

@@ -927,6 +927,97 @@ var EditorModel = new Class({
 	}
 	var spin = new Spinner($('overlay'), {message: "Bitte warten..."});
 
+	var updateDataArray = function(lcdiff) {
+	    // delete all lines after the changed line from memory 
+	    ref.data = Object.filter(ref.data, function(item, index) {
+		return index < tok_id;
+	    });
+	    ref.changedLines = ref.changedLines.filter(function(val) {
+		return val < tok_id;
+	    });
+	    // update line count and re-load page
+	    ref.lineCount = ref.lineCount + lcdiff;
+	    ref.renderPagesPanel(ref.activePage);
+	    ref.displayPage(ref.activePage);
+	}
+
+	var showFailureMessage = function(status, title) {
+	    var message = "", textarea = "";
+	    if (status==null) {
+		message = 'Die Änderung der Transkription war nicht erfolgreich.  Es ist ein unbekannter Fehler aufgetreten.';
+	    }
+	    else {
+		message = 'Die Änderung der Transkription war nicht erfolgreich.';
+		for(var i=0;i<status.errors.length;i++){
+		    textarea += status.errors[i] + "\n";
+		}
+	    }
+	    
+	    if(textarea!='') {
+		$('saveErrorPopup').getElement('p').set('html', message);
+		$('saveErrorPopup').getElement('textarea').set('html', textarea);
+		message = 'saveErrorPopup';
+	    }
+	    new mBox.Modal({
+		title: 'Löschen fehlgeschlagen',
+		content: message,
+		buttons: [ {title: "OK"} ],
+		options: {fade: {close: false}},
+		onCloseComplete: function() {
+		    mbox.options.fade.open = false;
+		    mbox.open();
+		}
+	    }).open();
+	}
+
+	var performDelete = function(mbox) {
+	    $('deleteTokenToken').set('html', old_token);
+	    var confirmbox = new mBox.Modal({
+		title: 'Löschen bestätigen',
+		content: 'deleteTokenWarning',
+		buttons: [
+		    {title: 'Nein, abbrechen', addClass: 'mform'},
+		    {title: 'Ja, löschen', addClass: 'mform button_red',
+		     event: function() {
+			 confirmbox.close();
+			 $('overlay').show();
+			 spin.show();
+			 new Request.JSON({
+			     url: 'request.php',
+			     async: true,
+			     onSuccess: function(status, text) {
+				 mbox.close();
+				 if (status!=null && status.success) {
+				     new mBox.Notice({
+					 type: 'ok',
+					 content: 'Token gelöscht.',
+					 position: { x: 'right' }
+				     });
+				     updateDataArray(-Number.from(status.oldmodcount));
+				 }
+				 else {
+				     showFailureMessage(status, "Löschen fehlgeschlagen");
+				 }
+				 spin.hide();
+				 $('overlay').hide();
+			     },
+			     onFailure: function(xhr) {
+				 new mBox.Modal({
+				     title: 'Bearbeiten fehlgeschlagen',
+				     content: 'Ein interner Fehler ist aufgetreten. Server lieferte folgende Antwort: "'+xhr.responseText+'" ('+xhr.statusText+').'
+				 }).open();
+				 spin.hide();
+				 $('overlay').hide();
+			     }
+			 }).get({'do': 'deleteToken', 'token_id': db_id});
+		     }
+		    }
+		],
+		closeOnBodyClick: false
+	    });
+	    confirmbox.open();
+	}
+
 	var performEdit = function(mbox) {
 	    var new_token = $('editTokenBox').get('value').trim();
 	    if(!new_token) {
@@ -954,45 +1045,10 @@ var EditorModel = new Class({
 			    position: { x: 'right' }
 			});
 			// update data array if number of mods has changed
-			var lcdiff = Number.from(status.newmodcount) - Number.from(status.oldmodcount); 
-			// delete all lines after the changed line from memory 
-			ref.data = Object.filter(ref.data, function(item, index) {
-			    return index < tok_id;
-			});
-			ref.changedLines = ref.changedLines.filter(function(val) {
-			    return val < tok_id;
-			});
-			// update line count and re-load page
-			ref.lineCount = ref.lineCount + lcdiff;
-			ref.renderPagesPanel(ref.activePage);
-			ref.displayPage(ref.activePage);
+			updateDataArray(Number.from(status.newmodcount)-Number.from(status.oldmodcount)); 
 		    }
 		    else {
-			if (status==null) {
-			    message = 'Die Änderung der Transkription war nicht erfolgreich.  Es ist ein unbekannter Fehler aufgetreten.';
-			}
-			else {
-			    message = 'Die Änderung der Transkription war nicht erfolgreich.';
-			    for(var i=0;i<status.errors.length;i++){
-				textarea += status.errors[i] + "\n";
-			    }
-			}
-			
-			if(textarea!='') {
-			    $('saveErrorPopup').getElement('p').set('html', message);
-			    $('saveErrorPopup').getElement('textarea').set('html', textarea);
-			    message = 'saveErrorPopup';
-			}
-			new mBox.Modal({
-			    title: 'Änderung der Transkription fehlgeschlagen',
-			    content: message,
-			    buttons: [ {title: "OK"} ],
-			    options: {fade: {close: false}},
-			    onCloseComplete: function() {
-				mbox.options.fade.open = false;
-				mbox.open();
-			    }
-			}).open();
+			showFailureMessage(status, "Änderung fehlgeschlagen");
 		    }
 		    spin.hide();
 		    $('overlay').hide();
@@ -1020,8 +1076,13 @@ var EditorModel = new Class({
 	    title: 'Transkription bearbeiten',
 	    content: 'editTokenForm',
 	    buttons: [
+		{title: 'Token löschen', addClass: 'mform button_red button_left',
+		 event: function() {
+		     performDelete(this);
+		 }
+		},
 		{title: 'Abbrechen', addClass: 'mform'},
-		{title: 'Transkription speichern', addClass: 'mform button_green',
+		{title: 'Speichern', addClass: 'mform button_green',
 		 event: function() {
 		     performEdit(this);
 		 }
@@ -1039,7 +1100,6 @@ var EditorModel = new Class({
 	    }
 	});
 	editTokenBox.open();
-
     }
 
 });

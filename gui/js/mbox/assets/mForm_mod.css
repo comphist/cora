@@ -421,11 +421,52 @@ input.mform[type="submit"].button_yellow:active {
 	background:#ffb215;
 }
 
-form button.button_left:active,
-form input[type="button"].button_left:active,
-form input[type="submit"].button_left:active,
-button.mform.button_left:active,
-input.mform[type="button"].button_left:active,
-input.mform[type="submit"].button_left:active {
+/*** red button ***/
+
+form button.button_red,
+form input[type="button"].button_red,
+form input[type="submit"].button_red,
+button.mform.button_red,
+input.mform[type="button"].button_red,
+input.mform[type="submit"].button_red {
+	color:#fff;
+	text-shadow:0 -1px 1px #a21414;
+	border:1px solid #cc0404;
+	border-bottom:1px solid #8a0000;
+	background-color:#bf0d0d;
+	background-image:-webkit-linear-gradient(top,#ff3333,#a82222);
+	background-image:-moz-linear-gradient(top,#ff3333,#a82222);
+	background-image:-ms-linear-gradient(top,#ff3333,#a82222);
+	background-image:-o-linear-gradient(top,#ff3333,#a82222);
+	background-image:linear-gradient(top,#ff3333,#a82222);
+	filter:progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=#ff3333,EndColorStr=#a82222);
+}
+form button.button_red:hover,
+form input[type="button"].button_red:hover,
+form input[type="submit"].button_red:hover,
+button.mform.button_red:hover,
+input.mform[type="button"].button_red:hover,
+input.mform[type="submit"].button_red:hover {
+	border:1px solid #940000;
+	-webkit-box-shadow:inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 1px 1px rgba(0, 0, 0, 0.15);
+	-moz-box-shadow:inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 1px 1px rgba(0, 0, 0, 0.07);
+	box-shadow:inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 1px 1px rgba(0, 0, 0, 0.15);
+}
+form button.button_red:active,
+form input[type="button"].button_red:active,
+form input[type="submit"].button_red:active,
+button.mform.button_red:active,
+input.mform[type="button"].button_red:active,
+input.mform[type="submit"].button_red:active {
+	border:1px solid #cc0404;
+	border-bottom:1px solid #b60202;
+	background:#dd2424;
+}
+
+form button.button_left,
+form input[type="button"].button_left,
+form input[type="submit"].button_left,
+button.mform.button_left,
+input.mform[type="submit"].button_left {
     float: left;
 }

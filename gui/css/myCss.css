@@ -779,9 +779,18 @@ div#editorSettingsNumberOfLines input {
     text-align: right;
 }
 
+div#editorSettingsNumberOfLines form {
+    padding-top: 1em;
+}
+
 div#editorSettingsHiddenColumns input {
     margin-left: 0.5em;
 }
+
+div#editorSettingsInputAids input {
+    margin-left: 0.5em;
+}
+
 
 form#newFileImportForm label {
     display: inline-block;
@@ -812,6 +821,10 @@ div#changePasswordFormDiv label {
 .error_text {
     color: red;
     display: none;
+}
+
+.important_text {
+    color: red;
 }
 
 /* (more) admin stuff */
