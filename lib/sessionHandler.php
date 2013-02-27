@@ -338,6 +338,23 @@ class CoraSessionHandler {
     return $this->db->getHighestTagId($tagset);
   }
 
+  /** Delete a token from a file.
+   *
+   * @param string $tokenid ID of the token to be deleted
+   */
+  public function deleteToken($tokenid) {
+    $errors = array();
+    // check whether tokenid belongs to currently opened file
+    $textid = $this->db->getTextIdForToken($tokenid);
+    if($textid !== $_SESSION['currentFileId']) {
+      $errors[] = "Token konnte nicht gelöscht werden, da es nicht zur momentan geöffneten Datei gehört.";
+      return array("success" => false, "errors" => $errors);
+    }
+    // call the DB interface to make the change
+    $status = $this->db->deleteToken($textid, $tokenid);
+    return $status;
+  }
+
   /** Edit transcription in the database.
    *
    * @param string $tokenid ID of the token to be edited

@@ -1455,11 +1455,123 @@
      return $this->query( $qs );
    }
 
+   /** Delete a token
+    *
+    * @param string $textid  The ID of the document to which the token belongs.
+    * @param string $tokenid The ID of the token to be changed.
+    *
+    * @return array A status array
+    */
+   public function deleteToken($textid, $tokenid) {
+     $errors = array();
+     $prevtokenid = null;
+     $nexttokenid = null;
+
+     // find IDs of next and previous tokens
+     $qs  = "SELECT a.id FROM {$this->db}.token a ";
+     $qs .= "WHERE  a.ordnr > (SELECT b.ordnr FROM {$this->db}.token b ";
+     $qs .= "                  WHERE  b.id={$tokenid}) ";
+     $qs .= "ORDER BY a.ordnr ASC LIMIT 1 ";
+     $q = $this->query($qs);
+     $qerr = $this->dbconn->last_error($q);
+     if($qerr) {
+       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1220).";
+       $errors[] = $qerr . "\n" . $qs;
+       return array("success" => false, "errors" => $errors);
+     }
+     $row = $this->dbconn->fetch_assoc($q);
+     if($row && array_key_exists('id', $row)) {
+       $nexttokenid = $row['id'];
+     }
+     $qs  = "SELECT a.id FROM {$this->db}.token a ";
+     $qs .= "WHERE  a.ordnr < (SELECT b.ordnr FROM {$this->db}.token b ";
+     $qs .= "                  WHERE  b.id={$tokenid}) ";
+     $qs .= "ORDER BY a.ordnr DESC LIMIT 1 ";
+     $q = $this->query($qs);
+     $qerr = $this->dbconn->last_error($q);
+     if($qerr) {
+       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1221).";
+       $errors[] = $qerr . "\n" . $qs;
+       return array("success" => false, "errors" => $errors);
+     }
+     $row = $this->dbconn->fetch_assoc($q);
+     if($row && array_key_exists('id', $row)) {
+       $prevtokenid = $row['id'];
+     }
+
+     // find shift tags attached to this token
+     $stinsert = array();
+     $qs  = "SELECT `id`, `tok_from`, `tok_to` FROM {$this->db}.shifttags ";
+     $qs .= "WHERE  `tok_from`={$tokenid} OR `tok_to`={$tokenid}";
+     $q = $this->query($qs);
+     $qerr = $this->dbconn->last_error($q);
+     if($qerr) {
+       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1222).";
+       $errors[] = $qerr . "\n" . $qs;
+       return array("success" => false, "errors" => $errors);
+     }
+     // if necessary, move these shift tags around to prevent them from getting deleted
+     while($row = $this->dbconn->fetch_assoc($q)) {
+       // if both refer to the current token, do nothing
+       if($row['tok_from'] != $row['tok_to']) {
+	 if($row['tok_from'] == $tokenid) {
+	   $stinsert[] = "(" . $row['id'] . ", {$nexttokenid}, " . $row['tok_to'] . ")";
+	 }
+	 else {
+	   $stinsert[] = "(" . $row['id'] . ", " . $row['tok_from'] . ", {$prevtokenid})";
+	 }
+       }
+     }
+     
+     // perform modifications
+     $this->dbconn->startTransaction();
+
+     if(!empty($stinsert)) {
+       $qs  = "INSERT INTO {$this->db}.shifttags (`id`, `tok_from`, `tok_to`) VALUES ";
+       $qs .= implode(", ", $stinsert);
+       $qs .= " ON DUPLICATE KEY UPDATE `tok_from`=VALUES(tok_from), `tok_to`=VALUES(tok_to)";
+       $q = $this->query($qs);
+       $qerr = $this->dbconn->last_error($q);
+       if($qerr) {
+	 $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1223).";
+	 $errors[] = $qerr . "\n" . $qs;
+	 $this->dbconn->rollback();
+	 return array("success" => false, "errors" => $errors);
+       }
+     }
+     // move any (non-internal) comments attached to this token
+     if($prevtokenid!==null || $nexttokenid!==null) {
+       $commtokenid = ($prevtokenid===null ? $nexttokenid : $prevtokenid);
+       $qs  = "UPDATE {$this->db}.comment SET `tok_id`={$commtokenid} ";
+       $qs .= "WHERE  `tok_id`={$tokenid} AND `comment_type`!='C' ";
+       $q = $this->query($qs);
+       $qerr = $this->dbconn->last_error($q);
+       if($qerr) {
+	 $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1224).";
+	 $errors[] = $qerr . "\n" . $qs;
+	 $this->dbconn->rollback();
+	 return array("success" => false, "errors" => $errors);
+       }
+     }
+     // only now, delete the token
+     $qs = "DELETE FROM {$this->db}.token WHERE `id`={$tokenid}";
+     $q = $this->query($qs);
+     $qerr = $this->dbconn->last_error($q);
+     if($qerr) {
+       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1225).";
+       $errors[] = $qerr . "\n" . $qs;
+       $this->dbconn->rollback();
+       return array("success" => false, "errors" => $errors);
+     }
+     
+     $this->dbconn->commitTransaction();
+     return array("success" => true);
+   }
+
    /** Change a token.
     *
+    * @param string $textid  The ID of the document to which the token belongs.
     * @param string $tokenid The ID of the token to be changed.
-    * @param string $toktrans The new transcription of the token.
-    * @param array  $converted An array containing new mod and dipl strings for the token.
     *
     * @return array A status array
     */

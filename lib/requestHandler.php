@@ -357,6 +357,10 @@ class RequestHandler {
 	  case "editToken":
 	    echo json_encode($this->sh->editToken($get['token_id'], $get['value']));
 	    exit;
+
+	  case "deleteToken":
+	    echo json_encode($this->sh->deleteToken($get['token_id']));
+	    exit;
 	    
 	  default:           self::returnError(400, "Unknown request: " + $get["do"]);
 	  }
