@@ -13,6 +13,7 @@ var EditorModel = new Class({
     spinner: null,
     dynamicLoadRange: 5, // how many pages should be loaded in advance
     inputErrorClass: "", // browser-dependent CSS styling for input errors
+    dropdown: null,  // contains the currently opened dropdown menu, if any
 
     /* Constructor: EditorModel
 
@@ -66,6 +67,16 @@ var EditorModel = new Class({
 
 	/* define delegated events */
 	et.removeEvents();
+	$(document.body).addEvent(
+	    'click',
+	    function(event, target) {
+		if(ref.dropdown!==null &&
+		   (!event.target || !$(event.target).hasClass("editTableDropdownIcon"))) {
+		    ref.dropdown.hide();
+		    ref.dropdown = null;
+		}
+	    }
+	);
 	et.addEvent(
 	    'click:relay(div)',
 	    function(event, target) {
@@ -78,6 +89,28 @@ var EditorModel = new Class({
 		} else if(target.hasClass('editTableProgress')) {
 		    new_value = target.hasClass('editTableProgressChecked') ? false : true;
 		    ref.updateProgress(this_id, new_value);
+		} else if(target.hasClass('editTableDropdown')) {
+		    new_value = target.getSiblings('div.editTableDropdownMenu')[0];
+		    if(ref.dropdown!==null) {
+			ref.dropdown.hide();
+			if(ref.dropdown==new_value) { 
+			    ref.dropdown = null;
+			    return;
+			}
+		    }
+		    ref.dropdown = new_value;
+		    ref.dropdown.show();
+	    	}
+	    }
+	);
+	et.addEvent(
+	    'click:relay(a)',
+	    function(event, target) {
+		var this_id = target.getParent('tr').get('id').substr(5);
+		if(target.hasClass('editTableDdButtonDelete')) {
+		    ref.deleteToken(this_id);
+		} else if(target.hasClass('editTableDdButtonEdit')) {
+		    ref.editToken(this_id);
 		}
 	    }
 	);
@@ -915,6 +948,118 @@ var EditorModel = new Class({
 	}
     },
 
+    /* Function: showFailureMessage
+
+       Generic function to display an error popup with a textarea.
+
+    */
+    showFailureMessage: function(message, rows, title) {
+	var textarea = "";
+	for(var i=0;i<rows.length;i++){
+	    textarea += rows[i] + "\n";
+	}
+	if(textarea!='') {
+	    $('saveErrorPopup').getElement('p').set('html', message);
+	    $('saveErrorPopup').getElement('textarea').set('html', textarea);
+	    message = 'saveErrorPopup';
+	}
+	new mBox.Modal({
+	    title: title,
+	    content: message,
+	    buttons: [ {title: "OK"} ],
+	    options: {fade: {close: false}},
+	    closeOnBodyClick: false,
+	}).open();
+    },
+
+    /* Function: updateDataArray
+
+       Updates the line array after a server-side edit operation.
+
+       All lines after the token which has changed are deleted from
+       memory, all changes after that line are reset, and the
+       currently displayed page is refreshed (fetching the previously
+       deleted lines anew from the server, if necessary).
+
+       Parameters:
+        tok_id - the ID of the token which is affected by the edit
+	lcdiff - the difference in line count after the edit operation
+    */
+    updateDataArray: function(tok_id, lcdiff) {
+	// delete all lines after the changed line from memory 
+	this.data = Object.filter(this.data, function(item, index) {
+	    return index < tok_id;
+	});
+	this.changedLines = this.changedLines.filter(function(val) {
+	    return val < tok_id;
+	});
+	// update line count and re-load page
+	this.lineCount = this.lineCount + lcdiff;
+	this.renderPagesPanel(this.activePage);
+	this.displayPage(this.activePage);
+    },
+
+
+    /* Function: deleteToken
+
+       Display a pop-up with the option to delete a token.
+
+       Parameters:
+         tok_id - The line ID of the token to be deleted
+     */
+    deleteToken: function(tok_id) {
+	var ref = this;
+	var old_token = this.data[tok_id]['full_trans'];
+	var db_id = this.data[tok_id]['tok_id'];
+	while(this.data[tok_id-1] !== undefined && this.data[tok_id-1]['tok_id'] === db_id) {
+	    // set tok_id to the first line corresponding to the token to be edited
+	    tok_id = tok_id - 1;
+	}
+	var spin = new Spinner($('overlay'), {message: "Bitte warten..."});
+
+	$('deleteTokenToken').set('html', old_token);
+	var confirmbox = new mBox.Modal({
+	    title: 'Löschen bestätigen',
+	    content: 'deleteTokenWarning',
+	    buttons: [
+		{title: 'Nein, abbrechen', addClass: 'mform'},
+		{title: 'Ja, löschen', addClass: 'mform button_red',
+		 event: function() {
+		     confirmbox.close();
+		     $('overlay').show();
+		     spin.show();
+		     new Request.JSON({
+			 url: 'request.php',
+			 async: true,
+			 onSuccess: function(status, text) {
+			     if (status!=null && status.success) {
+				 ref.showNotice('ok', 'Token gelöscht.');
+				 ref.updateDataArray(tok_id, -Number.from(status.oldmodcount));
+			     }
+			     else {
+				 var rows = (status!=null ? status.errors : ["Ein unbekannter Fehler ist aufgetreten."]);
+				 ref.showFailureMessage("Das Löschen des Tokens war nicht erfolgreich.", rows, "Löschen fehlgeschlagen");
+			     }
+			     spin.hide();
+			     $('overlay').hide();
+			 },
+			 onFailure: function(xhr) {
+			     new mBox.Modal({
+				 title: 'Bearbeiten fehlgeschlagen',
+				 content: 'Ein interner Fehler ist aufgetreten. Server lieferte folgende Antwort: "'+xhr.responseText+'" ('+xhr.statusText+').'
+			     }).open();
+			     spin.hide();
+			     $('overlay').hide();
+			 }
+		     }).get({'do': 'deleteToken', 'token_id': db_id});
+		 }
+		}
+	    ],
+	    closeOnBodyClick: false
+	});
+	confirmbox.open();
+    },
+
     /* Function: editToken
 
        Display a pop-up with the option to edit the transcription of a
@@ -932,93 +1077,6 @@ var EditorModel = new Class({
 	    tok_id = tok_id - 1;
 	}
 	var spin = new Spinner($('overlay'), {message: "Bitte warten..."});
-
-	var updateDataArray = function(lcdiff) {
-	    // delete all lines after the changed line from memory 
-	    ref.data = Object.filter(ref.data, function(item, index) {
-		return index < tok_id;
-	    });
-	    ref.changedLines = ref.changedLines.filter(function(val) {
-		return val < tok_id;
-	    });
-	    // update line count and re-load page
-	    ref.lineCount = ref.lineCount + lcdiff;
-	    ref.renderPagesPanel(ref.activePage);
-	    ref.displayPage(ref.activePage);
-	}
-
-	var showFailureMessage = function(status, title) {
-	    var message = "", textarea = "";
-	    if (status==null) {
-		message = 'Die Änderung der Transkription war nicht erfolgreich.  Es ist ein unbekannter Fehler aufgetreten.';
-	    }
-	    else {
-		message = 'Die Änderung der Transkription war nicht erfolgreich.';
-		for(var i=0;i<status.errors.length;i++){
-		    textarea += status.errors[i] + "\n";
-		}
-	    }
-	    
-	    if(textarea!='') {
-		$('saveErrorPopup').getElement('p').set('html', message);
-		$('saveErrorPopup').getElement('textarea').set('html', textarea);
-		message = 'saveErrorPopup';
-	    }
-	    new mBox.Modal({
-		title: 'Löschen fehlgeschlagen',
-		content: message,
-		buttons: [ {title: "OK"} ],
-		options: {fade: {close: false}},
-		onCloseComplete: function() {
-		    mbox.options.fade.open = false;
-		    mbox.open();
-		}
-	    }).open();
-	}
-
-	var performDelete = function(mbox) {
-	    $('deleteTokenToken').set('html', old_token);
-	    var confirmbox = new mBox.Modal({
-		title: 'Löschen bestätigen',
-		content: 'deleteTokenWarning',
-		buttons: [
-		    {title: 'Nein, abbrechen', addClass: 'mform'},
-		    {title: 'Ja, löschen', addClass: 'mform button_red',
-		     event: function() {
-			 confirmbox.close();
-			 $('overlay').show();
-			 spin.show();
-			 new Request.JSON({
-			     url: 'request.php',
-			     async: true,
-			     onSuccess: function(status, text) {
-				 mbox.close();
-				 if (status!=null && status.success) {
-				     ref.showNotice('ok', 'Token gelöscht.');
-				     updateDataArray(-Number.from(status.oldmodcount));
-				 }
-				 else {
-				     showFailureMessage(status, "Löschen fehlgeschlagen");
-				 }
-				 spin.hide();
-				 $('overlay').hide();
-			     },
-			     onFailure: function(xhr) {
-				 new mBox.Modal({
-				     title: 'Bearbeiten fehlgeschlagen',
-				     content: 'Ein interner Fehler ist aufgetreten. Server lieferte folgende Antwort: "'+xhr.responseText+'" ('+xhr.statusText+').'
-				 }).open();
-				 spin.hide();
-				 $('overlay').hide();
-			     }
-			 }).get({'do': 'deleteToken', 'token_id': db_id});
-		     }
-		    }
-		],
-		closeOnBodyClick: false
-	    });
-	    confirmbox.open();
-	}
 
 	var performEdit = function(mbox) {
 	    var new_token = $('editTokenBox').get('value').trim();
@@ -1042,10 +1100,11 @@ var EditorModel = new Class({
 		    if (status!=null && status.success) {
 			ref.showNotice('ok', 'Transkription erfolgreich geändert.');
 			// update data array if number of mods has changed
-			updateDataArray(Number.from(status.newmodcount)-Number.from(status.oldmodcount)); 
+			ref.updateDataArray(tok_id, Number.from(status.newmodcount)-Number.from(status.oldmodcount)); 
 		    }
 		    else {
-			showFailureMessage(status, "Änderung fehlgeschlagen");
+			var rows = (status!=null ? status.errors : ["Ein unbekannter Fehler ist aufgetreten."]);
+			ref.showFailureMessage("Das Ändern der Transkription war nicht erfolgreich.", rows, "Bearbeiten fehlgeschlagen");
 		    }
 		    spin.hide();
 		    $('overlay').hide();
@@ -1073,11 +1132,6 @@ var EditorModel = new Class({
 	    title: 'Transkription bearbeiten',
 	    content: 'editTokenForm',
 	    buttons: [
-		{title: 'Token löschen', addClass: 'mform button_red button_left',
-		 event: function() {
-		     performDelete(this);
-		 }
-		},
 		{title: 'Abbrechen', addClass: 'mform'},
 		{title: 'Speichern', addClass: 'mform button_green',
 		 event: function() {

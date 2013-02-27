@@ -827,6 +827,34 @@ div#changePasswordFormDiv label {
     color: red;
 }
 
+/* Dropdown Menu */
+
+div.editTableDropdownMenu {
+    position: absolute;
+    display: none;
+    background-color: #d4d4d4;
+    padding: 5px;
+    margin: 0 0 0 ;
+    border: 1px solid #777777;
+}
+
+div.editTableDropdownMenu ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+div.editTableDropdownMenu a {
+    color: #444444;
+    text-decoration: none;
+}
+
+div.editTableDropdownMenu a:hover {
+    color: #880000;
+    text-decoration: none;
+}
+
+
 /* (more) admin stuff */
 div.userChangeEditTable {
     min-width: 40em;

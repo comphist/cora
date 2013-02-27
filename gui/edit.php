@@ -32,6 +32,7 @@
 			<th class="editTable_Morph">Morphologie-Tag</th>
 			<th class="editTable_Lemma">Lemma</th>
 			<th class="editTable_Comment">Kommentar</th>
+			<th class="editTable_dropdown"></th>
 		</tr>
 
 		<tr id="line_template">
@@ -59,6 +60,15 @@
 			</td>
 			<td class="editTable_Comment">
 			    <input type="text" size="30" value="" />
+			</td>
+			<td class="editTable_dropdown">
+   <div class="editTableDropdown"><img class="editTableDropdownIcon" src="gui/images/proxal/arrow-down.ico"/></div>
+   <div class="editTableDropdownMenu">
+   <ul>
+   <li><a class="editTableDdButtonDelete" href="#">Token löschen</a></li>
+   <li><a class="editTableDdButtonEdit" href="#">Token bearbeiten</a></li>
+   </ul>
+   </div>
 			</td>
 		</tr>
 

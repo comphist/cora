@@ -28,7 +28,7 @@ $projects = $sh->getProjectList();
         <link rel="stylesheet" href="gui/js/mbox/assets/mBoxTooltip.css" media="screen" />        
         <link rel="stylesheet" href="gui/js/mbox/assets/mForm_mod.css" media="screen" />        
         <link rel="stylesheet" href="gui/js/mbox/assets/mFormElement-Select.css" media="screen" />        
-         
+        <link rel="stylesheet" href="gui/css/MooDropMenu.css" media="screen" />
 
 		<!-- Print only, on bottom --> 
 		<link rel="stylesheet" type="text/css" href="gui/css/print.css" media="print" />
@@ -47,6 +47,7 @@ $projects = $sh->getProjectList();
 		<script src="gui/js/mbox/mForm.Submit.js"></script>
 		<script src="gui/js/mbox/mForm.Element.js"></script>
 		<script src="gui/js/mbox/mForm.Element.Select.js"></script>
+                <script src="gui/js/MooDropMenu.js"></script>
 
 		<script src="gui/js/dragtable_hack.js"></script>
 		<script src="gui/js/iFrameFormRequest.js"></script>
