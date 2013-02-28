@@ -361,13 +361,55 @@ class CoraSessionHandler {
    * @param string $value   New transcription for the token
    */
   public function editToken($tokenid, $value) {
-    $errors = array();
     // check whether tokenid belongs to currently opened file
     $textid = $this->db->getTextIdForToken($tokenid);
     if($textid !== $_SESSION['currentFileId']) {
       $errors[] = "Token konnte nicht geändert werden, da es nicht zur momentan geöffneten Datei gehört.";
       return array("success" => false, "errors" => $errors);
     }
+    // check and convert transcription
+    $converted = null;
+    $status = $this->checkConvertTranscription($tokenid, $value, $converted);
+    if($status) {
+      return $status;
+    }
+
+    // then, call a DBInterface function to make the change
+    $status = $this->db->editToken($textid, $tokenid, $value, $converted);
+    return $status;
+  }
+
+  /** Add transcription to the database.
+   *
+   * @param string $tokenid ID of the token before which the new token should be added
+   * @param string $value   Transcription for the new token
+   */
+  public function addToken($tokenid, $value) {
+    // check whether tokenid belongs to currently opened file
+    $textid = $this->db->getTextIdForToken($tokenid);
+    if($textid !== $_SESSION['currentFileId']) {
+      $errors[] = "Token konnte nicht hinzugefügt werden, da es nicht zur momentan geöffneten Datei gehört.";
+      return array("success" => false, "errors" => $errors);
+    }
+    // check and convert transcription
+    $converted = null;
+    $status = $this->checkConvertTranscription($tokenid, $value, $converted);
+    if($status!==null) {
+      return $status;
+    }
+
+    // then, call a DBInterface function to make the change
+    $status = $this->db->addToken($textid, $tokenid, $value, $converted);
+    return $status;
+  }
+
+  /** Check a transcription and return an array with its converted diplomatic and modern tokens.
+   *
+   * @param string $tokenid ID of the token to be edited
+   * @param string $value   Transcription for the token
+   */
+  private function checkConvertTranscription($tokenid, $value, &$converted) {
+    $errors = array();
     // call the check script
     $check = $this->ch->checkToken($value);
     if(!empty($check)) {
@@ -380,23 +422,7 @@ class CoraSessionHandler {
       array_unshift($errors, "Bei der Konvertierung des Tokens ist ein Fehler aufgetreten.", "");
       return array("success" => false, "errors" => $errors);
     }
-
-    // then, call a DBInterface function to make the change
-    $status = $this->db->editToken($textid, $tokenid, $value, $converted);
-
-    return $status;
-
-    foreach($converted as $type => $convarray) {
-      $errors[] = $type . ":";
-      foreach($convarray as $line) {
-	$errors[] = "  " . $line;
-      }
-    }
-    return array("success" => false, "errors" => $errors);
-
-
-    //    return array("success" => true);
-    return array("success" => false, "errors" => array("Not implemented"));
+    return null;
   }
 
 

@@ -1576,6 +1576,102 @@
      return array("success" => true, "oldmodcount" => $oldmodcount);
    }
 
+   /** Add a token.
+    *
+    * Contrary to editToken(), transcriptions are expected NOT to
+    * contain line breaks for this method!
+    *
+    * @param string $textid  The ID of the document to which the token belongs.
+    * @param string $oldtokenid The ID of the token before which the new one is inserted.
+    *
+    * @return array A status array
+    */
+   public function addToken($textid, $oldtokenid, $toktrans, $converted) {
+     $errors = array();
+     $ordnr = null; $lineid = null;
+
+     // fetch ordnr for token
+     $qs = "SELECT `ordnr` FROM {$this->db}.token WHERE `id`={$oldtokenid}";
+     $q = $this->query($qs);
+     $row = $this->dbconn->fetch_assoc($q);
+     $ordnr = $row['ordnr'];
+     // fetch line for first dipl
+     $qs  = "SELECT `line_id` FROM {$this->db}.dipl WHERE `tok_id`={$oldtokenid} ";
+     $qs .= "ORDER BY `id` ASC LIMIT 1";
+     $q = $this->query($qs);
+     $row = $this->dbconn->fetch_assoc($q);
+     $lineid = $row['line_id'];
+
+     $this->dbconn->startTransaction();
+     // add token
+     $qs  = "INSERT INTO {$this->db}.token (`text_id`, `trans`, `ordnr`) VALUES ";
+     $qs .= "({$textid}, '" . mysql_real_escape_string($toktrans) . "', '{$ordnr}')";
+     $q = $this->query($qs);
+     $qerr = $this->dbconn->last_error($q);
+     if($qerr) {
+       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1230).";
+       $errors[] = $qerr . "\n" . $qs;
+       $this->dbconn->rollback();
+       return array("success" => false, "errors" => $errors);
+     }
+     $tokenid = $this->dbconn->last_insert_id();
+     
+     // re-order tokens
+     $qs  = "UPDATE {$this->db}.token SET `ordnr`=`ordnr`+1 ";
+     $qs .= "WHERE `text_id`={$textid} AND (`id`={$oldtokenid} OR `ordnr`>{$ordnr})";
+     $q = $this->query($qs);
+     $qerr = $this->dbconn->last_error($q);
+     if($qerr) {
+       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1231).";
+       $errors[] = $qerr . "\n" . $qs;
+       $this->dbconn->rollback();
+       return array("success" => false, "errors" => $errors);
+     }
+
+     // insert dipl
+     $diplinsert = array();
+     $diplcount = count($converted['dipl_trans']);
+     for($i = 0; $i < $diplcount; $i++) { // loop by index because two arrays are involved
+       $diplinsert[] = "({$tokenid}, {$lineid}, '" 
+	 . mysql_real_escape_string($converted['dipl_utf'][$i]) . "', '"
+	 . mysql_real_escape_string($converted['dipl_trans'][$i]) . "')";
+     }
+     $qs  = "INSERT INTO {$this->db}.dipl (`tok_id`, `line_id`, `utf`, `trans`) VALUES ";
+     $qs .= implode(", ", $diplinsert);
+     $q = $this->query($qs);
+     $qerr = $this->dbconn->last_error($q);
+     if($qerr) {
+       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1232).";
+       $errors[] = $qerr . "\n" . $qs;
+       $this->dbconn->rollback();
+       return array("success" => false, "errors" => $errors);
+     }
+
+     // insert mod
+     $modinsert = array();
+     $modcount  = count($converted['mod_trans']);
+     for($j = 0; $j < $modcount; $j++) {
+       $modinsert[] = "({$tokenid}, '" . mysql_real_escape_string($converted['mod_trans'][$j]) . "', '"
+	 . mysql_real_escape_string($converted['mod_ascii'][$j]) . "', '"
+	 . mysql_real_escape_string($converted['mod_utf'][$j]) . "')";
+     }
+     $qs  = "INSERT INTO {$this->db}.modern (`tok_id`, `trans`, `ascii`, `utf`) VALUES ";
+     $qs .= implode(", ", $modinsert);
+     $q = $this->query($qs);
+     $qerr = $this->dbconn->last_error($q);
+     if($qerr) {
+       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1233).";
+       $errors[] = $qerr . "\n" . $qs;
+       $this->dbconn->rollback();
+       return array("success" => false, "errors" => $errors);
+     }
+
+     // done!
+     $this->dbconn->commitTransaction();
+     return array("success" => true, "newmodcount" => $modcount);
+   }
+
+
    /** Change a token.
     *
     * @param string $textid  The ID of the document to which the token belongs.

@@ -111,6 +111,8 @@ var EditorModel = new Class({
 		    ref.deleteToken(this_id);
 		} else if(target.hasClass('editTableDdButtonEdit')) {
 		    ref.editToken(this_id);
+		} else if(target.hasClass('editTableDdButtonAdd')) {
+		    ref.addToken(this_id);
 		}
 	    }
 	);
@@ -1151,7 +1153,106 @@ var EditorModel = new Class({
 	    }
 	});
 	editTokenBox.open();
+    },
+
+    /* Function: addToken
+
+       Display a pop-up with the option to add a new token to the
+       transcription.
+
+       Parameters:
+         tok_id - The line ID of the token that was selected
+     */
+    addToken: function(tok_id) {
+	var ref = this;
+	var old_token = this.data[tok_id]['full_trans'];
+	var db_id = this.data[tok_id]['tok_id'];
+	while(this.data[tok_id-1] !== undefined && this.data[tok_id-1]['tok_id'] === db_id) {
+	    // set tok_id to the first line corresponding to the token to be edited
+	    tok_id = tok_id - 1;
+	}
+	var lineinfo = "";
+	if(this.data[tok_id]['page_name'] !== undefined) {
+	    lineinfo = this.data[tok_id]['page_name'] + this.data[tok_id]['page_side']
+		+ this.data[tok_id]['col_name'] + "," + this.data[tok_id]['line_name'];
+	}
+	var spin = new Spinner($('overlay'), {message: "Bitte warten..."});
+
+	var performAdd = function(mbox) {
+	    var new_token = $('addTokenBox').get('value').trim();
+	    if(!new_token) {
+		alert("Transkription darf nicht leer sein!");
+		return false;
+	    }
+	    if(new_token.indexOf(" ") !== -1) {
+		alert("Transkription darf keine Leerzeichen enthalten!");
+		return false;
+	    }
+
+	    $('overlay').show();
+	    spin.show();
+	    new Request.JSON({
+		url: 'request.php',
+		async: true,
+		onSuccess: function(status, text) {
+		    mbox.close();
+		    if (status!=null && status.success) {
+			ref.showNotice('ok', 'Transkription erfolgreich hinzugefügt.');
+			ref.updateDataArray(tok_id, Number.from(status.newmodcount)); 
+		    }
+		    else {
+			var rows = (status!=null ? status.errors : ["Ein unbekannter Fehler ist aufgetreten."]);
+			ref.showFailureMessage("Das Hinzufügen der Transkription war nicht erfolgreich.", rows, "Hinzufügen fehlgeschlagen");
+		    }
+		    spin.hide();
+		    $('overlay').hide();
+		},
+		onFailure: function(xhr) {
+		    new mBox.Modal({
+			title: 'Hinzufügen fehlgeschlagen',
+			content: 'Ein interner Fehler ist aufgetreten. Server lieferte folgende Antwort: "'+xhr.responseText+'" ('+xhr.statusText+').'
+		    }).open();
+		    spin.hide();
+		    $('overlay').hide();
+		}
+	    }).get({'do': 'addToken', 'token_id': db_id, 'value': new_token});
+	    mbox.close();
+	}
+
+	$('addTokenBox').set('value', '');
+	$('addTokenBefore').set('html', old_token);
+	$('addTokenLineinfo').set('html', lineinfo);
+	if(this.changedLines.some(function(val) {return val >= tok_id;})) {
+	    $('addTokenWarning').show();
+	}
+	else {
+	    $('addTokenWarning').hide();
+	}
+	var addTokenBox = new mBox.Modal({
+	    title: 'Transkription hinzufügen',
+	    content: 'addTokenForm',
+	    buttons: [
+		{title: 'Abbrechen', addClass: 'mform'},
+		{title: 'Speichern', addClass: 'mform button_green',
+		 event: function() {
+		     performAdd(this);
+		 }
+		}
+	    ],
+	    onOpenComplete: function() {
+		$('addTokenBox').focus();
+	    },
+	    closeOnBodyClick: false
+	});
+	$('addTokenBox').removeEvents('keydown');
+	$('addTokenBox').addEvent('keydown', function(event) {
+	    if(event.key == "enter") {
+		performAdd(addTokenBox);
+	    }
+	});
+	addTokenBox.open();
     }
+
 
 });
 

@@ -65,8 +65,9 @@
    <div class="editTableDropdown"><img class="editTableDropdownIcon" src="gui/images/proxal/arrow-down.ico"/></div>
    <div class="editTableDropdownMenu">
    <ul>
+   <li><a class="editTableDdButtonEdit" href="#">Token bearbeiten...</a></li>
+   <li><a class="editTableDdButtonAdd" href="#">Token hinzufügen...</a></li>
    <li><a class="editTableDdButtonDelete" href="#">Token löschen</a></li>
-   <li><a class="editTableDdButtonEdit" href="#">Token bearbeiten</a></li>
    </ul>
    </div>
 			</td>
@@ -92,7 +93,7 @@
    <p>Soll das Token &quot;<span id="deleteTokenToken"></span>&quot; wirklich gelöscht werden?</p>
    </div>
 
-   <div id="editTokenForm">
+   <div id="editTokenForm" class="limitedWidth">
    <p id="editTokenWarning" class="error_text"><strong>Achtung!</strong> Es gibt in diesem Dokument noch ungespeicherte Änderungen, die beim Editieren dieser Transkription verloren gehen werden!</p>
    <p>
      <label for="editToken">Transkription: </label>
@@ -100,8 +101,18 @@
    </p>
    <p><strong>Achtung!</strong> Leerzeichen in der Transkription werden als Zeilenumbrüche interpretiert und dürfen <strong>nur</strong> nach einem Trennzeichen (<code>=</code> oder <code>(=)</code>) benutzt werden.</p>
 
-   <p>Neue Token können derzeit noch nicht hinzugefügt werden.</p>
+   <p>Wenn Sie aus einem Token zwei machen wollen, benutzen Sie bitte die Funktion &quot;Token hinzufügen&quot; und bearbeiten Sie dann die Transkription entsprechend.</p>
    </div>
+
+   <div id="addTokenForm" class="limitedWidth">
+   <p id="addTokenWarning" class="error_text"><strong>Achtung!</strong> Es gibt in diesem Dokument noch ungespeicherte Änderungen, die beim Hinzufügen dieser Transkription verloren gehen werden!</p>
+   <p>
+     <label for="addToken">Transkription: </label>
+     <input id="addTokenBox" type="text" name="addToken" size="42" placeholder="" />
+   </p>
+   <p>Die neue Transkription wird <strong>vor</strong> dem Token &quot;<span id="addTokenBefore"></span>&quot; auf Zeile &quot;<span id="addTokenLineinfo"></span>&quot; in das Originaldokument eingefügt.</p>
+   </div>
+
 </div>	
 
 </div>

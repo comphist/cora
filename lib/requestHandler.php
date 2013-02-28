@@ -362,6 +362,10 @@ class RequestHandler {
 	    echo json_encode($this->sh->deleteToken($get['token_id']));
 	    exit;
 	    
+	  case "addToken":
+	    echo json_encode($this->sh->addToken($get['token_id'], $get['value']));
+	    exit;
+
 	  default:           self::returnError(400, "Unknown request: " + $get["do"]);
 	  }
    }

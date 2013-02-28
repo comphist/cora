@@ -803,16 +803,15 @@ div#fileImportForm p {
     max-width: 31em;
 }
 
-div#editTokenForm p {
-    max-width: 31em;
-}
-
 div#changePasswordFormDiv label {
     display: inline-block;
     width: 11em;
     text-align: right;
 }
 
+div.limitedWidth p {
+    max-width: 31em;
+}
 
 .templateHolder {
     display: none;
@@ -850,7 +849,7 @@ div.editTableDropdownMenu a {
 }
 
 div.editTableDropdownMenu a:hover {
-    color: #880000;
+    color: #4444cc;
     text-decoration: none;
 }
 
