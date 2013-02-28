@@ -943,7 +943,7 @@
    public function getMaxLinesNo($fileid){
      $qs  = "SELECT COUNT(modern.id) FROM {$this->db}.token ";
      $qs .= "LEFT JOIN {$this->db}.modern ON modern.tok_id=token.id ";
-     $qs .= "WHERE token.text_id='{$fileid}'";
+     $qs .= "WHERE token.text_id='{$fileid}' ";
      $row = $this->dbconn->fetch_array($this->query($qs));
      return $row[0];
    }
@@ -997,7 +997,7 @@
      //$qs .= "                                        AND c2.comment_type='K' ";
      $qs .= "     WHERE  token.text_id='{$fileid}' ";
      $qs .= "     ORDER BY token.ordnr ASC, modern.id ASC) q ";
-     $qs .= "   JOIN (SELECT @rownum := -1) r) x ";
+     $qs .= "   JOIN (SELECT @rownum := -1) r WHERE q.id IS NOT NULL) x ";
      $qs .= "LIMIT {$start},{$lim}";
      $query = $this->query($qs); 		
 
