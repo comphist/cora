@@ -987,7 +987,7 @@
      $qs  = "SELECT x.* FROM ";
      $qs .= "  (SELECT q.*, @rownum := @rownum + 1 AS num FROM ";
      $qs .= "    (SELECT modern.id, modern.trans, modern.utf, ";
-     $qs .= "            modern.tok_id, token.trans AS full_trans, ";
+     $qs .= "            modern.tok_id, token.trans AS full_trans, "; // full_trans is currently being overwritten later!
      $qs .= "            c1.value AS comment "; // ,c2.value AS k_comment
      $qs .= "     FROM   {$this->db}.token ";
      $qs .= "       LEFT JOIN {$this->db}.modern  ON modern.tok_id=token.id ";
@@ -1010,6 +1010,23 @@
       */
      while($line = $this->dbconn->fetch_assoc($query)){
        $mid = $line['id'];
+
+       // Transcription including spaces for line breaks
+       $ttrans = "";
+       $qs  = "SELECT `trans`, `line_id` FROM {$this->db}.dipl ";
+       $qs .= " WHERE `tok_id`=" . $line['tok_id'];
+       $qs .= " ORDER BY `id` ASC";
+       $q = $this->query($qs);
+       $lastline = null;
+       while($row = $this->dbconn->fetch_assoc($q)) {
+	 if($lastline!==null && $lastline!==$row['line_id']) {
+	   $ttrans .= " ";
+	 }
+	 $ttrans .= $row['trans'];
+	 $lastline = $row['line_id'];
+       }
+       $line['full_trans'] = $ttrans;
+       unset($lastline);
 
        // Layout info
        $qs  = "SELECT l.name AS line_name, c.name AS col_name, l.num AS line_num, ";
