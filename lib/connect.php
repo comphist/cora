@@ -1466,11 +1466,18 @@
      $errors = array();
      $prevtokenid = null;
      $nexttokenid = null;
+     $oldmodcount = 0;
+
+     // get current mod count
+     $qs = "SELECT * FROM {$this->db}.modern WHERE `tok_id`='{$tokenid}' ORDER BY `id` ASC";
+     $q = $this->query($qs);
+     $oldmodcount = $this->dbconn->row_count($q);
 
      // find IDs of next and previous tokens
      $qs  = "SELECT a.id FROM {$this->db}.token a ";
      $qs .= "WHERE  a.ordnr > (SELECT b.ordnr FROM {$this->db}.token b ";
      $qs .= "                  WHERE  b.id={$tokenid}) ";
+     $qs .= "       AND a.text_id={$textid} ";
      $qs .= "ORDER BY a.ordnr ASC LIMIT 1 ";
      $q = $this->query($qs);
      $qerr = $this->dbconn->last_error($q);
@@ -1486,6 +1493,7 @@
      $qs  = "SELECT a.id FROM {$this->db}.token a ";
      $qs .= "WHERE  a.ordnr < (SELECT b.ordnr FROM {$this->db}.token b ";
      $qs .= "                  WHERE  b.id={$tokenid}) ";
+     $qs .= "       AND a.text_id={$textid} ";
      $qs .= "ORDER BY a.ordnr DESC LIMIT 1 ";
      $q = $this->query($qs);
      $qerr = $this->dbconn->last_error($q);
@@ -1522,7 +1530,7 @@
 	 }
        }
      }
-     
+
      // perform modifications
      $this->dbconn->startTransaction();
 
@@ -1565,7 +1573,7 @@
      }
      
      $this->dbconn->commitTransaction();
-     return array("success" => true);
+     return array("success" => true, "oldmodcount" => $oldmodcount);
    }
 
    /** Change a token.
