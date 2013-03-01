@@ -19,8 +19,105 @@ var fileTagset = {
 var file = {
     initialize: function(){
         this.activateImportForm();
+        this.activateTransImportForm();
     },
 
+    // activates the transcription import form -- in big parts a clone
+    // of activateImportForm -- could they be combined?
+    activateTransImportForm: function() {
+	if($('noProjectGroups')) {
+	    return;
+	}
+
+	var formname = 'newFileImportTransForm';
+        var ref = this;
+	var spinner;
+	var import_mbox = new mBox.Modal({
+	    title: 'Importieren aus Transkriptionsdatei',
+	    content: 'fileImportTransForm',
+	    attach: 'importNewTransLink'
+	});
+	// check if a file has been selected
+	$('newFileImportTransForm').getElement('input[type="submit"]').addEvent('click', function(e) {
+	    var importfile = $('newFileImportTransForm').getElement('input[name="transFile"]').get('value');
+	    if(importfile==null || importfile=="") {
+		$$('#newFileImportTransForm p.error_text').show();
+		e.stop();
+	    } else {
+		$$('#newFileImportTransForm p.error_text').hide();
+	    }
+	});
+
+        var iFrame = new iFrameFormRequest(formname,{
+            onFailure: function(xhr) {
+		// never fires?
+       		alert("Speichern nicht erfolgreich: Der Server lieferte folgende Fehlermeldung zurück:\n\n" +
+       		      xhr.responseText);
+		spinner.hide();
+		$('overlay').hide();                
+       	    },
+	    onRequest: function(){
+		import_mbox.close();
+		$('overlay').show();
+		spinner = new Spinner($('overlay'),
+				      {message: "Importiere Daten..."});
+		spinner.show();
+	    },
+	    onComplete: function(response){
+		var title="", message="", textarea="";
+		response = JSON.decode(response);
+		
+		if(response==null || typeof response.success == "undefined"){
+		    title = "Datei-Import fehlgeschlagen";
+		    message = "Beim Hinzufügen der Datei ist ein unbekannter Fehler aufgetreten.";
+		}
+		else if(!response.success){
+		    title = "Datei-Import fehlgeschlagen";
+		    message  = "Beim Hinzufügen der Datei ";
+		    message += response.errors.length>1 ? "sind " + response.errors.length : "ist ein";
+		    message += " Fehler aufgetreten:";
+
+		    for(var i=0;i<response.errors.length;i++){
+			textarea += response.errors[i] + "\n";
+		    }
+		} 
+		else { 
+		    title = "Datei-Import erfolgreich";
+		    message = "Die Datei wurde erfolgreich hinzugefügt.";
+		    if((typeof response.warnings !== "undefined") && response.warnings.length>0) {
+			message += " Das System lieferte ";
+			message += response.warnings.length>1 ? response.warnings.length + " Warnungen" : "eine Warnung";
+			message += " zurück:";
+
+			for(var i=0;i<response.warnings.length;i++){
+			    textarea += response.warnings[i] + "\n";
+			}
+		    }
+
+		    form.reset($(formname));
+		    $(formname).getElements('.error_text').hide();
+		    ref.listFiles();
+                }
+
+		if(textarea!='') {
+		    $('fileImportPopup').getElement('p').set('html', message);
+		    $('fileImportPopup').getElement('textarea').set('html', textarea);
+		    message = 'fileImportPopup';
+		}
+		new mBox.Modal({
+		    title: title,
+		    content: message,
+		    closeOnBodyClick: false,
+		    buttons: [ {title: "OK"} ]
+		}).open();
+
+		spinner.hide();
+		$('overlay').hide();                
+            }
+	});
+    },
+
+    // activates the XML import form
     activateImportForm: function(){
 	if($('noProjectGroups')) {
 	    return;
@@ -43,7 +140,7 @@ var file = {
 		$$('#newFileImportForm p.error_text').show();
 		e.stop();
 	    } else {
-		    $$('#newFileImportForm p.error_text').hide();
+		$$('#newFileImportForm p.error_text').hide();
 	    }
 	});
 	
@@ -64,7 +161,7 @@ var file = {
 		var title="", message="", textarea="";
 		response = JSON.decode(response);
 		
-		if(response==null){
+		if(response==null || typeof response.success == "undefined"){
 		    title = "Datei-Import fehlgeschlagen";
 		    message = "Beim Hinzufügen der Datei ist ein unbekannter Fehler aufgetreten.";
 		}
@@ -368,6 +465,9 @@ var file = {
     },
 
     exportFile: function(fileid){
+	alert("Diese Funktion ist zur Zeit noch nicht implementiert!");
+	return;
+
 	new mBox.Modal({
 	    content: 'fileExportPopup',
 	    title: 'Datei exportieren',

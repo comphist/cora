@@ -25,7 +25,8 @@ $tagsets = $sh->getTagsetList();
 
 <div class="panel" id="fileImport">
 	<h3>Datei importieren</h3>
-  <p><button class="mform" id="importNewXMLLink">Neues Dokument aus XML-Datei importieren...</button></p>
+  <p><button class="mform" id="importNewTransLink">Neues Dokument aus Transkriptionsdatei importieren...</button>
+     <button class="mform" id="importNewXMLLink">Neues Dokument aus XML-Datei importieren...</button></p>
 </div>
 
 <div class="panel">
@@ -79,7 +80,7 @@ $tagsets = $sh->getTagsetList();
     <p><textarea cols="80" rows="10" readonly="readonly"></textarea></p>
   </div>
 
-  <div id="fileImportForm">
+  <div id="fileImportForm" class="limitedWidth">
 	<form action="request.php" id="newFileImportForm" method="post" accept-charset="utf-8" enctype="multipart/form-data">
   <p class="error_text">Bitte wählen Sie eine Datei zum Importieren aus!</p>
 
@@ -100,7 +101,7 @@ $tagsets = $sh->getTagsetList();
   <p>Die folgenden Felder müssen nicht ausgefüllt werden, falls die entsprechenden Informationen bereits in der XML-Datei enthalten sind.</p>
 
 		<p>
-		<label for="xmlFile">Name: </label>
+		<label for="xmlName">Name: </label>
 		<input type="text" name="xmlName" placeholder="(Dokumentname)" size="30" />
 		</p>
 
@@ -126,6 +127,52 @@ $tagsets = $sh->getTagsetList();
                 </p>
 	</form>
   </div>
+
+  <div id="fileImportTransForm" class="limitedWidth">
+	<form action="request.php" id="newFileImportTransForm" method="post" accept-charset="utf-8" enctype="multipart/form-data">
+  <p class="error_text">Bitte wählen Sie eine Datei zum Importieren aus!</p>
+
+		<p>
+		<label for="transFile">Datei: </label>
+		<input type="file" name="transFile" data-required="" />
+		</p>
+
+		<p>
+		<label for="project">Projekt: </label>
+		<select name="project" size="1">
+			<?php foreach($projects as $set):?>
+			<option value="<?php echo $set['id'];?>"><?php echo "{$set['name']}";?></option>
+			<?php endforeach;?>
+		</select>
+		</p>
+
+		<p>
+		<label for="transName">Name: </label>
+		<input type="text" name="transName" placeholder="(Dokumentname)" size="30" data-required="" />
+		</p>
+
+		<p>
+		<label for="sigle">Sigle: </label>
+		<input type="text" name="sigle" placeholder="(Sigle &ndash; optional)" size="30" />
+		</p>
+
+		<p>
+		<label for="tagset">Tagset: </label>
+		<select name="tagset" size="1">
+			<?php foreach($tagsets as $set):?>
+			<option value="<?php echo $set['shortname'];?>"><?php echo $set['longname'];?></option>
+			<?php endforeach;?>
+		</select>
+		</p>
+
+
+		<p><input type="hidden" name="action" value="importTransFile" /></p>
+		<p style="text-align:right;">
+                  <input type="submit" value="Importieren &rarr;" />
+                </p>
+	</form>
+  </div>
+
 </div>
 
 <?php

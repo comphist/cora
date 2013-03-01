@@ -84,8 +84,10 @@
   </div>
 
    <div id="jumpToLineForm">
+     <form>
      <label for="jumpTo">Zeilennummer: </label>
      <input id="jumpToBox" type="text" name="jumpTo" placeholder="" size="6" />
+     </form>
    </div>
 
    <div id="deleteTokenWarning">
@@ -95,10 +97,12 @@
 
    <div id="editTokenForm" class="limitedWidth">
    <p id="editTokenWarning" class="error_text"><strong>Achtung!</strong> Es gibt in diesem Dokument noch ungespeicherte Änderungen, die beim Editieren dieser Transkription verloren gehen werden!</p>
+   <form>
    <p>
      <label for="editToken">Transkription: </label>
      <input id="editTokenBox" type="text" name="editToken" size="42" placeholder="" />
    </p>
+   </form>
    <p><strong>Achtung!</strong> Leerzeichen in der Transkription werden als Zeilenumbrüche interpretiert und dürfen <strong>nur</strong> nach einem Trennzeichen (<code>=</code> oder <code>(=)</code>) benutzt werden.</p>
 
    <p>Wenn Sie aus einem Token zwei machen wollen, benutzen Sie bitte die Funktion &quot;Token hinzufügen&quot; und bearbeiten Sie dann die Transkription entsprechend.</p>
@@ -106,10 +110,12 @@
 
    <div id="addTokenForm" class="limitedWidth">
    <p id="addTokenWarning" class="error_text"><strong>Achtung!</strong> Es gibt in diesem Dokument noch ungespeicherte Änderungen, die beim Hinzufügen dieser Transkription verloren gehen werden!</p>
+   <form>														  
    <p>
      <label for="addToken">Transkription: </label>
      <input id="addTokenBox" type="text" name="addToken" size="42" placeholder="" />
    </p>
+   </form>
    <p>Die neue Transkription wird <strong>vor</strong> dem Token &quot;<span id="addTokenBefore"></span>&quot; auf Zeile &quot;<span id="addTokenLineinfo"></span>&quot; in das Originaldokument eingefügt.</p>
    </div>
 
