@@ -226,7 +226,7 @@
    }
 
    /** Clone of RequestHandler::escapeSQL() */
-   protected function escapeSQL( $obj ) {
+   public function escapeSQL( $obj ) {
      if(is_string($obj)) {
        return mysql_real_escape_string(stripslashes($obj));
      }
