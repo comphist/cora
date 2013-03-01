@@ -43,7 +43,7 @@ abstract class Cora_Tests_DbTestCase
      */
     public static function setUpBeforeClass() {
         $mysqlcall = "mysql -uroot -p{$GLOBALS["DB_ROOTPW"]}";
-        system("echo CREATE DATABASE {$GLOBALS["DB_DBNAME"]} | ".$mysqlcall);
+        system("echo CREATE DATABASE IF NOT EXISTS {$GLOBALS["DB_DBNAME"]} | ".$mysqlcall);
         system($mysqlcall." {$GLOBALS["DB_DBNAME"]} < data/coratest-myisam.sql" );
     }
 
