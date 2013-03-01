@@ -94,11 +94,27 @@ abstract class Cora_Tests_DbTestCase
 
     public function last_error($result = null) {
         if ($result == null) {
-            $errinfo = $this->lastquery->errorInfo();
-            return $errinfo[0] != "00000";
+            $errinfo = self::$pdo->errorInfo();
+            return $errinfo[1] != 0;
         }
         $errinfo = $result->errorInfo();
-        return $errinfo[0] != "00000";
+        return $errinfo[1] != 0;
+    }
+
+    public function escapeSQL($obj) {
+        if(is_string($obj)) {
+            return $this->getConnection()->getConnection()->quote($obj);
+        } elseif (is_array($obj)) {
+            $newarray = array();
+            foreach($obj as $k => $v) {
+                $newarray[$k] = self::escapeSQL($v);
+            }
+            return $newarray;
+        } elseif (is_object($obj) && get_class($obj) == "SimpleXMLElement") {
+            return self::escapeSQL((string) $obj);
+        } else {
+            return $obj;
+        }
     }
 
     public function startTransaction() {}
