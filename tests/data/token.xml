@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<dataset>
+    <table name="edited_token">
+        <column>id</column>
+        <column>text_id</column>
+        <column>trans</column>
+        <column>ordnr</column>
+        <row>
+            <value>3</value>
+            <value>3</value>
+            <value>neutest</value>
+            <value>3</value>
+        </row>
+    </table>
+    <table name="edited_dipl">
+        <column>id</column>
+        <column>tok_id</column>
+        <column>line_id</column>
+        <column>utf</column>
+        <column>trans</column>
+        <row>
+            <value>3</value>
+            <value>3</value>
+            <value>3</value>
+            <value>testneu</value>
+            <value>testneu</value>
+        </row>
+    </table>
+    <table name="edited_modern">
+        <column>id</column>
+        <column>tok_id</column>
+        <column>trans</column>
+        <column>ascii</column>
+        <column>utf</column>
+        <row>
+            <value>5</value>
+            <value>3</value>
+            <value>testneu</value>
+            <value>testneu</value>
+            <value>testneu</value>
+        </row>
+    </table>
+    <table name="edited_comment">
+        <column>id</column>
+        <row>
+            <value></value>
+        </row>
+    </table>
+</dataset>

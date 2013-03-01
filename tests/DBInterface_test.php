@@ -364,12 +364,48 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         //$this->dbi->insertNewDocument($options, $data);
     }
 
-    public function testTokenOperations() {
-        // $this->deleteToken($textid, $tokenid);
-        // $this->addToken($textid, $oldtokenid, $toktrans, $converted);
-        // $this->editToken($textit, $tokenid, $toktrans, $converted);
+    public function testEditToken() {
+        // $this->editToken($textid, $tokenid, $toktrans, $converted);
+        $this->assertEquals(array("success" => false,
+            "errors" => array(
+                 "Die neue Transkription enthält einen Zeilenumbruch mehr "
+                 ."als die vorherige, es konnte jedoch keine passende Zeile "
+                 ."gefunden werden. (Befindet sich die Transkription in der "
+                 ."letzten Zeile des Dokuments?)"
+                //"Die neue Transkription enthält 1 Zeilenumbrüche, "
+                //."die alte Transkription enthielt jedoch nur 0."
+            )),
+                            $this->dbi->editToken("4", "6", "neutest", "test neu"));
+
+        $actual = $this->dbi->editToken("3", "3",
+                                  "neutest", array("dipl_trans" => array("testneu"),
+                                                   "dipl_utf" => array("testneu"),
+                                                   "mod_trans" => array("testneu"),
+                                                   "mod_ascii" => array("testneu"),
+                                                   "mod_utf" => array("testneu"))
+        );
+        $this->assertEquals(array("success" => true,
+                                  "oldmodcount" => 1,
+                                  "newmodcount" => 1),
+                            $actual);
+        $expected = $this->createXMLDataset("data/token.xml");
+        $this->assertTablesEqual($expected->getTable("edited_token"),
+            $this->getConnection()->createQueryTable("edited_token",
+            "SELECT * FROM token WHERE id=3"));
+        $this->assertTablesEqual($expected->getTable("edited_dipl"),
+            $this->getConnection()->createQueryTable("edited_dipl",
+            "SELECT * FROM dipl WHERE tok_id=3"));
+        $this->assertTablesEqual($expected->getTable("edited_modern"),
+            $this->getConnection()->createQueryTable("edited_modern",
+            "SELECT * FROM modern WHERE tok_id=3"));
     }
 
+    public function testDeleteToken() {
+        // $this->deleteToken($textid, $tokenid);
+    }
+    public function testAddToken() {
+        // $this->addToken($textid, $oldtokenid, $toktrans, $converted);
+    }
     /*
     public function testDeleteFile() {
         $this->dbi->deleteFile("3");
