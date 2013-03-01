@@ -1361,7 +1361,9 @@
 	 $qstr .= " ON DUPLICATE KEY UPDATE `value`=VALUES(value)";
 	 $q = $this->query($qstr);
 	 $qerr = $this->dbconn->last_error();
-	 if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
+         if($qerr) {
+             throw new SQLQueryException($qerr."\n".$qstr);
+         }
        }
        if(!empty($inserttag)) {
 	 foreach($inserttag as $insertdata) {
@@ -1369,7 +1371,9 @@
 	   $qstr .= "VALUES " . $insertdata['query'];
 	   $q = $this->query($qstr);
 	   $qerr = $this->dbconn->last_error();
-	   if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
+           if($qerr) {
+               throw new SQLQueryException($qerr."\n".$qstr);
+           }
 	   $q = $this->query("SELECT LAST_INSERT_ID()");
 	   $row = $this->dbconn->fetch_array($q);
 	   $newid = $row[0];
@@ -1383,13 +1387,17 @@
 	 $qstr .= "')";
 	 $q = $this->query($qstr);
 	 $qerr = $this->dbconn->last_error();
-	 if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
+         if($qerr) {
+             throw new SQLQueryException($qerr."\n".$qstr);
+         }
 	 $qstr  = "DELETE FROM {$this->db}.tag WHERE `id` IN ('";
 	 $qstr .= implode("','", $deletetag);
 	 $qstr .= "')";
 	 $q = $this->query($qstr);
 	 $qerr = $this->dbconn->last_error();
-	 if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
+         if($qerr) {
+             throw new SQLQueryException($qerr."\n".$qstr);
+         }
        }
        if(!empty($insertts)) {
 	 $qstr  = "INSERT INTO {$this->db}.tag_suggestion ";
@@ -1399,7 +1407,9 @@
 	 $qstr .= "                         `tag_id`=VALUES(tag_id)";
 	 $q = $this->query($qstr);
 	 $qerr = $this->dbconn->last_error();
-	 if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
+         if($qerr) {
+             throw new SQLQueryException($qerr."\n".$qstr);
+         }
        }
        if(!empty($deletets)) {
 	 $qstr  = "DELETE FROM {$this->db}.tag_suggestion WHERE `id` IN ('";
@@ -1407,14 +1417,18 @@
 	 $qstr .= "')";
 	 $q = $this->query($qstr);
 	 $qerr = $this->dbconn->last_error();
-	 if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
+         if($qerr) {
+             throw new SQLQueryException($qerr."\n".$qstr);
+         }
        }
        if(!empty($deleteerr)) {
 	 $qstr  = "DELETE FROM {$this->db}.mod2error WHERE ";
 	 $qstr .= implode(" OR ", $deleteerr);
 	 $q = $this->query($qstr);
 	 $qerr = $this->dbconn->last_error();
-	 if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
+         if($qerr) {
+             throw new SQLQueryException($qerr."\n".$qstr);
+         }
        }
        if(!empty($inserterr)) {
 	 $qstr  = "INSERT IGNORE INTO {$this->db}.mod2error ";
@@ -1422,7 +1436,9 @@
 	 $qstr .= implode(", ", $inserterr);
 	 $q = $this->query($qstr);
 	 $qerr = $this->dbconn->last_error();
-	 if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
+         if($qerr) {
+             throw new SQLQueryException($qerr."\n".$qstr);
+         }
        }
        if(!empty($insertcom)) {
 	 $qstr  = "INSERT INTO {$this->db}.comment ";
@@ -1431,7 +1447,9 @@
 	 $qstr .= " ON DUPLICATE KEY UPDATE `value`=VALUES(value)";
 	 $q = $this->query($qstr);
 	 $qerr = $this->dbconn->last_error();
-	 if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
+         if($qerr) {
+             throw new SQLQueryException($qerr."\n".$qstr);
+         }
        }
        if(!empty($deletecom)) {
 	 $qstr  = "DELETE FROM {$this->db}.comment WHERE `id` IN (";
@@ -1439,7 +1457,9 @@
 	 $qstr .= ")";
 	 $q = $this->query($qstr);
 	 $qerr = $this->dbconn->last_error();
-	 if($qerr) { throw new SQLQueryException($qerr."\n".$qstr); }
+         if($qerr) {
+             throw new SQLQueryException($qerr."\n".$qstr);
+         }
        }
      }
      catch(SQLQueryException $e) {
