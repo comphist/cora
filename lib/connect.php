@@ -1344,7 +1344,7 @@
 	   }
 	 }
 	 if(!empty($line['comment'])) {
-	   $insertcom[] = "({$comment_id}, '" . $token_ids[$line['id']] . "', '" . mysql_real_escape_string($line['comment']) . "', 'C', '" . $line['id'] . "')";
+	   $insertcom[] = "({$comment_id}, '" . $token_ids[$line['id']] . "', '" . $this->dbconn->escapeSQL($line['comment']) . "', 'C', '" . $line['id'] . "')";
 	 }
        }
 
@@ -1622,7 +1622,7 @@
      $this->dbconn->startTransaction();
      // add token
      $qs  = "INSERT INTO {$this->db}.token (`text_id`, `trans`, `ordnr`) VALUES ";
-     $qs .= "({$textid}, '" . mysql_real_escape_string($toktrans) . "', '{$ordnr}')";
+     $qs .= "({$textid}, '" . $this->dbconn->escapeSQL($toktrans) . "', '{$ordnr}')";
      $q = $this->query($qs);
      $qerr = $this->dbconn->last_error($q);
      if($qerr) {
@@ -1650,8 +1650,8 @@
      $diplcount = count($converted['dipl_trans']);
      for($i = 0; $i < $diplcount; $i++) { // loop by index because two arrays are involved
        $diplinsert[] = "({$tokenid}, {$lineid}, '" 
-	 . mysql_real_escape_string($converted['dipl_utf'][$i]) . "', '"
-	 . mysql_real_escape_string($converted['dipl_trans'][$i]) . "')";
+	 . $this->dbconn->escapeSQL($converted['dipl_utf'][$i]) . "', '"
+	 . $this->dbconn->escapeSQL($converted['dipl_trans'][$i]) . "')";
      }
      $qs  = "INSERT INTO {$this->db}.dipl (`tok_id`, `line_id`, `utf`, `trans`) VALUES ";
      $qs .= implode(", ", $diplinsert);
@@ -1668,9 +1668,9 @@
      $modinsert = array();
      $modcount  = count($converted['mod_trans']);
      for($j = 0; $j < $modcount; $j++) {
-       $modinsert[] = "({$tokenid}, '" . mysql_real_escape_string($converted['mod_trans'][$j]) . "', '"
-	 . mysql_real_escape_string($converted['mod_ascii'][$j]) . "', '"
-	 . mysql_real_escape_string($converted['mod_utf'][$j]) . "')";
+       $modinsert[] = "({$tokenid}, '" . $this->dbconn->escapeSQL($converted['mod_trans'][$j]) . "', '"
+	 . $this->dbconn->escapeSQL($converted['mod_ascii'][$j]) . "', '"
+	 . $this->dbconn->escapeSQL($converted['mod_utf'][$j]) . "')";
      }
      $qs  = "INSERT INTO {$this->db}.modern (`tok_id`, `trans`, `ascii`, `utf`) VALUES ";
      $qs .= implode(", ", $modinsert);
@@ -1766,9 +1766,9 @@
      for($i = 0; $i < $diplcount; $i++) { // loop by index because three arrays are involved
        $diplid = (isset($olddipl[$i]) ? $olddipl[$i]['id'] : "NULL");
        $dipltrans = $converted['dipl_trans'][$i];
-       $diplinsert[] = "({$diplid}, {$tokenid}, " . mysql_real_escape_string($lineids[$currentline]) . ", '" 
-	 . mysql_real_escape_string($converted['dipl_utf'][$i]) . "', '"
-	 . mysql_real_escape_string($dipltrans) . "')";
+       $diplinsert[] = "({$diplid}, {$tokenid}, " . $this->dbconn->escapeSQL($lineids[$currentline]) . ", '" 
+	 . $this->dbconn->escapeSQL($converted['dipl_utf'][$i]) . "', '"
+	 . $this->dbconn->escapeSQL($dipltrans) . "')";
        if(substr($dipltrans, -1)==='=' || substr($dipltrans, -3)==='(=)') {
 	 $currentline++;
        }
@@ -1792,9 +1792,9 @@
      $modcount  = count($converted['mod_trans']);
      for($j = 0; $j < $modcount; $j++) {
        $modid = (isset($oldmod[$j]) ? $oldmod[$j]['id'] : "NULL");
-       $modinsert[] = "({$modid}, {$tokenid}, '" . mysql_real_escape_string($converted['mod_trans'][$j]) . "', '"
-	 . mysql_real_escape_string($converted['mod_ascii'][$j]) . "', '"
-	 . mysql_real_escape_string($converted['mod_utf'][$j]) . "')";
+       $modinsert[] = "({$modid}, {$tokenid}, '" . $this->dbconn->escapeSQL($converted['mod_trans'][$j]) . "', '"
+	 . $this->dbconn->escapeSQL($converted['mod_ascii'][$j]) . "', '"
+	 . $this->dbconn->escapeSQL($converted['mod_utf'][$j]) . "')";
      }
      // are there mods that need to be deleted?
      while(isset($oldmod[$j])) {
@@ -1865,7 +1865,7 @@
      }
      // token
      $qs = "UPDATE {$this->db}.token SET `trans`='"
-       . mysql_real_escape_string($toktrans) . "' WHERE `id`={$tokenid}";
+       . $this->dbconn->escapeSQL($toktrans) . "' WHERE `id`={$tokenid}";
      $q = $this->query($qs);
      $qerr = $this->dbconn->last_error($q);
      if($qerr) {
@@ -2011,11 +2011,11 @@
     $qstr  = "INSERT INTO {$this->db}.text ";
     $qstr .= "  (`sigle`, `fullname`, `project_id`, `created`, `creator_id`, ";
     $qstr .= "   `currentmod_id`, `header`) VALUES ";
-    $qstr .= "('" . mysql_real_escape_string($options['sigle']) . "', ";
-    $qstr .= "'" . mysql_real_escape_string($options['name']) . "', ";
+    $qstr .= "('" . $this->dbconn->escapeSQL($options['sigle']) . "', ";
+    $qstr .= "'" . $this->dbconn->escapeSQL($options['name']) . "', ";
     $qstr .= "'" . $options['project'] . "', CURRENT_TIMESTAMP, ";
     $qstr .= "'" . $_SESSION['user_id'] . "', NULL, ";
-    $qstr .= "'" . mysql_real_escape_string($data->getHeader()) . "')";
+    $qstr .= "'" . $this->dbconn->escapeSQL($data->getHeader()) . "')";
     $q = $this->query($qstr);
     if($qerr = $this->dbconn->last_error()) {
       $this->dbconn->rollback();
@@ -2047,8 +2047,8 @@
     $qarr  = array();
     $pages = $data->getPages();
     foreach($pages as $page) {
-      $qarr[] = "('" . mysql_real_escape_string($page['name']) . "', '" 
-	. mysql_real_escape_string($page['side']) . "', '{$fileid}', '" 
+      $qarr[] = "('" . $this->dbconn->escapeSQL($page['name']) . "', '" 
+	. $this->dbconn->escapeSQL($page['side']) . "', '{$fileid}', '" 
 	. $page['num'] . "')";
     }
     $qstr .= implode(",", $qarr);
@@ -2065,7 +2065,7 @@
     $qarr  = array();
     $cols  = $data->getColumns();
     foreach($cols as $col) {
-      $qarr[] = "('" . mysql_real_escape_string($col['name']) . "', '" 
+      $qarr[] = "('" . $this->dbconn->escapeSQL($col['name']) . "', '" 
 	. $col['num'] . "', '" . $col['parent_db_id'] . "')";
     }
     $qstr .= implode(",", $qarr);
@@ -2082,7 +2082,7 @@
     $qarr  = array();
     $lines = $data->getLines();
     foreach($lines as $line) {
-      $qarr[] = "('" . mysql_real_escape_string($line['name']) . "', '" 
+      $qarr[] = "('" . $this->dbconn->escapeSQL($line['name']) . "', '" 
 	. $line['num'] . "', '"	. $line['parent_db_id'] . "')";
     }
     $qstr .= implode(",", $qarr);
@@ -2099,7 +2099,7 @@
     $qarr  = array();
     $tokens = $data->getTokens();
     foreach($tokens as $token) {
-      $qarr[] = "('" . mysql_real_escape_string($token['trans']) . "', '" 
+      $qarr[] = "('" . $this->dbconn->escapeSQL($token['trans']) . "', '" 
 	. $token['ordnr'] . "', '{$fileid}')";
     }
     $qstr .= implode(",", $qarr);
@@ -2116,8 +2116,8 @@
     $qarr  = array();
     $dipls = $data->getDipls();
     foreach($dipls as $dipl) {
-      $qarr[] = "('" . mysql_real_escape_string($dipl['trans']) . "', '" 
-	. mysql_real_escape_string($dipl['utf']) . "', '"
+      $qarr[] = "('" . $this->dbconn->escapeSQL($dipl['trans']) . "', '" 
+	. $this->dbconn->escapeSQL($dipl['utf']) . "', '"
 	. $dipl['parent_tok_db_id'] . "', '" . $dipl['parent_line_db_id'] . "')";
     }
     $qstr .= implode(",", $qarr);
@@ -2134,9 +2134,9 @@
     $qarr  = array();
     $moderns = $data->getModerns();
     foreach($moderns as $mod) {
-      $qarr[] = "('" . mysql_real_escape_string($mod['trans']) . "', '" 
-	. mysql_real_escape_string($mod['utf']) . "', '"
-	. mysql_real_escape_string($mod['ascii']) . "', '" . $mod['parent_db_id'] . "')";
+      $qarr[] = "('" . $this->dbconn->escapeSQL($mod['trans']) . "', '" 
+	. $this->dbconn->escapeSQL($mod['utf']) . "', '"
+	. $this->dbconn->escapeSQL($mod['ascii']) . "', '" . $mod['parent_db_id'] . "')";
     }
     $qstr .= implode(",", $qarr);
     $q = $this->query($qstr);
@@ -2166,7 +2166,7 @@
 	}
 	// for all other tags, create a new tag entry first
 	else {
-	  $tqstr = $tistr . "('" . mysql_real_escape_string($sugg['tag']) . "', 0, '"
+	  $tqstr = $tistr . "('" . $this->dbconn->escapeSQL($sugg['tag']) . "', 0, '"
 	    . $tagset_ids[$sugg['type']] . "')";
 	  $tq = $this->query($tqstr);
 	  if($qerr = $this->dbconn->last_error()) {
@@ -2212,8 +2212,8 @@
     $comments = $data->getComments();
     foreach($comments as $comment) {
       $qarr[] = "('" . $comment['parent_db_id'] . "', '" 
-	. mysql_real_escape_string($comment['text']) . "', '"
-	. mysql_real_escape_string($comment['type']) . "')";
+	. $this->dbconn->escapeSQL($comment['text']) . "', '"
+	. $this->dbconn->escapeSQL($comment['type']) . "')";
     }
     $qstr .= implode(",", $qarr);
     $q = $this->query($qstr);

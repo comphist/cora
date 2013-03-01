@@ -883,7 +883,7 @@ var EditorModel = new Class({
 	    });
 	}
 
-	var ler = data[this.lastEditedRow].id;
+	var ler = (!(this.lastEditedRow in data) ? this.lastEditedRow : data[this.lastEditedRow].id);
 	req = new Request.JSON({
 	    url: 'request.php?do=saveData&lastEditedRow='+ler,
 	    onSuccess: function(status,xml) {
