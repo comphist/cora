@@ -400,11 +400,32 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
             "SELECT * FROM modern WHERE tok_id=3"));
     }
 
-    public function testDeleteToken() {
-        // $this->deleteToken($textid, $tokenid);
-    }
     public function testAddToken() {
-        // $this->addToken($textid, $oldtokenid, $toktrans, $converted);
+        $this->assertEquals(array("success" => true,
+                                  "newmodcount" => 1),
+            $this->dbi->addToken("3", "3", "testadd",
+                                 array("dipl_trans" => array("testadd"),
+                                       "dipl_utf" => array("testadd"),
+                                       "mod_trans" => array("testadd"),
+                                       "mod_ascii" => array("testadd"),
+                                       "mod_utf" => array("testadd"))
+        ));
+
+        $expected = $this->createXMLDataset("data/token.xml");
+        $actual = $this->getConnection()->createQueryTable("added_token",
+                  "SELECT * FROM token");
+        $this->assertEquals("7", $actual->getRowCount());
+        $this->assertTablesEqual($expected->getTable("added_token"), $actual);
+
+        $actual = $this->getConnection()->createQueryTable("added_dipl",
+                  "SELECT * FROM dipl");
+        $this->assertEquals("12", $actual->getRowCount());
+        $this->assertTablesEqual($expected->getTable("added_dipl"), $actual);
+
+        $actual = $this->getConnection()->createQueryTable("added_modern",
+                  "SELECT * FROM modern");
+        $this->assertEquals("12", $actual->getRowCount());
+        $this->assertTablesEqual($expected->getTable("added_modern"), $actual);
     }
     /*
     public function testDeleteFile() {

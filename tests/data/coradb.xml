@@ -134,8 +134,6 @@
 		<field name="name" xsi:nil="true" />
 	</row>
 	</table_data>
-	<table_data name="comment">
-	</table_data>
 	<table_data name="token">
 	<row>
 		<field name="id">1</field>
@@ -173,6 +171,15 @@
 		<field name="trans">test</field>
 		<field name="ordnr">1</field>
 	</row>
+	</table_data>
+	<table_data name="comment">
+            <row>
+                <field name="id">1</field>
+                <field name="tok_id">3</field>
+                <field name="value">blablabla</field>
+                <field name="comment_type">K</field>
+                <field name="subtok_id">5</field>
+            </row>
 	</table_data>
 	<table_data name="user2project">
 	<row>
