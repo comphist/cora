@@ -17,14 +17,10 @@ require_once"../lib/connect.php";
  *      changePassword($uname, $password)
  *      changeProjectUsers($pid, $userlist)
  *      toggleNormStatus($username)
- *      isAllowedToOpenFile($fid, $uname)
- *      isAllowedToDeleteFile($fid, $uname)
- *      importTaglist($taglist, $tagsetname)
- *      insertNewDocument($options, $data) XXX
+ *      getTextIdForToken($tok_id)
  *  coverage for:
  *      getLines($fid, $start, $lim);
  *      saveLines($fid, $lastedited, $lines);
- *
  */
 class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
     protected $dbi;
@@ -86,6 +82,11 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         $this->dbi->toggleAdminStatus("test");
         $this->assertEquals(0, $this->getConnection()->createQueryTable("testuser",
                                "SELECT admin FROM users WHERE name='test';")->getValue(0, "admin"));
+
+        $this->assertTrue($this->dbi->isAllowedToOpenFile("3", "bollmann"));
+        $this->assertFalse($this->dbi->isAllowedToOpenFile("3", "test"));
+        $this->assertTrue($this->dbi->isAllowedToDeleteFile("3", "bollmann"));
+        $this->assertFalse($this->dbi->isAllowedToDeleteFile("3", "test"));
     }
 
     public function testUserSettings() {
@@ -265,13 +266,6 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
             "SELECT * FROM user2project WHERE user_id=5 AND project_id=1")->getRowCount());
     }
 
-    /*
-    public function testGetAllLines() {
-        $this->assertEquals($this->expected["lines"],
-                            $this->dbi->getAllLines("3"));
-    }
-     */
-
     public function testSaveLines() {
         //saveLines($fid, $lastedited, $lines);
         $_SESSION["user"] = "bollmann";
@@ -364,10 +358,6 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
                                   'deletedlemma' => '512'),
                             $this->dbi->getTagsetByValue("3"));
         //$this->dbi->importTagList($taglist, $name);
-      //  $actual = $this->dbi->getAllSuggestions("t1", "1");
-      //  $this->assertEquals(array(
-      //                      ),
-      //                      $actual);
     }
 
     public function testInsertNewDocument() {
@@ -388,7 +378,21 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         // ignored in our test db
         $this->assertEquals(0,
             $this->query("SELECT * FROM {$GLOBALS["DB_DBNAME"]}.text WHERE ID=3")->getRowCount());
-    }*/
+    }
+
+    public function testGetAllLines() {
+        $this->assertEquals($this->expected["lines"],
+                            $this->dbi->getAllLines("3"));
+    }
+
+    public function testGetSuggestions() {
+        $actual = $this->dbi->getAllSuggestions("t1", "1");
+        $this->assertEquals(array(
+                            ),
+                            $actual);
+    }
+     */
+
 
 }
 ?>
