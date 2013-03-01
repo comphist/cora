@@ -4,6 +4,55 @@ require_once"data/test_data.php";
 
 require_once"../lib/connect.php";
 
+/** CoraDocument Mock for insertNewDocument test
+ *
+ * 03/2013 Florian Petran
+ */
+class Cora_Tests_CoraDocument_Mock {
+    private $test_data;
+    function __construct() {
+        $this->test_data = get_CoraDocument_data();
+    }
+    public function getHeader() {
+        return "Importtest header";
+    }
+    public function getPages() {
+        return $this->test_data["pages"];
+    }
+    public function getColumns() {
+        return $this->test_data["columns"];
+    }
+    public function getLines() {
+        return $this->test_data["lines"];
+    }
+    public function getTokens() {
+        return $this->test_data["tokens"];
+    }
+    public function getDipls() {
+        return $this->test_data["dipls"];
+    }
+    public function getModerns() {
+        return $this->test_data["mods"];
+    }
+    public function getShifttags() {
+        return array();
+    }
+    public function getComments() {
+        return array(
+            "text" => "bla bla kommentar",
+            "type" => "K",
+            "parent_db_id" => "7"
+        );
+    }
+
+    public function fillPageIDs() {}
+    public function fillColumnIDs() {}
+    public function fillLineIDs() {}
+    public function fillTokenIDs() {}
+    public function fillDiplIDs() {}
+    public function fillModernIDs() {}
+}
+
 /** Tests for DBInterface class
  *
  *  02/2013 Florian Petran
@@ -361,7 +410,64 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
     }
 
     public function testInsertNewDocument() {
-        //$this->dbi->insertNewDocument($options, $data);
+        $options = array("tagset" => "1",
+                         "sigle" => "i1",
+                         "name" => "importtest",
+                         "project" => 1
+                     );
+        $data = new Cora_Tests_CoraDocument_Mock();
+        $_SESSION["user_id"] = 3;
+        $expected = $this->createXMLDataset("data/inserted_document.xml");
+
+        $actual = $this->dbi->insertNewDocument($options, $data);
+
+        $this->assertTablesEqual($expected->getTable("inserted_text"),
+            $this->getConnection()->createQueryTable("inserted_text",
+            "SELECT id, sigle, fullname, project_id, currentmod_id, header FROM text "
+           ."WHERE sigle='i1'"));
+        $this->assertTablesEqual($expected->getTable("inserted_text2tagset"),
+            $this->getConnection()->createQueryTable("inserted_text2tagset",
+            "SELECT * FROM text2tagset WHERE text_id=6"));
+
+        $this->assertTablesEqual($expected->getTable("inserted_page"),
+            $this->getConnection()->createQueryTable("inserted_page",
+            "SELECT * FROM page WHERE text_id=6"));
+
+        $this->assertTablesEqual($expected->getTable("inserted_col"),
+            $this->getConnection()->createQueryTable("inserted_col",
+            "SELECT * FROM col WHERE page_id=3"));
+
+        $this->assertTablesEqual($expected->getTable("inserted_line"),
+            $this->getConnection()->createQueryTable("inserted_line",
+            "SELECT * FROM line WHERE col_id=3"));
+
+        $this->assertTablesEqual($expected->getTable("inserted_token"),
+            $this->getConnection()->createQueryTable("inserted_token",
+            "SELECT * FROM token WHERE text_id=6"));
+
+        $this->assertTablesEqual($expected->getTable("inserted_dipl"),
+            $this->getConnection()->createQueryTable("inserted_dipl",
+            "SELECT * FROM dipl WHERE tok_id >= 7 AND tok_id <= 9"));
+
+        $this->assertTablesEqual($expected->getTable("inserted_modern"),
+            $this->getConnection()->createQueryTable("inserted_modern",
+            "SELECT * FROM modern WHERE tok_id >= 7 AND tok_id <= 9"));
+
+
+        $this->assertTablesEqual($expected->getTable("inserted_tag_suggestion"),
+            $this->getConnection()->createQueryTable("inserted_tag_suggestion",
+            "SELECT * FROM tag_suggestion WHERE mod_id >= 15"));
+
+
+        $this->assertTablesEqual($expected->getTable("inserted_tag"),
+            $this->getConnection()->createQueryTable("inserted_tag",
+            "SELECT * FROM tag WHERE tagset_id=2 or tagset_id=3"));
+
+        $this->assertTablesEqual($expected->getTable("inserted_comment"),
+            $this->getConnection()->createQueryTable("inserted_comment",
+            "SELECT * FROM comment WHERE tok_id=7"));
+        // XXX apparently insertNewDocument returns false if no error occurred
+        $this->assertFalse($actual);
     }
 
     public function testEditToken() {
@@ -427,6 +533,16 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         $this->assertEquals("12", $actual->getRowCount());
         $this->assertTablesEqual($expected->getTable("added_modern"), $actual);
     }
+
+    public function testGetIDForToken() {
+        for ($i = 1; $i <= 5; ++$i) {
+            $this->assertEquals("3",
+                $this->dbi->getTextIDForToken($i));
+        }
+        $this->assertEquals("4",
+            $this->dbi->getTextIDForToken("6"));
+    }
+
     /*
     public function testDeleteFile() {
         $this->dbi->deleteFile("3");

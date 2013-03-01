@@ -547,6 +547,12 @@ function get_XMLHandler_initial() {
 
 
 /** Test data to initialize CoraDocument with
+ *
+ * 02/2013-03/2013 Florian Petran
+ *
+ * it's also used for CoraDocument Mock objects,
+ * e.g. in DBInterface tests.
+ *
  */
 function get_CoraDocument_data() {
     return array(
@@ -554,74 +560,255 @@ function get_CoraDocument_data() {
                         array( "xml_id" => "p1",
                                "side" => 'v',
                                'range' => array('c1', 'c1'),
-                               'no' => '42')
+                               'name' => '42',
+                               'num' => '1'
+                           )
                     ),
         "columns" => array( // column
                         array('xml_id' => 'c1',
-                              'range' => array('l1', 'l2'))
+                              'range' => array('l1', 'l2'),
+                              'name' => 'a',
+                              'num' => '1',
+                              'parent_db_id' => '3'
+                        )
                     ),
         "lines" => array( // lines
-                        array('xml_id' => 'l1',
+                        array('xml_id' => 'l1', // 8
                               'name' => '01',
+                              'num' => '1',
+                              'parent_db_id' => '4',
                               'range' => array('t1_d1', 't2_d2')),
-                        array('xml_id' => 'l2',
+                        array('xml_id' => 'l2', // 9
                               'name' => '02',
+                              'num' => '2',
+                              'parent_db_id' => '4',
                               'range' => array('t3_d1', 't3_d1'))
                     ),
         "tokens" => array( // tokens
                         array("db_id" => "",
                               "xml_id" => "t1",
-                              '$ol|tu'),
+                              'ordnr' => 1,
+                              'trans' => '$ol|tu'),
                         array("db_id" => "",
                               "xml_id" => "t2",
-                              'ge#e$$en'),
+                              'ordnr' => 2,
+                              'trans' => 'ge#e$$en'),
                         array("db_id" => "",
                               "xml_id" => "t3",
-                              "Anshelm/(.)")
+                              'ordnr' => 3,
+                              'trans' => "Anshelm/(.)")
                     ),
         "dipls" => array( // dipl
                         array("db_id" => "",
                               "xml_id" => "t1_d1",
                               "parent_tok_xml_id" => "t1",
-                              "\$ol|tu"),
+                              'parent_tok_db_id' => '7',
+                              'parent_line_db_id' => '8',
+                              'utf' => '',
+                              'trans' => "\$ol|tu"),
                         array("db_id" => "",
                               "xml_id" => "t2_d1",
                               "parent_tok_xml_id" => "t2",
-                              "ge#"),
+                              'parent_tok_db_id' => '8',
+                              'parent_line_db_id' => '8',
+                              'utf' => '',
+                              'trans' => "ge#"),
                         array("db_id" => "",
                               "xml_id" => "t2_d2",
                               "parent_tok_xml_id" => "t2",
-                              'e$$en'),
+                              'parent_tok_db_id' => '8',
+                              'parent_line_db_id' => '9',
+                              'utf' => '',
+                              'trans' => 'e$$en'),
                         array("db_id" => "",
                               "xml_id" => "t3_d1",
                               "parent_tok_xml_id" => "t3",
-                              "Anshelm/")
+                              'parent_tok_db_id' => '9',
+                              'parent_line_db_id' => '9',
+                              'utf' => '',
+                              'trans' => "Anshelm/")
                    ),
         "mods" => array( // mod
-                        array("db_id" => "",
+                        array("db_id" => "15",
                               "xml_id" => "t1_m1",
                               "parent_xml_id" => "t1",
-                              '$ol'),
-                        array("db_id" => "",
+                              'tags' => array(
+                                  array(
+                                      'type' => 'pos',
+                                      'tag' => 'ADJA.Comp.Fem.Dat.Sg',
+                                      'score' => '0.91',
+                                      'source' => 'user',
+                                      'selected' => '0'
+                                  ),
+                                  array(
+                                      'type' => 'norm',
+                                      'tag' => 'soll',
+                                      'score' => '1.0',
+                                      'source' => 'user',
+                                      'selected' => '1',
+                                  ),
+                                  array(
+                                      'type' => 'lemma',
+                                      'tag' => 'sollen',
+                                      'source' => 'user',
+                                      'score' => null,
+                                      'selected' => '0'
+                                  )
+                              ),
+                              'parent_db_id' => '7',
+                              'ascii' => '', // XXX
+                              'utf' => '', // XXX
+                              'trans' => '$ol'),
+                        array("db_id" => "16",
                               "xml_id" => "t1_m2",
                               "parent_xml_id" => "t1",
-                              'tu'),
-                        array("db_id" => "",
+                              'tags' => array(
+                                  array(
+                                      'type' => 'pos',
+                                      'tag' => 'ADJA.Comp.Fem.Dat.Sg',
+                                      'score' => '0.91',
+                                      'source' => 'user',
+                                      'selected' => '0'
+                                  ),
+                                  array(
+                                      'type' => 'norm',
+                                      'tag' => 'soll',
+                                      'score' => '1.0',
+                                      'source' => 'user',
+                                      'selected' => '1',
+                                  ),
+                                  array(
+                                      'type' => 'lemma',
+                                      'tag' => 'sollen',
+                                      'score' => null,
+                                      'source' => 'user',
+                                      'selected' => '0'
+                                  )
+                              ),
+                              'parent_db_id' => '7',
+                              'ascii' => '', // XXX
+                              'utf' => '', // XXX
+                              'trans' => 'tu'),
+                        array("db_id" => "17",
                               "xml_id" => "t2_m1",
                               "parent_xml_id" => "t2",
-                              'ge#e$$en'),
-                        array("db_id" => "",
+                              'tags' => array(
+                                  array(
+                                      'type' => 'pos',
+                                      'tag' => 'ADJA.Comp.Fem.Dat.Sg',
+                                      'score' => '0.91',
+                                      'source' => 'user',
+                                      'selected' => '0'
+                                  ),
+                                  array(
+                                      'type' => 'norm',
+                                      'tag' => 'soll',
+                                      'score' => '1.0',
+                                      'source' => 'user',
+                                      'selected' => '1',
+                                  ),
+                                  array(
+                                      'type' => 'lemma',
+                                      'tag' => 'sollen',
+                                      'score' => null,
+                                      'source' => 'user',
+                                      'selected' => '0'
+                                  )
+                              ),
+                              'parent_db_id' => '8',
+                              'ascii' => '', // XXX
+                              'utf' => '', // XXX
+                              'trans' => 'ge#e$$en'),
+                        array("db_id" => "18",
                               "xml_id" => "t3_m1",
                               "parent_xml_id" => "t3",
-                              'Anshelm'),
-                        array("db_id" => "",
+                              'tags' => array(
+                                  array(
+                                      'type' => 'pos',
+                                      'tag' => 'ADJA.Comp.Fem.Dat.Sg',
+                                      'score' => '0.91',
+                                      'source' => 'user',
+                                      'selected' => '0'
+                                  ),
+                                  array(
+                                      'type' => 'norm',
+                                      'tag' => 'soll',
+                                      'score' => '1.0',
+                                      'source' => 'user',
+                                      'selected' => '1',
+                                  ),
+                                  array(
+                                      'type' => 'lemma',
+                                      'tag' => 'sollen',
+                                      'score' => null,
+                                      'source' => 'user',
+                                      'selected' => '0'
+                                  )
+                              ),
+                              'parent_db_id' => '9',
+                              'ascii' => '', // XXX
+                              'utf' => '', // XXX
+                              'trans' => 'Anshelm'),
+                        array("db_id" => "19",
                               "xml_id" => "t3_m2",
                               "parent_xml_id" => "t3",
-                              '/'),
-                        array("db_id" => "",
+                              'tags' => array(
+                                  array(
+                                      'type' => 'pos',
+                                      'tag' => 'ADJA.Comp.Fem.Dat.Sg',
+                                      'score' => '0.91',
+                                      'source' => 'user',
+                                      'selected' => '0'
+                                  ),
+                                  array(
+                                      'type' => 'norm',
+                                      'tag' => 'soll',
+                                      'score' => '1.0',
+                                      'source' => 'user',
+                                      'selected' => '1',
+                                  ),
+                                  array(
+                                      'type' => 'lemma',
+                                      'tag' => 'sollen',
+                                      'score' => null,
+                                      'source' => 'user',
+                                      'selected' => '0'
+                                  )
+                              ),
+                              'parent_db_id' => '9',
+                              'ascii' => '', // XXX
+                              'utf' => '', // XXX
+                              'trans' => '/'),
+                        array("db_id" => "20",
                               "xml_id" => "t3_m3",
                               "parent_xml_id" => "t3",
-                              '(.)')
+                              'tags' => array(
+                                  array(
+                                      'type' => 'pos',
+                                      'tag' => 'ADJA.Comp.Fem.Dat.Sg',
+                                      'score' => '0.91',
+                                      'source' => 'user',
+                                      'selected' => '0'
+                                  ),
+                                  array(
+                                      'type' => 'norm',
+                                      'tag' => 'soll',
+                                      'score' => '1.0',
+                                      'source' => 'user',
+                                      'selected' => '1',
+                                  ),
+                                  array(
+                                      'type' => 'lemma',
+                                      'tag' => 'sollen',
+                                      'score' => null,
+                                      'source' => 'user',
+                                      'selected' => '0'
+                                  )
+                              ),
+                              'parent_db_id' => '9',
+                              'ascii' => '', // XXX
+                              'utf' => '', // XXX
+                              'trans' => '(.)')
                 )
     );
 }
