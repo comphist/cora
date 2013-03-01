@@ -39,6 +39,7 @@ class Cora_Tests_DBInterface_Mock {
         }
 
         return array(
+            "lastEditedRow" => "",
             "data" => array(
                 "id" => "",
                 "sigle" => "",
@@ -49,7 +50,10 @@ class Cora_Tests_DBInterface_Mock {
                 "changed" => "",
                 "changer_id" => "",
                 "currentmod_id" => "",
-                "header" => $this->xml_data["header"]
+                "ext_id" => "",
+                "file_name" => "bla",
+                "tagset" => "",
+                "header" => $this->expected["header"]
             ),
             "success" => true
         );
@@ -68,7 +72,7 @@ class Cora_Tests_XMLHandler_test extends PHPUnit_Framework_TestCase {
     }
 
     public function testImport() {
-        $options = array();
+        $options = array('ext_id' => '');
         $filename = array(
             "tmp_name" => "data/cora-importtest.xml",
             "name" => "cora-importtest.xml"
