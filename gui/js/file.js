@@ -65,18 +65,23 @@ var file = {
 	    },
 	    onComplete: function(response){
 		var title="", message="", textarea="";
-		response = JSON.decode(response);
+		try {
+		    response = JSON.decode(response);
+		} catch(err) {
+		    title = "Datei-Import fehlgeschlagen";
+		    message = "Der Server lieferte eine ungültige Antwort zurück.";
+		    textarea += "Fehler beim Interpretieren der Server-Antwort:\n\t" + err.message;
+		    textarea += "\n\nDie Server-Antwort lautete:\n" + response;
+		}
 		
-		if(response==null || typeof response.success == "undefined"){
+		if(message!="") {}
+		else if(response==null || typeof response.success == "undefined"){
 		    title = "Datei-Import fehlgeschlagen";
 		    message = "Beim Hinzufügen der Datei ist ein unbekannter Fehler aufgetreten.";
 		}
 		else if(!response.success){
 		    title = "Datei-Import fehlgeschlagen";
-		    message  = "Beim Hinzufügen der Datei ";
-		    message += response.errors.length>1 ? "sind " + response.errors.length : "ist ein";
-		    message += " Fehler aufgetreten:";
-
+		    message = "Beim Hinzufügen der Datei sind Fehler aufgetreten:";
 		    for(var i=0;i<response.errors.length;i++){
 			textarea += response.errors[i] + "\n";
 		    }

@@ -159,6 +159,35 @@ class CoraSessionHandler {
   public function importFile($xmldata, $options) {
     return $this->xml->import($xmldata, $options);
   }
+
+
+  /** Checks file for validity, converts it to XML, then calls
+      XMLHandler::import(). */
+  public function importTranscriptionFile($transdata, $options) {
+    $localname = $transdata['tmp_name'];
+    // convert to utf-8
+    $errors = $this->ch->convertToUtf($localname, $options['encoding']);
+    if(!empty($errors)) {
+      return array("success" => false, "errors" => $errors);
+    }
+    // run through check script
+    $errors = $this->ch->checkFile($localname);
+    if(!empty($errors)) {
+      return array("success" => false, "errors" => $errors);
+    }
+    // run through XML conversion (& tagging)
+    $xmlname = null;
+    $errors = $this->ch->convertTransToXML($localname, $xmlname);
+    if(!empty($errors)) {
+      return array("success" => false, "errors" => $errors);
+    }
+    if(!isset($xmlname) || empty($xmlname)) {
+      return array("success" => false, "errors" => array("Fehler beim Erzeugen einer temporären Datei."));
+    }
+    // perform import
+    $xmldata = array("tmp_name" => $xmlname, "name" => $transdata['name']);
+    return $this->xml->import($xmldata, $options);
+  }
   
   /** Wraps DBInterface::importTagList() */
   public function importTagList($taglist, $tagsetname){

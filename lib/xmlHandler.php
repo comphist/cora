@@ -261,7 +261,7 @@ class XMLHandler {
     $reader = new XMLReader();
     if(!$reader->open($xmlfile['tmp_name'])) {
       return array("success"=>False,
-		   "errors"=>array("Interner Fehler: Konnte temporäre Datei '".$xmlfile."' nicht öffnen."));
+		   "errors"=>array("Interner Fehler: Konnte temporäre Datei '".$xmlfile['tmp_name']."' nicht öffnen."));
     }
     $format = '';
     $xmlerror = $this->processXMLHeader($reader, $options, $format);

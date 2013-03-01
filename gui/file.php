@@ -138,6 +138,15 @@ $tagsets = $sh->getTagsetList();
 		</p>
 
 		<p>
+		<label for="fileEnc">Encoding: </label>
+		<select name="fileEnc" size="1">
+                   <option value="utf-8">UTF-8 (Unicode)</option>
+                   <option value="iso-8859-1">ISO-8859-1 (Latin 1)</option>
+                   <option value="IBM850">MS-DOS (IBM-850)</option>
+		</select>
+		</p>
+
+		<p>
 		<label for="project">Projekt: </label>
 		<select name="project" size="1">
 			<?php foreach($projects as $set):?>

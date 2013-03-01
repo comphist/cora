@@ -255,7 +255,39 @@ class RequestHandler {
 				     "errors"=>array("PHPException: ".
 						     $e->getMessage())));
 	    }
-	    
+	    exit;
+
+	  case "importTransFile":
+	    $errmsg = $this->checkFileUpload($_FILES['transFile']);
+	    if($errmsg) {
+	      echo json_encode(array("success"=>false,
+				     "errors"=>array("Fehler beim Upload: ".$errmsg)));
+	      exit;
+	    }
+
+	    $data = $_FILES['transFile'];
+	    $options = array();
+	    if(!empty($post['fileEnc'])) {
+	      $options['encoding'] = $post['fileEnc'];
+	    }
+	    if(!empty($post['transName'])) {
+	      $options['name'] = $post['transName'];
+	    }
+	    if(!empty($post['sigle'])) {
+	      $options['sigle'] = $post['sigle'];
+	    }
+	    $options['tagset'] = $post['tagset'];
+	    $options['project'] = $post['project'];
+
+	    try {
+	      $result = $this->sh->importTranscriptionFile($data,self::escapeSQL($options));
+	      echo json_encode($result);
+	    }
+	    catch (Exception $e) {
+	      echo json_encode(array("success"=>false,
+				     "errors"=>array("PHPException: ".
+						     $e->getMessage())));
+	    }
 	    exit;
 	    
 	  default:	exit();
