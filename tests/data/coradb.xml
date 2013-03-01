@@ -3532,7 +3532,7 @@
 	<row>
 		<field name="id">512</field>
 		<field name="value">deletedlemma</field>
-		<field name="needs_revision">0</field>
+		<field name="needs_revision">1</field>
 		<field name="tagset_id">3</field>
 	</row>
 	<row>

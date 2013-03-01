@@ -167,7 +167,7 @@ function get_DBInterface_expected() {
                             'trans'       => 'vunf=tusent#vnd#vierhundert#vn-(=)sechzig',
                             'utf'         => 'vunftusentvndvierhundertvnsechzig',
                             'tok_id'      => '4',
-                            'full_trans'  => 'vunf=tusent#vnd#vierhundert#vn-(=)sechzig',
+                            'full_trans'  => 'vunf= tusent#vnd#vierhundert#vn-(=) sechzig',
                             'num'         => '5',
                             'suggestions' => array(),
                             'anno_norm'   => 'norm',

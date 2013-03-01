@@ -12,16 +12,13 @@ require_once"../lib/connect.php";
  *
  * TODO
  * tests for:
+ *      getErrorTypes()
  *      getUserData($user, $pw)
- *      getTagsets($class ="POS")
- *      getTagset($tagset, $limit="none")
- *      getTagsetByValue($tagset:")
  *      changePassword($uname, $password)
  *      changeProjectUsers($pid, $userlist)
  *      toggleNormStatus($username)
  *      isAllowedToOpenFile($fid, $uname)
  *      isAllowedToDeleteFile($fid, $uname)
- *      getAllSuggestions($fid, $lineid)
  *      importTaglist($taglist, $tagsetname)
  *      insertNewDocument($options, $data) XXX
  *  coverage for:
@@ -141,14 +138,6 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
     }
 
     public function testLockUnlock() {
-        // locking a file that doesn't exist
-        /* this returns { success: true, lockCount: 0 }
-         * TODO find out if this is intended
-        $lock_result = $this->dbi->lockFile("512", "test");
-        $this->assertEquals(array("success" => false),
-            $lock_result);
-         */
-
         // locking a file that is already locked returns info on the lock
         $lock_result = $this->dbi->lockFile("3", "test");
         $this->assertEquals(array("success" => false,
@@ -241,10 +230,6 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         $this->assertEquals("9", $this->dbi->getMaxLinesNo("3"));
         $this->assertEquals("0", $this->dbi->getMaxLinesNo("5"));
         $this->assertEquals("0", $this->dbi->getMaxLinesNo("512"));
-
-        //insertNewDocument($options, $data);
-        //getAllSuggestions($fid, $line_id);
-        //saveLines($fid, $lasteditedrow, $lines);
     }
 
     public function testProjects() {
@@ -333,11 +318,66 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
     }
 
     public function testTags() {
-      
+        $tagsets = array(array('id' => '1',
+                               'class' => 'POS',
+                               'shortname' => '1',
+                               'longname' => 'ImportTest'),
+                         array('id' => '3',
+                               'class' => 'lemma',
+                               'shortname' => '3',
+                               'longname' => 'LemmaTest'),
+                         array('id' => '2',
+                               'class' => 'norm',
+                               'shortname' => '2',
+                               'longname' => 'NormTest'));
+
+        $this->assertEquals($tagsets,
+                            $this->dbi->getTagsets(null));
+        $this->assertEquals(array($tagsets[0]),
+                            $this->dbi->getTagsets("POS"));
+
+        // getTagsetsForFile returns a slightly different array,
+        // so we can't use the expected array from above.
+        $this->assertEquals(array(array('id' => '1',
+                                        'class' => 'POS'),
+                                  array('id' => '2',
+                                        'class' => 'norm'),
+                                  array('id' => '3',
+                                        'class' => 'lemma')),
+                            $this->dbi->getTagsetsForFile("3"));
+
+        $lemma_tagset = array(array('id' => '512',
+                                    'value' => 'deletedlemma',
+                                    'needs_revision' => '1'),
+                              array('id' => '511',
+                                    'value' => 'lemma',
+                                    'needs_revision' => '0'));
+
+        // default value for limit is 'none', but actually other
+        // strings would work too
+        $this->assertEquals($lemma_tagset,
+                            $this->dbi->getTagset("3"));
+        $this->assertEquals(array($lemma_tagset[1]),
+                            $this->dbi->getTagset("3", 'legal'));
+
+        $this->assertEquals(array('lemma' => '511',
+                                  'deletedlemma' => '512'),
+                            $this->dbi->getTagsetByValue("3"));
+        //$this->dbi->importTagList($taglist, $name);
       //  $actual = $this->dbi->getAllSuggestions("t1", "1");
       //  $this->assertEquals(array(
       //                      ),
       //                      $actual);
+    }
+
+    public function testInsertNewDocument() {
+        //$this->dbi->insertNewDocument($options, $data);
+    }
+
+    public function testTokenOperations() {
+        // $this->deleteToken($textid, $tokenid);
+        // $this->addToken($textid, $oldtokenid, $toktrans, $converted);
+        // $this->editToken($textit, $tokenid, $toktrans, $converted);
     }
 
     /*
@@ -351,30 +391,4 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
     }*/
 
 }
-
-/** Tests that need FK awareness.
- *
- * TODO this needs to be moved to a separate file,
- * since apparently phpunit doesn't allow more than one test
- * class in a file.
- */
-class Cora_Tests_DBInterface_FK_test extends Cora_Tests_DbTestCase_FKAware {
-    protected $dbi;
-    protected $backupGlobalsBlacklist = array('_SESSION');
-
-    protected function setUp() {
-        $this->dbi = new DBInterface($this);
-        parent::setUp();
-    }
-
-    public function testDeleteProjectWithUsers() {
-        $this->assertFalse($this->dbi->deleteProject("1"));
-        $this->assertEquals("1",
-            $this->getConnection()->createQueryTable("project",
-            "SELECT * FROM project WHERE id=1")->getRowCount());
-        $this->fail();
-    }
-}
-
-
 ?>
