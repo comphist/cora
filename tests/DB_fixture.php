@@ -103,7 +103,8 @@ abstract class Cora_Tests_DbTestCase
 
     public function escapeSQL($obj) {
         if(is_string($obj)) {
-            return $this->getConnection()->getConnection()->quote($obj);
+            return preg_replace( "/^'/", "",
+                        preg_replace( "/'$/", "", $this->getConnection()->getConnection()->quote($obj)));
         } elseif (is_array($obj)) {
             $newarray = array();
             foreach($obj as $k => $v) {
