@@ -39,7 +39,7 @@ class CoraSessionHandler {
     $defaults = array( "lang"        => DEFAULT_LANGUAGE,
 		       "loggedIn"    => false,
 		       "admin"       => false,
-		       "normvisible" => true,
+		       "normvisible" => false,
 		       "failedLogin" => false );
 
     foreach($defaults as $key => $default) {
