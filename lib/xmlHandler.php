@@ -109,7 +109,7 @@ class XMLHandler {
 			    "fm" => "F");
     foreach($node->children() as $tagnode) {
       $shifttag = array();
-      $shifttag['type'] = $tagnode->getName();
+      $shifttag['type'] = (string) $tagnode->getName();
       $shifttag['type_letter'] = $type_to_letter[$shifttag['type']];
       $shifttag['range'] = $this->parseRange((string) $tagnode['range']);
       $shifttags[] = $shifttag;
@@ -142,12 +142,14 @@ class XMLHandler {
       $modern['utf']    = (string) $modnode['utf'];
       $modern['parent_xml_id'] = $thistokid;
       // first, parse all automatic suggestions
-      foreach($modnode->suggestions->children() as $suggnode) {
-	$sugg = array('source' => 'auto', 'selected' => 0);
-	$sugg['type']   = $suggnode->getName();
-	$sugg['tag']    = (string) $suggnode['tag'];
-	$sugg['score']  = (string) $suggnode['score'];
-	$modern['tags'][] = $sugg;
+      if($modnode->suggestions) {
+	foreach($modnode->suggestions->children() as $suggnode) {
+	  $sugg = array('source' => 'auto', 'selected' => 0);
+	  $sugg['type']   = $suggnode->getName();
+	  $sugg['tag']    = (string) $suggnode['tag'];
+	  $sugg['score']  = (string) $suggnode['score'];
+	  $modern['tags'][] = $sugg;
+	}
       }
       // then, parse all selected annotations
       foreach($modnode->children() as $annonode) {
@@ -187,8 +189,13 @@ class XMLHandler {
     $tokens  = array();
     $dipls   = array();
     $moderns = array();
-    $tokcount = 0;
-    $lasttokid = null;
+
+    $token['xml_id'] = "t0";
+    $token['trans']  = "";
+    $token['ordnr']  = 1;
+    $tokens[] = $token;
+    $tokcount = 1;
+    $lasttokid = "t0";
 
     while ($reader->read()) {
       // only handle opening tags
