@@ -1,4 +1,5 @@
 <?php
+ini_set('memory_limit', '536870912');
 
 /** @file request.php
  * Handle requests sent via JavaScript.
