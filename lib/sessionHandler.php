@@ -308,6 +308,9 @@ class CoraSessionHandler {
     if ($_SESSION["admin"]) {
       return $this->db->createProject($name);
     }
+    else {
+      return array("success" => false, "errors" => array());
+    }
   }
 
   /** Wraps DBInterface::deleteProject(), checking for administrator

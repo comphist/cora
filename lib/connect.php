@@ -888,7 +888,11 @@
    public function createProject($name){
      $qs = "INSERT INTO {$this->db}.project (`name`) VALUES ('{$name}')";
      $query = $this->query($qs);
-     return $this->dbconn->last_insert_id();
+     $qerr = $this->dbconn->last_error($query);
+     if($qerr) {
+       return array("success" => false, "errors" => array($qerr));
+     }
+     return array("success" => true, "pid" => $this->dbconn->last_insert_id());
    }
 
    /** Deletes a project.  Will fail unless no document is

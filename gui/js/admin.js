@@ -224,8 +224,11 @@ var project_editor = {
 		var pn = $('projectCreateForm').getElement('input').get('value');
 		var req = new Request.JSON(
 		    {url:'request.php',
-		     onSuccess: function(data, text) {
-			 var pid = Number.from(text);
+		     onSuccess: function(status) {
+			 var pid = false;
+			 if(status!==null && status.success && status.pid) {
+			     pid = Number.from(status.pid);
+			 }
 			 if(!pid || pid<1) {
 			     new mBox.Notice({
 				 content: 'Projekt erstellen fehlgeschlagen',
