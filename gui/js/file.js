@@ -305,7 +305,7 @@ var file = {
         		            url: "request.php",
         		            async: true,
 				    method: 'get',
-				    data: {'do':'fetchTagset','tagset_id':fileData.data.tagset_id,'limit':'legal'},
+				    data: {'do':'fetchTagset','tagset_id':fileData.data.tagset_id,'limit':'all'},
         		            onComplete: function(response){
 					ref.preprocessTagset(response);
 					afterLoadTagset();
