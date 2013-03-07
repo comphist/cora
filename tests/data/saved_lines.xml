@@ -7,6 +7,13 @@
         <column>tag_id</column>
         <column>mod_id</column>
         <row>
+            <value>3</value>
+            <value>0</value>
+            <value>auto</value>
+            <value>478</value>
+            <value>4</value>
+        </row>
+        <row>
             <value>6</value>
             <value>1</value>
             <value>auto</value>
@@ -21,28 +28,35 @@
             <value>5</value>
         </row>
         <row>
-            <value>11</value>
+            <value>13</value>
             <value>1</value>
             <value>user</value>
             <value>497</value>
             <value>3</value>
         </row>
         <row>
-            <value>12</value>
+            <value>10</value>
+            <value>0</value>
+            <value>auto</value>
+            <value>478</value>
+            <value>3</value>
+        </row>
+        <row>
+            <value>14</value>
             <value>1</value>
             <value>user</value>
             <value>508</value>
             <value>5</value>
         </row>
         <row>
-            <value>13</value>
+            <value>15</value>
             <value>1</value>
             <value>user</value>
             <value>189</value>
             <value>7</value>
         </row>
         <row>
-            <value>14</value>
+            <value>16</value>
             <value>1</value>
             <value>user</value>
             <value>514</value>
@@ -85,6 +99,27 @@
         <row>
             <value>8</value>
             <value>1</value>
+        </row>
+    </table>
+    <table name="comment">
+        <column>id</column>
+        <column>tok_id</column>
+        <column>value</column>
+        <column>comment_type</column>
+        <column>subtok_id</column>
+        <row>
+            <value>1</value>
+            <value>3</value>
+            <value>blablabla</value>
+            <value>K</value>
+            <value>5</value>
+        </row>
+        <row>
+            <value>3</value>
+            <value>2</value>
+            <value>testcomment</value>
+            <value>C</value>
+            <value>2</value>
         </row>
     </table>
 </dataset>

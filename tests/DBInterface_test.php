@@ -317,35 +317,41 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
 
     public function testSaveLines() {
         //saveLines($fid, $lastedited, $lines);
-        $_SESSION["user"] = "bollmann";
-        $result = $this->dbi->saveLines("3", "9",
-            array(
-                array('id' => '2',
-                      'anno_POS' => 'PPOSS',
-                      'anno_morph' => 'Fem.Nom.Sg'),
-                array('id' => '3',
-                      'anno_POS' => 'VVFIN',
-                      'anno_morph' => '3.Pl.Past.Konj'),
-                array('id' => '4',
-                      'anno_POS' => null),
-                array('id' => '5',
-                      'anno_POS' => 'VVPP',
-                      'anno_lemma' => 'newlemma'),
-                array('id' => '6',
-                      'anno_norm' => 'newnorm'),
-                array('id' => '7',
-                      'anno_POS' => 'NN',
-                      'anno_morph' => 'Neut.Dat.Pl',
-                      'general_error' => false,
-                      'anno_lemma' => null),
-                array('id' => '8',
-                      'anno_norm' => 'bla',
-                      'general_error' => true),
-                array('id' => '9',
-                      'anno_morph' => 'Neut.Nom.Sg',
-                      'anno_lemma' => 'blatest',
-                      'anno_norm' => "")
-            ));
+        $lines = array(
+                    array('id' => '2',
+                          'anno_POS' => 'PPOSS',
+                          'anno_morph' => 'Fem.Nom.Sg',
+                          'comment' => 'testcomment'),
+                    array('id' => '3',
+                          'anno_POS' => 'VVFIN',
+                          'anno_morph' => '3.Pl.Past.Konj',
+                          'comment' => ''),
+                    array('id' => '4',
+                          'anno_POS' => null),
+                    array('id' => '5',
+                          'anno_POS' => 'VVPP',
+                          'anno_lemma' => 'newlemma',
+                          'comment' => ''),
+                    array('id' => '6',
+                          'anno_norm' => 'newnorm'),
+                    array('id' => '7',
+                          'anno_POS' => 'NN',
+                          'anno_morph' => 'Neut.Dat.Pl',
+                          'general_error' => false,
+                          'anno_lemma' => null),
+                    array('id' => '8',
+                          'anno_norm' => 'bla',
+                          'anno_POS' => '',
+                          'general_error' => true),
+                    array('id' => '9',
+                          'anno_morph' => 'Neut.Nom.Sg',
+                          'anno_lemma' => 'blatest',
+                          'anno_norm' => "")
+                );
+        $this->assertEquals("lock failed",
+            $this->dbi->saveLines("3", "9", $lines, "test"));
+
+        $result = $this->dbi->saveLines("3", "9", $lines, "bollmann");
         $this->assertFalse($result);
         $expected = $this->createXMLDataset("data/saved_lines.xml");
         $this->assertTablesEqual($expected->getTable("tag_suggestion"),
@@ -358,6 +364,10 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         $this->assertTablesEqual($expected->getTable("mod2error"),
             $this->getConnection()->createQueryTable("mod2error",
             "SELECT * FROM mod2error WHERE mod_id IN (7, 8, 9)"));
+
+        $this->assertTablesEqual($expected->getTable("comment"),
+            $this->getConnection()->createQueryTable("comment",
+            "SELECT * FROM comment"));
     }
 
     public function testTags() {
@@ -481,14 +491,14 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
                 //"Die neue Transkription enthält 1 Zeilenumbrüche, "
                 //."die alte Transkription enthielt jedoch nur 0."
             )),
-                            $this->dbi->editToken("4", "6", "neutest", "test neu"));
+                            $this->dbi->editToken("4", "6", "neutest", "test neu", "3"));
 
         $actual = $this->dbi->editToken("3", "3",
                                   "neutest", array("dipl_trans" => array("testneu"),
                                                    "dipl_utf" => array("testneu"),
                                                    "mod_trans" => array("testneu"),
                                                    "mod_ascii" => array("testneu"),
-                                                   "mod_utf" => array("testneu"))
+                                                   "mod_utf" => array("testneu")), "3"
         );
         $this->assertEquals(array("success" => true,
                                   "oldmodcount" => 1,
@@ -514,7 +524,7 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
                                        "dipl_utf" => array("testadd"),
                                        "mod_trans" => array("testadd"),
                                        "mod_ascii" => array("testadd"),
-                                       "mod_utf" => array("testadd"))
+                                       "mod_utf" => array("testadd")), "3"
         ));
 
         $expected = $this->createXMLDataset("data/token.xml");

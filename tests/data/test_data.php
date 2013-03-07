@@ -125,7 +125,11 @@ function get_DBInterface_expected() {
                             'full_trans'  => 'pi$t||u||s',
                             'num'         => '2',
                             'general_error' => 1,
-                            'suggestions' => array(),
+                            'suggestions' => array(array('POS' => 'VMINF',
+                                                   'morph' => '--',
+                                                   'score' => null)),
+                            'anno_POS' => 'VMINF',
+                            'anno_morph' => '--',
 			      'comment' => null,
 			     'page_name' => '1',
 			     'page_side' => 'r',
@@ -138,7 +142,11 @@ function get_DBInterface_expected() {
                             'tok_id'      => '2',
                             'full_trans'  => 'pi$t||u||s',
                             'num'         => '3',
-                            'suggestions' => array(),
+                            'suggestions' => array(
+                                array('POS' => 'VVFIN',
+                                      'morph' => '3.Pl.Pres.Konj',
+                                      'score' => null)
+                            ),
                             'anno_POS'    => 'VVFIN',
                             'anno_morph'  => '3.Pl.Pres.Konj',
 			      'comment' => null,
@@ -157,7 +165,7 @@ function get_DBInterface_expected() {
                             'anno_POS'    => 'PDS',
                             'anno_morph'  => '*.Gen.Pl',
                             'anno_lemma'  => 'lemma',
-			      'comment' => null,
+			      'comment' => 'cora comment',
 			     'page_name' => '1',
 			     'page_side' => 'r',
 			     'col_name' => '',
@@ -203,7 +211,9 @@ function get_DBInterface_expected() {
 			     'page_name' => '1',
 			     'page_side' => 'r',
 			     'col_name' => '',
-			     'line_name' => '5'
+			     'line_name' => '5',
+                             'anno_POS' => 'PDS',
+                             'anno_morph' => 'Fem.Nom.Sg'
                         ),
                         array('id' => '9',
                             'trans' => '(.)',
@@ -415,15 +425,18 @@ function get_XMLHandler_expected() {
                 ),
         ),
         "tokens" => array(
+                array("xml_id" => "t0",
+                      "trans" => "",
+                      "ordnr" => 1),
                 array("xml_id" => "t1",
                       "trans" => '$ol|tu',
-                      "ordnr" => 1),
+                      "ordnr" => 2),
                 array("xml_id" => "t2",
                       "trans" => 'ge#e$$en',
-                      "ordnr" => 2),
+                      "ordnr" => 3),
                 array("xml_id" => "t3",
                       "trans" => 'Anshelm/(.)',
-                      "ordnr" => 3)
+                      "ordnr" => 4)
         ),
         "dipls" => array(
                 array(
@@ -530,6 +543,7 @@ function get_XMLHandler_initial() {
                             'trans' => '*{A*4}n$helm%9',
                             'utf' => 'Anshelm\'',
                             'tok_id' => '1',
+                            'ext_id' => null,
                             'full_trans' => '*{A*4}n$helm%9',
                             'num' => '0',
                             'suggestions' => array (

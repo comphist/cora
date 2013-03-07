@@ -180,6 +180,13 @@
                 <field name="comment_type">K</field>
                 <field name="subtok_id">5</field>
             </row>
+            <row>
+                <field name="id">2</field>
+                <field name="tok_id">3</field>
+                <field name="value">cora comment</field>
+                <field name="comment_type">C</field>
+                <field name="subtok_id">5</field>
+            </row>
 	</table_data>
 	<table_data name="user2project">
 	<row>
@@ -3562,7 +3569,7 @@
 		<field name="id">3</field>
 		<field name="score" xsi:nil="true" />
 		<field name="selected">1</field>
-		<field name="source">user</field>
+		<field name="source">auto</field>
 		<field name="tag_id">499</field>
 		<field name="mod_id">4</field>
 	</row>
@@ -3614,6 +3621,22 @@
 		<field name="tag_id">513</field>
 		<field name="mod_id">9</field>
 	</row>
+	<row>
+		<field name="id">10</field>
+		<field name="score" xsi:nil="true"/>
+		<field name="selected">1</field>
+		<field name="source">auto</field>
+		<field name="tag_id">478</field>
+		<field name="mod_id">3</field>
+	</row>
+        <row>
+                <field name="id">11</field>
+                <field name="score" xsi:nil="true"/>
+                <field name="selected">1</field>
+                <field name="source">user</field>
+                <field name="tag_id">218</field>
+                <field name="mod_id">8</field>
+        </row>
 	</table_data>
 </database>
 </mysqldump>
