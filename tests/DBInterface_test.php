@@ -97,8 +97,12 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         $this->assertEquals(1, $this->dbi->getUserIDFromName('system'));
         $this->assertEquals(5, $this->dbi->getUserIDFromName('test'));
 
-        // TODO can't test this without the unhashed password
-        // $this->dbi->getUserData($user,$pw);
+        $result = $this->dbi->getUserData("test","test");
+        $this->assertEquals(array('id' => '5',
+                                  'name' => 'test',
+                                  'admin' => '0',
+                                  'lastactive' => '2013-01-22 15:38:32'),
+                            $result);
 
         $this->assertEquals(array($this->expected["users"]["bollmann"],
                                   $this->expected["users"]["test"]),
@@ -118,7 +122,10 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
                                  $this->getConnection()->createQueryTable("users",
                                     "SELECT id,name,admin FROM users WHERE name='anselm';"));
 
-        //changePassword($name, $passwd);
+        $this->dbi->changePassword("test", "password");
+        $this->assertEquals("1619d7adc23f4f633f11014d2f22b7d8",
+            $this->getConnection()->createQueryTable("users",
+            "SELECT password FROM users WHERE name='test'")->getValue(0, 'password' ));
 
         $this->dbi->deleteUser("anselm");
         $this->assertEquals(0, $this->getConnection()->createQueryTable("users",
@@ -368,6 +375,14 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         $this->assertTablesEqual($expected->getTable("comment"),
             $this->getConnection()->createQueryTable("comment",
             "SELECT * FROM comment"));
+
+        $lines = array(array('id'=>'14'));
+        $result = $this->dbi->saveLines("3", "1", $lines, "bollmann");
+        $this->assertEquals(
+              "Ein interner Fehler ist aufgetreten (Code: 1074).  "
+             ."Die Anfrage enthielt 1 ungültige Token-ID(s) für "
+             ."das derzeit geöffnete Dokument.",
+             $result);
     }
 
     public function testTags() {

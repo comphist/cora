@@ -44,7 +44,7 @@ class Cora_Tests_DBInterface_FK_test extends Cora_Tests_DbTestCase_FKAware {
     public function testDeleteToken() {
         $this->assertEquals(array("success" => true,
                                   "oldmodcount" => 1),
-                            $this->dbi->deleteToken("3", "3"));
+                            $this->dbi->deleteToken("3", "3", "3"));
         $this->assertEquals(0,
             $this->getConnection()->createQueryTable("deleted_token",
             "SELECT * FROM token WHERE id=3")->getRowCount());
