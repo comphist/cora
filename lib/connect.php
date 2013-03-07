@@ -228,7 +228,7 @@
    /** Clone of RequestHandler::escapeSQL() */
    public function escapeSQL( $obj ) {
      if(is_string($obj)) {
-       return mysql_real_escape_string(stripslashes($obj));
+       return mysql_real_escape_string($obj);
      }
      else if(is_array($obj)) {
        $newarray = array();
