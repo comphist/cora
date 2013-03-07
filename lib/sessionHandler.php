@@ -509,8 +509,11 @@ class CoraSessionHandler {
 
   /** Perform user logout. */
   public function logout() {
-	session_destroy();
-	// setcookie();
+    if(isset($_SESSION["currentFileId"]) && !empty($_SESSION["currentFileId"])) {
+      $this->unlockFile($_SESSION["currentFileId"]);
+    }
+    session_destroy();
+    // setcookie();
     $_SESSION["loggedIn"] = false;
     $_SESSION["failedLogin"] = false;
     $_SESSION["admin"] = false;
