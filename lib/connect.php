@@ -1164,11 +1164,13 @@
     * @param string $lasteditedrow the id of the mod which
     *               should receive the progress marker
     * @param array  $lines an array of mods to be saved
+    * @param string $uname the username, used for the locking the
+    *               file and updating the last_edited timestamp
     *
     * @return @bool the result of the mysql query
     */ 		
-   public function saveLines($fileid,$lasteditedrow,$lines) {
-     $locked = $this->lockFile($fileid, $_SESSION["user"]);
+   public function saveLines($fileid,$lasteditedrow,$lines,$uname) {
+     $locked = $this->lockFile($fileid, $uname);
      if(!$locked['success']) {
        return "lock failed";
      }
@@ -1499,10 +1501,20 @@
 
      $this->dbconn->commitTransaction();
 
-     // finally, one last query...
-     $result = $this->markLastPosition($fileid,$lasteditedrow);
+     // mark the last position
+     $this->markLastPosition($fileid,$lasteditedrow);
+     // update timestamp
+     $userid = $this->getUserIDFromName($uname);
+     $this->updateChangedTimestamp($fileid,$userid);
 
      return False;
+   }
+
+   /** Updates "last edited" information for a file.
+    */
+   public function updateChangedTimestamp($fileid,$userid) {
+     $qs = "UPDATE {$this->db}.text SET `changer_id`={$userid}, `changed`=CURRENT_TIMESTAMP WHERE `id`={$fileid}";
+     return $this->query($qs);
    }
 
 
@@ -1519,17 +1531,18 @@
     */
    public function markLastPosition($fileid,$line){
      $qs = "UPDATE {$this->db}.text SET `currentmod_id`='{$line}' WHERE `id`='{$fileid}'";
-     return $this->query( $qs );
+     return $this->query($qs);
    }
 
    /** Delete a token
     *
     * @param string $textid  The ID of the document to which the token belongs.
     * @param string $tokenid The ID of the token to be changed.
+    * @param string $userid  The ID of the user making the change
     *
     * @return array A status array
     */
-   public function deleteToken($textid, $tokenid) {
+   public function deleteToken($textid, $tokenid, $userid) {
      $errors = array();
      $prevtokenid = null;
      $nexttokenid = null;
@@ -1640,6 +1653,7 @@
      }
      
      $this->dbconn->commitTransaction();
+     $this->updateChangedTimestamp($textid,$userid);
      return array("success" => true, "oldmodcount" => $oldmodcount);
    }
 
@@ -1650,10 +1664,11 @@
     *
     * @param string $textid  The ID of the document to which the token belongs.
     * @param string $oldtokenid The ID of the token before which the new one is inserted.
+    * @param string $userid  The ID of the user making the change
     *
     * @return array A status array
     */
-   public function addToken($textid, $oldtokenid, $toktrans, $converted) {
+   public function addToken($textid, $oldtokenid, $toktrans, $converted, $userid) {
      $errors = array();
      $ordnr = null; $lineid = null;
 
@@ -1735,6 +1750,7 @@
 
      // done!
      $this->dbconn->commitTransaction();
+     $this->updateChangedTimestamp($textid,$userid);
      return array("success" => true, "newmodcount" => $modcount);
    }
 
@@ -1743,10 +1759,11 @@
     *
     * @param string $textid  The ID of the document to which the token belongs.
     * @param string $tokenid The ID of the token to be changed.
+    * @param string $userid  The ID of the user making the change
     *
     * @return array A status array
     */
-   public function editToken($textid, $tokenid, $toktrans, $converted) {
+   public function editToken($textid, $tokenid, $toktrans, $converted, $userid) {
      $errors = array();
      $olddipl = array();
      $oldmod  = array();
@@ -1926,7 +1943,7 @@
      }
 
      $this->dbconn->commitTransaction();
-
+     $this->updateChangedTimestamp($textid,$userid);
      return array("success" => true, "oldmodcount" => count($oldmod), "newmodcount" => $modcount);
    }
 

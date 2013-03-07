@@ -362,7 +362,8 @@ class CoraSessionHandler {
   public function saveData($lasteditedrow,$data){
     $status = $this->db->saveLines($_SESSION['currentFileId'],
 				   $lasteditedrow,
-				   $data);
+				   $data,
+				   $_SESSION['user']);
 
     if($status) {
       return array("success"=>false, "errors"=>array($status));
@@ -382,6 +383,7 @@ class CoraSessionHandler {
    */
   public function deleteToken($tokenid) {
     $errors = array();
+    $userid = $_SESSION["user_id"];
     // check whether tokenid belongs to currently opened file
     $textid = $this->db->getTextIdForToken($tokenid);
     if($textid !== $_SESSION['currentFileId']) {
@@ -389,7 +391,7 @@ class CoraSessionHandler {
       return array("success" => false, "errors" => $errors);
     }
     // call the DB interface to make the change
-    $status = $this->db->deleteToken($textid, $tokenid);
+    $status = $this->db->deleteToken($textid, $tokenid, $userid);
     return $status;
   }
 
@@ -399,6 +401,8 @@ class CoraSessionHandler {
    * @param string $value   New transcription for the token
    */
   public function editToken($tokenid, $value) {
+    $errors = array();
+    $userid = $_SESSION["user_id"];
     // check whether tokenid belongs to currently opened file
     $textid = $this->db->getTextIdForToken($tokenid);
     if($textid !== $_SESSION['currentFileId']) {
@@ -413,7 +417,7 @@ class CoraSessionHandler {
     }
 
     // then, call a DBInterface function to make the change
-    $status = $this->db->editToken($textid, $tokenid, $value, $converted);
+    $status = $this->db->editToken($textid, $tokenid, $value, $converted, $userid);
     return $status;
   }
 
@@ -423,6 +427,8 @@ class CoraSessionHandler {
    * @param string $value   Transcription for the new token
    */
   public function addToken($tokenid, $value) {
+    $errors = array();
+    $userid = $_SESSION["user_id"];
     // check whether tokenid belongs to currently opened file
     $textid = $this->db->getTextIdForToken($tokenid);
     if($textid !== $_SESSION['currentFileId']) {
@@ -437,7 +443,7 @@ class CoraSessionHandler {
     }
 
     // then, call a DBInterface function to make the change
-    $status = $this->db->addToken($textid, $tokenid, $value, $converted);
+    $status = $this->db->addToken($textid, $tokenid, $value, $converted, $userid);
     return $status;
   }
 
