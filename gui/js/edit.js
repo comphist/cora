@@ -1086,14 +1086,39 @@ var EditorModel = new Class({
 
 	var performEdit = function(mbox) {
 	    var new_token = $('editTokenBox').get('value').trim();
-	    if(!new_token) {
-		alert("Transkription darf nicht leer sein!");
-		return false;
-	    }
 	    if(new_token == old_token) {
 		mbox.close();
 		return false;
 	    }
+	    if(!new_token) {
+		alert("Transkription darf nicht leer sein!");
+		return false;
+	    }
+	    if(new_token.indexOf("=")>-1) {
+		checkstr = new_token.replace(/=\) /g, "").replace(/= /g, "");
+		if(checkstr.indexOf("=")>-1) {
+		    new mBox.Modal({
+			title: 'Sind Sie sicher?',
+			content: 'editTokenConfirm',
+			buttons: [
+			    {title: 'Abbrechen', addClass: 'mform'},
+			    {title: 'Ja', addClass: 'mform button_green',
+			     event: function() {
+				 this.close();
+				 performEditRequest(mbox, new_token);
+			     }
+			    }
+			],
+			closeOnBodyClick: false,
+			closeInTitle: false
+		    }).open();
+		    return false;
+		}
+	    }
+	    performEditRequest(mbox, new_token);
+	}
+
+	var performEditRequest = function(mbox, new_token) {
 	    // spaces are treated as line breaks atm
 	    new_token = new_token.replace(/ /g, "\n");
 	    $('overlay').show();

@@ -93,6 +93,12 @@
    <p>Soll das Token &quot;<span id="deleteTokenToken"></span>&quot; wirklich gelöscht werden?</p>
    </div>
 
+   <div id="editTokenConfirm" class="limitedWidth">
+   <p>Die neue Transkription enthält mindestens ein Trennzeichen (<code>=</code> oder <code>(=)</code>), auf das kein Leerzeichen folgt.  Dies bedeutet, dass das Trennzeichen in der Transkription <strong>nicht am Zeilenende</strong>, sondern mitten im Wort stehen wird!</p>
+     <p>Falls dies nicht beabsichtigt ist, muss hinter das Trennzeichen ein Leerzeichen eingefügt werden, um den Zeilenumbruch zu signalisieren.</p>
+   <p>Sind Sie sicher, dass Sie diese Änderungen so durchführen wollen?</p>
+   </div>
+
    <div id="editTokenForm" class="limitedWidth">
    <p id="editTokenWarning" class="error_text"><strong>Achtung!</strong> Es gibt in diesem Dokument noch ungespeicherte Änderungen, die beim Editieren dieser Transkription verloren gehen werden!</p>
    <p>
