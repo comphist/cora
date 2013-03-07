@@ -744,26 +744,52 @@
     * @return bool @c true 
     */	
    public function deleteFile($fileid){
+     // first, get all open class tags associated with this file as
+     // they have to be deleted separately
+     $deletetag = array();
+     $qs  = "SELECT tag.id AS tag_id FROM {$this->db}.tag "
+       . "     LEFT JOIN {$this->db}.tag_suggestion ts ON tag.id=ts.tag_id "
+       . "     LEFT JOIN {$this->db}.tagset            ON tagset.id=tag.tagset_id "
+       . "     LEFT JOIN {$this->db}.modern            ON modern.id=ts.mod_id "
+       . "     LEFT JOIN {$this->db}.token             ON token.id=modern.tok_id "
+       . "     LEFT JOIN {$this->db}.text              ON text.id=token.text_id "
+       . "   WHERE  tagset.set_type='open' AND text.id={$fileid}";
+     $q = $this->query($qs);
+     $qerr = $this->dbconn->last_error($q);
+     if($qerr) { return "Ein interner Fehler ist aufgetreten (Code: 1040).\n" . $qerr; }
+     while($row = $this->dbconn->fetch_assoc($q)) {
+       $deletetag[] = $row['tag_id'];
+     }
+
      $this->dbconn->startTransaction();
-     $this->lockFile($fileid, "system");
 
-     $qs = "	DELETE FROM {$this->db}.files_metadata WHERE file_id='{$fileid}'";
-     if(!$this->query($qs)) { $this->dbconn->rollback(); return "Query for metadata failed."; }
+     // delete associated open class tags
+     if(!empty($deletetag)) {
+       $qs = "DELETE FROM {$this->db}.tag_suggestion WHERE `tag_id` IN (" . implode(",", $deletetag) . ")";
+       $q = $this->query($qs);
+       $qerr = $this->dbconn->last_error($q);
+       if($qerr) {
+	 $this->dbconn->rollback();
+	 return "Ein interner Fehler ist aufgetreten (Code: 1041).\n" . $qerr;
+       }
+       $qs = "DELETE FROM {$this->db}.tag WHERE `id` IN (" . implode(",", $deletetag) . ")";
+       $q = $this->query($qs);
+       $qerr = $this->dbconn->last_error($q);
+       if($qerr) {
+	 $this->dbconn->rollback();
+	 return "Ein interner Fehler ist aufgetreten (Code: 1043).\n" . $qerr;
+       }
+     }
 
-     $qs = "	DELETE FROM {$this->db}.files_tags_suggestion WHERE file_id='{$fileid}'";							 
-     if(!$this->query($qs)) { $this->dbconn->rollback(); return "Query for tags_suggestion failed."; }
-
-     $qs = "	DELETE FROM {$this->db}.files_data WHERE file_id='{$fileid}'";
-     if(!$this->query($qs)) { $this->dbconn->rollback(); return "Query for data failed."; }
-
-     $qs = "DELETE FROM {$this->db}.files_errors WHERE file_id='{$fileid}'";
-     if(!$this->query($qs)) { $this->dbconn->rollback(); return "Query for errors failed."; }
-
-     $qs = "DELETE FROM {$this->db}.files_progress WHERE file_id='{$fileid}'";
-     if(!$this->query($qs)) { $this->dbconn->rollback(); return "Query for progress failed."; }
-
-     $qs = "DELETE FROM {$this->db}.files_locked WHERE file_id='{$fileid}'";
-     $this->query($qs);
+     // delete text---deletions in all other tables are triggered
+     // automatically in the database via ON DELETE CASCADE
+     $qs = "DELETE FROM {$this->db}.text WHERE `id`={$fileid}";
+     $q = $this->query($qs);
+     $qerr = $this->dbconn->last_error($q);
+     if($qerr) {
+       $this->dbconn->rollback();
+       return "Ein interner Fehler ist aufgetreten (Code: 1042).\n" . $qerr;
+     }
 
      $this->dbconn->commitTransaction();
 

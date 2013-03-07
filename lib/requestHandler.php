@@ -352,9 +352,7 @@ class RequestHandler {
 	  case "openFile":   echo json_encode($this->sh->openFile($get['fileid']));
 	    exit;
 	    
-	  case "deleteFile": $status = $this->sh->deleteFile(self::escapeSQL($post["file_id"]));
-	    if ($status)
-	      self::returnError(500, "Could not delete file.  "+$status);
+	  case "deleteFile": echo json_encode($this->sh->deleteFile(self::escapeSQL($post["file_id"])));
 	    exit;
 	    
 	  case "exportFile":

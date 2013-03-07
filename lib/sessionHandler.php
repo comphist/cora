@@ -200,9 +200,15 @@ class CoraSessionHandler {
   /** Wraps DBInterface::deleteFile() */	
   public function deleteFile($fileid){
     if(!$_SESSION['admin'] && !$this->db->isAllowedToDeleteFile($fileid, $_SESSION['user'])) {
-      return "Keine Berechtigung.";
+      return array("success" => false, "error_msg" => "Keine Berechtigung.");
     }
-    return $this->db->deleteFile($fileid);
+    $status = $this->db->deleteFile($fileid);
+    if($status) {
+      return array("success" => false, "error_msg" => $status);
+    }
+    else {
+      return array("success" => true);
+    }
   }
 
   /** Wraps DBInterface::lockFile() */	

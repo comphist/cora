@@ -22,6 +22,26 @@ var file = {
         this.activateTransImportForm();
     },
 
+    /* Function: showNotice
+
+       Displays a floating notice, e.g., to indicate success.
+
+       NOTE: This function is duplicated in file.js and edit.js, and
+       should probably be placed in a separate "GUIInterface" class or
+       something.
+
+       Parameters:
+        ntype - Type of the notice ('ok' or 'error')
+        message - String to appear in the notice
+    */
+    showNotice: function(ntype, message) {
+	new mBox.Notice({
+	    type: ntype,
+	    position: {x: 'right'},
+	    content: message
+	});
+    },
+
     // activates the transcription import form -- in big parts a clone
     // of activateImportForm -- could they be combined?
     activateTransImportForm: function() {
@@ -455,15 +475,27 @@ var file = {
         if(!confirm(dialog))
             return;
         
-        var req = new Request(
+        var req = new Request.JSON(
     	    {'url': 'request.php?do=deleteFile',
     	     'async': false,
     	     'data': 'file_id='+fileid,
     	     onFailure: function(xhr) {
     		 alert("Fehler: Der Server lieferte folgende Fehlermeldung zurück:\n\n" + xhr.responseText);
     	     },
-    	     onSuccess: function(data, xml) {    	         
-    		     ref.listFiles();
+    	     onSuccess: function(status, blubb) {
+		 if(!status || !status.success) {
+		     ref.showNotice('error', "Konnte Datei nicht löschen.");
+		     if(status.error_msg) {
+    			 alert("Fehler: Der Server lieferte folgende Fehlermeldung zurück:\n\n" + status.error_msg);
+		     }
+		     else {
+    			 alert("Ein unbekannter Fehler ist aufgetreten.");
+		     }
+		 }
+		 else {
+		     ref.showNotice('ok', "Datei gelöscht.");
+		 }
+    		 ref.listFiles();
     	     }
     	    }
     	).post();

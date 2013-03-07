@@ -212,7 +212,11 @@ var EditorModel = new Class({
 
     /* Function: showNotice
 
-       Displays a floating notice to indicate success.
+       Displays a floating notice, e.g., to indicate success.
+
+       NOTE: This function is duplicated in file.js and edit.js, and
+       should probably be placed in a separate "GUIInterface" class or
+       something.
 
        Parameters:
         ntype - Type of the notice ('ok' or 'error')
