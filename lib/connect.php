@@ -2077,12 +2077,19 @@
     // Table 'text'
     $qstr  = "INSERT INTO {$this->db}.text ";
     $qstr .= "  (`sigle`, `fullname`, `project_id`, `created`, `creator_id`, ";
-    $qstr .= "   `currentmod_id`, `header`) VALUES ";
+    $qstr .= "   `currentmod_id`, `header`, `fullfile`) VALUES ";
     $qstr .= "('" . $this->dbconn->escapeSQL($options['sigle']) . "', ";
     $qstr .= "'" . $this->dbconn->escapeSQL($options['name']) . "', ";
     $qstr .= "'" . $options['project'] . "', CURRENT_TIMESTAMP, ";
     $qstr .= "'" . $_SESSION['user_id'] . "', NULL, ";
-    $qstr .= "'" . $this->dbconn->escapeSQL($data->getHeader()) . "')";
+    $qstr .= "'" . $this->dbconn->escapeSQL($data->getHeader()) . "', ";
+    if(isset($options['trans_file']) && !empty($options['trans_file'])) {
+      // $qstr .= "LOAD_FILE('" . $options['trans_file'] . "')";
+      $qstr .= "'" . $this->dbconn->escapeSQL($options['trans_file']) . "'";
+    } else {
+      $qstr .= "NULL";
+    }
+    $qstr .= ")";
     $q = $this->query($qstr);
     if($qerr = $this->dbconn->last_error()) {
       $this->dbconn->rollback();

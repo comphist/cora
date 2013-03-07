@@ -165,6 +165,7 @@ class CoraSessionHandler {
       XMLHandler::import(). */
   public function importTranscriptionFile($transdata, $options) {
     $localname = $transdata['tmp_name'];
+    $options['trans_file'] = file_get_contents($localname);
     // convert to utf-8
     $errors = $this->ch->convertToUtf($localname, $options['encoding']);
     if(!empty($errors)) {
