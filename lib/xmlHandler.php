@@ -206,7 +206,7 @@ class XMLHandler {
 	$this->setOptionsFromHeader($node, $options);
       }
       else if ($reader->name == 'header') {
-	$document->setHeader((string)$node);
+	$document->setHeader(trim((string)$node));
       }
       else if ($reader->name == 'layoutinfo') {
 	$this->processLayoutInformation($node, $document);
