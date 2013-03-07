@@ -12,9 +12,13 @@ require_once"../lib/xmlHandler.php";
 /** A mock DBInterface to trick the XMLHandler with
  */
 class Cora_Tests_DBInterface_Mock {
+    /// the imported document and options, we'll run asserts on these
     public $document;
     public $options;
-    private $test_data;
+
+    // expected and initial data
+    private $expected;
+    private $initial;
 
     function __construct() {
         $this->expected = get_XMLHandler_expected();
@@ -26,7 +30,7 @@ class Cora_Tests_DBInterface_Mock {
         $this->options = $options;
     }
     public function getAllLines($fileid) {
-        return $this->test_data["lines"];
+        return $this->initial["lines"];
     }
     public function getAllSuggestions($fileid, $lineid) {
         // XXX needed for export
@@ -123,7 +127,7 @@ class Cora_Tests_XMLHandler_test extends PHPUnit_Framework_TestCase {
     public function testExport() {
         // XXX
         $result_filename = "";
-        $this->xh->export("1", "hist");
+        $this->xh->export("1", "cora");
         $this->assertFileEquals("data/cora-importtest.xml",
                                 $result_filename);
     }
