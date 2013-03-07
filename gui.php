@@ -93,14 +93,6 @@ project_editor.project_users[<?php echo $pid; ?>] = new Array(<?php echo $arrstr
 			<?php endif; ?>
 		<?php endforeach; ?>
 
-		<style type="text/css">
-			<!--
-			#main {
-				max-width : 95%; //haupt css wert ueberschreiben
-			}
-			-->
-		</style>
-		
 	</head>
 	<body onload="onLoad();" onbeforeunload="return onBeforeUnload();">
 	        <div id="overlay"></div>

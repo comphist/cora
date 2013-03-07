@@ -133,7 +133,7 @@ var file = {
 		    title: title,
 		    content: message,
 		    closeOnBodyClick: false,
-		    buttons: [ {title: "OK"} ]
+		    buttons: [ {title: "OK", addClass: "mform button_green"} ]
 		}).open();
 
 		spinner.hide();
@@ -227,7 +227,7 @@ var file = {
 		    title: title,
 		    content: message,
 		    closeOnBodyClick: false,
-		    buttons: [ {title: "OK"} ]
+		    buttons: [ {title: "OK", addClass: "mform button_green"} ]
 		}).open();
 
 		spinner.hide();

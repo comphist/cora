@@ -131,7 +131,7 @@ ol {
 
 #main {
 	margin : auto;
-	max-width : 100%; //65em;
+	max-width : 99%; //65em;
 	min-width : 40em;
 	width : auto !important;
 	//width : 65em;
@@ -267,7 +267,7 @@ ol {
 	height : 1%;
 	overflow : hidden;
 	border: 1px solid #d1d1d1;
-	padding : 2em 5em 2em 5em;
+	padding : 2em 3em 2em 3em;
 	background: #f8f8f8;
 	margin: 10px;
 
