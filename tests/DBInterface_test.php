@@ -38,11 +38,11 @@ class Cora_Tests_CoraDocument_Mock {
         return array();
     }
     public function getComments() {
-        return array(
+        return array(array(
             "text" => "bla bla kommentar",
             "type" => "K",
             "parent_db_id" => "7"
-        );
+        ));
     }
 
     public function fillPageIDs() {}

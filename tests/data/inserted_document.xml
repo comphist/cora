@@ -449,10 +449,10 @@
         <column>comment_type</column>
         <column>subtok_id</column>
         <row>
-            <value>5</value>
+            <value>3</value>
             <value>7</value>
-            <value>7</value>
-            <value>7</value>
+            <value>bla bla kommentar</value>
+            <value>K</value>
             <value></value>
         </row>
     </table>

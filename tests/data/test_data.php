@@ -40,7 +40,8 @@ function get_DBInterface_expected() {
                           "changed" => "0000-00-00 00:00:00",
                           "changer_id" => "3",
                           "currentmod_id" => null,
-                          "header" => null
+                          "header" => null,
+                          "fullfile" => null
             ),
             "t2" => array("id" => "4",
                           "sigle" => "t2",
@@ -51,7 +52,8 @@ function get_DBInterface_expected() {
                           "changed" => "0000-00-00 00:00:00",
                           "changer_id" => "1",
                           "currentmod_id" => "14",
-                          "header" => null
+                          "header" => null,
+                          "fullfile" => null
             ),
             "t3" => array("id" => "5",
                           "sigle" => "t3",
@@ -62,7 +64,8 @@ function get_DBInterface_expected() {
                           "changed" => "0000-00-00 00:00:00",
                           "changer_id" => "1",
                           "currentmod_id" => null,
-                          "header" => null
+                          "header" => null,
+                          "fullfile" => null
             )
         ),
         "texts_extended" => array(

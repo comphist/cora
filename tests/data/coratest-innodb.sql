@@ -289,6 +289,7 @@ CREATE TABLE `text` (
   `changer_id` int(11) NOT NULL,
   `currentmod_id` bigint(20) DEFAULT NULL,
   `header` text,
+  `fullfile` text,
   PRIMARY KEY (`id`),
   KEY `creator_id` (`creator_id`),
   KEY `changer_id` (`changer_id`),
