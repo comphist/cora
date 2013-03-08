@@ -100,7 +100,11 @@ var EditorModel = new Class({
 		    }
 		    ref.dropdown = new_value;
 		    ref.dropdown.show();
-	    	}
+	    	} else if(target.hasClass('editTableLemma')) {
+		    new_value = target.hasClass('editTableLemmaChecked') ? 0 : 1;
+		    target.toggleClass('editTableLemmaChecked');
+		    ref.updateData(this_id, 'lemma_verified', new_value);
+		}
 	    }
 	);
 	et.addEvent(
@@ -690,6 +694,11 @@ var EditorModel = new Class({
 	    } else {
 		tr.getElement('div.editTableError').removeClass('editTableErrorChecked');
 	    }
+	    if (line.lemma_verified != null && line.lemma_verified == 1) {
+		tr.getElement('div.editTableLemma').addClass('editTableLemmaChecked');
+	    } else {
+		tr.getElement('div.editTableLemma').removeClass('editTableLemmaChecked');
+	    }
 	    if(line.page_name !== undefined) {
 		lineinfo = line.page_name + line.page_side + line.col_name + "," + line.line_name;
 	    }
@@ -879,6 +888,7 @@ var EditorModel = new Class({
 	    save.push({
 		id: line.id,
 		general_error: line.general_error,
+		lemma_verified: line.lemma_verified,
 		anno_lemma: line.anno_lemma,
 		anno_POS: tp, //.replace(/\s[\d\.]+/g,""),
 		anno_morph: tm, //.replace(/\s[\d\.]+/g,""),

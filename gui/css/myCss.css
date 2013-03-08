@@ -714,7 +714,7 @@ table#editTable select.input_error_chrome {
 
 }
 
-.editTableError {
+.editTableCheckbox {
     border: 1px solid black;
     width: 8px;
     height: 8px;
@@ -737,6 +737,14 @@ div.editTableProgressChecked {
 
 div.editTableErrorChecked {
     background-color: red !important;
+}
+
+div.editTableLemma {
+    display: inline-block;
+}
+
+div.editTableLemmaChecked {
+    background-color: blue !important;
 }
 
 .fileViewRefresh h3 {

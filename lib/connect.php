@@ -1086,6 +1086,8 @@
        while($row = $this->dbconn->fetch_assoc($q)) {
 	 if($row['name']=='general error') {
 	   $line['general_error'] = 1;
+	 } else if($row['name']=='lemma verified') {
+	   $line['lemma_verified'] = 1;
 	 }
        }
 
@@ -1216,6 +1218,11 @@
        $error_general = $errortypes['general error'];
      } else {
        $error_general = false;
+     }
+     if(array_key_exists('lemma verified', $errortypes)) {
+       $lemma_verified = $errortypes['lemma verified'];
+     } else {
+       $lemma_verified = false;
      }
      $tslist = $this->getTagsetsForFile($fileid);
      if(!is_array($tslist)) {
@@ -1360,6 +1367,17 @@
 	   else {
 	     // hack ...
 	     $deleteerr[] = "(`mod_id`='" . $line['id'] . "' AND `error_id`='" . $error_general . "')";
+	   }
+	 }
+       }
+       if(array_key_exists('lemma_verified', $line)) {
+	 if($lemma_verified) {
+	   if(intval($line['lemma_verified']) == 1) {
+	     $inserterr[] = "('" . $line['id'] . "', '" . $lemma_verified . "')";
+	   }
+	   else {
+	     // same hack ...
+	     $deleteerr[] = "(`mod_id`='" . $line['id'] . "' AND `error_id`='" . $lemma_verified . "')";
 	   }
 	 }
        }

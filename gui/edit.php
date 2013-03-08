@@ -44,7 +44,7 @@
 			<td class="editTable_line">
 			</td>
 			<td class="editTable_error">
-			    <div class="editTableError"></div>
+			    <div class="editTableError editTableCheckbox"></div>
 			</td>
 			<td class="editTable_tok_trans"></td>
 			<td class="editTable_token"></td>
@@ -56,6 +56,7 @@
 			<td class="editTable_POS"></td>
 			<td class="editTable_Morph"></td>
 			<td class="editTable_Lemma">
+			    <div class="editTableLemma editTableCheckbox"></div>
 			    <input type="text" size="10" value="" />
 			</td>
 			<td class="editTable_Comment">
