@@ -1,4 +1,4 @@
- <?php
+<?php
 
  /** @file connect.php
   * Provide objects for database access.
@@ -2323,4 +2323,3 @@
 
 
 ?>
-

@@ -12,7 +12,7 @@ class CommandHandler {
 
   private $check_script = "/usr/bin/ruby /usr/local/bin/convert_check.rb -C";
   private $conv_script  = "/usr/bin/ruby /usr/local/bin/convert_check.rb -T";
-  private $xml_script   = "/usr/bin/python /usr/local/bin/convert_coraxml.py";
+  private $xml_script   = "/usr/bin/python -u /usr/local/bin/convert_coraxml.py";
   private $single_token_flag = "-L";
   private $conv_opt = array("mod_trans" => "-c orig -t all -p leave -r leave -i original -d leave -s delete",
 			    "mod_ascii" => "-c simple -t all -p leave -r delete -i leave -d delete -s delete",
@@ -58,11 +58,11 @@ class CommandHandler {
 
   /** Call the conversion script to convert a transcription file to
       CorA XML. */
-  public function convertTransToXML(&$transname, &$xmlname) {
+  public function convertTransToXML(&$transname, &$xmlname, $logfile) {
     $output = array();
     $xmlname = tempnam(sys_get_temp_dir(), 'cora');
     $retval = 0;
-    $command = $this->xml_script . " {$transname} {$xmlname} 2>&1";
+    $command = $this->xml_script . " {$transname} {$xmlname} >>{$logfile} 2>&1";
     exec($command, $output, $retval);
     if($retval) {
       if(count($output) > 500) {
@@ -82,12 +82,11 @@ class CommandHandler {
       an empty array indicates success. */
   public function convertToUtf($filename, $encoding) {
     $errors = array(); $output = array();
-    $tmpfname = tempnam(sys_get_temp_dir(), 'cora');
     if (isset($encoding) && !empty($encoding) && $encoding!="utf-8") {
+      $tmpfname = tempnam(sys_get_temp_dir(), 'cora');
       exec("uconv -f {$encoding} -t utf-8 {$filename} > {$tmpfname}");
       exec("mv {$tmpfname} {$filename}");
     }
-    unlink($tmpfname);
     exec("iconv -f utf-8 -t utf-8 {$filename} 2>&1", $output, $retval);
     if ($retval) {
       array_unshift($errors, "Falsches Encoding angegeben: Datei konnte nicht nach UTF-8 umgewandelt werden!");

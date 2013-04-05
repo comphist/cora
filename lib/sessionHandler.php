@@ -160,34 +160,103 @@ class CoraSessionHandler {
     return $this->xml->import($xmldata, $options);
   }
 
+  /** Checks and parses the logfile for the current file import. */
+  public function getImportStatus() {
+    $logstat = $_SESSION['importInProgress'];
+    $status = array('in_progress'=>(bool)$logstat);
+    try {
+      $logcontent = file_get_contents($_SESSION['importLogFile']);
+      $log = explode("\n", $logcontent);
+    }
+    catch(Exception $e) {
+      return $status;
+    }
+    $output = array();
+    foreach($log as $lnr=>$entry) {
+      if(preg_match('/^~BEGIN (.*)/', $entry, $matches)) {
+	$status['status_'.$matches[1]] = "begun";
+      }
+      else if(preg_match('/^~SUCCESS (.*)/', $entry, $matches)) {
+	$status['status_'.$matches[1]] = "success";
+      }
+      else if(preg_match('/^~ERROR (.*)/', $entry, $matches)) {
+	$status['status_'.$matches[1]] = "error";
+      }
+      else if(preg_match('/^~FINISHED/', $entry, $matches)) {
+	$status['progress'] = 1.0;
+      }
+      else if(preg_match('/^~PROGRESS (.*)/', $entry, $matches)) {
+	$status['progress'] = floatval($matches[1]);
+      }
+      else if($entry == "reading parameter file...finished") {}
+      else {
+	$entry = trim($entry);
+	if(!empty($entry) && !preg_match('/^\d+$/', $entry, $matches)) {
+	  $output[] = $entry;
+	}
+      }
+    }
+    $status['output'] = implode("\n", $output);
+    return $status;
+  }
 
   /** Checks file for validity, converts it to XML, then calls
       XMLHandler::import(). */
   public function importTranscriptionFile($transdata, $options) {
     $localname = $transdata['tmp_name'];
+    $logfile = fopen($options['logfile'], 'a');
     // convert to utf-8
+    fwrite($logfile, "~BEGIN CHECK\n");
     $errors = $this->ch->convertToUtf($localname, $options['encoding']);
     if(!empty($errors)) {
-      return array("success" => false, "errors" => $errors);
+      fwrite($logfile, "~ERROR CHECK\n");
+      fwrite($logfile, implode("\n", $errors) . "\n");
+      fclose($logfile);
+      return false;
     }
     $options['trans_file'] = file_get_contents($localname);
     // run through check script
     $errors = $this->ch->checkFile($localname);
     if(!empty($errors)) {
-      return array("success" => false, "errors" => $errors);
+      fwrite($logfile, "~ERROR CHECK\n");
+      fwrite($logfile, implode("\n", $errors) . "\n");
+      fclose($logfile);
+      return false;
     }
+    fwrite($logfile, "~SUCCESS CHECK\n");
     // run through XML conversion (& tagging)
     $xmlname = null;
-    $errors = $this->ch->convertTransToXML($localname, $xmlname);
+    fwrite($logfile, "~BEGIN XMLCALL\n");
+    fclose($logfile);
+    $errors = $this->ch->convertTransToXML($localname, $xmlname, $options['logfile']);
+    $logfile = fopen($options['logfile'], 'a');
     if(!empty($errors)) {
-      return array("success" => false, "errors" => $errors);
+      fwrite($logfile, "~ERROR XML\n");
+      fwrite($logfile, implode("\n", $errors) . "\n");
+      fclose($logfile);
+      return false;
     }
     if(!isset($xmlname) || empty($xmlname)) {
-      return array("success" => false, "errors" => array("Fehler beim Erzeugen einer temporären Datei."));
+      fwrite($logfile, "~ERROR XML\n");
+      fwrite($logfile, "Fehler beim Erzeugen einer temporären Datei.\n");
+      fclose($logfile);
+      return false;
     }
+    fwrite($logfile, "~SUCCESS XMLCALL\n");
     // perform import
+    fwrite($logfile, "~BEGIN IMPORT\n");
     $xmldata = array("tmp_name" => $xmlname, "name" => $transdata['name']);
-    return $this->xml->import($xmldata, $options);
+    $status = $this->xml->import($xmldata, $options);
+    if(!isset($status['success']) || !$status['success']) {
+      fwrite($logfile, "~ERROR IMPORT\n");
+      fwrite($logfile, implode("\n", $status['errors']) . "\n");
+      fclose($logfile);
+      return false;
+    }
+    fwrite($logfile, "~SUCCESS IMPORT\n");
+    fwrite($logfile, implode("\n", $status['warnings']) . "\n");
+    fclose($logfile);
+    return true;
   }
   
   /** Wraps DBInterface::importTagList() */

@@ -41,6 +41,19 @@ $tagsets = $sh->getTagsetList();
 </div>
 
 <div class="templateHolder">
+  <div id="transImportSpinner">
+   <div id="transImportStatusContainer">
+   <table>
+   <tr id="tIS_upload"><td class="proc proc-running"></td><td>Datei übermitteln</td></tr>
+   <tr id="tIS_check"><td class="proc" /></td><td>Transkription prüfen</td></tr>
+   <tr id="tIS_convert"><td class="proc" /></td><td>Transkription analysieren</td></tr>
+   <tr id="tIS_tag"><td class="proc" /></td><td>Automatisch vorannotieren</td></tr>
+   <tr id="tIS_import"><td class="proc" /></td><td>Importieren abschließen</td></tr>
+   </table>
+   <div id="tIS_progress"></div>
+   </div>
+  </div>
+   
   <div class="panel" id="fileGroup">
     <h4 class="projectname">Projektname</h4>
         <div>

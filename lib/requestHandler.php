@@ -258,13 +258,36 @@ class RequestHandler {
 	    exit;
 
 	  case "importTransFile":
+	    $tmpfname = tempnam(sys_get_temp_dir(), 'coraIL');
+	    $_SESSION['importLogFile'] = $tmpfname;
+	    $_SESSION['importInProgress'] = true;
+
+	    // we perform a lengthy operation, so release the session
+	    session_write_close();
+
 	    $errmsg = $this->checkFileUpload($_FILES['transFile']);
 	    if($errmsg) {
 	      echo json_encode(array("success"=>false,
 				     "errors"=>array("Fehler beim Upload: ".$errmsg)));
 	      exit;
 	    }
+	    
+	    // send a JSON message indicating successful file upload,
+	    // then close the connection and proceed with the import
+	    // in background
+	    $response = json_encode(array("success"=>true));
+	    ignore_user_abort(true);
+	    set_time_limit(1800);
+	    ob_end_clean();
+	    header("Connection: close");
+	    ob_start();
+	    echo $response;
+	    $response_size = ob_get_length();
+	    header("Content-Length: " . $response_size);
+	    ob_end_flush();
+	    flush();
 
+	    // from here on, the client connection should be closed
 	    $data = $_FILES['transFile'];
 	    $options = array();
 	    if(!empty($post['fileEnc'])) {
@@ -278,16 +301,25 @@ class RequestHandler {
 	    }
 	    $options['tagset'] = $post['tagset'];
 	    $options['project'] = $post['project'];
+	    $options['logfile'] = $tmpfname;
 
 	    try {
-	      $result = $this->sh->importTranscriptionFile($data,self::escapeSQL($options));
-	      echo json_encode($result);
+	      $success = $this->sh->importTranscriptionFile($data,self::escapeSQL($options));
+	      if($success) {
+		$logfile = fopen($tmpfname, 'a');
+		fwrite($logfile, "~FINISHED\n");
+		fclose($logfile);
+	      }
 	    }
 	    catch (Exception $e) {
-	      echo json_encode(array("success"=>false,
-				     "errors"=>array("PHPException: ".
-						     $e->getMessage())));
+	      $logfile = fopen($tmpfname, 'a');
+	      fwrite($logfile, "~ERROR PHPEXCEPTION\n");
+	      fwrite($logfile, $e->getMessage() . "\n");
+	      fclose($logfile);
 	    }
+
+	    session_start();
+	    $_SESSION["importInProgress"] = false;
 	    exit;
 	    
 	  default:	exit();
@@ -296,6 +328,10 @@ class RequestHandler {
 	
 	if (array_key_exists("do", $get)) {
 	  switch ( $get["do"] ) {
+	  case "getImportStatus":
+	    echo json_encode($this->sh->getImportStatus());
+	    exit;
+
 	  case "getHighestTagId": echo $this->sh->getHighestTagId(self::escapeSQL($get["tagset"]));
 	    exit;
 	    

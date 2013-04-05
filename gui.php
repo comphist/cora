@@ -36,6 +36,7 @@ $projects = $sh->getProjectList();
 		<script src="gui/js/mootools-more-1.4.0.1.js" type="text/javascript" charset="utf-8"></script>
 		<script src="gui/js/cerabox/cerabox.min.js"></script>
 		<script src="gui/js/baseBox.js"></script>
+		<script src="gui/js/ProgressBar.js"></script>
 
 		<script src="gui/js/mbox/mBox.Core.js"></script>
 		<script src="gui/js/mbox/mBox.Modal.js"></script>

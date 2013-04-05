@@ -17,6 +17,8 @@ var fileTagset = {
 // ***********************************************************************
 
 var file = {
+    transImportProgressBar: null,
+
     initialize: function(){
         this.activateImportForm();
         this.activateTransImportForm();
@@ -40,6 +42,66 @@ var file = {
 	    position: {x: 'right'},
 	    content: message
 	});
+    },
+
+    resetImportProgress: function() {
+	$('tIS_upload').getElement('td.proc').set('class', 'proc proc-running');
+	$('tIS_check').getElement('td.proc').set('class', 'proc');
+	$('tIS_convert').getElement('td.proc').set('class', 'proc');
+	$('tIS_tag').getElement('td.proc').set('class', 'proc');
+	$('tIS_import').getElement('td.proc').set('class', 'proc');
+	this.transImportProgressBar.set(0);
+    },
+
+    updateImportProgress: function(process) {
+	var done = "running";
+	var get_css_code = function(status_code) {
+	    if(status_code == "begun") {
+		return "proc-running";
+	    } else if(status_code == "success") {
+		return "proc-success";
+	    } else {
+		return "proc-error";
+	    }
+	}
+	if(process.status_CHECK != null) {
+	    var c = get_css_code(process.status_CHECK);
+	    $('tIS_check').getElement('td.proc').set('class', 'proc').addClass(c);
+	}
+	if(process.status_XML != null) {
+	    var c = get_css_code(process.status_XML);
+	    $('tIS_convert').getElement('td.proc').set('class', 'proc').addClass(c);
+	}
+	if(process.status_TAG != null) {
+	    var c = get_css_code(process.status_TAG);
+	    $('tIS_tag').getElement('td.proc').set('class', 'proc').addClass(c);
+	}
+	if(process.status_IMPORT != null) {
+	    var c = get_css_code(process.status_IMPORT);
+	    $('tIS_import').getElement('td.proc').set('class', 'proc').addClass(c);
+	}
+	if(process.progress != null) {
+	    this.transImportProgressBar.set(process.progress * 100.0);
+	}
+	if(process.in_progress != null && !process.in_progress) {
+	    if(process.progress != null && process.progress == 1.0) {
+		done = "success";
+	    } else {
+		done = "error";
+		if(process.output != null) {
+		    message = "Beim Importieren sind Fehler aufgetreten.";
+		    $('fileImportPopup').getElement('p').set('html', message);
+		    $('fileImportPopup').getElement('textarea').set('html', process.output);
+		    new mBox.Modal({
+			title: "Fehler beim Importieren",
+			content: 'fileImportPopup',
+			closeOnBodyClick: false,
+			buttons: [ {title: "OK", addClass: "mform button_green"} ]
+		    }).open();
+		}
+	    }
+	}
+	return done;
     },
 
     // activates the transcription import form -- in big parts a clone
@@ -68,6 +130,16 @@ var file = {
 	    }
 	});
 
+	this.transImportProgressBar = new ProgressBar({
+	    container: $('tIS_progress'),
+	    startPercentage: 0,
+	    speed: 500,
+	    boxID: 'tISPB_box1',
+	    percentageID: 'tISPB_perc1',
+	    displayID: 'tISPB_disp1',
+	    displayText: true	    
+	});
+
         var iFrame = new iFrameFormRequest(formname,{
             onFailure: function(xhr) {
 		// never fires?
@@ -79,9 +151,28 @@ var file = {
 	    onRequest: function(){
 		import_mbox.close();
 		$('overlay').show();
-		spinner = new Spinner($('overlay'),
-				      {message: "Importiere Daten..."});
-		spinner.show();
+		ref.resetImportProgress();
+		spinner = new mBox.Modal({
+		    title: "Importiere Daten...",
+		    content: $('transImportSpinner'),
+		    closeOnBodyClick: false,
+		    buttons: [ {title: "OK", addClass: "mform button_green tIS_cb",
+			        id: "importCloseButton", 
+			        event: function() {
+				    this.close();
+				}} ],
+		    onCloseComplete: function() {
+			// reset progress bar here so the animation isn't noticeable
+			ref.transImportProgressBar.set(0);
+		    }
+		});
+		$$('.tIS_cb').set('disabled', true);
+		spinner.container.getElement("a.mBoxClose").hide();
+		spinner.open();
+		//spinner = new Spinner($('overlay'),
+		//		      {message: $('transImportSpinner'),
+		//		       img: false});
+		//spinner.show();
 	    },
 	    onComplete: function(response){
 		var title="", message="", textarea="";
@@ -94,6 +185,7 @@ var file = {
 		    textarea += "\n\nDie Server-Antwort lautete:\n" + response;
 		}
 		
+		ref.transImportProgressBar.set(1);
 		if(message!="") {}
 		else if(response==null || typeof response.success == "undefined"){
 		    title = "Datei-Import fehlgeschlagen";
@@ -106,23 +198,52 @@ var file = {
 			textarea += response.errors[i] + "\n";
 		    }
 		} 
-		else { 
-		    title = "Datei-Import erfolgreich";
-		    message = "Die Datei wurde erfolgreich hinzugefügt.";
-		    if((typeof response.warnings !== "undefined") && response.warnings.length>0) {
-			message += " Das System lieferte ";
-			message += response.warnings.length>1 ? response.warnings.length + " Warnungen" : "eine Warnung";
-			message += " zurück:";
-
-			for(var i=0;i<response.warnings.length;i++){
-			    textarea += response.warnings[i] + "\n";
+		else {
+		    $('tIS_upload').getElement('td.proc').set('class', 'proc proc-success');
+		    $('tIS_check').getElement('td.proc').set('class', 'proc proc-running');
+		    // set up periodical poll
+		    var import_update = new Request({
+			method: 'get',
+			url: 'request.php?do=getImportStatus',
+			initialDelay: 1000,
+			delay: 2000,
+			limit: 6000,
+			onComplete: function(response) {
+			    var done = false;
+			    try {
+				done = ref.updateImportProgress(JSON.decode(response));
+			    }
+			    catch(err) { }
+			    if(done != "running") {
+				import_update.stopTimer();
+				$$('.tIS_cb').set('disabled', false);
+				$('overlay').hide();
+				if(done == "success") {
+				    form.reset($(formname));
+				    $(formname).getElements('.error_text').hide();
+				    ref.listFiles();
+				    ref.showNotice('ok', "Datei erfolgreich importiert.");
+				} else {
+				    ref.showNotice('error', "Importieren fehlgeschlagen.");
+				}
+			    }
 			}
-		    }
+		    });
+		    import_update.startTimer();
+		    return;
+		}
 
-		    form.reset($(formname));
-		    $(formname).getElements('.error_text').hide();
-		    ref.listFiles();
-                }
+//		    title = "Datei-Import erfolgreich";
+//		    message = "Die Datei wurde erfolgreich hinzugefügt.";
+//		    if((typeof response.warnings !== "undefined") && response.warnings.length>0) {
+//			message += " Das System lieferte ";
+//			message += response.warnings.length>1 ? response.warnings.length + " Warnungen" : "eine Warnung";
+//			message += " zurück:";
+//
+//			for(var i=0;i<response.warnings.length;i++){
+//			    textarea += response.warnings[i] + "\n";
+//			}
+//		    }
 
 		if(textarea!='') {
 		    $('fileImportPopup').getElement('p').set('html', message);
@@ -136,7 +257,7 @@ var file = {
 		    buttons: [ {title: "OK", addClass: "mform button_green"} ]
 		}).open();
 
-		spinner.hide();
+		spinner.close();
 		$('overlay').hide();                
             }
 	});

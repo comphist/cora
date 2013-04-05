@@ -872,3 +872,65 @@ div.userChangeEditTable span {
     margin: 2px;
     min-width: 6em;
 }
+
+/* Import dialog */
+div#transImportSpinner {
+}
+div#transImportSpinner table {
+    margin-left: 26px;
+}
+div#transImportSpinner td {
+    font-weight: bold;
+    font-size: 1.2em;
+    padding-left: 4px;
+}
+div#transImportSpinner .proc-running {
+	background: url(../images/spinner.gif) no-repeat;
+}
+div#transImportSpinner .proc-error {
+	background: url(../images/proxal/warn-user.ico) no-repeat;
+}
+div#transImportSpinner .proc-success {
+	background: url(../images/proxal/check.ico) no-repeat;
+}
+div#transImportSpinner .proc {
+        background-size: 16px 16px;
+	width: 16px;
+	height: 16px;
+	margin: 0 auto;
+}
+
+#tIS_progress {
+    padding: 15px;
+}
+
+#tISPB_box1 {
+    border: 1px solid #555;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    width: 250px;
+    height: 14px;
+}
+
+#tISPB_perc1 {
+    background-color: rgb(128,192,238);
+    background-image: -webkit-linear-gradient(top,rgb(128,192,238),rgb(74,136,192)) !important;
+    background-image: -moz-linear-gradient(top,rgb(128,192,238),rgb(74,136,192)) !important;
+    background-image: -ms-linear-gradient(top,rgb(128,192,238),rgb(74,136,192)) !important;
+    background-image: -o-linear-gradient(top,rgb(128,192,238),rgb(74,136,192)) !important;
+    height: 14px;
+}
+
+#tISPB_disp1 {
+    position: relative;
+    top: -15px;
+    width: 250px;
+    padding: 0;
+    margin: 0;
+    font-family: tahoma, arial, sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+    color: #000;
+    text-align: center;
+}
