@@ -27,11 +27,13 @@ $ulist = $sh->getUserList();
        <th></th>
        <th>Benutzername</th>
        <th>Admin?</th>
+       <th>Letzte Aktivität</th>
 <!--       <th>Norm.-Spalte?</th> -->
        <th></th>
      </tr>
      <?php foreach ($ulist as $user): 
              $un = $user['name'];
+             $la = $user['lastactive'];
              $admin = $user['admin'] == '1';
              $norm = TRUE; //$user['normvisible'] == 'y';
      ?>
@@ -41,6 +43,7 @@ $ulist = $sh->getUserList();
        <td class="centered adminUserAdminStatus"><img src="gui/images/proxal/check.ico" class="adminUserAdminStatus"
            <?php if (!$admin): ?>style="display: none;"<?php endif; ?>/>
        </td>
+       <td class="adminUserLastactiveCell"><?php echo $la; ?></td>
 <!--       <td class="centered adminUserNormStatus"><img src="gui/images/proxal/check.ico" class="adminUserNormStatus"
            <?php if (!$norm): ?>style="display: none;"<?php endif; ?>/>
        </td>
