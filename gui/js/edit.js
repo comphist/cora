@@ -10,7 +10,6 @@ var EditorModel = new Class({
     changedLines: null,
     editTable: null,
     tries: 0,
-    spinner: null,
     dynamicLoadRange: 5, // how many pages should be loaded in advance
     inputErrorClass: "", // browser-dependent CSS styling for input errors
     dropdown: null,  // contains the currently opened dropdown menu, if any
@@ -44,7 +43,6 @@ var EditorModel = new Class({
 
 	this.editTable = $('editTable');
 	et = this.editTable;
-	this.spinner = new Spinner($('overlay'), {message: "Speichere..."});
 
 	/* set up the line template */
 	elem = $('line_template');
@@ -212,26 +210,6 @@ var EditorModel = new Class({
 		return true;
 	}
 	return false;
-    },
-
-    /* Function: showNotice
-
-       Displays a floating notice, e.g., to indicate success.
-
-       NOTE: This function is duplicated in file.js and edit.js, and
-       should probably be placed in a separate "GUIInterface" class or
-       something.
-
-       Parameters:
-        ntype - Type of the notice ('ok' or 'error')
-        message - String to appear in the notice
-    */
-    showNotice: function(ntype, message) {
-	new mBox.Notice({
-	    type: ntype,
-	    position: {x: 'right'},
-	    content: message
-	});
     },
 
     /* Function: updateInputError
@@ -485,9 +463,9 @@ var EditorModel = new Class({
 	jumptoFunc = function(mbox) {
 	    var line_no = Number.from($('jumpToBox').value);
 	    if(line_no==null) {
-		ref.showNotice('error', 'Bitte eine Zahl eingeben.');
+		nav.showNotice('error', 'Bitte eine Zahl eingeben.');
 	    } else if(line_no>ref.lineCount || line_no<1) {
-		ref.showNotice('error', 'Zeilennummer existiert nicht.');
+		nav.showNotice('error', 'Zeilennummer existiert nicht.');
 	    } else {
 		var new_page = ref.displayPageByLine(line_no);
 		$('pageSelector').set('value', new_page);
@@ -874,7 +852,6 @@ var EditorModel = new Class({
     saveData: function() {
 	var req, cl, data, save, line, tp, tm, ler;
 	var ref = this;
-	var spin = new Spinner($('overlay'), {message: "Speichere..."});
 
 	cl = this.changedLines;
 	if (cl==null) { return true; }
@@ -905,7 +882,7 @@ var EditorModel = new Class({
 
 		if (status!=null && status.success) {
 		    ref.changedLines = new Array(); // reset "changed lines" array
-		    ref.showNotice('ok', 'Speichern erfolgreich.');
+		    nav.showNotice('ok', 'Speichern erfolgreich.');
 		}
 		else {
 		    if (status==null) {
@@ -929,21 +906,18 @@ var EditorModel = new Class({
 			buttons: [ {title: "OK"} ]
 		    }).open();
 		}
-		spin.hide();
-		$('overlay').hide();
+		nav.hideSpinner();
 	    },
 	    onFailure: function(xhr) {
 		new mBox.Modal({
 		    title: 'Speichern fehlgeschlagen',
 		    content: 'Das Speichern der Datei war nicht erfolgreich! Server lieferte folgende Antwort: "'+xhr.responseText+'" ('+xhr.statusText+').'
 		}).open();
-		spin.hide();
-		$('overlay').hide();
+		nav.hideSpinner();
 	    }
 	});
-	$('overlay').show();
-	spin.show();
-	req.post(JSON.encode(save));	
+	nav.showSpinner({message: 'Speichere...'});
+	req.post(JSON.encode(save));
     },
 
     /* Function: confirmClose
@@ -1031,7 +1005,6 @@ var EditorModel = new Class({
 	    // set tok_id to the first line corresponding to the token to be edited
 	    tok_id = tok_id - 1;
 	}
-	var spin = new Spinner($('overlay'), {message: "Bitte warten..."});
 
 	$('deleteTokenToken').set('html', old_token);
 	var confirmbox = new mBox.Modal({
@@ -1042,30 +1015,27 @@ var EditorModel = new Class({
 		{title: 'Ja, löschen', addClass: 'mform button_red',
 		 event: function() {
 		     confirmbox.close();
-		     $('overlay').show();
-		     spin.show();
+		     nav.showSpinner({message: 'Bitte warten...'});
 		     new Request.JSON({
 			 url: 'request.php',
 			 async: true,
 			 onSuccess: function(status, text) {
 			     if (status!=null && status.success) {
-				 ref.showNotice('ok', 'Token gelöscht.');
+				 nav.showNotice('ok', 'Token gelöscht.');
 				 ref.updateDataArray(tok_id, -Number.from(status.oldmodcount));
 			     }
 			     else {
 				 var rows = (status!=null ? status.errors : ["Ein unbekannter Fehler ist aufgetreten."]);
 				 ref.showFailureMessage("Das Löschen des Tokens war nicht erfolgreich.", rows, "Löschen fehlgeschlagen");
 			     }
-			     spin.hide();
-			     $('overlay').hide();
+			     nav.hideSpinner();
 			 },
 			 onFailure: function(xhr) {
 			     new mBox.Modal({
 				 title: 'Bearbeiten fehlgeschlagen',
 				 content: 'Ein interner Fehler ist aufgetreten. Server lieferte folgende Antwort: "'+xhr.responseText+'" ('+xhr.statusText+').'
 			     }).open();
-			     spin.hide();
-			     $('overlay').hide();
+			     nav.hideSpinner();
 			 }
 		     }).get({'do': 'deleteToken', 'token_id': db_id});
 		 }
@@ -1092,7 +1062,6 @@ var EditorModel = new Class({
 	    // set tok_id to the first line corresponding to the token to be edited
 	    tok_id = tok_id - 1;
 	}
-	var spin = new Spinner($('overlay'), {message: "Bitte warten..."});
 
 	var performEdit = function(mbox) {
 	    var new_token = $('editTokenBox').get('value').trim();
@@ -1131,15 +1100,14 @@ var EditorModel = new Class({
 	var performEditRequest = function(mbox, new_token) {
 	    // spaces are treated as line breaks atm
 	    new_token = new_token.replace(/ /g, "\n");
-	    $('overlay').show();
-	    spin.show();
+	    nav.showSpinner({message: 'Bitte warten...'});
 	    new Request.JSON({
 		url: 'request.php',
 		async: true,
 		onSuccess: function(status, text) {
 		    mbox.close();
 		    if (status!=null && status.success) {
-			ref.showNotice('ok', 'Transkription erfolgreich geändert.');
+			nav.showNotice('ok', 'Transkription erfolgreich geändert.');
 			// update data array if number of mods has changed
 			ref.updateDataArray(tok_id, Number.from(status.newmodcount)-Number.from(status.oldmodcount)); 
 		    }
@@ -1147,16 +1115,14 @@ var EditorModel = new Class({
 			var rows = (status!=null ? status.errors : ["Ein unbekannter Fehler ist aufgetreten."]);
 			ref.showFailureMessage("Das Ändern der Transkription war nicht erfolgreich.", rows, "Bearbeiten fehlgeschlagen");
 		    }
-		    spin.hide();
-		    $('overlay').hide();
+		    nav.hideSpinner();
 		},
 		onFailure: function(xhr) {
 		    new mBox.Modal({
 			title: 'Bearbeiten fehlgeschlagen',
 			content: 'Ein interner Fehler ist aufgetreten. Server lieferte folgende Antwort: "'+xhr.responseText+'" ('+xhr.statusText+').'
 		    }).open();
-		    spin.hide();
-		    $('overlay').hide();
+		    nav.hideSpinner();
 		}
 	    }).get({'do': 'editToken', 'token_id': db_id, 'value': new_token});
 	    mbox.close();
@@ -1215,7 +1181,6 @@ var EditorModel = new Class({
 	    lineinfo = this.data[tok_id]['page_name'] + this.data[tok_id]['page_side']
 		+ this.data[tok_id]['col_name'] + "," + this.data[tok_id]['line_name'];
 	}
-	var spin = new Spinner($('overlay'), {message: "Bitte warten..."});
 
 	var performAdd = function(mbox) {
 	    var new_token = $('addTokenBox').get('value').trim();
@@ -1228,31 +1193,28 @@ var EditorModel = new Class({
 		return false;
 	    }
 
-	    $('overlay').show();
-	    spin.show();
+	    nav.showSpinner({message: 'Bitte warten...'});
 	    new Request.JSON({
 		url: 'request.php',
 		async: true,
 		onSuccess: function(status, text) {
 		    mbox.close();
 		    if (status!=null && status.success) {
-			ref.showNotice('ok', 'Transkription erfolgreich hinzugefügt.');
+			nav.showNotice('ok', 'Transkription erfolgreich hinzugefügt.');
 			ref.updateDataArray(tok_id, Number.from(status.newmodcount)); 
 		    }
 		    else {
 			var rows = (status!=null ? status.errors : ["Ein unbekannter Fehler ist aufgetreten."]);
 			ref.showFailureMessage("Das Hinzufügen der Transkription war nicht erfolgreich.", rows, "Hinzufügen fehlgeschlagen");
 		    }
-		    spin.hide();
-		    $('overlay').hide();
+		    nav.hideSpinner();
 		},
 		onFailure: function(xhr) {
 		    new mBox.Modal({
 			title: 'Hinzufügen fehlgeschlagen',
 			content: 'Ein interner Fehler ist aufgetreten. Server lieferte folgende Antwort: "'+xhr.responseText+'" ('+xhr.statusText+').'
 		    }).open();
-		    spin.hide();
-		    $('overlay').hide();
+		    nav.hideSpinner();
 		}
 	    }).get({'do': 'addToken', 'token_id': db_id, 'value': new_token});
 	    mbox.close();

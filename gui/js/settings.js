@@ -30,7 +30,7 @@ window.addEvent('domready', function() {
 		    np = ((dls+1) / (pl-cl)).ceil();
 		    em.renderPagesPanel(np);
                     em.displayPage(np);
-		    changeTab('edit');
+		    nav.changeTab('edit');
 		}
 		new mBox.Notice({
 		    type: 'ok',

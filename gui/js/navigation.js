@@ -10,10 +10,10 @@
  * the default tab.
  */
 function onLoad() {
-    addToggleEvents();
+    nav.initialize();
 
     // default item defined in content.php, variable set in gui.php
-    changeTab(default_tab);
+    nav.changeTab(default_tab);
 }
 
 function onBeforeUnload() {
@@ -26,60 +26,123 @@ function onBeforeUnload() {
     }
 }
 
-/** Select a new tab.  Shows the content @c div corresponding to the
- * selected menu item, while hiding all others and highlighting the
- * correct menu button.
- *
- * @tparam String tabName Internal name of the tab to be selected
- */
-function changeTab(tabName) {
-    var contentBox, tabButton, activeTab, i;
 
-    // hide all tabs
-    contentBox = $$(".content");
-    for (i = 0; i < contentBox.length; i++) {
-        contentBox[i].setStyle("display", "none");
-    }
 
-    // select correct tab button
-    tabButton = $$(".tabButton");
-    for (i = 0; i < tabButton.length; i++) {
-        if (tabButton[i].id === tabName + "TabButton") {
-            tabButton[i].set("active", "true");
-        } else {
-            tabButton[i].set("active", "false");
-        }
-    }
+var nav = {
+    activeSpinner: null,
 
-    // show active tab
-    activeTab = $(tabName + "Div");
-    if (activeTab === null) {
-        alert(tabName + " tab not implemented!");
-    }
-    activeTab.setStyle("display", "block");
-}
+    initialize: function() {
+	this.addToggleEvents();
+    },
 
-/** Enable clappable @c div containers.  Adds @em onClick events to
- * the <code>.clapp</code> element in each <code>.clappable</code>
- * container that toggle the visibility of its contents.  Also,
- * automatically hides all contents of <code>.starthidden</code>
- * containers.
- */
-function addToggleEvents() {
-    $$('.clappable').each(function (clappable) {
-        var clapper, content;
+    /* Function: addToggleEvents
 
-        // add toggle event
-        clapper = clappable.getElement('.clapp');
-        content = clappable.getElement('div');
-        if (clapper !== null) {
-            clapper.addEvent('click', function () {
-                content.toggle();
-            });
-        }
-        // hide content by default, if necessary
-        if (clappable.hasClass('starthidden')) {
-            content.hide();
-        }
-    });
+       Enable clappable div containers.
+
+       Adds onClick events to the .clapp element in each .clappable
+       container that toggle the visibility of its contents.  Also,
+       automatically hides all contents of .starthidden containers.
+    */
+    addToggleEvents: function() {
+	$$('.clappable').each(function (clappable) {
+            var clapper, content;
+	    
+            // add toggle event
+            clapper = clappable.getElement('.clapp');
+            content = clappable.getElement('div');
+            if (clapper !== null) {
+		clapper.addEvent('click', function () {
+                    content.toggle();
+		});
+            }
+            // hide content by default, if necessary
+            if (clappable.hasClass('starthidden')) {
+		content.hide();
+            }
+	});
+    },
+
+    /* Function: changeTab
+
+       Selects a new tab.
+
+       Shows the content div corresponding to the selected menu item,
+       while hiding all others and highlighting the correct menu
+       button.
+
+       Parameters:
+        tabName - Internal name of the tab to be selected
+    */
+    changeTab: function(tabName) {
+	var contentBox, tabButton, activeTab, i;
+
+	// hide all tabs
+	contentBox = $$(".content");
+	for (i = 0; i < contentBox.length; i++) {
+            contentBox[i].setStyle("display", "none");
+	}
+	
+	// select correct tab button
+	tabButton = $$(".tabButton");
+	for (i = 0; i < tabButton.length; i++) {
+            if (tabButton[i].id === tabName + "TabButton") {
+		tabButton[i].set("active", "true");
+            } else {
+		tabButton[i].set("active", "false");
+            }
+	}
+
+	// show active tab
+	activeTab = $(tabName + "Div");
+	if (activeTab === null) {
+            alert(tabName + " tab not implemented!");
+	}
+	activeTab.setStyle("display", "block");
+    },
+
+    /* Function: showNotice
+
+       Displays a floating notice, e.g., to indicate success.
+
+       Parameters:
+        ntype - Type of the notice ('ok' or 'error')
+        message - String to appear in the notice
+    */
+    showNotice: function(ntype, message) {
+	new mBox.Notice({
+	    type: ntype,
+	    position: {x: 'right'},
+	    content: message
+	});
+    },
+
+    /* Function: showSpinner
+
+       Displays a "loading" spinner.
+
+       Parameters: 
+        options - An object which may contain the following options:
+	           * message - Message to display (default: none)
+    */
+    showSpinner: function(options) {
+	var options = options || {};
+	var spinmsg = options.message || null;
+
+	$('overlay').show();
+	this.activeSpinner = new Spinner($('overlay'),
+					 {message: spinmsg});
+	this.activeSpinner.show();
+    },
+
+    /* Function: hideSpinner
+
+       Hides the currently displayed spinner.
+    */
+    hideSpinner: function() {
+	if(this.activeSpinner !== undefined && this.activeSpinner !== null) {
+	    this.activeSpinner.hide();
+	    $('overlay').hide();
+	}
+    },
+
 }

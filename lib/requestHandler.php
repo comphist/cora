@@ -330,6 +330,9 @@ class RequestHandler {
 	
 	if (array_key_exists("do", $get)) {
 	  switch ( $get["do"] ) {
+	  case "keepalive":
+	    exit;
+
 	  case "getImportStatus":
 	    echo json_encode($this->sh->getImportStatus());
 	    exit;

@@ -24,26 +24,6 @@ var file = {
         this.activateTransImportForm();
     },
 
-    /* Function: showNotice
-
-       Displays a floating notice, e.g., to indicate success.
-
-       NOTE: This function is duplicated in file.js and edit.js, and
-       should probably be placed in a separate "GUIInterface" class or
-       something.
-
-       Parameters:
-        ntype - Type of the notice ('ok' or 'error')
-        message - String to appear in the notice
-    */
-    showNotice: function(ntype, message) {
-	new mBox.Notice({
-	    type: ntype,
-	    position: {x: 'right'},
-	    content: message
-	});
-    },
-
     resetImportProgress: function() {
 	$('tIS_upload').getElement('td.proc').set('class', 'proc proc-running');
 	$('tIS_check').getElement('td.proc').set('class', 'proc');
@@ -114,7 +94,7 @@ var file = {
 
 	var formname = 'newFileImportTransForm';
         var ref = this;
-	var spinner;
+	var import_progress;
 	var import_mbox = new mBox.Modal({
 	    title: 'Importieren aus Transkriptionsdatei',
 	    content: 'fileImportTransForm',
@@ -146,14 +126,13 @@ var file = {
 		// never fires?
        		alert("Speichern nicht erfolgreich: Der Server lieferte folgende Fehlermeldung zurück:\n\n" +
        		      xhr.responseText);
-		spinner.hide();
-		$('overlay').hide();                
+		nav.hideSpinner();
        	    },
 	    onRequest: function(){
 		import_mbox.close();
-		$('overlay').show();
+		nav.showSpinner();
 		ref.resetImportProgress();
-		spinner = new mBox.Modal({
+		import_progress = new mBox.Modal({
 		    title: "Importiere Daten...",
 		    content: $('transImportSpinner'),
 		    closeOnBodyClick: false,
@@ -170,11 +149,7 @@ var file = {
 		    }
 		});
 		$$('.tIS_cb').set('disabled', true);
-		spinner.open();
-		//spinner = new Spinner($('overlay'),
-		//		      {message: $('transImportSpinner'),
-		//		       img: false});
-		//spinner.show();
+		import_progress.open();
 	    },
 	    onComplete: function(response){
 		var title="", message="", textarea="";
@@ -219,14 +194,14 @@ var file = {
 			    if(done != "running") {
 				import_update.stopTimer();
 				$$('.tIS_cb').set('disabled', false);
-				$('overlay').hide();
+				nav.hideSpinner();
 				if(done == "success") {
 				    form.reset($(formname));
 				    $(formname).getElements('.error_text').hide();
 				    ref.listFiles();
-				    ref.showNotice('ok', "Datei erfolgreich importiert.");
+				    nav.showNotice('ok', "Datei erfolgreich importiert.");
 				} else {
-				    ref.showNotice('error', "Importieren fehlgeschlagen.");
+				    nav.showNotice('error', "Importieren fehlgeschlagen.");
 				}
 			    }
 			}
@@ -259,8 +234,8 @@ var file = {
 		    buttons: [ {title: "OK", addClass: "mform button_green"} ]
 		}).open();
 
-		spinner.close();
-		$('overlay').hide();                
+		import_progress.close();
+		nav.hideSpinner();
             }
 	});
     },
@@ -273,7 +248,6 @@ var file = {
 
 	var formname = 'newFileImportForm';
         var ref = this;
-	var spinner;
 
 	var import_mbox = new mBox.Modal({
 	    title: 'Importieren aus CorA-XML-Format',
@@ -300,10 +274,7 @@ var file = {
        	    },
 	    onRequest: function(){
 		import_mbox.close();
-		$('overlay').show();
-		spinner = new Spinner($('overlay'),
-				      {message: "Importiere Daten..."});
-		spinner.show();
+		nav.showSpinner({message: 'Importiere Daten...'});
 	    },
 	    onComplete: function(response){
 		var title="", message="", textarea="";
@@ -353,8 +324,7 @@ var file = {
 		    buttons: [ {title: "OK", addClass: "mform button_green"} ]
 		}).open();
 
-		spinner.hide();
-		$('overlay').hide();                
+		nav.hideSpinner();
             }
 	});
     },
@@ -441,7 +411,7 @@ var file = {
 				    edit.editorModel = new EditorModel(fileid, fileData.maxLinesNo, fileData.lastEditedRow, fileData.lastPage);
 				    $('editTabButton').show();
 				    default_tab = 'edit';
-				    changeTab('edit');
+				    nav.changeTab('edit');
 				};
 				
         		        new Request.JSON({
@@ -486,7 +456,7 @@ var file = {
 			ref.listFiles();
 			edit.editorModel = null;
 			default_tab = 'file';
-			changeTab(default_tab);
+			nav.changeTab(default_tab);
 			$('menuRight').hide();
 			$('editTable').hide();
 			$('editTabButton').hide();
@@ -607,7 +577,7 @@ var file = {
     	     },
     	     onSuccess: function(status, blubb) {
 		 if(!status || !status.success) {
-		     ref.showNotice('error', "Konnte Datei nicht löschen.");
+		     nav.showNotice('error', "Konnte Datei nicht löschen.");
 		     if(status.error_msg) {
     			 alert("Fehler: Der Server lieferte folgende Fehlermeldung zurück:\n\n" + status.error_msg);
 		     }
@@ -616,7 +586,7 @@ var file = {
 		     }
 		 }
 		 else {
-		     ref.showNotice('ok', "Datei gelöscht.");
+		     nav.showNotice('ok', "Datei gelöscht.");
 		 }
     		 ref.listFiles();
     	     }

@@ -16,7 +16,7 @@ foreach( $menu->getItems() as $item ) {
    $text = $menu->getItemCaption($item);
 echo <<<MENUITEM
       <li class="tabButton" id="{$item}TabButton" title="{$tooltip}" active="false">
-         <a onclick="changeTab('$item');">$text</a>
+         <a onclick="nav.changeTab('$item');">$text</a>
       </li>
 MENUITEM;
 } 

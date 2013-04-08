@@ -517,15 +517,14 @@ input.error {
 }
 
 div#overlay {
-    z-index:1000;
-    position:fixed;
-    top:0;
-    bottom:0;
-    left:0;
-    height:100%;
-    width:100%;
-    background:none;
-    display:none;
+    z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 10000px;
+    width: 10000px;
+    background: none;
+    display: none;
 }
 
 .panel {

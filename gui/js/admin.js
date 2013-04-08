@@ -453,7 +453,6 @@ var tagset_editor = {
 	    }
 	});
 
-	var spinner;
         var iFrame = new iFrameFormRequest(formname, {
             onFailure: function(xhr) {
 		// never fires?
@@ -462,11 +461,7 @@ var tagset_editor = {
        	    },
 	    onRequest: function(){
 		import_mbox.close();
-		$('overlay').show();
-		spinner = new Spinner($('overlay'),
-				      {message: "Importiere Tagset...",
-				       fxOptions: {duration: 500}});
-		spinner.show(true);
+		nav.showSpinner({message: 'Importiere Tagset...'});
 	    },
 	    onComplete: function(response){
 		var title="", message="", textarea="", error=false;
@@ -527,8 +522,7 @@ var tagset_editor = {
 		    buttons: [ {title: "OK"} ]
 		}).open();
 
-		spinner.hide();
-		$('overlay').hide();                
+		nav.hideSpinner();
             }
 	});
 
