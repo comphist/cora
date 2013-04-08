@@ -97,6 +97,14 @@ class CoraSessionHandler {
     }
   }
 
+  /** Wraps DBInterface::updateLastactive(), updating "last active"
+      information for currently logged-in user, if any. */
+  public function updateLastactive() {
+    if(isset($_SESSION["user_id"]) && !empty($_SESSION["user_id"])) {
+      $this->db->updateLastactive($_SESSION["user_id"]);
+    }
+  }
+
   /** Wraps DBInterface::createUser(), checking for administrator
       privileges first. */
   public function createUser( $username, $password, $admin ) {
@@ -559,6 +567,7 @@ class CoraSessionHandler {
       $_SESSION["failedLogin"] = false;
       $_SESSION["admin"] = ($data['admin'] == 1);
       //$_SESSION["normvisible"] = ($data['normvisible'] == 1);
+      $this->db->updateLastactive($data['id']);
 
 	  // file already opened?
 	  $data = $this->db->getLockedFiles($user);
@@ -591,6 +600,7 @@ class CoraSessionHandler {
 
   /** Perform user logout. */
   public function logout() {
+    $this->updateLastactive();
     if(isset($_SESSION["currentFileId"]) && !empty($_SESSION["currentFileId"])) {
       $this->unlockFile($_SESSION["currentFileId"]);
     }

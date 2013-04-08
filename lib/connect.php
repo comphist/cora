@@ -429,6 +429,15 @@
      return $tags;
    }
 
+   /** Updates the "last active" timestamp for a user.
+    *
+    * @param string  $userid   ID of the user to be updated
+    */
+   public function updateLastactive($userid) {
+     $qs = "UPDATE {$this->db}.users SET `lastactive`=NOW() WHERE `id`={$userid}";
+     $this->query($qs);
+   }
+
    /** Create a new user.
     *
     * @param string  $username The username to be created

@@ -194,6 +194,8 @@ class RequestHandler {
    * @li or nothing.
    */
   public function handleJSONRequest( $get, $post ) {
+    $this->sh->updateLastactive();
+
 	if (array_key_exists("action", $post)) {
 	  switch( $post["action"]) {
 	  case "changeUserPassword":$status = $this->sh->changeUserPassword(
