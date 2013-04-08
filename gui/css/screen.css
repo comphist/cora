@@ -264,12 +264,11 @@ ol {
 
 .panel {
 	height : auto !important;
-	height : 1%;
 	overflow : auto;
 	border: 1px solid #d1d1d1;
 	padding : 2em 3em 2em 3em;
 	background: #f8f8f8;
-	margin: 10px;
+	margin: 0.5%;
 
 	clear: both;
 	
