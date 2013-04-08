@@ -461,7 +461,7 @@ var tagset_editor = {
        	    },
 	    onRequest: function(){
 		import_mbox.close();
-		nav.showSpinner({message: 'Importiere Tagset...'});
+		gui.showSpinner({message: 'Importiere Tagset...'});
 	    },
 	    onComplete: function(response){
 		var title="", message="", textarea="", error=false;
@@ -522,7 +522,7 @@ var tagset_editor = {
 		    buttons: [ {title: "OK"} ]
 		}).open();
 
-		nav.hideSpinner();
+		gui.hideSpinner();
             }
 	});
 

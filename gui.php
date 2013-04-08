@@ -72,7 +72,7 @@ usenorm: "<?php echo $_SESSION['normvisible']; ?>"
 						   };
 		</script>
 
-		<script src="gui/js/navigation.js" type="text/javascript" charset="utf-8"></script>
+		<script src="gui/js/gui.js" type="text/javascript" charset="utf-8"></script>
 		<?php if($_SESSION['admin']): ?>
 			<script src="gui/js/admin.js" type="text/javascript" charset="utf-8"></script><script type="text/javascript">
 project_editor.project_users = new Object();
@@ -97,6 +97,7 @@ project_editor.project_users[<?php echo $pid; ?>] = new Array(<?php echo $arrstr
 	</head>
 	<body onload="onLoad();" onbeforeunload="return onBeforeUnload();">
 	        <div id="overlay"></div>
+	        <div id="spin-overlay"></div>
 
 <!--		<div id="tools" class="no-print">
 			$$toolsLinks$$

@@ -463,9 +463,9 @@ var EditorModel = new Class({
 	jumptoFunc = function(mbox) {
 	    var line_no = Number.from($('jumpToBox').value);
 	    if(line_no==null) {
-		nav.showNotice('error', 'Bitte eine Zahl eingeben.');
+		gui.showNotice('error', 'Bitte eine Zahl eingeben.');
 	    } else if(line_no>ref.lineCount || line_no<1) {
-		nav.showNotice('error', 'Zeilennummer existiert nicht.');
+		gui.showNotice('error', 'Zeilennummer existiert nicht.');
 	    } else {
 		var new_page = ref.displayPageByLine(line_no);
 		$('pageSelector').set('value', new_page);
@@ -882,7 +882,7 @@ var EditorModel = new Class({
 
 		if (status!=null && status.success) {
 		    ref.changedLines = new Array(); // reset "changed lines" array
-		    nav.showNotice('ok', 'Speichern erfolgreich.');
+		    gui.showNotice('ok', 'Speichern erfolgreich.');
 		}
 		else {
 		    if (status==null) {
@@ -906,17 +906,17 @@ var EditorModel = new Class({
 			buttons: [ {title: "OK"} ]
 		    }).open();
 		}
-		nav.hideSpinner();
+		gui.hideSpinner();
 	    },
 	    onFailure: function(xhr) {
 		new mBox.Modal({
 		    title: 'Speichern fehlgeschlagen',
 		    content: 'Das Speichern der Datei war nicht erfolgreich! Server lieferte folgende Antwort: "'+xhr.responseText+'" ('+xhr.statusText+').'
 		}).open();
-		nav.hideSpinner();
+		gui.hideSpinner();
 	    }
 	});
-	nav.showSpinner({message: 'Speichere...'});
+	gui.showSpinner({message: 'Speichere...'});
 	req.post(JSON.encode(save));
     },
 
@@ -1015,27 +1015,27 @@ var EditorModel = new Class({
 		{title: 'Ja, löschen', addClass: 'mform button_red',
 		 event: function() {
 		     confirmbox.close();
-		     nav.showSpinner({message: 'Bitte warten...'});
+		     gui.showSpinner({message: 'Bitte warten...'});
 		     new Request.JSON({
 			 url: 'request.php',
 			 async: true,
 			 onSuccess: function(status, text) {
 			     if (status!=null && status.success) {
-				 nav.showNotice('ok', 'Token gelöscht.');
+				 gui.showNotice('ok', 'Token gelöscht.');
 				 ref.updateDataArray(tok_id, -Number.from(status.oldmodcount));
 			     }
 			     else {
 				 var rows = (status!=null ? status.errors : ["Ein unbekannter Fehler ist aufgetreten."]);
 				 ref.showFailureMessage("Das Löschen des Tokens war nicht erfolgreich.", rows, "Löschen fehlgeschlagen");
 			     }
-			     nav.hideSpinner();
+			     gui.hideSpinner();
 			 },
 			 onFailure: function(xhr) {
 			     new mBox.Modal({
 				 title: 'Bearbeiten fehlgeschlagen',
 				 content: 'Ein interner Fehler ist aufgetreten. Server lieferte folgende Antwort: "'+xhr.responseText+'" ('+xhr.statusText+').'
 			     }).open();
-			     nav.hideSpinner();
+			     gui.hideSpinner();
 			 }
 		     }).get({'do': 'deleteToken', 'token_id': db_id});
 		 }
@@ -1100,14 +1100,14 @@ var EditorModel = new Class({
 	var performEditRequest = function(mbox, new_token) {
 	    // spaces are treated as line breaks atm
 	    new_token = new_token.replace(/ /g, "\n");
-	    nav.showSpinner({message: 'Bitte warten...'});
+	    gui.showSpinner({message: 'Bitte warten...'});
 	    new Request.JSON({
 		url: 'request.php',
 		async: true,
 		onSuccess: function(status, text) {
 		    mbox.close();
 		    if (status!=null && status.success) {
-			nav.showNotice('ok', 'Transkription erfolgreich geändert.');
+			gui.showNotice('ok', 'Transkription erfolgreich geändert.');
 			// update data array if number of mods has changed
 			ref.updateDataArray(tok_id, Number.from(status.newmodcount)-Number.from(status.oldmodcount)); 
 		    }
@@ -1115,14 +1115,14 @@ var EditorModel = new Class({
 			var rows = (status!=null ? status.errors : ["Ein unbekannter Fehler ist aufgetreten."]);
 			ref.showFailureMessage("Das Ändern der Transkription war nicht erfolgreich.", rows, "Bearbeiten fehlgeschlagen");
 		    }
-		    nav.hideSpinner();
+		    gui.hideSpinner();
 		},
 		onFailure: function(xhr) {
 		    new mBox.Modal({
 			title: 'Bearbeiten fehlgeschlagen',
 			content: 'Ein interner Fehler ist aufgetreten. Server lieferte folgende Antwort: "'+xhr.responseText+'" ('+xhr.statusText+').'
 		    }).open();
-		    nav.hideSpinner();
+		    gui.hideSpinner();
 		}
 	    }).get({'do': 'editToken', 'token_id': db_id, 'value': new_token});
 	    mbox.close();
@@ -1193,28 +1193,28 @@ var EditorModel = new Class({
 		return false;
 	    }
 
-	    nav.showSpinner({message: 'Bitte warten...'});
+	    gui.showSpinner({message: 'Bitte warten...'});
 	    new Request.JSON({
 		url: 'request.php',
 		async: true,
 		onSuccess: function(status, text) {
 		    mbox.close();
 		    if (status!=null && status.success) {
-			nav.showNotice('ok', 'Transkription erfolgreich hinzugefügt.');
+			gui.showNotice('ok', 'Transkription erfolgreich hinzugefügt.');
 			ref.updateDataArray(tok_id, Number.from(status.newmodcount)); 
 		    }
 		    else {
 			var rows = (status!=null ? status.errors : ["Ein unbekannter Fehler ist aufgetreten."]);
 			ref.showFailureMessage("Das Hinzufügen der Transkription war nicht erfolgreich.", rows, "Hinzufügen fehlgeschlagen");
 		    }
-		    nav.hideSpinner();
+		    gui.hideSpinner();
 		},
 		onFailure: function(xhr) {
 		    new mBox.Modal({
 			title: 'Hinzufügen fehlgeschlagen',
 			content: 'Ein interner Fehler ist aufgetreten. Server lieferte folgende Antwort: "'+xhr.responseText+'" ('+xhr.statusText+').'
 		    }).open();
-		    nav.hideSpinner();
+		    gui.hideSpinner();
 		}
 	    }).get({'do': 'addToken', 'token_id': db_id, 'value': new_token});
 	    mbox.close();

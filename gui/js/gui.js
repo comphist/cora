@@ -1,5 +1,5 @@
 /** @file
- * Functions related to site navigation (tab changing, etc.)
+ * GUI-related functions
  *
  * @author Marcel Bollmann
  * @date January 2012
@@ -10,10 +10,10 @@
  * the default tab.
  */
 function onLoad() {
-    nav.initialize();
+    gui.initialize();
 
     // default item defined in content.php, variable set in gui.php
-    nav.changeTab(default_tab);
+    gui.changeTab(default_tab);
 }
 
 function onBeforeUnload() {
@@ -28,7 +28,7 @@ function onBeforeUnload() {
 
 
 
-var nav = {
+var gui = {
     activeSpinner: null,
 
     initialize: function() {
@@ -129,7 +129,8 @@ var nav = {
 	var spinmsg = options.message || null;
 
 	$('overlay').show();
-	this.activeSpinner = new Spinner($('overlay'),
+	$('spin-overlay').show();
+	this.activeSpinner = new Spinner($('spin-overlay'),
 					 {message: spinmsg});
 	this.activeSpinner.show();
     },
@@ -142,6 +143,7 @@ var nav = {
 	if(this.activeSpinner !== undefined && this.activeSpinner !== null) {
 	    this.activeSpinner.hide();
 	    $('overlay').hide();
+	    $('spin-overlay').hide();
 	}
     },
 

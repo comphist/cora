@@ -126,11 +126,11 @@ var file = {
 		// never fires?
        		alert("Speichern nicht erfolgreich: Der Server lieferte folgende Fehlermeldung zurück:\n\n" +
        		      xhr.responseText);
-		nav.hideSpinner();
+		gui.hideSpinner();
        	    },
 	    onRequest: function(){
 		import_mbox.close();
-		nav.showSpinner();
+		gui.showSpinner();
 		ref.resetImportProgress();
 		import_progress = new mBox.Modal({
 		    title: "Importiere Daten...",
@@ -194,14 +194,14 @@ var file = {
 			    if(done != "running") {
 				import_update.stopTimer();
 				$$('.tIS_cb').set('disabled', false);
-				nav.hideSpinner();
+				gui.hideSpinner();
 				if(done == "success") {
 				    form.reset($(formname));
 				    $(formname).getElements('.error_text').hide();
 				    ref.listFiles();
-				    nav.showNotice('ok', "Datei erfolgreich importiert.");
+				    gui.showNotice('ok', "Datei erfolgreich importiert.");
 				} else {
-				    nav.showNotice('error', "Importieren fehlgeschlagen.");
+				    gui.showNotice('error', "Importieren fehlgeschlagen.");
 				}
 			    }
 			}
@@ -235,7 +235,7 @@ var file = {
 		}).open();
 
 		import_progress.close();
-		nav.hideSpinner();
+		gui.hideSpinner();
             }
 	});
     },
@@ -274,7 +274,7 @@ var file = {
        	    },
 	    onRequest: function(){
 		import_mbox.close();
-		nav.showSpinner({message: 'Importiere Daten...'});
+		gui.showSpinner({message: 'Importiere Daten...'});
 	    },
 	    onComplete: function(response){
 		var title="", message="", textarea="";
@@ -324,7 +324,7 @@ var file = {
 		    buttons: [ {title: "OK", addClass: "mform button_green"} ]
 		}).open();
 
-		nav.hideSpinner();
+		gui.hideSpinner();
             }
 	});
     },
@@ -411,7 +411,7 @@ var file = {
 				    edit.editorModel = new EditorModel(fileid, fileData.maxLinesNo, fileData.lastEditedRow, fileData.lastPage);
 				    $('editTabButton').show();
 				    default_tab = 'edit';
-				    nav.changeTab('edit');
+				    gui.changeTab('edit');
 				};
 				
         		        new Request.JSON({
@@ -456,7 +456,7 @@ var file = {
 			ref.listFiles();
 			edit.editorModel = null;
 			default_tab = 'file';
-			nav.changeTab(default_tab);
+			gui.changeTab(default_tab);
 			$('menuRight').hide();
 			$('editTable').hide();
 			$('editTabButton').hide();
@@ -577,7 +577,7 @@ var file = {
     	     },
     	     onSuccess: function(status, blubb) {
 		 if(!status || !status.success) {
-		     nav.showNotice('error', "Konnte Datei nicht löschen.");
+		     gui.showNotice('error', "Konnte Datei nicht löschen.");
 		     if(status.error_msg) {
     			 alert("Fehler: Der Server lieferte folgende Fehlermeldung zurück:\n\n" + status.error_msg);
 		     }
@@ -586,7 +586,7 @@ var file = {
 		     }
 		 }
 		 else {
-		     nav.showNotice('ok', "Datei gelöscht.");
+		     gui.showNotice('ok', "Datei gelöscht.");
 		 }
     		 ref.listFiles();
     	     }
