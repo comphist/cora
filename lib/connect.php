@@ -1192,6 +1192,8 @@
      $comment_ids = array(); // maps modern IDs to comment IDs (of 'C' type comments)
      $token_ids = array();   // maps modern IDs to token IDs
 
+     $warnings = array();
+
      /* Check if all IDs belong to the currently opened document
 	(--this is done because IDs are managed on the client side and
 	therefore could potentially be manipulated)
@@ -1322,7 +1324,9 @@
        }
        // POS
        if($haspos && array_key_exists('anno_POS', $line)) {
-	 if(array_key_exists('anno_morph', $line) && !empty($line['anno_morph'])) {
+	 if(array_key_exists('anno_morph', $line)
+	    && !empty($line['anno_morph'])
+	    && $line['anno_morph'] != "--") {
 	   $tagvalue = $line['anno_POS'] . "." . $line['anno_morph'];
 	 } else {
 	   $tagvalue = $line['anno_POS'];
@@ -1352,6 +1356,9 @@
 	       $tsstr  = "(NULL, 1, 'user', '{$newid}', '" . $line['id'] . "')";
 	       $insertts[] = $tsstr;
 	     }
+	   }
+	   else {
+	     $warnings[] = "Überspringe illegalen POS-Tag: {$tagvalue}";
 	   }
 	 }
 	 else if(array_key_exists('POS', $selected)) {
@@ -1534,6 +1541,9 @@
      $userid = $this->getUserIDFromName($uname);
      $this->updateChangedTimestamp($fileid,$userid);
 
+     if(!empty($warnings)) {
+       return "Der Speichervorgang wurde abgeschlossen, einige Informationen wurden jedoch möglicherweise nicht gespeichert.  Das System meldete:\n" . implode("\n", $warnings);
+     }
      return False;
    }
 
