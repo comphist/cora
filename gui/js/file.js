@@ -96,6 +96,7 @@ var file = {
 			title: "Fehler beim Importieren",
 			content: 'fileImportPopup',
 			closeOnBodyClick: false,
+			closeOnEsc: false,
 			buttons: [ {title: "OK", addClass: "mform button_green"} ]
 		    }).open();
 		}
@@ -156,6 +157,8 @@ var file = {
 		    title: "Importiere Daten...",
 		    content: $('transImportSpinner'),
 		    closeOnBodyClick: false,
+		    closeOnEsc: false,
+		    closeInTitle: false,
 		    buttons: [ {title: "OK", addClass: "mform button_green tIS_cb",
 			        id: "importCloseButton", 
 			        event: function() {
@@ -167,7 +170,6 @@ var file = {
 		    }
 		});
 		$$('.tIS_cb').set('disabled', true);
-		spinner.container.getElement("a.mBoxClose").hide();
 		spinner.open();
 		//spinner = new Spinner($('overlay'),
 		//		      {message: $('transImportSpinner'),
