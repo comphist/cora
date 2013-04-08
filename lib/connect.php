@@ -2272,11 +2272,13 @@
 	  . $sugg['source'] . "', '{$tag_id}', '" . $mod['db_id'] . "')";
       }
     }
-    $qstr .= implode(",", $qarr);
-    $q = $this->query($qstr);
-    if($qerr = $this->dbconn->last_error()) {
-      $this->dbconn->rollback();
-      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1101).\n" . $qerr;
+    if(!empty($qarr)) {
+      $qstr .= implode(",", $qarr);
+      $q = $this->query($qstr);
+      if($qerr = $this->dbconn->last_error()) {
+	$this->dbconn->rollback();
+	return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1101).\n" . $qerr;
+      }
     }
 
     // Table 'shifttags'
