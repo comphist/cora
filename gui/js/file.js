@@ -183,8 +183,8 @@ var file = {
 			method: 'get',
 			url: 'request.php?do=getImportStatus',
 			initialDelay: 1000,
-			delay: 2000,
-			limit: 6000,
+			delay: 1000,
+			limit: 5000,
 			onComplete: function(response) {
 			    var done = false;
 			    try {

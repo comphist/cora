@@ -354,6 +354,7 @@ class CoraSessionHandler {
 	
   /** Wraps DBInterface::getFiles() */
   public function getFiles(){
+    $this->db->releaseOldLocks();
     if ($_SESSION["admin"]) {
       return $this->db->getFiles();
     } else {

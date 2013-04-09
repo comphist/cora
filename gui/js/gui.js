@@ -30,9 +30,11 @@ function onBeforeUnload() {
 
 var gui = {
     activeSpinner: null,
+    keepaliveRequest: null,
 
     initialize: function() {
 	this.addToggleEvents();
+	this.activateKeepalive();
     },
 
     /* Function: addToggleEvents
@@ -60,6 +62,26 @@ var gui = {
 		content.hide();
             }
 	});
+    },
+
+    /* Function: activateKeepalive
+
+       Sets up a periodical server request with the sole purpose of
+       keeping the connection alive, i.e., telling the server that the
+       user is still active (and has not, e.g., closed the browser
+       window without logging out).
+    */
+    activateKeepalive: function() {
+	if(userdata.name != undefined) {
+	    this.keepaliveRequest = new Request({
+		url: 'request.php?do=keepalive',
+		method: 'get',
+		initialDelay: 60000,
+		delay: 300000,
+		limit: 300000
+	    });
+	    this.keepaliveRequest.startTimer();
+	}
     },
 
     /* Function: changeTab
