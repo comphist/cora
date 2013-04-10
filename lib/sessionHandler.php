@@ -40,7 +40,9 @@ class CoraSessionHandler {
 		       "loggedIn"    => false,
 		       "admin"       => false,
 		       "normvisible" => false,
-		       "failedLogin" => false );
+		       "failedLogin" => false,
+		       "currentName" => null,
+		       "currentFileId" => null );
 
     foreach($defaults as $key => $default) {
       if(!array_key_exists($key, $_SESSION)) {
