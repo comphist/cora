@@ -26,7 +26,8 @@
                         <th class="editTable_tok_trans">Token (Trans)</th>
                         <th class="editTable_token">Token (UTF)</th>
    <?php if($_SESSION["normvisible"]): ?>
-			<th class="editTable_Norm">Normalisierte Form</th>
+			<th class="editTable_Norm">Normalisierung</th>
+			<th class="editTable_Norm">Modernisierung</th>
    <?php endif; ?>
 			<th class="editTable_POS">POS-Tag</th>
 			<th class="editTable_Morph">Morphologie-Tag</th>
@@ -50,14 +51,17 @@
 			<td class="editTable_token"></td>
    <?php if($_SESSION["normvisible"]): ?>
 			<td class="editTable_Norm">
-			    <input type="text" size="10" value="" />
+			    <input type="text" size="12" value="" />
+			</td>
+			<td class="editTable_Mod">
+			    <input type="text" size="12" value="" />
 			</td>
    <?php endif; ?>
 			<td class="editTable_POS"></td>
 			<td class="editTable_Morph"></td>
 			<td class="editTable_Lemma">
 			    <div class="editTableLemma editTableCheckbox"></div>
-			    <input type="text" size="10" value="" />
+			    <input type="text" size="12" value="" />
 			</td>
 			<td class="editTable_Comment">
 			    <input type="text" size="30" value="" />

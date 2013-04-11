@@ -1116,6 +1116,12 @@
 	 if($row['class']=='norm' && $row['selected']=='1') {
 	   $line['anno_norm'] = $row['value'];
 	 }
+	 else if($row['class']=='norm_broad' && $row['selected']=='1') {
+	   $line['anno_mod'] = $row['value'];
+	 }
+	 else if($row['class']=='norm_type' && $row['selected']=='1') {
+	   $line['anno_modtype'] = $row['value'];
+	 }
 	 else if($row['class']=='lemma' && $row['selected']=='1') {
 	   $line['anno_lemma'] = $row['value'];
 	 }
@@ -1197,6 +1203,7 @@
 
      $idlist = array();
      $pos_tags = array();    // maps tags to tag IDs
+     $norm_types = array();
      $tagset_ids = array();  // maps tagset classes to tagset IDs
      $comment_ids = array(); // maps modern IDs to comment IDs (of 'C' type comments)
      $token_ids = array();   // maps modern IDs to token IDs
@@ -1252,8 +1259,22 @@
        $tagset_ids[$tagset['class']] = $tagset['id'];
      }
      $hasnorm = array_key_exists('norm', $tagset_ids);
+     $hasmod = array_key_exists('norm_broad', $tagset_ids) && array_key_exists('norm_type', $tagset_ids);
      $haslemma = array_key_exists('lemma', $tagset_ids);
      $haspos = array_key_exists('POS', $tagset_ids);
+     // norm_types
+     if($hasmod) {
+       $qstr  = "SELECT `id`, `value` FROM {$this->db}.tag ";
+       $qstr .= "WHERE `tagset_id`='" . $tagset_ids['norm_type'] . "'";
+       $q = $this->query($qstr);
+       $qerr = $this->dbconn->last_error();
+       if($qerr) {
+	 return "Ein interner Fehler ist aufgetreten (Code: 1076).  Die Datenbank meldete:\n{$qerr}";
+       }
+       while($row = $this->dbconn->fetch_assoc($q)) {
+	 $norm_types[$row['value']] = $row['id'];
+       }
+     }
      // POS
      if($haspos) {
        $qstr  = "SELECT `id`, `value` FROM {$this->db}.tag ";
@@ -1267,6 +1288,7 @@
 	 $pos_tags[$row['value']] = $row['id'];
        }
      }
+
 
      $updatetag = array();    // array with tags to be updated
      $inserttag = array();    // array with tags to be inserted
@@ -1312,6 +1334,52 @@
 	 }
 	 else if(array_key_exists('norm', $selected)) {
 	   $deletetag[] = $selected['norm']['tag_id'];
+	 }
+       }
+       if($hasmod) {
+	 if(array_key_exists('anno_mod', $line)) {
+	   $tagvalue = $line['anno_mod'];
+	   if(!empty($tagvalue)) {
+	     if(array_key_exists('norm_broad', $selected)) {
+	       $tagid = $selected['norm_broad']['tag_id'];
+	       $updatetag[] = "('{$tagid}', '{$tagvalue}')";
+	     }
+	     else {
+	       $inserttag[] = array("query" => "('{$tagvalue}', 0, '" . $tagset_ids['norm_broad'] . "')",
+				    "line_id" => $line['id']);
+	     }
+	   }
+	   else if(array_key_exists('norm_broad', $selected)) {
+	     $deletetag[] = $selected['norm_broad']['tag_id'];
+	   }
+	 }
+	 if(array_key_exists('anno_modtype', $line)) {
+	   $tagvalue = $line['anno_modtype'];
+	   if(!empty($tagvalue)) {
+	     if(array_key_exists($tagvalue, $norm_types)) { // legal?
+	       $newid = $norm_types[$tagvalue];
+	       if(array_key_exists('norm_type', $selected)) {
+		 $tagid = $selected['norm_type']['tag_id'];
+		 if($tagid !== $newid) { // change required?
+		   $deletets[] = $selected['norm_type']['id'];
+		   $tsstr  = "(NULL, 1, 'user', '{$newid}', '" . $line['id'] . "')";
+		   $insertts[] = $tsstr;
+		 }
+	       }
+	       else {
+		 // simply insert
+		 $tsstr  = "(NULL, 1, 'user', '{$newid}', '" . $line['id'] . "')";
+		 $insertts[] = $tsstr;
+	       }
+	     }
+	     else {
+	       $warnings[] = "Überspringe illegalen Modernisierungstyp: {$tagvalue}";
+	     }
+	   }
+	   else if(array_key_exists('norm_type', $selected)) {
+	     // delete
+	     $deletets[] = $selected['norm_type']['id'];
+	   }
 	 }
        }
        // Lemma

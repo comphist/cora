@@ -34,7 +34,8 @@
             <input type="checkbox" name="displayedColumns" value="tok_trans" checked="yes" /> Token (Trans)
 	    <input type="checkbox" name="displayedColumns" value="token" checked="yes" /> Token (UTF)
    <?php if($_SESSION["normvisible"]): ?>
-	    <input type="checkbox" name="displayedColumns" value="Norm" checked="yes" /> Normalisierte Form
+	    <input type="checkbox" name="displayedColumns" value="Norm" checked="yes" /> Normalisierung
+	    <input type="checkbox" name="displayedColumns" value="Mod" checked="yes" /> Modernisierung
    <?php endif; ?>
 	    <input type="checkbox" name="displayedColumns" value="POS" checked="yes" /> POS-Tag
 	    <input type="checkbox" name="displayedColumns" value="Morph" checked="yes" /> Morphologie-Tag

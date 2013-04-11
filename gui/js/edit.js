@@ -146,6 +146,9 @@ var EditorModel = new Class({
 		if (parent.hasClass("editTable_Norm")) {
 		    ref.updateData(this_id, 'anno_norm', new_value);
 		    ref.updateProgress(this_id, true);
+		} else if (parent.hasClass("editTable_Mod")) {
+		    ref.updateData(this_id, 'anno_mod', new_value);
+		    ref.updateProgress(this_id, true);
 		} else if (parent.hasClass("editTable_Lemma")) {
 		    ref.updateData(this_id, 'anno_lemma', new_value);
 		    ref.updateProgress(this_id, true);
@@ -691,8 +694,12 @@ var EditorModel = new Class({
 
 	    // build annotation elements
 	    var norm_tr = tr.getElement('.editTable_Norm input');
+	    var mod_tr = tr.getElement('.editTable_Mod input');
 	    if(norm_tr != null && norm_tr != undefined) {
 		norm_tr.set('value', line.anno_norm);
+	    }
+	    if(mod_tr != null && mod_tr != undefined) {
+		mod_tr.set('value', line.anno_mod);
 	    }
 	    tr.getElement('.editTable_Lemma input').set('value', line.anno_lemma);
 
@@ -870,6 +877,7 @@ var EditorModel = new Class({
 		anno_POS: tp, //.replace(/\s[\d\.]+/g,""),
 		anno_morph: tm, //.replace(/\s[\d\.]+/g,""),
 		anno_norm: line.anno_norm,
+		anno_mod: line.anno_mod,
 		comment: line.comment
 	    });
 	}
