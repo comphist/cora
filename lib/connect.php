@@ -2116,6 +2116,9 @@
     $tagset_ids['pos'] = $options['tagset'];
     // Load POS tagset
     $tagset_pos = $this->getTagsetByValue($tagset_ids['pos']);
+    if(array_key_exists('norm_type', $tagset_ids)) {
+      $tagset_norm_type = $this->getTagsetByValue($tagset_ids['norm_type']);
+    }
 
     // Start insertions
     $this->dbconn->startTransaction();
@@ -2152,6 +2155,12 @@
     }
     if(array_key_exists('lemma', $tagset_ids)) {
       $qstr .= ", ('{$fileid}', '" . $tagset_ids['lemma'] . "', 0)";
+    }
+    if(array_key_exists('norm_type', $tagset_ids)) {
+      $qstr .= ", ('{$fileid}', '" . $tagset_ids['norm_type'] . "', 0)";
+    }
+    if(array_key_exists('norm_broad', $tagset_ids)) {
+      $qstr .= ", ('{$fileid}', '" . $tagset_ids['norm_broad'] . "', 0)";
     }
     $q = $this->query($qstr);
     if($qerr = $this->dbconn->last_error()) {
@@ -2283,6 +2292,14 @@
 	    return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1099). Der folgende POS-Tag ist ungültig: " . $sugg['tag'];
 	  }
 	  $tag_id = $tagset_pos[$sugg['tag']];
+	}
+	// for modernisation types, too
+	else if($sugg['type']==='norm_type') {
+	  if(!array_key_exists($sugg['tag'], $tagset_norm_type)) {
+	    $this->dbconn->rollback();
+	    return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1099). Der folgende Modernisierungstyp ist ungültig: " . $sugg['tag'];
+	  }
+	  $tag_id = $tagset_norm_type[$sugg['tag']];
 	}
 	// for all other tags, create a new tag entry first
 	else {
