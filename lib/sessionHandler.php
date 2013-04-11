@@ -23,6 +23,9 @@ class CoraSessionHandler {
   private $xml; /**< An XMLHandler object. */
   private $ch; /**< A CommandHandler object. */
 
+  // HACK as long as the setting is not in the DB
+  private $users_allowed_norm = array("bollmann", "petran");
+
   /** Create a new CoraSessionHandler.
    *
    * Initializes a session, constructs a new DBInterface, and sets
@@ -570,6 +573,7 @@ class CoraSessionHandler {
       $_SESSION["failedLogin"] = false;
       $_SESSION["admin"] = ($data['admin'] == 1);
       //$_SESSION["normvisible"] = ($data['normvisible'] == 1);
+      $_SESSION["normvisible"] = in_array($user, $this->users_allowed_norm);
       $this->db->updateLastactive($data['id']);
 
 	  // file already opened?
