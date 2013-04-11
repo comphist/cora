@@ -3,6 +3,7 @@ var EditorModel = new Class({
     lineTemplate: null,
     lastEditedRow: -1,
     activePage: 0,
+    maxPage: 0,
     displayedLinesStart: 0,
     displayedLinesEnd: 0,
     lineCount: 0,
@@ -169,8 +170,29 @@ var EditorModel = new Class({
 	    function(event, target) {
 		var parent = target.getParent('td');
 		var new_value = target.get('value');
+		var new_row, new_target, this_class;
 		if (parent.hasClass("editTable_Mod")) {
 		    ref.updateModSelect(parent, new_value);
+		}
+		if (event.code == 40) { // down arrow
+		    this_class = parent.get('class');
+		    new_row = parent.getParent('tr').getNext('tr');
+		    if(new_row != null) {
+			new_target = new_row.getElement('td.'+this_class+' input');
+			if(new_target != null) {
+			    new_target.focus();
+			}
+		    }
+		}
+		if (event.code == 38) { // up arrow
+		    this_class = parent.get('class');
+		    new_row = parent.getParent('tr').getPrevious('tr');
+		    if(new_row != null) {
+			new_target = new_row.getElement('td.'+this_class+' input');
+			if(new_target != null) {
+			    new_target.focus();
+			}
+		    }
 		}
 	    }
 	);
@@ -395,6 +417,32 @@ var EditorModel = new Class({
 	}
     },
 
+    /* Function: displayNextPage
+
+       Displays the next page of the document.
+    */
+    displayNextPage: function() {
+	var ps = $('pageSelector');
+	var new_page = ps.value.toInt() + 1;
+	if (new_page<=this.maxPage) {
+	    ps.set('value', new_page);
+	    this.displayPage(new_page);
+	}
+    },
+
+    /* Function: displayPreviousPage
+
+       Displays the previous page of the document.
+    */
+    displayPreviousPage: function() {
+	var ps = $('pageSelector');
+	var new_page = ps.value.toInt() - 1;
+	if (new_page>0) {
+	    ps.set('value', new_page);
+	    this.displayPage(new_page);
+	}
+    },
+
     /* Function: renderPagesPanel
 
        Render the page navigator panel.
@@ -425,6 +473,7 @@ var EditorModel = new Class({
 	x = (this.lineCount - userdata.contextLines);
 	y = (userdata.noPageLines - userdata.contextLines);
 	max_page = (x % y) ? Math.ceil(x/y) : (x/y);
+	this.maxPage = max_page;
 
 	if (active_page==null || active_page<1) {
 	    active_page = 1;
@@ -449,12 +498,7 @@ var EditorModel = new Class({
 	    events: {
 		click: function(e) {
 		    e.stop();
-		    var ps = $('pageSelector');
-		    var new_page = ps.value.toInt() - 1;
-		    if (new_page>0) {
-			ps.set('value', new_page);
-			ref.displayPage(new_page);
-		    }
+		    ref.displayPreviousPage();
 		}
 	    },
 	}));
@@ -482,12 +526,7 @@ var EditorModel = new Class({
 	    events: {
 		click: function(e) {
 		    e.stop();
-		    var ps = $('pageSelector');
-		    var new_page = ps.value.toInt() + 1;
-		    if (new_page<=max_page) {
-			ps.set('value', new_page);
-			ref.displayPage(new_page);
-		    }
+		    ref.displayNextPage();
 		}
 	    },
 	}));
@@ -497,8 +536,8 @@ var EditorModel = new Class({
 	    events: {
 		click: function(e) {
 		    e.stop();
-		    $('pageSelector').set('value', max_page);
-		    ref.displayPage(max_page);
+		    $('pageSelector').set('value', ref.maxPage);
+		    ref.displayPage(ref.maxPage);
 		}
 	    },
 	}));
