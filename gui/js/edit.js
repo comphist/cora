@@ -133,6 +133,10 @@ var EditorModel = new Class({
 		    ref.updateData(this_id, 'anno_morph', new_value);
 		    if (userdata.showInputErrors)
 			ref.updateInputError(target.getParent('tr'));
+		} else if (parent.hasClass("editTable_Mod")) {
+		    ref.updateData(this_id, 'anno_modtype', new_value);
+		    if (userdata.showInputErrors)
+			ref.updateInputError(target.getParent('tr'));
 		}
 		ref.updateProgress(this_id, true);
 	    }
@@ -148,12 +152,25 @@ var EditorModel = new Class({
 		    ref.updateProgress(this_id, true);
 		} else if (parent.hasClass("editTable_Mod")) {
 		    ref.updateData(this_id, 'anno_mod', new_value);
+		    //ref.updateModSelect(parent, new_value);
+		    if (userdata.showInputErrors)
+			ref.updateInputError(target.getParent('tr'));
 		    ref.updateProgress(this_id, true);
 		} else if (parent.hasClass("editTable_Lemma")) {
 		    ref.updateData(this_id, 'anno_lemma', new_value);
 		    ref.updateProgress(this_id, true);
 		} else if (parent.hasClass("editTable_Comment")) {
 		    ref.updateData(this_id, 'comment', new_value);
+		}
+	    }
+	);
+	et.addEvent(
+	    'keyup:relay(input)',
+	    function(event, target) {
+		var parent = target.getParent('td');
+		var new_value = target.get('value');
+		if (parent.hasClass("editTable_Mod")) {
+		    ref.updateModSelect(parent, new_value);
 		}
 	    }
 	);
@@ -215,6 +232,23 @@ var EditorModel = new Class({
 	return false;
     },
 
+    /* Function: updateModSelect
+
+       Update status of the modernisation type select box.
+       
+       Parameters:
+        td - current table data object
+	mod - current modernisation value
+    */
+    updateModSelect: function(td, mod) {
+	if(!mod || mod=="") {
+	    td.getElement("option[value='']").set('selected', 'selected');
+	    td.getElement("select").set('disabled', 'disabled');
+	} else {
+	    td.getElement("select").set('disabled', null);
+	}
+    },
+
     /* Function: updateInputError
 
        Visualize whether selected tags are legal values.
@@ -229,18 +263,29 @@ var EditorModel = new Class({
     */
     updateInputError: function(tr) {
 	var iec = this.inputErrorClass;
+	var tselect, ttag, modval;
 	var pselect, ptag, mselect, mtag;
+	try {
+	    tselect = tr.getElement('td.editTable_Mod select');
+	    ttag = tselect.getSelected()[0].get('value');
+	    modval = tr.getElement('td.editTable_Mod input').get('value');
+	} catch(err) {}
+	if(tselect) {
+	    if(modval!="" && ttag=="") {
+		tselect.addClass(iec);
+	    } else {
+		tselect.removeClass(iec);
+	    }
+	}
+
 	try {
 	    pselect = tr.getElement('td.editTable_POS select');
 	    ptag = pselect.getSelected()[0].get('value');
 	    mselect = tr.getElement('td.editTable_Morph select');
 	    mtag = mselect.getSelected()[0].get('value');
-	}
-	catch(err) {
-	    // row doesn't have the select, or the select is empty
+	} catch(err) {	// row doesn't have the select, or the select is empty
 	    return;
 	}
-
 	if(ptag!="") {
 	    if(!fileTagset.pos.contains(ptag)) {
 		pselect.addClass(iec);
@@ -694,13 +739,30 @@ var EditorModel = new Class({
 
 	    // build annotation elements
 	    var norm_tr = tr.getElement('.editTable_Norm input');
-	    var mod_tr = tr.getElement('.editTable_Mod input');
+	    var mod_tr  = tr.getElement('.editTable_Mod input');
+	    var mod_trs = tr.getElement('.editTable_Mod select');
 	    if(norm_tr != null && norm_tr != undefined) {
 		norm_tr.set('value', line.anno_norm);
 	    }
 	    if(mod_tr != null && mod_tr != undefined) {
 		mod_tr.set('value', line.anno_mod);
 	    }
+	    if(mod_trs != null && mod_trs != undefined) {
+		if(line.anno_mod != null && line.anno_mod != undefined) {
+		    mod_trs.set('disabled', null);
+		} else {
+		    mod_trs.set('disabled', 'disabled');
+		}
+		mod_trs.getElement("option[value='']").set('selected', 'selected');
+		if(line.anno_modtype != null && line.anno_modtype != undefined) {
+		    mod_trs = mod_trs.getElement("option[value='" + line.anno_modtype + "']");
+		    if(mod_trs != null) {
+			mod_trs.set('selected', 'selected');
+		    }
+		}
+	    }
+
+
 	    tr.getElement('.editTable_Lemma input').set('value', line.anno_lemma);
 
             // POS
@@ -878,6 +940,7 @@ var EditorModel = new Class({
 		anno_morph: tm, //.replace(/\s[\d\.]+/g,""),
 		anno_norm: line.anno_norm,
 		anno_mod: line.anno_mod,
+		anno_modtype: line.anno_modtype,
 		comment: line.comment
 	    });
 	}

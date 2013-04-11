@@ -51,17 +51,23 @@
 			<td class="editTable_token"></td>
    <?php if($_SESSION["normvisible"]): ?>
 			<td class="editTable_Norm">
-			    <input type="text" size="12" value="" />
+			    <input type="text" size="13" value="" />
 			</td>
 			<td class="editTable_Mod">
-			    <input type="text" size="12" value="" />
+			    <input type="text" size="13" value="" />
+                            <select size="1" disabled="disabled">
+                              <option value=""></option>
+                              <option value="1">1</option>
+                              <option value="2">2</option>
+                              <option value="3">3</option>
+                            </select>
 			</td>
    <?php endif; ?>
 			<td class="editTable_POS"></td>
 			<td class="editTable_Morph"></td>
 			<td class="editTable_Lemma">
 			    <div class="editTableLemma editTableCheckbox"></div>
-			    <input type="text" size="12" value="" />
+			    <input type="text" size="13" value="" />
 			</td>
 			<td class="editTable_Comment">
 			    <input type="text" size="30" value="" />
