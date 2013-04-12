@@ -340,6 +340,19 @@ var EditorModel = new Class({
 	}
     },
 
+    /* Function: forcePageRedraw
+
+       Deletes all rows in the editor table and recreates them.
+
+       This operation is purely cosmetic and should be used after
+       significant changes to the table row content (e.g., displaying
+       previously hidden columns).
+    */
+    forcePageRedraw: function() {
+	$('editTable').getElements('tr[id^=line][id!=line_template]').destroy();
+	this.displayPage(this.activePage);
+    },
+
     /* Function: renderMorphOptions
 
        Re-render the morphology tag drop-down box when POS tag

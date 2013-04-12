@@ -81,6 +81,9 @@ window.addEvent('domready', function() {
 		var value = target.get('value');
 		if (checked) {
 		    $('editTable').getElements(".editTable_"+value).show();
+		    if(edit!=null && edit.editorModel!=null && edit.editorModel!=undefined) {
+			edit.editorModel.forcePageRedraw();
+		    }
 		    userdata.hiddenColumns = userdata.hiddenColumns.replace(value+",","");
 		} else {
 		    $('editTable').getElements(".editTable_"+value).hide();

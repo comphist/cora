@@ -27,7 +27,7 @@
                         <th class="editTable_token">Token (UTF)</th>
    <?php if($_SESSION["normvisible"]): ?>
 			<th class="editTable_Norm">Normalisierung</th>
-			<th class="editTable_Norm">Modernisierung</th>
+			<th class="editTable_Mod">Modernisierung</th>
    <?php endif; ?>
 			<th class="editTable_POS">POS-Tag</th>
 			<th class="editTable_Morph">Morphologie-Tag</th>
