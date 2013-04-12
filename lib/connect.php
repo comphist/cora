@@ -2009,16 +2009,18 @@
        }
      }
      // modern
-     $qs  = "INSERT INTO {$this->db}.modern (`id`, `tok_id`, `trans`, `ascii`, `utf`) VALUES ";
-     $qs .= implode(", ", $modinsert);
-     $qs .= " ON DUPLICATE KEY UPDATE `trans`=VALUES(trans), `ascii`=VALUES(ascii), `utf`=VALUES(utf)";
-     $q = $this->query($qs);
-     $qerr = $this->dbconn->last_error($q);
-     if($qerr) {
-       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1213).";
-       $errors[] = $qerr . "\n" . $qs;
-       $this->dbconn->rollback();
-       return array("success" => false, "errors" => $errors);
+     if(!empty($modinsert)) { // this can happen for struck words, e.g. *[vnd*]
+       $qs  = "INSERT INTO {$this->db}.modern (`id`, `tok_id`, `trans`, `ascii`, `utf`) VALUES ";
+       $qs .= implode(", ", $modinsert);
+       $qs .= " ON DUPLICATE KEY UPDATE `trans`=VALUES(trans), `ascii`=VALUES(ascii), `utf`=VALUES(utf)";
+       $q = $this->query($qs);
+       $qerr = $this->dbconn->last_error($q);
+       if($qerr) {
+	 $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1213).";
+	 $errors[] = $qerr . "\n" . $qs;
+	 $this->dbconn->rollback();
+	 return array("success" => false, "errors" => $errors);
+       }
      }
      if(!empty($moddelete)) {
        $qs = "DELETE FROM {$this->db}.modern WHERE `id` IN (" . implode(", ", $moddelete) . ")";
