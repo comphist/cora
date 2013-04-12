@@ -686,8 +686,6 @@ var EditorModel = new Class({
 	var data = this.data;
 	var et = this.editTable;
 	var ler = this.lastEditedRow;
-	var sie = userdata.showInputErrors;
-	var iec = this.inputErrorClass;
 	var morphhtml = fileTagset.morphHTML;
 	var morph = fileTagset.morph;
 	var pos = fileTagset.pos;
@@ -816,7 +814,6 @@ var EditorModel = new Class({
 		}
 	    }
 
-
 	    tr.getElement('.editTable_Lemma input').set('value', line.anno_lemma);
 
             // POS
@@ -833,13 +830,6 @@ var EditorModel = new Class({
 		});
 		posopt.grab(optgroup, 'top');
 	    }
-	    if(sie){ // this should never happen with the new DB, I guess?
-		if(line.anno_POS && !pos.contains(line.anno_POS)) {
-		    posopt.addClass(iec);
-		} else {
-		    posopt.removeClass(iec);
-		}
-	    }
 	    posopt.grab(new Element('option',{
 		html: line.anno_POS,
 		value: line.anno_POS,
@@ -855,14 +845,6 @@ var EditorModel = new Class({
 					       selected: 'selected',
 					       'class': 'lineSuggestedTag'
 					      }));
-	    if(sie && line.anno_POS){
-		if(morph[line.anno_POS]==null
-		   || !morph[line.anno_POS].contains(line.anno_morph)) {
-		    mselect.addClass(iec);
-		} else {
-		    mselect.removeClass(iec);
-		}
-	    }
 
 	    if (line.suggestions.length>0) {
 		optgroup = new Element('optgroup', {'label': 'Vorgeschlagene Tags', 'class': 'lineSuggestedTag'});
@@ -879,6 +861,10 @@ var EditorModel = new Class({
 	    if (line.anno_POS!=null) {
 		mselect.grab(new Element('optgroup', {'label': "Alle Tags für '"+line.anno_POS+"'",
 						      html: morphhtml[line.anno_POS]}));
+	    }
+
+	    if(userdata.showInputErrors) {
+		this.updateInputError(tr);
 	    }
 	}
 
