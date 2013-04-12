@@ -636,7 +636,9 @@ tr.opened {
  
 /* Edit-Table */
 table#editTable{
+    border-spacing: 0px;
     font-size: 1.5em;
+    padding-top: 6px;
 }
 
 tr.editHeadLine{
@@ -647,13 +649,19 @@ table#editTable tr {
 
 }
 
-table#editTable td, table#editTable th {
-    border-bottom: 1px solid #999;
-    padding: 5px 10px;
+table#editTable th {
+    border-bottom: 1px solid #666;
+    padding: 0px 6px 4px 6px;
 }
 
-table#editTable td.editTable_progress {
-    padding: 0px 12px;
+table#editTable td {
+    border-bottom: 1px solid #BBB;
+    padding: 0px 6px;
+    white-space: nowrap;
+}
+
+table#editTable th.editTable_tokenid {
+    text-align: right;
 }
 
 table#editTable td.editTable_tokenid {
@@ -663,10 +671,26 @@ table#editTable td.editTable_tokenid {
 }
 
 table#editTable td.editTable_POS select {
-    width: 10em;
+    width: 8em;
 }
 
 table#editTable td.editTable_Morph select {
+    width: 12em;
+}
+
+table#editTable td.editTable_Norm input {
+    width: 8em;
+}
+
+table#editTable td.editTable_Mod input {
+    width: 8em;
+}
+
+table#editTable td.editTable_Lemma input {
+    width: 8em;
+}
+
+table#editTable td.editTable_Comment input {
     width: 15em;
 }
 
@@ -680,6 +704,37 @@ table#editTable select.input_error_chrome {
 }
 
 .editTable_token {
+}
+
+
+.editTableCheckbox {
+    border: 1px solid black;
+    width: 8px;
+    height: 8px;
+    padding: 1px;
+    background-color: white;
+}
+
+div.editTableProgress {
+    width: 8px;
+    height: 2em;
+    background-color: #CCC;
+}
+
+div.editTableProgressChecked {
+    background-color: green !important;
+}
+
+div.editTableErrorChecked {
+    background-color: red !important;
+}
+
+div.editTableLemma {
+    display: inline-block;
+}
+
+div.editTableLemmaChecked {
+    background-color: blue !important;
 }
 
 
@@ -725,40 +780,6 @@ table#editTable select.input_error_chrome {
     font-style: normal;
 
 }
-
-.editTableCheckbox {
-    border: 1px solid black;
-    width: 8px;
-    height: 8px;
-    padding: 1px;
-    background-color: white;
-}
-
-div.editTableProgress {
-/*    border: '0.5px solid black';*/
-    width: 8px;
-    height: 2em;
-    background-color: lightgray;
-    margin-bottom: 2px;
-/*    padding: '1px';*/
-}
-
-div.editTableProgressChecked {
-    background-color: green !important;
-}
-
-div.editTableErrorChecked {
-    background-color: red !important;
-}
-
-div.editTableLemma {
-    display: inline-block;
-}
-
-div.editTableLemmaChecked {
-    background-color: blue !important;
-}
-
 .fileViewRefresh h3 {
     display: inline;
     margin-right: 20px;

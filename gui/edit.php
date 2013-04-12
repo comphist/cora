@@ -51,10 +51,10 @@
 			<td class="editTable_token"></td>
    <?php if($_SESSION["normvisible"]): ?>
 			<td class="editTable_Norm">
-			    <input type="text" size="13" value="" />
+			    <input type="text" value="" />
 			</td>
 			<td class="editTable_Mod">
-			    <input type="text" size="13" value="" />
+			    <input type="text" value="" />
                             <select size="1" disabled="disabled">
                               <option value=""></option>
                               <option value="1">1</option>
@@ -67,10 +67,10 @@
 			<td class="editTable_Morph"></td>
 			<td class="editTable_Lemma">
 			    <div class="editTableLemma editTableCheckbox"></div>
-			    <input type="text" size="13" value="" />
+			    <input type="text" value="" />
 			</td>
 			<td class="editTable_Comment">
-			    <input type="text" size="30" value="" />
+			    <input type="text" value="" />
 			</td>
 			<td class="editTable_dropdown">
    <div class="editTableDropdown"><img class="editTableDropdownIcon" src="gui/images/proxal/arrow-down.ico"/></div>
