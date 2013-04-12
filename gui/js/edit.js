@@ -150,6 +150,7 @@ var EditorModel = new Class({
 		var new_value = target.get('value');
 		if (parent.hasClass("editTable_Norm")) {
 		    ref.updateData(this_id, 'anno_norm', new_value);
+		    parent.getSiblings("td.editTable_Mod input")[0].set('placeholder', new_value);
 		    ref.updateProgress(this_id, true);
 		} else if (parent.hasClass("editTable_Mod")) {
 		    ref.updateData(this_id, 'anno_mod', new_value);
@@ -257,7 +258,7 @@ var EditorModel = new Class({
     /* Function: updateModSelect
 
        Update status of the modernisation type select box.
-       
+
        Parameters:
         td - current table data object
 	mod - current modernisation value
@@ -791,6 +792,7 @@ var EditorModel = new Class({
 		    mod_trs.set('disabled', null);
 		} else {
 		    mod_trs.set('disabled', 'disabled');
+		    mod_tr.set('placeholder', line.anno_norm);
 		}
 		mod_trs.getElement("option[value='']").set('selected', 'selected');
 		if(line.anno_modtype != null && line.anno_modtype != undefined) {
