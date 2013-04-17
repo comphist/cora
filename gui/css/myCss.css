@@ -703,9 +703,13 @@ table#editTable select.input_error_chrome {
     outline: 2px solid #FFA0A0;
 }
 
-.editTable_token {
+table#editTable td.editTable_token {
+    font-family: Junicode, Cardo, Alphabetum, "Palemonas MUFI",
+                 "Andron Scriptor Web", LeedsUni, "Titus Cyberbit",
+		 "Times New Roman", Times, serif;
+    font-size: 110%;
+    padding-top: 4px;
 }
-
 
 .editTableCheckbox {
     border: 1px solid black;
