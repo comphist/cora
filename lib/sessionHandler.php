@@ -24,8 +24,8 @@ class CoraSessionHandler {
   private $ch; /**< A CommandHandler object. */
 
   // HACK as long as the setting is not in the DB
-  private $users_allowed_norm = array("bollmann", "petran", "krasselt",
-				      "bort", "frey", "stengler", "nelken");
+  private $users_allowed_norm = array("bollmann", "petran", "krasselt", "dipper",
+				      "bort", "frey", "spengler", "nelken");
 
   /** Create a new CoraSessionHandler.
    *
