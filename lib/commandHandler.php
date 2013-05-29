@@ -51,9 +51,12 @@ class CommandHandler {
 	$output[] = "Es gab noch {$diff} weitere Zeilen, die hier ausgelassen wurden.";
       }
       array_unshift($output, "Die Prüfung der Transkription hat Fehler ergeben:");
+      // return
+      return $output;
     }
-    // return
-    return $output;
+    else {
+      return array();
+    }
   }
 
   /** Call the conversion script to convert a transcription file to
