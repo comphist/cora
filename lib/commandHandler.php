@@ -14,11 +14,11 @@ class CommandHandler {
   private $conv_script  = "/usr/bin/ruby /usr/local/bin/convert_check.rb -T";
   private $xml_script   = "/usr/bin/python -u /usr/local/bin/convert_coraxml.py -t -g";
   private $single_token_flag = "-L";
-  private $conv_opt = array("mod_trans" => "-c orig -t all -p leave -r leave -i original -d leave -s delete",
-			    "mod_ascii" => "-c simple -t all -p leave -r delete -i leave -d delete -s delete",
-			    "mod_utf"   => "-c utf -t all -p leave -r delete -i leave -d delete -s delete",
-			    "dipl_trans" => "-S -c orig -t historical -p leave -r leave -i original -s original -d leave",
-			    "dipl_utf"   => "-S -c utf -t historical -p delete -r delete -i leave -s leave -d leave"
+  private $conv_opt = array("mod_trans" => "-c orig -t all -p leave -r leave -i original -d leave -s delete -e leave",
+			    "mod_ascii" => "-c simple -t all -p leave -r delete -i leave -d delete -s delete -e delete",
+			    "mod_utf"   => "-c utf -t all -p leave -r delete -i leave -d delete -s delete -e delete",
+			    "dipl_trans" => "-S -c orig -t historical -p leave -r leave -i original -s original -d leave -e leave",
+			    "dipl_utf"   => "-S -c utf -t historical -p delete -r delete -i leave -s leave -d leave -e delete"
 			    );
 
   function __construct() {

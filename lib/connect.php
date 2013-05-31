@@ -1986,16 +1986,18 @@
      // perform actual queries
      $this->dbconn->startTransaction();
      // dipl
-     $qs  = "INSERT INTO {$this->db}.dipl (`id`, `tok_id`, `line_id`, `utf`, `trans`) VALUES ";
-     $qs .= implode(", ", $diplinsert);
-     $qs .= " ON DUPLICATE KEY UPDATE `line_id`=VALUES(line_id), `utf`=VALUES(utf), `trans`=VALUES(trans)";
-     $q = $this->query($qs);
-     $qerr = $this->dbconn->last_error($q);
-     if($qerr) {
-       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1211).";
-       $errors[] = $qerr . "\n" . $qs;
-       $this->dbconn->rollback();
-       return array("success" => false, "errors" => $errors);
+     if(!empty($diplinsert)) { // e.g., standalone edition numberings have no dipl
+       $qs  = "INSERT INTO {$this->db}.dipl (`id`, `tok_id`, `line_id`, `utf`, `trans`) VALUES ";
+       $qs .= implode(", ", $diplinsert);
+       $qs .= " ON DUPLICATE KEY UPDATE `line_id`=VALUES(line_id), `utf`=VALUES(utf), `trans`=VALUES(trans)";
+       $q = $this->query($qs);
+       $qerr = $this->dbconn->last_error($q);
+       if($qerr) {
+	 $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1211).";
+	 $errors[] = $qerr . "\n" . $qs;
+	 $this->dbconn->rollback();
+	 return array("success" => false, "errors" => $errors);
+       }
      }
      if(!empty($dipldelete)) {
        $qs = "DELETE FROM {$this->db}.dipl WHERE `id` IN (" . implode(", ", $dipldelete) . ")";
@@ -2419,20 +2421,21 @@
     $qstr .= "  (`tok_id`, `value`, `comment_type`) VALUES ";
     $qarr  = array();
     $comments = $data->getComments();
-    foreach($comments as $comment) {
-      $qarr[] = "('" . $comment['parent_db_id'] . "', '" 
-	. $this->dbconn->escapeSQL($comment['text']) . "', '"
-	. $this->dbconn->escapeSQL($comment['type']) . "')";
-    }
-    $qstr .= implode(",", $qarr);
-    $q = $this->query($qstr);
-    if($qerr = $this->dbconn->last_error()) {
-      $this->dbconn->rollback();
-      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1103).\n" . $qerr . "\n" . $qstr;
+    if(!empty($comments)) {
+      foreach($comments as $comment) {
+	$qarr[] = "('" . $comment['parent_db_id'] . "', '" 
+	  . $this->dbconn->escapeSQL($comment['text']) . "', '"
+	  . $this->dbconn->escapeSQL($comment['type']) . "')";
+      }
+      $qstr .= implode(",", $qarr);
+      $q = $this->query($qstr);
+      if($qerr = $this->dbconn->last_error()) {
+	$this->dbconn->rollback();
+	return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1103).\n" . $qerr . "\n" . $qstr;
+      }
     }
 
     $this->dbconn->commitTransaction();
-    
     return False;
   }
 
