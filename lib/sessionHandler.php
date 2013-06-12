@@ -95,6 +95,16 @@ class CoraSessionHandler {
     return $this->db->getTagset($tagset, $limit);
   }
 
+
+  /** Wraps DBInterface::fetchLemmaSuggestion(). */
+  public function getLemmaSuggestion($linenum, $q, $limit) {
+    return array(
+		 array("v" => "lemma1"),
+		 array("v" => "lemma2"),
+		 array("v" => "lemma3")
+		 );
+  }
+
   /** Wraps DBInterface::getUserList(), checking for administrator
       privileges first. */
   public function getUserList() {

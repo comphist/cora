@@ -177,21 +177,25 @@ var EditorModel = new Class({
 		}
 		if (event.code == 40) { // down arrow
 		    this_class = parent.get('class');
-		    new_row = parent.getParent('tr').getNext('tr');
-		    if(new_row != null) {
-			new_target = new_row.getElement('td.'+this_class+' input');
-			if(new_target != null) {
-			    new_target.focus();
+		    if(event.control || this_class != "editTable_Lemma") {
+			new_row = parent.getParent('tr').getNext('tr');
+			if(new_row != null) {
+			    new_target = new_row.getElement('td.'+this_class+' input');
+			    if(new_target != null) {
+				new_target.focus();
+			    }
 			}
 		    }
 		}
 		if (event.code == 38) { // up arrow
 		    this_class = parent.get('class');
-		    new_row = parent.getParent('tr').getPrevious('tr');
-		    if(new_row != null) {
-			new_target = new_row.getElement('td.'+this_class+' input');
-			if(new_target != null) {
-			    new_target.focus();
+		    if(event.control || this_class != "editTable_Lemma") {
+			new_row = parent.getParent('tr').getPrevious('tr');
+			if(new_row != null) {
+			    new_target = new_row.getElement('td.'+this_class+' input');
+			    if(new_target != null) {
+				new_target.focus();
+			    }
 			}
 		    }
 		}
@@ -681,6 +685,7 @@ var EditorModel = new Class({
          'true' if the page was displayed successfully.
      */
     displayPage: function(page){
+	var ref = this;
 	var cl = userdata.contextLines;
 	var pl = userdata.noPageLines;
 	var data = this.data;
@@ -690,7 +695,7 @@ var EditorModel = new Class({
 	var morph = fileTagset.morph;
 	var pos = fileTagset.pos;
 	var end, start, tr, line, posopt, morphopt, mselect, trs, j;
-	var optgroup, elem;
+	var optgroup, elem, lemma_input;
 	var dlr, dynstart, dynend;
 	var lineinfo;
 
@@ -748,7 +753,8 @@ var EditorModel = new Class({
 	    j++;
 	}
 	while (j<=pl) { // add missing lines
-	    et.adopt(this.lineTemplate.clone());
+	    tr_clone = this.lineTemplate.clone();
+	    et.adopt(tr_clone);
 	    j++;
 	}
 
@@ -814,7 +820,26 @@ var EditorModel = new Class({
 		}
 	    }
 
-	    tr.getElement('.editTable_Lemma input').set('value', line.anno_lemma);
+	    // Lemma auto-completion
+	    lemma_input = tr.getElement('.editTable_Lemma input');
+	    lemma_input.removeEvents();
+	    lemma_input.set('value', line.anno_lemma);
+	    new Meio.Autocomplete(lemma_input,
+				  'request.php?do=fetchLemmaSugg', {
+				      urlOptions: {
+					  extraParams: [
+					      {'name': 'linenum', 'value': line.num}
+					  ]
+				      },
+				      filter: {
+					  type: 'startswith',
+					  path: 'v'
+				      },
+				  }).addEvent('select', function(e,v) { 
+				      var this_id = e.field.node.getParent("tr").get("id").substr(5);
+				      ref.updateData(this_id, 'anno_lemma', v['v']);
+				      ref.updateProgress(this_id, true);
+				  });
 
             // POS
 	    posopt = tr.getElement('.editTable_POS select');

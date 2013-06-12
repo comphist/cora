@@ -658,7 +658,7 @@
     * given file.
     */
    public function getTagsetsForFile($fileid) {
-     $qs  = "SELECT ts.id, ts.class ";
+     $qs  = "SELECT ts.id, ts.class, ts.set_type ";
      $qs .= "FROM   {$this->db}.text2tagset ttt ";
      $qs .= "  LEFT JOIN {$this->db}.tagset ts  ON ts.id=ttt.tagset_id ";
      $qs .= "WHERE  ttt.text_id='{$fileid}'";
@@ -1256,7 +1256,14 @@
        return "Ein interner Fehler ist aufgetreten (Code: 1075).  Die Datenbank meldete:\n{$tslist}";
      }
      foreach($tslist as $tagset) {
-       $tagset_ids[$tagset['class']] = $tagset['id'];
+       if($tagset['class'] == "lemma") {
+	 if($tagset['set_type'] == "open") {
+	   $tagset_ids["lemma"] = $tagset['id'];
+	 }
+       }
+       else {
+	 $tagset_ids[$tagset['class']] = $tagset['id'];
+       }
      }
      $hasnorm = array_key_exists('norm', $tagset_ids);
      $hasmod = array_key_exists('norm_broad', $tagset_ids) && array_key_exists('norm_type', $tagset_ids);

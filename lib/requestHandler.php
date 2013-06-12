@@ -345,6 +345,13 @@ class RequestHandler {
 	    echo json_encode($data);
 	    exit;
 
+	  case "fetchLemmaSugg":
+	    $data = $this->sh->getLemmaSuggestion(self::escapeSQL($get["linenum"]),
+						  self::escapeSQL($get["q"]),
+						  $get["limit"]);
+	    echo json_encode($data);
+	    exit;
+
 	  case "createUser":    $status = $this->sh->createUser(
 								self::escapeSQL($post["username"]),
 								self::escapeSQL($post["password"]),
