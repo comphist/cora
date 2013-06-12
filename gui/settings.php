@@ -30,24 +30,22 @@
 	<div id="editorSettingsHiddenColumns">
 	<h4>Sichtbare Spalten</h4>
 	<p>
-	    <input type="checkbox" name="displayedColumns" value="tokenid" checked="yes" /> Zeilennummer
-            <input type="checkbox" name="displayedColumns" value="tok_trans" checked="yes" /> Token (Trans)
-	    <input type="checkbox" name="displayedColumns" value="token" checked="yes" /> Token (UTF)
-   <?php if($_SESSION["normvisible"]): ?>
-	    <input type="checkbox" name="displayedColumns" value="Norm" checked="yes" /> Normalisierung
-	    <input type="checkbox" name="displayedColumns" value="Mod" checked="yes" /> Modernisierung
-   <?php endif; ?>
-	    <input type="checkbox" name="displayedColumns" value="POS" checked="yes" /> POS-Tag
-	    <input type="checkbox" name="displayedColumns" value="Morph" checked="yes" /> Morphologie-Tag
-	    <input type="checkbox" name="displayedColumns" value="Lemma" checked="yes" /> Lemma
-	    <input type="checkbox" name="displayedColumns" value="Comment" checked="yes" /> Kommentar
+	    <input type="checkbox" name="displayedColumns" id="eshc-tokenid" value="tokenid" checked="yes" /><label for="eshc-tokenid">Zeilennummer</label>
+            <input type="checkbox" name="displayedColumns" id="eshc-tok_trans" value="tok_trans" checked="yes" /><label for="eshc-tok_trans">Token (Trans)</label>
+	    <input type="checkbox" name="displayedColumns" id="eshc-token" value="token" checked="yes" /><label for="eshc-token">Token (UTF)</label>
+	    <input type="checkbox" name="displayedColumns" id="eshc-Norm" value="Norm" checked="yes" /><label for="eshc-Norm">Normalisierung</label>
+	    <input type="checkbox" name="displayedColumns" id="eshc-Mod" value="Mod" checked="yes" /><label for="eshc-Mod">Modernisierung</label>
+	    <input type="checkbox" name="displayedColumns" id="eshc-POS" value="POS" checked="yes" /><label for="eshc-POS">POS-Tag</label>
+	    <input type="checkbox" name="displayedColumns" id="eshc-Morph" value="Morph" checked="yes" /><label for="eshc-Morph">Morphologie-Tag</label>
+	    <input type="checkbox" name="displayedColumns" id="eshc-Lemma" value="Lemma" checked="yes" /><label for="eshc-Lemma">Lemma</label>
+	    <input type="checkbox" name="displayedColumns" id="eshc-Comment" value="Comment" checked="yes" /><label for="eshc-Comment">Kommentar</label>
 	</p>
 	</div>
 
 	<div id="editorSettingsInputAids">
 	<h4>Editierhilfen</h4>
 	<p>
-   <input type="checkbox" name="show_error" value="show_error" checked="yes" /> Fehlerhafte Tags hervorheben
+   <input type="checkbox" name="show_error" value="show_error" checked="yes" id="esia-showerror" /><label for="esia-showerror">Fehlerhafte Tags hervorheben</label>
 	</p>
 	</div>
 	</div>

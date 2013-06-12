@@ -9,7 +9,8 @@ var fileTagset = {
     pos: null,
     morph: null,
     posHTML: "",
-    morphHTML: {}
+    morphHTML: {},
+    list: [],
 };
 
 // ***********************************************************************
@@ -405,6 +406,8 @@ var file = {
         		url: 'request.php',
         		onComplete: function(fileData) {        		         
         		    if(fileData.success){
+				fileTagset.list = fileData.data.tagsets;
+
        				// load tagset
         		        var afterLoadTagset = function() {
 				    // code that depends on the tagsets being fully loaded
@@ -543,9 +546,6 @@ var file = {
 //        tr.adopt(new Element('td',{ 'class': 'tagStatusPOS', html: (file.POS_tagged == 1) ? chkImg : '--' }));
 //        tr.adopt(new Element('td',{ 'class': 'tagStatusMorph', html: (file.morph_tagged == 1) ? chkImg : '--' }));
 
-//	if(userdata.usenorm) {
-//            tr.adopt(new Element('td',{ 'class': 'tagStatusNorm', html: (file.norm == 1) ? chkImg : '--' }));
-//	}
 	/* the following lines have been uncommented as the field is
 	 * not currently used */
         tr.adopt(new Element('td',{ html: file.changed }));

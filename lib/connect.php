@@ -533,18 +533,7 @@
      return $this->toggleUserStatus($username, 'admin');
    }
 
-   /** Toggle visibility of normalization column for a user.
-    *
-    * @param string $username The username for which the status should
-    * be changed
-    *
-    * @return The result of the corresponding @c mysql_query() command.
-    */
-   public function toggleNormStatus($username) {
-     return $this->toggleUserStatus($username, 'normvisible');
-   }
-
-   /** Helper function for @c toggleAdminStatus() and @c toggleNormStatus(). */
+   /** Helper function for @c toggleAdminStatus(). */
    public function toggleUserStatus($username, $statusname) {
      $qs = "SELECT {$statusname} FROM {$this->db}.users WHERE name='{$username}'";
      $query = $this->query($qs);
@@ -690,7 +679,8 @@
        return array('success' => false);
      }
 
-     $qs  = "SELECT text.*, tagset.id AS 'tagset_id' ";
+     $qs  = "SELECT text.id, text.sigle, text.fullname, text.project_id, ";
+     $qs .= "       text.currentmod_id, text.header, tagset.id AS 'tagset_id' ";
      $qs .= "FROM   ({$this->db}.text, {$this->db}.text2tagset ttt) ";
      $qs .= "  LEFT JOIN {$this->db}.tagset ";
      $qs .= "         ON ttt.tagset_id=tagset.id ";
@@ -711,6 +701,15 @@
 	 $row = $this->dbconn->fetch_assoc($q);
 	 $lock['lastEditedRow'] = intval($row['position']) - 1;
        }
+     }
+     // fetch information about associated tagsets
+     $qs  = "SELECT tagset.id, tagset.name, tagset.class, tagset.set_type "
+       . "     FROM   ({$this->db}.tagset, {$this->db}.text2tagset) "
+       . "     WHERE  tagset.id=text2tagset.tagset_id AND text2tagset.text_id='{$fileid}'";
+     $metadata['tagsets'] = array();
+     $q = $this->query($qs);
+     while($row = $this->dbconn->fetch_assoc($q)) {
+       $metadata['tagsets'][] = $row;
      }
      $lock['data'] = $metadata;
      $lock['success'] = true;

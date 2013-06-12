@@ -65,7 +65,6 @@ class Cora_Tests_CoraDocument_Mock {
  *      getUserData($user, $pw)
  *      changePassword($uname, $password)
  *      changeProjectUsers($pid, $userlist)
- *      toggleNormStatus($username)
  *      getTextIdForToken($tok_id)
  *  coverage for:
  *      getLines($fid, $start, $lim);
@@ -163,7 +162,6 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
             "SELECT columns_order FROM users WHERE name='test';")->getValue(0, "columns_order"));
         $this->assertFalse($this->dbi->setUserSetting("test", "invalid_field", "somevalue"));
 
-        // toggleNormStatus
         // isAllowedToDeleteFile($fid, $user)
         // isAllowedToOpenFile($fid, $user)
     }

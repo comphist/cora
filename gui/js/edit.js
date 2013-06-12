@@ -14,6 +14,7 @@ var EditorModel = new Class({
     dynamicLoadRange: 5, // how many pages should be loaded in advance
     inputErrorClass: "", // browser-dependent CSS styling for input errors
     dropdown: null,  // contains the currently opened dropdown menu, if any
+    useLemmaLookup: false,
 
     /* Constructor: EditorModel
 
@@ -44,6 +45,8 @@ var EditorModel = new Class({
 
 	this.editTable = $('editTable');
 	et = this.editTable;
+
+	this.useLemmaLookup = false;
 
 	/* set up the line template */
 	elem = $('line_template');
@@ -233,12 +236,61 @@ var EditorModel = new Class({
 	});
 	mr.show();
 
+	this.initializeColumnVisibility();
+
 	/* render pages panel and set start page */
 	start_page = Number.from(start_page);
 	if(start_page==null || start_page<1) { start_page = 1; }
 	this.renderPagesPanel(start_page);
 	this.displayPage(start_page);
 	this.activePage = start_page;
+    },
+
+    /* Function: initializeColumnVisibility
+       
+       Hide or show columns based on whether the required tagsets are
+       associated with the currently opened file.
+    */
+    initializeColumnVisibility: function() {
+	var visibility = {
+	    "Norm":  false,
+	    "Mod":   false,
+	    "Lemma": false
+	};
+	var normbroad = false;
+	var normtype = false;
+	/* Check tagset associations */
+	fileTagset.list.each(function(tagset) {
+	    if(tagset['class'] == "lemma") {
+		if(tagset['set_type'] == "open") {
+		    visibility["Lemma"] = true;
+		} else {
+		    this.useLemmaLookup = true;
+		}
+	    }
+	    if(tagset['class'] == "norm") { visibility["Norm"] = true; }
+	    if(tagset['class'] == "norm_broad") { normbroad = true; }
+	    if(tagset['class'] == "norm_type") { normtype = true; }
+	}.bind(this));
+	if(normbroad && normtype) {
+	    visibility["Mod"] = true;
+	}
+
+	/* Show/hide columns and settings checkboxes */
+	var eshc = $('editorSettingsHiddenColumns');
+	Object.each(visibility, function(visible, value) {
+	    eshc.getElements('input[value="'+value+'"]').set('checked', visible);
+	    if(visible) {
+		eshc.getElements('input#eshc-'+value+']').show();
+		eshc.getElements('label[for="eshc-'+value+'"]').show();
+		$('editTable').getElements(".editTable_"+value).show();
+	    } else {
+//		eshc.getElements('input[value="'+value+'"]').hide();
+		eshc.getElements('input#eshc-'+value+']').hide();
+		eshc.getElements('label[for="eshc-'+value+'"]').hide();
+		$('editTable').getElements(".editTable_"+value).hide();
+	    }
+	});
     },
 
     /* Function: isValidTagCombination
@@ -824,7 +876,9 @@ var EditorModel = new Class({
 	    lemma_input = tr.getElement('.editTable_Lemma input');
 	    lemma_input.removeEvents();
 	    lemma_input.set('value', line.anno_lemma);
-	    this.makeNewAutocomplete(lemma_input, line.num);
+	    if(this.useLemmaLookup) {
+		this.makeNewAutocomplete(lemma_input, line.num);
+	    }
 
             // POS
 	    posopt = tr.getElement('.editTable_POS select');

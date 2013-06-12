@@ -23,10 +23,6 @@ class CoraSessionHandler {
   private $xml; /**< An XMLHandler object. */
   private $ch; /**< A CommandHandler object. */
 
-  // HACK as long as the setting is not in the DB
-  private $users_allowed_norm = array("bollmann", "petran", "krasselt", "dipper",
-				      "bort", "frey", "spengler", "nelken");
-
   /** Create a new CoraSessionHandler.
    *
    * Initializes a session, constructs a new DBInterface, and sets
@@ -43,7 +39,6 @@ class CoraSessionHandler {
     $defaults = array( "lang"        => DEFAULT_LANGUAGE,
 		       "loggedIn"    => false,
 		       "admin"       => false,
-		       "normvisible" => false,
 		       "failedLogin" => false,
 		       "currentName" => null,
 		       "currentFileId" => null );
@@ -173,14 +168,6 @@ class CoraSessionHandler {
     return $this->db->toggleAdminStatus($username);
   }
 
-  /** Wraps DBInterface::toggleNormStatus(), checking for
-      administrator privileges first. */
-  public function toggleNormStatus( $username ) {
-    if (!$_SESSION["admin"])
-      return false;
-    return $this->db->toggleNormStatus($username);
-  }
-  
   /** Wraps XMLHandler::import() */
   public function importFile($xmldata, $options) {
     return $this->xml->import($xmldata, $options);
@@ -585,8 +572,6 @@ class CoraSessionHandler {
       $_SESSION["user_id"] = $data['id'];
       $_SESSION["failedLogin"] = false;
       $_SESSION["admin"] = ($data['admin'] == 1);
-      //$_SESSION["normvisible"] = ($data['normvisible'] == 1);
-      $_SESSION["normvisible"] = in_array($user, $this->users_allowed_norm);
       $this->db->updateLastactive($data['id']);
 
 	  // file already opened?

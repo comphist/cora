@@ -25,10 +25,8 @@
 			<th class="editTable_error">E</th>
                         <th class="editTable_tok_trans">Token (Trans)</th>
                         <th class="editTable_token">Token (UTF)</th>
-   <?php if($_SESSION["normvisible"]): ?>
 			<th class="editTable_Norm">Normalisierung</th>
 			<th class="editTable_Mod">Modernisierung</th>
-   <?php endif; ?>
 			<th class="editTable_POS">POS-Tag</th>
 			<th class="editTable_Morph">Morphologie-Tag</th>
 			<th class="editTable_Lemma">Lemma</th>
@@ -49,7 +47,6 @@
 			</td>
 			<td class="editTable_tok_trans"></td>
 			<td class="editTable_token"></td>
-   <?php if($_SESSION["normvisible"]): ?>
 			<td class="editTable_Norm">
 			    <input type="text" value="" />
 			</td>
@@ -62,7 +59,6 @@
                               <option value="3">3</option>
                             </select>
 			</td>
-   <?php endif; ?>
 			<td class="editTable_POS"></td>
 			<td class="editTable_Morph"></td>
 			<td class="editTable_Lemma">

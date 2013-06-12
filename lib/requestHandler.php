@@ -371,11 +371,6 @@ class RequestHandler {
 	      self::returnError(500, "Could not toggle admin status.");
 	    exit;
 
-	  case "toggleNorm":   $status = $this->sh->toggleNormStatus(self::escapeSQL($post["username"]));
-	    if(!$status)
-	      self::returnError(500, "Could not toggle normalization status.");
-	    exit;
-	    
 	  case "changePassword":$status = $this->sh->changePassword(
 								    self::escapeSQL($post["username"]),
 								    self::escapeSQL($post["password"])

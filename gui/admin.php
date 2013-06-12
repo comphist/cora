@@ -28,14 +28,12 @@ $ulist = $sh->getUserList();
        <th>Benutzername</th>
        <th>Admin?</th>
        <th>Letzte Aktivität</th>
-<!--       <th>Norm.-Spalte?</th> -->
        <th></th>
      </tr>
      <?php foreach ($ulist as $user): 
              $un = $user['name'];
              $la = $user['lastactive'];
              $admin = $user['admin'] == '1';
-             $norm = TRUE; //$user['normvisible'] == 'y';
      ?>
      <tr id="User_<?php echo $un; ?>" class="adminUserInfoRow">
        <td class="adminUserDelete"><img src="gui/images/proxal/delete.ico" /></td>
@@ -44,19 +42,12 @@ $ulist = $sh->getUserList();
            <?php if (!$admin): ?>style="display: none;"<?php endif; ?>/>
        </td>
        <td class="adminUserLastactiveCell"><?php echo $la; ?></td>
-<!--       <td class="centered adminUserNormStatus"><img src="gui/images/proxal/check.ico" class="adminUserNormStatus"
-           <?php if (!$norm): ?>style="display: none;"<?php endif; ?>/>
-       </td>
--->
        <td>
            <button class="adminUserPasswordButton" type="button">Passwort ändern...</button>
        </td>
      </tr>
      <?php endforeach; ?>
    </table>
-
-<!--   <p><strong>Hinweis:</strong> Administratoren können <i>immer</i> die Spalte &quot;Normalisierung&quot; sehen.</p> -->
-   <p><strong>Hinweis:</strong> Sichtbarkeit der Spalte &quot;Normalisierung&quot; wird derzeit über einen Hack in <i>session.php</i> gesteuert...</p>
 
    <p>
    <button id="createUser" type="button" class="mform">

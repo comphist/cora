@@ -829,14 +829,16 @@ div#editorSettingsNumberOfLines form {
     padding-top: 1em;
 }
 
-div#editorSettingsHiddenColumns input {
-    margin-left: 0.5em;
-}
-
+div#editorSettingsHiddenColumns input,
 div#editorSettingsInputAids input {
     margin-left: 0.5em;
+    vertical-align: middle;
 }
 
+div#editorSettingsHiddenColumns label,
+div#editorSettingsInputAids label {
+    margin-left: 5px;
+}
 
 form#newFileImportForm label,
 form#newFileImportTransForm label {
