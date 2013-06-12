@@ -2191,7 +2191,14 @@
     $tagset_ids = array();
     $tagsets = $this->getTagsets(null);
     foreach($tagsets as $tagset) {
-      $tagset_ids[$tagset['class']] = $tagset['id'];
+      if($tagset['class'] == "lemma") {
+	if($tagset['set_type'] == "open") {
+	  $tagset_ids[$tagset['class']] = $tagset['id'];
+	}
+      }
+      else {
+	$tagset_ids[$tagset['class']] = $tagset['id'];
+      }
     }
     $tagset_ids['pos'] = $options['tagset'];
     // Load POS tagset
