@@ -56,7 +56,7 @@ $ulist = $sh->getUserList();
    </table>
 
 <!--   <p><strong>Hinweis:</strong> Administratoren können <i>immer</i> die Spalte &quot;Normalisierung&quot; sehen.</p> -->
-   <p><strong>Hinweis:</strong> Spalte &quot;Normalisierung&quot; ist derzeit <i>immer</i> sichtbar.</p>
+   <p><strong>Hinweis:</strong> Sichtbarkeit der Spalte &quot;Normalisierung&quot; wird derzeit über einen Hack in <i>session.php</i> gesteuert...</p>
 
    <p>
    <button id="createUser" type="button" class="mform">

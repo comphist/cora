@@ -2446,6 +2446,33 @@
     return False;
   }
 
+  public function getLemmaSuggestion($fileid, $linenum, $q, $limit) {
+    if(strlen($q)==0) {
+      return array();
+    }
+    $tslist = $this->getTagsetsForFile($fileid);
+    $tsid = 0;
+    foreach($tslist as $tagset) {
+      if($tagset['class']=="lemma" && $tagset['set_type']=="closed") {
+	$tsid = $tagset['id'];
+      }
+    }
+    if(!$tsid) {
+      return array();
+    }
+
+    $suggestions = array();
+    $qs = "SELECT `id`, `value` FROM {$this->db}.tag "
+      . "  WHERE `tagset_id`='{$tsid}' AND `value` LIKE '{$q}%' "
+      . "  ORDER BY `value` LIMIT {$limit}";
+    $query = $this->query($qs);
+    while ( $row = $this->dbconn->fetch_assoc( $query ) ) {
+      $suggestions[] = array("id" => $row['id'], "v" => $row['value']);
+    }
+    
+    return $suggestions;
+  }
+
 }
 
 

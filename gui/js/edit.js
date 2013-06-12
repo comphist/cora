@@ -824,22 +824,7 @@ var EditorModel = new Class({
 	    lemma_input = tr.getElement('.editTable_Lemma input');
 	    lemma_input.removeEvents();
 	    lemma_input.set('value', line.anno_lemma);
-	    new Meio.Autocomplete(lemma_input,
-				  'request.php?do=fetchLemmaSugg', {
-				      urlOptions: {
-					  extraParams: [
-					      {'name': 'linenum', 'value': line.num}
-					  ]
-				      },
-				      filter: {
-					  type: 'startswith',
-					  path: 'v'
-				      },
-				  }).addEvent('select', function(e,v) { 
-				      var this_id = e.field.node.getParent("tr").get("id").substr(5);
-				      ref.updateData(this_id, 'anno_lemma', v['v']);
-				      ref.updateProgress(this_id, true);
-				  });
+	    this.makeNewAutocomplete(lemma_input, line.num);
 
             // POS
 	    posopt = tr.getElement('.editTable_POS select');
@@ -1388,8 +1373,56 @@ var EditorModel = new Class({
 	    }
 	});
 	addTokenBox.open();
-    }
+    },
 
+    /* Function: makeNewAutocomplete
+
+       Activates auto-complete functionality for an input text box.
+
+       Parameters:
+         inputfield - The element to be given auto-complete functionality
+	 linenum - The line number of the element, supplied to the AJAX query
+	           for auto-complete suggestions
+     */
+    makeNewAutocomplete: function(inputfield, linenum) {
+	var ref = this;
+	var splitExternalId = function(text) {
+	    var re = new RegExp("^(.*) \\[(.*)\\]$");
+	    var match = re.exec(text);
+	    return (match == null) ? [text, ""] : [match[1], match[2]];
+	};
+	new Meio.Autocomplete(inputfield,
+			      'request.php?do=fetchLemmaSugg', {
+				  urlOptions: {
+				      extraParams: [
+					  {'name': 'linenum', 'value': linenum}
+				      ]
+				  },
+				  filter: {
+				      //type: 'startswith',
+				      //path: 'v',
+				      filter: function(text, data) {
+					  return text ? data.v.standardize().test(new RegExp("^" + text.standardize().escapeRegExp(), 'i')) : true;
+				      },
+				      formatMatch: function(text, data, i){
+					  //return splitExternalId(data.v)[0];
+					  return data.v;
+				      },
+				      formatItem: function(text, data){
+					  var sdata = splitExternalId(data.v);
+					  var item = text ? ('<strong>'  + sdata[0].substr(0, text.length) + '</strong>' + sdata[0].substr(text.length)) : sdata[0];
+					  if(sdata[1]!="") {
+					      item = item + " <span class='ma-greyed'>[" + sdata[1] + "]</span>";
+					  }
+					  return item;
+				      }
+				  },
+			      }).addEvent('select', function(e,v,text,index) { 
+				  var this_id = e.field.node.getParent("tr").get("id").substr(5);
+				  ref.updateData(this_id, 'anno_lemma', text);
+				  ref.updateProgress(this_id, true);
+			      });
+    }
 
 });
 

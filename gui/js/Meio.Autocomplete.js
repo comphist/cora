@@ -605,6 +605,8 @@ provides: [Meio.Autocomplete]
                     case 'esc':
                         this.elements.list.hide();
                         break;
+		    case 'shift':
+			break;
                     default:
                         this.setupList();
                     }

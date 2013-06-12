@@ -687,7 +687,7 @@ table#editTable td.editTable_Mod input {
 }
 
 table#editTable td.editTable_Lemma input {
-    width: 12em;
+    width: 15em;
 }
 
 table#editTable td.editTable_Comment input {
