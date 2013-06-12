@@ -346,7 +346,8 @@
     * information about their admin status.
     */
    public function getUserList() {
-     $qs = "SELECT `id`, name, admin, lastactive FROM {$this->db}.users WHERE `id`!=1";
+     $qs = "SELECT `id`, name, admin, lastactive FROM {$this->db}.users "
+       . "  WHERE `id`!=1 ORDER BY name";
      $query = $this->query( $qs );
      $users = array();
      while ( $row = $this->dbconn->fetch_assoc($query) ) {
