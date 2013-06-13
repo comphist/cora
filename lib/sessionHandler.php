@@ -81,8 +81,8 @@ class CoraSessionHandler {
   }
 
   /** Wraps DBInterface::getTagsets(). */
-  public function getTagsetList() {
-    return $this->db->getTagsets();
+  public function getTagsetList($class="POS", $orderby="name") {
+    return $this->db->getTagsets($class, $orderby);
   }
 
   /** Wraps DBInterface::getTagset(). */

@@ -5,6 +5,7 @@
 
 $filelist = $sh->getFiles(); 
 $tagsets = $sh->getTagsetList();
+$tagsets_all = $sh->getTagsetList(false, "class");
 // $projects = $sh->getProjectList();   defined in gui.php
 
 ?>
@@ -123,16 +124,31 @@ $tagsets = $sh->getTagsetList();
 		<input type="text" name="sigle" placeholder="(Sigle &ndash; optional)" size="30" />
 		</p>
 
-		<p>
-		<label for="tagset">Tagset: </label>
+  <div <?php if(!$_SESSION['admin']) {echo 'style="display:none;"';} ?>>
+<!--		<p>
+		<label for="tagset">POS-Tagset: </label>
 		<select name="tagset" size="1">
-			<option value="">Angabe aus XML-Datei übernehmen</option>
 			<?php foreach($tagsets as $set):?>
 			<option value="<?php echo $set['shortname'];?>"><?php echo $set['longname'];?></option>
 			<?php endforeach;?>
 		</select>
 		</p>
-
+-->
+		<p style="padding-top: 15px;">Tagset-Verknüpfungen:
+                <table class="tagset-list">
+		   <tr><th></th><th class="numeric">ID</th><th>Name</th><th>Class</th><th>Set</th></tr>
+                   <?php foreach($tagsets_all as $set): ?>
+		   <tr>
+                      <td class="check"><input type="checkbox" name="linktagsets[]" value="<?php echo $set['shortname']; ?>" /></td>
+                      <td class="numeric"><?php echo $set['shortname']; ?></td>
+                      <td><?php echo $set['longname']; ?></td>
+                      <td><?php echo $set['class']; ?></td>
+                      <td><?php echo $set['set_type']; ?></td>
+                   </tr>
+                   <?php endforeach; ?>
+		</table>
+		</p>
+  </div>		     
 
 		<p><input type="hidden" name="action" value="importXMLFile" /></p>
 		<p style="text-align:right;">
@@ -178,16 +194,31 @@ $tagsets = $sh->getTagsetList();
 		<input type="text" name="sigle" placeholder="(Sigle &ndash; optional)" size="30" />
 		</p>
 
-		<p>
-		<label for="tagset">Tagset: </label>
+  <div <?php if(!$_SESSION['admin']) {echo 'style="display:none;"';} ?>>
+<!--		<p>
+		<label for="tagset">POS-Tagset: </label>
 		<select name="tagset" size="1">
 			<?php foreach($tagsets as $set):?>
 			<option value="<?php echo $set['shortname'];?>"><?php echo $set['longname'];?></option>
 			<?php endforeach;?>
 		</select>
 		</p>
-
-
+-->
+		<p style="padding-top: 15px;">Tagset-Verknüpfungen:
+                <table class="tagset-list">
+		   <tr><th></th><th class="numeric">ID</th><th>Name</th><th>Class</th><th>Set</th></tr>
+                   <?php foreach($tagsets_all as $set): ?>
+		   <tr>
+                      <td class="check"><input type="checkbox" name="linktagsets[]" value="<?php echo $set['shortname']; ?>" /></td>
+                      <td class="numeric"><?php echo $set['shortname']; ?></td>
+                      <td><?php echo $set['longname']; ?></td>
+                      <td><?php echo $set['class']; ?></td>
+                      <td><?php echo $set['set_type']; ?></td>
+                   </tr>
+                   <?php endforeach; ?>
+		</table>
+		</p>
+  </div>		     
 		<p><input type="hidden" name="action" value="importTransFile" /></p>
 		<p style="text-align:right;">
                   <input type="submit" value="Importieren &rarr;" />

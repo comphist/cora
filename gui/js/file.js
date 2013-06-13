@@ -112,6 +112,12 @@ var file = {
 	    }
 	});
 
+	// set project default values for tagset association
+	// HACK: requires project_specific_hacks.php
+	this.setTagsetDefaults($(formname));
+	$(formname).getElement('select[name="project"]')
+	    .addEvent('change', function(e) { ref.setTagsetDefaults($(formname)); });
+
 	this.transImportProgressBar = new ProgressBar({
 	    container: $('tIS_progress'),
 	    startPercentage: 0,
@@ -199,6 +205,7 @@ var file = {
 				if(done == "success") {
 				    form.reset($(formname));
 				    $(formname).getElements('.error_text').hide();
+				    ref.setTagsetDefaults($(formname));
 				    ref.listFiles();
 				    gui.showNotice('ok', "Datei erfolgreich importiert.");
 				} else {
@@ -266,6 +273,12 @@ var file = {
 		$$('#newFileImportForm p.error_text').hide();
 	    }
 	});
+
+	// set project default values for tagset association
+	// HACK: requires project_specific_hacks.php
+	this.setTagsetDefaults($(formname));
+	$(formname).getElement('select[name="project"]')
+	    .addEvent('change', function(e) { ref.setTagsetDefaults($(formname)); });
 	
         var iFrame = new iFrameFormRequest(formname,{
             onFailure: function(xhr) {
@@ -310,6 +323,7 @@ var file = {
 
 		    form.reset($(formname));
 		    $(formname).getElements('.error_text').hide();
+		    ref.setTagsetDefaults($(formname));
 		    ref.listFiles();
                 }
 
@@ -328,6 +342,35 @@ var file = {
 		gui.hideSpinner();
             }
 	});
+    },
+    
+    /* Function: setTagsetDefaults
+
+       Sets default values for tagset associations depending on the
+       selected project.
+
+       Project default values are retrieved from the global variable
+       cora_projects_default_tagsets, which should probably be
+       refactored in the future.  The table updated by this function
+       is typically not visible in the GUI except for administrators,
+       but still important for the import process.
+
+       Parameters:
+         form - the form element to update
+     */
+    setTagsetDefaults: function(form) {
+	var pid = form.getElement('select[name="project"]')
+	    .getSelected()[0]
+	    .get('value');
+	var tlist = cora_project_default_tagsets[pid];
+	if(tlist == undefined || tlist == null || !tlist) {
+	    tlist = cora_project_default_tagsets['default'];
+	}
+	form.getElement('table.tagset-list')
+	    .getElements('input').each(function(input) {
+		var checked = tlist.contains(input.value.toInt()) ? "yes" : "";
+		input.set('checked', checked);
+	    });
     },
     
     copyTagset: function(){

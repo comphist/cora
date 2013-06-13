@@ -245,7 +245,7 @@ class RequestHandler {
 	    if(!empty($post['extid'])) {
 	      $options['ext_id'] = $post['extid'];
 	    }
-	    $options['tagset'] = $post['tagset'];
+	    $options['tagsets'] = $post['linktagsets'];
 	    $options['project'] = $post['project'];
 
 	    try {
@@ -301,7 +301,7 @@ class RequestHandler {
 	    if(!empty($post['sigle'])) {
 	      $options['sigle'] = $post['sigle'];
 	    }
-	    $options['tagset'] = $post['tagset'];
+	    $options['tagsets'] = $post['linktagsets'];
 	    $options['project'] = $post['project'];
 	    $options['logfile'] = $tmpfname;
 

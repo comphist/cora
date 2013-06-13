@@ -848,6 +848,29 @@ form#newFileImportTransForm label {
     padding-right: 5px;
 }
 
+table.tagset-list {
+    font-size: 1.1em;
+    padding: 12px;
+}
+
+table.tagset-list th {
+    padding: 2px 5px;
+    background-color: #bbb;
+}
+
+table.tagset-list td {
+    padding: 2px 5px;
+    background-color: #ddd;
+}
+
+table.tagset-list .numeric {
+    text-align: right;
+}
+
+table.tagset-list .check {
+    text-align: center;
+}
+
 div#changePasswordFormDiv label {
     display: inline-block;
     width: 11em;

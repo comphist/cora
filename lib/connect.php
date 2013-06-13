@@ -363,19 +363,20 @@
     * @return A list of associative arrays, containing the names
     * and IDs of the tagset.
     */
-   public function getTagsets($class="POS") {
+   public function getTagsets($class="POS", $orderby="name") {
      $result = array();
      if(!$class) {
-       $qs = "SELECT * FROM {$this->db}.tagset ORDER BY `name`";
+       $qs = "SELECT * FROM {$this->db}.tagset ORDER BY `{$orderby}`";
      }
      else {
-       $qs = "SELECT * FROM {$this->db}.tagset WHERE `class`='{$class}' ORDER BY `name`";
+       $qs = "SELECT * FROM {$this->db}.tagset WHERE `class`='{$class}' ORDER BY `{$orderby}`";
      }
      $query = $this->query($qs);
      while ( $row = $this->dbconn->fetch_assoc($query) ) {
        $data = array();
        $data["id"] = $row["id"];
        $data["class"] = $row["class"];
+       $data["set_type"] = $row["set_type"];
        $data["shortname"] = $row["id"];
        $data["longname"] = $row["name"];
        $result[] = $data;
@@ -2190,17 +2191,25 @@
     $tagset_ids = array();
     $tagsets = $this->getTagsets(null);
     foreach($tagsets as $tagset) {
-      if($tagset['class'] == "lemma") {
-	if($tagset['set_type'] == "open") {
+      // consider only tagsets that are given in the options
+      if(in_array($tagset['id'], $options['tagsets'])) {
+	if($tagset['class'] == "lemma") {
+	  if($tagset['set_type'] == "open") {
+	    $tagset_ids[$tagset['class']] = $tagset['id'];
+	  }
+	}
+	else if($tagset['class'] == "POS") {
+	  $tagset_ids['pos'] = $tagset['id'];
+	}
+	else {
 	  $tagset_ids[$tagset['class']] = $tagset['id'];
 	}
       }
-      else {
-	$tagset_ids[$tagset['class']] = $tagset['id'];
-      }
     }
-    $tagset_ids['pos'] = $options['tagset'];
     // Load POS tagset
+    if(!array_key_exists('pos', $tagset_ids)) {
+      return "Es wurde kein POS-Tagset angegeben (Code: 1089).";
+    }
     $tagset_pos = $this->getTagsetByValue($tagset_ids['pos']);
     if(array_key_exists('norm_type', $tagset_ids)) {
       $tagset_norm_type = $this->getTagsetByValue($tagset_ids['norm_type']);
@@ -2235,19 +2244,11 @@
     // Table 'text2tagset'
     $qstr  = "INSERT INTO {$this->db}.text2tagset ";
     $qstr .= "  (`text_id`, `tagset_id`, `complete`) VALUES ";
-    $qstr .= "('{$fileid}', '" . $tagset_ids['pos'] . "', 0)";
-    if(array_key_exists('norm', $tagset_ids)) {
-      $qstr .= ", ('{$fileid}', '" . $tagset_ids['norm'] . "', 0)";
+    $qarr  = array();
+    foreach($options['tagsets'] as $tagsetid) {
+      $qarr[] = "('{$fileid}', '{$tagsetid}', 0)";
     }
-    if(array_key_exists('lemma', $tagset_ids)) {
-      $qstr .= ", ('{$fileid}', '" . $tagset_ids['lemma'] . "', 0)";
-    }
-    if(array_key_exists('norm_type', $tagset_ids)) {
-      $qstr .= ", ('{$fileid}', '" . $tagset_ids['norm_type'] . "', 0)";
-    }
-    if(array_key_exists('norm_broad', $tagset_ids)) {
-      $qstr .= ", ('{$fileid}', '" . $tagset_ids['norm_broad'] . "', 0)";
-    }
+    $qstr .= implode(",", $qarr);
     $q = $this->query($qstr);
     if($qerr = $this->dbconn->last_error()) {
       $this->dbconn->rollback();
@@ -2394,7 +2395,7 @@
 	  $tq = $this->query($tqstr);
 	  if($qerr = $this->dbconn->last_error()) {
 	    $this->dbconn->rollback();
-	    return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1100).\n" . $qerr;
+	    return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1100, Tagset-Typ: " . $sugg['type'] . ").\n" . $qerr;
 	  }
 	  $tag_id = $this->dbconn->last_insert_id();
 	}

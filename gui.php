@@ -73,6 +73,8 @@ showInputErrors: <?php echo $_SESSION['showInputErrors']; ?>
 						   };
 		</script>
 
+<?php include( "project_specific_hacks.php" ); ?>
+
 		<script src="gui/js/gui.js" type="text/javascript" charset="utf-8"></script>
 		<?php if($_SESSION['admin']): ?>
 			<script src="gui/js/admin.js" type="text/javascript" charset="utf-8"></script><script type="text/javascript">
