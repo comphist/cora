@@ -855,12 +855,12 @@ table.tagset-list {
 
 table.tagset-list th {
     padding: 2px 5px;
-    background-color: #bbb;
+    background-color: #d1d1d1;
 }
 
 table.tagset-list td {
     padding: 2px 5px;
-    background-color: #ddd;
+    background-color: #efefef;
 }
 
 table.tagset-list .numeric {

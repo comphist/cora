@@ -70,6 +70,7 @@ $tagsets_all = $sh->getTagsetList(false, "class");
 				<th colspan="2">erstellt am/von</th>
 				<th></th>
 				<th></th>
+				<th></th>
 		    </tr>
 
 		<!-- this table is filled by file.listFiles() @ file.js -->
@@ -224,6 +225,21 @@ $tagsets_all = $sh->getTagsetList(false, "class");
                   <input type="submit" value="Importieren &rarr;" />
                 </p>
 	</form>
+  </div>
+
+  <div id="tagsetAssociationTable" class="limitedWidth">
+                <table class="tagset-list">
+		   <tr><th></th><th class="numeric">ID</th><th>Name</th><th>Class</th><th>Set</th></tr>
+                   <?php foreach($tagsets_all as $set): ?>
+		   <tr>
+                      <td class="check"><input type="checkbox" name="linktagsets[]" value="<?php echo $set['shortname']; ?>" /></td>
+                      <td class="numeric"><?php echo $set['shortname']; ?></td>
+                      <td><?php echo $set['longname']; ?></td>
+                      <td><?php echo $set['class']; ?></td>
+                      <td><?php echo $set['set_type']; ?></td>
+                   </tr>
+                   <?php endforeach; ?>
+		</table>
   </div>
 
 </div>

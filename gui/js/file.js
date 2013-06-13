@@ -595,12 +595,19 @@ var file = {
         tr.adopt(new Element('td',{ html: file.changer_name }));                    
         tr.adopt(new Element('td',{ html: file.created }));
         tr.adopt(new Element('td',{ html: file.creator_name }));
-        tr.adopt(new Element('td',{'class':'exportFile'}).adopt(new Element('a',{ html: 'Exportieren...', 'class': 'exportFileLink' }).addEvent('click', function(){ ref.exportFile(file.id); } )));
+        tr.adopt(new Element('td',{'class':'exportFile'}).adopt(
+	    new Element('a',{ html: 'Exportieren...', 'class': 'exportFileLink' })
+		.addEvent('click', function(){ ref.exportFile(file.id); } )));
+        if(userdata.admin){
+            tr.adopt(new Element('td',{'class':'editTagsetAssoc'}).adopt(
+		new Element('a',{ html: 'Tagsets...', 'class': 'editTagsetAssocLink' })
+		    .addEvent('click', function(){ ref.editTagsetAssoc(file.id,file.fullname); } )));
+        } else { tr.adopt(new Element('td')); }
         if((file.opened == userdata.name ) || (opened && userdata.admin)){
-            tr.adopt(new Element('td',{'class':'closeFile'}).adopt(new Element('a',{ html: 'Schließen', 'class': 'closeFileLink' }).addEvent('click', function(){ ref.closeFile(file.id); } )));
-        } else {
-	    tr.adopt(new Element('td'));
-	}
+            tr.adopt(new Element('td',{'class':'closeFile'}).adopt(
+		new Element('a',{ html: 'Schließen', 'class': 'closeFileLink' })
+		    .addEvent('click', function(){ ref.closeFile(file.id); } )));
+        } else { tr.adopt(new Element('td')); }
         return tr;
     },
     
@@ -635,6 +642,57 @@ var file = {
     	     }
     	    }
     	).post();
+    },
+
+    /* Function: editTagsetAssoc
+
+       Shows a dialog with the associated tagsets for a file.
+
+       Parameters:
+         fileid - ID of the file
+	 fullname - Name of the file
+     */
+    editTagsetAssoc: function(fileid, fullname) {
+	var contentdiv = $('tagsetAssociationTable');
+	var spinner = new Spinner(contentdiv);
+	var content = new mBox.Modal({
+	    title: "Tagset-Verknüpfungen für '"+fullname+"'",
+	    content: contentdiv,
+	    buttons: [ {title: "OK", addClass: "mform button_green",
+			id: "editTagsetAssocOK",
+			event: function() {
+			    this.close();
+			}}
+		     ]
+	});
+
+	content.open();
+	spinner.show();
+
+	new Request.JSON(
+    	    {'url': 'request.php',
+    	     'async': false,
+    	     onFailure: function(xhr) {
+    		 alert("Fehler: Der Server lieferte folgende Fehlermeldung zurück:\n\n" + xhr.responseText);
+		 spinner.destroy();
+		 content.close();
+    	     },
+    	     onSuccess: function(tlist, x) {
+		 // show tagset associations
+		 if(!tlist) {
+		     alert("Fehler: Konnte Tagset-Verknüpfungen nicht laden.");
+		     spinner.destroy();
+		     content.close();
+		 }
+		 contentdiv.getElement('table.tagset-list')
+		     .getElements('input').each(function(input) {
+			 var checked = tlist.contains(input.value) ? "yes" : "";
+			 input.set('checked', checked);
+		     });
+		 spinner.destroy();
+    	     }
+    	    }
+    	).get({'do': 'getTagsetsForFile', 'file_id': fileid});
     },
 
     exportFile: function(fileid){

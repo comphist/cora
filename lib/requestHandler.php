@@ -345,6 +345,11 @@ class RequestHandler {
 	    echo json_encode($data);
 	    exit;
 
+	  case "getTagsetsForFile":
+	    $data = $this->sh->getTagsetsForFile(self::escapeSQL($get["file_id"]));
+	    echo json_encode($data);
+	    exit;
+
 	  case "fetchLemmaSugg":
 	    $data = $this->sh->getLemmaSuggestion(self::escapeSQL($get["linenum"]),
 						  self::escapeSQL($get["q"]),

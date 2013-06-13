@@ -90,6 +90,16 @@ class CoraSessionHandler {
     return $this->db->getTagset($tagset, $limit);
   }
 
+  /** Wraps DBInterface::getTagsetsForFile() and filters it to create
+      a list of IDs only. */
+  public function getTagsetsForFile($fileid){
+    $tagsets = $this->db->getTagsetsForFile($fileid);
+    $tlist = array();
+    foreach($tagsets as $tagset) {
+      $tlist[] = $tagset['id'];
+    }
+    return $tlist;
+  }
 
   /** Wraps DBInterface::fetchLemmaSuggestion(). */
   public function getLemmaSuggestion($linenum, $q, $limit) {
