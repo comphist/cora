@@ -2458,6 +2458,8 @@
     if(strlen($q)==0) {
       return array();
     }
+    // strip ID for the search, if applicable
+    $q = preg_replace('/ \[.*\]$/', '', $q);
     $tslist = $this->getTagsetsForFile($fileid);
     $tsid = 0;
     foreach($tslist as $tagset) {
