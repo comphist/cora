@@ -13,10 +13,10 @@ define( "DB_MAX_QUERY_LENGTH",   500000 );
 
 /* Globals */
 define( "TITLE",              "CorA"	                  );
-define( "VERSION",            "beta"			  );
+define( "VERSION",            "1.0"			  );
 define( "LONGTITLE",          "Corpus Annotator"          );
-define( "DESCRIPTION",        "An annotation tool."       );
-define( "KEYWORDS",           "annotation"                );
+define( "DESCRIPTION",        "A corpus annotation tool." );
+define( "KEYWORDS",           "annotation,corpus,POS"     );
 define( "DEFAULT_LANGUAGE",   "de"                        );
 
 ?>

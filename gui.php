@@ -108,20 +108,20 @@ project_editor.project_users[<?php echo $pid; ?>] = new Array(<?php echo $arrstr
 -->
 		<div id="topbar" class="no-print">
 			<div id="header">
-				<div id="controls" style="right: 5px">
+				<div id="titelzeile">
+					<span id="otto"><object><h1><?php echo TITLE; ?></h1><h2><?php echo VERSION; ?></h2></object></span>
+					<span id="currentfile"><?php if(isset($_SESSION['currentName']) && !empty($_SESSION['currentName'])) echo $_SESSION['currentName']; ?></span>
+
+				</div>
+				<div id="controls">
 				  <?php if($_SESSION["loggedIn"]): ?>
 				  <a href="index.php?do=logout" id="logoutLink"><img src="gui/images/logout.png" alt="Logout" width="60" height="30" /></a>
 				  <?php endif; ?>
 <!--					<a href="#"><img id="HelpMe" src="gui/images/help.png" height="30" alt="Help" class="tipz" title="Help::Click here to toggle help mode."  /></a>
 -->
 				</div>
-				<div id="titelzeile">
-					<span id="otto"><object><h1><?php echo TITLE; ?></h1><h2><?php echo VERSION; ?></h2></object></span>
-					<span id="currentfile"><?php if(isset($_SESSION['currentName']) && !empty($_SESSION['currentName'])) echo $_SESSION['currentName']; ?></span>
-
-				</div>
+  			<?php include( "gui/menu.php" ); ?>
 			</div><!-- end Header -->
-			<?php include( "gui/menu.php" ); ?>
 		</div>
 
 		<div id="main" class="no-print">

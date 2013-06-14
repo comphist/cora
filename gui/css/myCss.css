@@ -52,6 +52,8 @@ a.tabFollowed  {
 
 #titelzeile {
 	height: 25px;
+	padding-left: 4em;
+	padding-bottom: 1em;
 }
 
 #titelzeile h1 {
@@ -404,7 +406,7 @@ div.notFocusedLines {
 #controls {
 	position: absolute;
 	top: 5px;
-
+	right: 5px;
 }
 
 #controls a img {

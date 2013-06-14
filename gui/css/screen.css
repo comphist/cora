@@ -134,8 +134,7 @@ ol {
 	max-width : 99%; //65em;
 	min-width : 40em;
 	width : auto !important;
-	//width : 65em;
-	padding-top: 13.5em;
+	padding-top: 7.5em;
 }
 
 #topbar {
@@ -146,9 +145,17 @@ ol {
 
 #header {
 	position: relative;
-	background : #2b548c url('../images/header_bg.png') repeat-x bottom left;
-	padding : 6em 4em 1em 4em;
-	height : 4.3em;
+	padding-top : 2em;
+	border-bottom : 1px solid #2b548c;
+	background: rgb(67,127,218); /* Old browsers */
+
+background: -moz-linear-gradient(top, rgba(43,84,140,1) 0%, rgba(67,127,218,1) 90%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(43,84,140,1)), color-stop(90%,rgba(67,127,218,1))); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top, rgba(43,84,140,1) 0%,rgba(67,127,218,1) 90%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top, rgba(43,84,140,1) 0%,rgba(67,127,218,1) 90%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top, rgba(43,84,140,1) 0%,rgba(67,127,218,1) 90%); /* IE10+ */
+background: linear-gradient(to bottom, rgba(43,84,140,1) 0%,rgba(67,127,218,1) 90%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2b548c', endColorstr='#437fda',GradientType=0 ); /* IE6-9 */
 }
 #header h1 {
 	color : #ffffff;
@@ -164,8 +171,6 @@ ol {
 #menu {
 	font-family: "Trebuchet MS", sans-serif;
 	font-size: 1.1em;
-	background : #437fda;
-	border-bottom : 1px solid #2b548c;
 }
 
 #menu ul {
