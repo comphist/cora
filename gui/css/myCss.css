@@ -741,6 +741,14 @@ div.editTableLemmaChecked {
     background-color: blue !important;
 }
 
+div.editTableLemmaLink {
+    display: inline;
+}
+
+div.editTableLemmaLink img {
+    vertical-align: text-bottom;
+    cursor: pointer;
+}
 
 /* POPUP */
 .addDataPopup{
@@ -895,6 +903,10 @@ div.limitedWidth p {
 }
 
 /* Dropdown Menu */
+
+img.editTableDropdownIcon {
+    cursor: pointer;
+}
 
 div.editTableDropdownMenu {
     position: absolute;

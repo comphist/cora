@@ -19,4 +19,28 @@
      // Default
      'default': [2, 3, 10, 11, 8]
  };
+
+     var cora_external_lemma_link = function(entry) {
+        var targetUrl;
+	var splitExternalId = function(text) {
+	    var re = new RegExp("^(.*) \\[(.*)\\]$");
+	    var match = re.exec(text);
+	    return (match == null) ? [text, ""] : [match[1], match[2]];
+	};
+
+	if(!entry || entry == "") {
+	  targetUrl = "http://www.woerterbuchnetz.de/DWB/";
+	}
+	else {
+	  split = splitExternalId(entry);
+	  if(split[1] && split[1] != "") {
+	    targetUrl = "http://www.woerterbuchnetz.de/DWB?lemid=" + split[1];
+	  } else {
+	    targetUrl = "http://www.woerterbuchnetz.de/DWB?lemma=" + split[0];
+	  }
+	}
+
+	window.open(targetUrl, "coraExternalLemmaLink");
+     };
+
 </script>

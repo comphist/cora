@@ -64,6 +64,9 @@
 			<td class="editTable_Lemma">
 			    <div class="editTableLemma editTableCheckbox"></div>
 			    <input type="text" value="" />
+                            <div class="editTableLemmaLink">
+                                <img src="gui/images/proxal/chat-event.ico" />
+                            </div>
 			</td>
 			<td class="editTable_Comment">
 			    <input type="text" value="" />

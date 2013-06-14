@@ -106,6 +106,8 @@ var EditorModel = new Class({
 		    new_value = target.hasClass('editTableLemmaChecked') ? 0 : 1;
 		    target.toggleClass('editTableLemmaChecked');
 		    ref.updateData(this_id, 'lemma_verified', new_value);
+		} else if(target.hasClass('editTableLemmaLink')) {
+		    cora_external_lemma_link(target.getSiblings("input")[0].get('value'));
 		}
 	    }
 	);
@@ -255,7 +257,7 @@ var EditorModel = new Class({
 	var visibility = {
 	    "Norm":  false,
 	    "Mod":   false,
-	    "Lemma": false
+	    "Lemma": false,
 	};
 	var normbroad = false;
 	var normtype = false;
@@ -291,6 +293,11 @@ var EditorModel = new Class({
 		$('editTable').getElements(".editTable_"+value).hide();
 	    }
 	});
+	if(this.useLemmaLookup) {
+	    $('editTable').getElements(".editTableLemmaLink").show('inline');
+	} else {
+	    $('editTable').getElements(".editTableLemmaLink").hide();
+	}
     },
 
     /* Function: isValidTagCombination
