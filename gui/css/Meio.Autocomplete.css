@@ -57,8 +57,13 @@ license: MIT-style license
 .ma-greyed{
     color: #bbb !important;
 }
+.ma-confirmed .ma-greyed{
+    color: #7a7 !important;
+    font-weight: normal;
+}
 .ma-confirmed{
     color: green !important;
+    font-weight: bold;
 }
 .ma-sugg{
     /* whoa, this is hacky */

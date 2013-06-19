@@ -166,6 +166,9 @@ var EditorModel = new Class({
 		} else if (parent.hasClass("editTable_Lemma")) {
 		    ref.updateData(this_id, 'anno_lemma', new_value);
 		    ref.updateProgress(this_id, true);
+		    // deselect "lemma verified" box after a change
+		    parent.getElement('div.editTableLemma').removeClass('editTableLemmaChecked');
+		    ref.updateData(this_id, 'lemma_verified', 0);
 		} else if (parent.hasClass("editTable_Comment")) {
 		    ref.updateData(this_id, 'comment', new_value);
 		}
@@ -1491,8 +1494,18 @@ var EditorModel = new Class({
 				      }
 				  },
 			      }).addEvent('select', function(e,v,text,index) { 
-				  var this_id = e.field.node.getParent("tr").get("id").substr(5);
+				  var parent = e.field.node.getParent("tr");
+				  var this_id = parent.get("id").substr(5);
+				  var verified = (v.t=="c") ? 1 : 0;
+
+				  if (verified) {
+				      parent.getElement('div.editTableLemma').addClass('editTableLemmaChecked');
+				  } else {
+				      parent.getElement('div.editTableLemma').removeClass('editTableLemmaChecked');
+				  }
+
 				  ref.updateData(this_id, 'anno_lemma', text);
+				  ref.updateData(this_id, 'lemma_verified', verified);
 				  ref.updateProgress(this_id, true);
 			      });
     }
