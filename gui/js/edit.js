@@ -883,9 +883,10 @@ var EditorModel = new Class({
 	    lemma_input = tr.getElement('.editTable_Lemma input');
 	    lemma_input.removeEvents();
 	    lemma_input.set('value', line.anno_lemma);
-	    if(this.useLemmaLookup) {
-		this.makeNewAutocomplete(lemma_input, line.num);
-	    }
+	    /* Auto-completion now returns more than just results from
+	     * a closed lemma tagset, so it should always be
+	     * instantiated regardless of this.useLemmaLookup */
+	    this.makeNewAutocomplete(lemma_input, line.num);
 
             // POS
 	    posopt = tr.getElement('.editTable_POS select');
@@ -1452,8 +1453,10 @@ var EditorModel = new Class({
 	    var match = re.exec(text);
 	    return (match == null) ? [text, ""] : [match[1], match[2]];
 	};
+	linenum = this.data[linenum].id;
 	new Meio.Autocomplete(inputfield,
 			      'request.php?do=fetchLemmaSugg', {
+				  delay: 100,
 				  urlOptions: {
 				      extraParams: [
 					  {'name': 'linenum', 'value': linenum}
@@ -1463,6 +1466,9 @@ var EditorModel = new Class({
 				      //type: 'startswith',
 				      //path: 'v',
 				      filter: function(text, data) {
+					  if(data.t=="s" || data.t=="c") {
+					      return true;
+					  }
 					  return text ? data.v.standardize().test(new RegExp("^" + text.standardize().escapeRegExp(), 'i')) : true;
 				      },
 				      formatMatch: function(text, data, i){
@@ -1471,9 +1477,15 @@ var EditorModel = new Class({
 				      },
 				      formatItem: function(text, data){
 					  var sdata = splitExternalId(data.v);
-					  var item = text ? ('<strong>'  + sdata[0].substr(0, text.length) + '</strong>' + sdata[0].substr(text.length)) : sdata[0];
+					  var item = (text && data.t=="q") ? ('<strong>'  + sdata[0].substr(0, text.length) + '</strong>' + sdata[0].substr(text.length)) : sdata[0];
 					  if(sdata[1]!="") {
 					      item = item + " <span class='ma-greyed'>[" + sdata[1] + "]</span>";
+					  }
+					  if(data.t=="c") {
+					      item = "<span class='ma-confirmed'>" + item + "</span>";
+					  }
+					  if(data.t=="s" || data.t=="c") {
+					      item = "<div class='ma-sugg'>" + item + "</div>";
 					  }
 					  return item;
 				      }

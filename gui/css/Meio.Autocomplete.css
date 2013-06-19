@@ -57,3 +57,15 @@ license: MIT-style license
 .ma-greyed{
     color: #bbb !important;
 }
+.ma-confirmed{
+    color: green !important;
+}
+.ma-sugg{
+    /* whoa, this is hacky */
+    margin: -2px -5px;
+    padding: 2px 5px;
+    background-color: #e4e4e4;
+}
+.ma-hover .ma-sugg{
+    background-color: #afafaf !important;
+}

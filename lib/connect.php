@@ -2178,6 +2178,19 @@
     return $textid;
   }
 
+  /** Find the project ID and ascii value for a given modern ID. */
+  private function getProjectAndAscii($modid) {
+    $qs = "SELECT text.project_id, modern.ascii FROM {$this->db}.text "
+      . "    LEFT JOIN {$this->db}.token ON token.text_id=text.id "
+      . "    LEFT JOIN {$this->db}.modern ON modern.tok_id=token.id "
+      . "  WHERE  modern.id='{$modid}' LIMIT 1";
+    $q = $this->query($qs);
+    if($row = $this->dbconn->fetch_assoc($q)) {
+      return $row;
+    }
+    return array();
+  }
+
 
   /** Insert a new document.
    *
@@ -2454,34 +2467,91 @@
     return False;
   }
 
+  /** Retrieve suggestions for lemma annotation.
+   *
+   * @param string $fileid ID of the file to which the annotation belongs
+   * @param string $linenum ID of the modern to which the annotation belongs
+   * @param string $q Query string to search for in the closed lemma tagset
+   * @param int $limit Number of results to return
+   *
+   * @return An array containing lemma suggestions, represented as
+   * arrays with tag IDs ('tag'), lemma ('value'), and suggestion type
+   * ('t') as either one of 's' (automatic suggestion stored in the
+   * suggestion table), 'c' (confirmed lemma entries from other tokens
+   * within the same project with the same ASCII value), or 'q' (query
+   * matches from the closed lemma tagset)
+   */
   public function getLemmaSuggestion($fileid, $linenum, $q, $limit) {
-    if(strlen($q)==0) {
-      return array();
-    }
-    // strip ID for the search, if applicable
-    $q = preg_replace('/ \[.*\]$/', '', $q);
-    $tslist = $this->getTagsetsForFile($fileid);
-    $tsid = 0;
-    foreach($tslist as $tagset) {
-      if($tagset['class']=="lemma" && $tagset['set_type']=="closed") {
-	$tsid = $tagset['id'];
-      }
-    }
-    if(!$tsid) {
-      return array();
+    $suggestions = array();
+
+    // get automatic suggestions stored with the line number
+    $qstr  = "SELECT ts.id, ts.tag_id, ts.source, tag.value, tagset.class ";
+    $qstr .= "FROM   {$this->db}.tag_suggestion ts ";
+    $qstr .= "  LEFT JOIN {$this->db}.tag ON tag.id=ts.tag_id ";
+    $qstr .= "  LEFT JOIN {$this->db}.tagset ON tagset.id=tag.tagset_id ";
+    $qstr .= "WHERE  ts.mod_id='{$linenum}' AND tagset.class='lemma' AND ts.source='auto'";
+    $query = $this->query($qstr);
+    while($row = $this->dbconn->fetch_assoc($query)) {
+      $suggestions[] = array("id" => $row['tag_id'], "v" => $row['value'], "t" => "s");
     }
 
-    $suggestions = array();
-    $qs = "SELECT `id`, `value` FROM {$this->db}.tag "
-      . "  WHERE `tagset_id`='{$tsid}' AND `value` LIKE '{$q}%' "
-      . "  ORDER BY `value` LIMIT {$limit}";
-    $query = $this->query($qs);
-    while ( $row = $this->dbconn->fetch_assoc( $query ) ) {
-      $suggestions[] = array("id" => $row['id'], "v" => $row['value']);
+    // get confirmed selected lemmas from tokens with identical simplification
+     $errortypes = $this->getErrorTypes();
+     if(array_key_exists('lemma verified', $errortypes)) {
+       $lemma_verified = $errortypes['lemma verified'];
+       $paa = $this->getProjectAndAscii($linenum);
+       if($paa && !empty($paa)) {
+	 $line_ascii = $paa['ascii'];
+	 $line_project = $paa['project_id'];
+	 $qstr  = "SELECT tag.id, tag.value, ts.id AS ts_id "
+	   . "     FROM   {$this->db}.tag "
+	   . "       LEFT JOIN {$this->db}.tagset ON tag.tagset_id=tagset.id "
+	   . "       LEFT JOIN {$this->db}.tag_suggestion ts ON ts.tag_id=tag.id "
+	   . "       LEFT JOIN {$this->db}.modern ON modern.id=ts.mod_id "
+	   . "       LEFT JOIN {$this->db}.token ON modern.tok_id=token.id "
+	   . "       LEFT JOIN {$this->db}.text ON token.text_id=text.id "
+	   . "       LEFT JOIN {$this->db}.mod2error ON mod2error.mod_id=modern.id "
+	   . "     WHERE  mod2error.error_id='{$lemma_verified}' "
+	   . "        AND modern.ascii='{$line_ascii}' "
+	   . "        AND text.project_id='{$line_project}' "
+	   . "        AND tagset.class='lemma' "
+	   . "        AND ts.selected=1 ";
+	 $query = $this->query($qstr);
+	 $processed_lemmas = array();
+	 while($row = $this->dbconn->fetch_assoc($query)) {
+	   if(!in_array($row['value'], $processed_lemmas)) {
+	     $suggestions[] = array("id" => $row['id'], "v" => $row['value'], "t" => "c");
+	     $processed_lemmas[] = $row['value'];
+	   }
+	 }
+       }
+     }
+
+    // get lemma matches for query string
+    if(strlen($q)>0) {
+      // strip ID for the search, if applicable
+      $q = preg_replace('/ \[.*\]$/', '', $q);
+      $tslist = $this->getTagsetsForFile($fileid);
+      $tsid = 0;
+      foreach($tslist as $tagset) {
+	if($tagset['class']=="lemma" && $tagset['set_type']=="closed") {
+	  $tsid = $tagset['id'];
+	}
+      }
+      if($tsid && $tsid != 0) {
+	$qs = "SELECT `id`, `value` FROM {$this->db}.tag "
+	  . "  WHERE `tagset_id`='{$tsid}' AND `value` LIKE '{$q}%' "
+	  . "  ORDER BY `value` LIMIT {$limit}";
+	$query = $this->query($qs);
+	while ( $row = $this->dbconn->fetch_assoc( $query ) ) {
+	  $suggestions[] = array("id" => $row['id'], "v" => $row['value'], "t" => "q");
+	}
+      }
     }
     
     return $suggestions;
   }
+
 
 }
 

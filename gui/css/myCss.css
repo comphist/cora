@@ -740,7 +740,7 @@ div.editTableLemma {
 }
 
 div.editTableLemmaChecked {
-    background-color: blue !important;
+    background-color: green !important;
 }
 
 div.editTableLemmaLink {
