@@ -2512,7 +2512,7 @@
 	   . "       LEFT JOIN {$this->db}.text ON token.text_id=text.id "
 	   . "       LEFT JOIN {$this->db}.mod2error ON mod2error.mod_id=modern.id "
 	   . "     WHERE  mod2error.error_id='{$lemma_verified}' "
-	   . "        AND modern.ascii='{$line_ascii}' "
+	   . "        AND UPPER(modern.ascii)=UPPER('{$line_ascii}') "
 	   . "        AND text.project_id='{$line_project}' "
 	   . "        AND tagset.class='lemma' "
 	   . "        AND ts.selected=1 ";

@@ -66,7 +66,10 @@ license: MIT-style license
     font-weight: bold;
 }
 .ma-sugg{
-    /* whoa, this is hacky */
+    /* whoa, this is hacky -- this class should ideally be applied to the
+       <li>, but as that isn't easily achievable without hacking
+       Meio.Autocomplete.js, we apply it to a <div> within the <li>
+       but make it appear otherwise via margin manipulations */
     margin: -2px -5px;
     padding: 2px 5px;
     background-color: #e4e4e4;
