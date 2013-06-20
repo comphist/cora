@@ -10,12 +10,18 @@
  */
 
 /** Exception when encountering illegal values. */
-class DocumentValueException extends Exception { }
+class CoraDocumentException extends Exception { }
+class DocumentValueException extends CoraDocumentException { }
+class DocumentImportException extends CoraDocumentException { }
 
 class CoraDocument {
   private $sigle     = "";     /**< Document sigle */
-  private $fullname  = "";  /**< Document name */
-  private $header    = "";    /**< Document header (free-format text) */
+  private $fullname  = "";     /**< Document name */
+  private $header    = "";     /**< Document header (free-format text) */
+  private $internal = array("fileid"  => null,
+			    "currentmod_id" => null,
+			    "tagsets" => array()
+			    );			    
 
   private $pages     = array();
   private $columns   = array();
@@ -27,12 +33,33 @@ class CoraDocument {
   private $moderns   = array();
 
   function __construct($options) {
-    if(isset($options['sigle']) && !empty($options['sigle'])) {
-      $this->sigle = $options['sigle'];
+    if($options && $options != null) {
+      $this->setMetadata($options);
     }
-    if(isset($options['name']) && !empty($options['name'])) {
-      $this->fullname = $options['name'];
+  }
+
+  /** Construct a new document from a file stored in the database.
+   *
+   * @param string $fileid The ID of the file to be constructed
+   * @param DBInterface $db Object to access the database
+   *
+   * @return A new @c CoraDocument object representing the file with
+   * the supplied ID.
+   */
+  public static function fromDB($fileid, $db) {
+    // File metadata
+    $metadata = $db->openFile($fileid);
+    if(!$metadata || !$metadata['success']) {
+      throw new DocumentImportException("Couldn't open the file in the database.");
     }
+    $instance = new self($metadata);
+    $instance->setHeader($metadata['header']);
+
+    // ...
+    $data = $db->getAllLines($fileid);
+
+    $db->unlockFile($fileid, $force=true);
+    return $instance;
   }
 
   /** Add a comment.
@@ -259,6 +286,24 @@ class CoraDocument {
 
   function getHeader() {
     return $this->header;
+  }
+
+  public function setMetadata($options) {
+    if(isset($options['sigle']) && !empty($options['sigle'])) {
+      $this->sigle = $options['sigle'];
+    }
+    if(isset($options['name']) && !empty($options['name'])) {
+      $this->fullname = $options['name'];
+    }
+    if(isset($options['currentmod_id']) && !empty($options['currentmod_id'])) {
+      $this->internal['currentmod_id'] = $options['currentmod_id'];
+    }
+    if(isset($options['id']) && !empty($options['id'])) {
+      $this->internal['fileid'] = $options['id'];
+    }
+    if(isset($options['tagsets']) && !empty($options['tagsets'])) {
+      $this->internal['tagsets'] = $options['tagsets'];
+    }
   }
 
   /** Set layout information directly.

@@ -26,7 +26,7 @@ require_once"lib/xmlHandler.php";
 require_once"lib/commandHandler.php";
 require_once( "lib/requestHandler.php" );
 require_once( "lib/sessionHandler.php" );
-
+require_once( "lib/exporter.php" );
 
 $sh;   /**< An instance of the SessionHandler object. */
 $rq;   /**< An instance of the RequestHandler object. */
@@ -38,8 +38,9 @@ $menu; /**< A Menu object containing the menu items and references to
 $dbc = new DBConnector(DB_SERVER, DB_USER, DB_PASSWORD, MAIN_DB);
 $dbi = new DBInterface($dbc);
 $xml = new XMLHandler($dbi);
+$exp = new Exporter($dbi);
 $ch = new CommandHandler();
-$sh = new CoraSessionHandler($dbi, $xml, $ch);
+$sh = new CoraSessionHandler($dbi, $xml, $exp, $ch);
 $rq = new RequestHandler( $sh );
 $rq->handleRequests($_GET, $_POST);
 

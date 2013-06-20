@@ -649,7 +649,7 @@
     * given file.
     */
    public function getTagsetsForFile($fileid) {
-     $qs  = "SELECT ts.id, ts.class, ts.set_type ";
+     $qs  = "SELECT ts.id, ts.name, ts.class, ts.set_type ";
      $qs .= "FROM   {$this->db}.text2tagset ttt ";
      $qs .= "  LEFT JOIN {$this->db}.tagset ts  ON ts.id=ttt.tagset_id ";
      $qs .= "WHERE  ttt.text_id='{$fileid}'";
@@ -703,15 +703,8 @@
 	 $lock['lastEditedRow'] = intval($row['position']) - 1;
        }
      }
-     // fetch information about associated tagsets
-     $qs  = "SELECT tagset.id, tagset.name, tagset.class, tagset.set_type "
-       . "     FROM   ({$this->db}.tagset, {$this->db}.text2tagset) "
-       . "     WHERE  tagset.id=text2tagset.tagset_id AND text2tagset.text_id='{$fileid}'";
-     $metadata['tagsets'] = array();
-     $q = $this->query($qs);
-     while($row = $this->dbconn->fetch_assoc($q)) {
-       $metadata['tagsets'][] = $row;
-     }
+
+     $metadata['tagsets'] = $this->getTagsetsForFile($fileid);
      $lock['data'] = $metadata;
      $lock['success'] = true;
      return $lock;
@@ -988,29 +981,10 @@
      return $row[0];
    }
 
-   /** Retrieve all lines from a file, including error data,
-    *  but not tagger suggestions.
+   /** Retrieves all lines from a file.
     */
-   public function getAllLines($fileid){
-     $qs = "SELECT a.*, b.value AS 'errorChk' FROM {$this->db}.files_data a LEFT JOIN {$this->db}.files_errors b ON (a.file_id=b.file_id AND a.line_id=b.line_id) WHERE a.file_id='{$fileid}' ORDER BY line_id";
-     $query = $this->query($qs);
-     $data = array();
-     while($row = $this->dbconn->fetch_assoc($query)){
-       $data[] = $row;
-     }
-     return $data;
-   }
-
-   /** Retrieve all tagger suggestions for a line in a file. */
-   public function getAllSuggestions($fileid, $lineid){
-     $qs = "SELECT * FROM {$this->db}.files_tags_suggestion WHERE file_id='{$fileid}' AND line_id='{$lineid}' ORDER BY tagtype DESC";
-     $q = $this->query($qs);
-
-     $tag_suggestions = array();
-     while($row = $this->dbconn->fetch_assoc($q)){
-       $tag_suggestions[] = $row;
-     }
-     return $tag_suggestions;
+   public function getAllLines($fileid) {
+     return $this->getLines($fileid, -1, -1);
    }
 
    /** Retrieves a specified number of lines from a file.
@@ -1038,7 +1012,9 @@
      $qs .= "     WHERE  token.text_id='{$fileid}' ";
      $qs .= "     ORDER BY token.ordnr ASC, modern.id ASC) q ";
      $qs .= "   JOIN (SELECT @rownum := -1) r WHERE q.id IS NOT NULL) x ";
-     $qs .= "LIMIT {$start},{$lim}";
+     if($lim && $lim != null && $lim>0) {
+       $qs .= "LIMIT {$start},{$lim}";
+     }
      $query = $this->query($qs); 		
 
      /* The following loop separately performs all queries on a
@@ -2190,7 +2166,6 @@
     }
     return array();
   }
-
 
   /** Insert a new document.
    *

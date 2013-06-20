@@ -10,6 +10,7 @@
 require_once( "connect.php" );
 require_once( "xmlHandler.php" );
 require_once( "commandHandler.php" );
+require_once( "exporter.php" );
 
 /** Manages session-specific data.
  *
@@ -22,18 +23,20 @@ class CoraSessionHandler {
   private $db; /**< A DBInterface object. */
   private $xml; /**< An XMLHandler object. */
   private $ch; /**< A CommandHandler object. */
+  private $exporter; /**< An Exporter object. */
 
   /** Create a new CoraSessionHandler.
    *
    * Initializes a session, constructs a new DBInterface, and sets
    * defaults for various session values if required.
    */
-  function __construct($db, $xml, $ch) {
+  function __construct($db, $xml, $exp, $ch) {
     session_name("PHPSESSID_CORA");
     session_start();
 
     $this->db = $db;
     $this->xml = $xml;
+    $this->exporter = $exp;
     $this->ch = $ch;
 
     $defaults = array( "lang"        => DEFAULT_LANGUAGE,
@@ -357,13 +360,13 @@ class CoraSessionHandler {
     return $lock;		
   }
 
-  /** Wraps XMLHandler::export() */
+  /** Wraps Exporter::export() */
   public function exportFile( $fileid, $format ){
     if(!$_SESSION['admin'] && !$this->db->isAllowedToOpenFile($fileid, $_SESSION['user'])) {
       return false;
     }
 
-    $this->xml->export($fileid,$format);
+    $this->exporter->export($fileid,$format);
     return true;
   }
 	
