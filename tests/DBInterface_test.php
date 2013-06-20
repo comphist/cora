@@ -243,8 +243,14 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         $_SESSION["user_id"] = "3";
         $this->assertEquals(
             array("lastEditedRow" => -1,
-                  "data" => array_merge($this->expected["texts"]["t1"],
-                                        array("tagset_id" => "1")),
+                  "data" => array_merge($this->expected["texts"]["t1_reduced"],
+                                        array("tagset_id" => "1",
+					      "tagsets" => array(
+						 $this->expected["tagsets"]["ts1"],
+						 $this->expected["tagsets"]["ts2"],
+						 $this->expected["tagsets"]["ts3"],
+
+								 ))),
                   "success" => true),
             $this->dbi->openFile("3")
         );
@@ -253,8 +259,11 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         $_SESSION["user_id"] = "5";
         $this->assertEquals(
             array("lastEditedRow" => 1,
-                  "data" => array_merge($this->expected["texts"]["t2"],
-                                        array("tagset_id" => "1")),
+                  "data" => array_merge($this->expected["texts"]["t2_reduced"],
+                                        array("tagset_id" => "1",
+					      "tagsets" => array(
+						 $this->expected["tagsets"]["ts1"]
+								 ))),
                   "success" => true),
             $this->dbi->openFile("4")
         );
@@ -387,15 +396,18 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         $tagsets = array(array('id' => '1',
                                'class' => 'POS',
                                'shortname' => '1',
-                               'longname' => 'ImportTest'),
+                               'longname' => 'ImportTest',
+			       'set_type' => 'closed'),
                          array('id' => '3',
                                'class' => 'lemma',
                                'shortname' => '3',
-                               'longname' => 'LemmaTest'),
+                               'longname' => 'LemmaTest',
+			       'set_type' => 'open'),
                          array('id' => '2',
                                'class' => 'norm',
                                'shortname' => '2',
-                               'longname' => 'NormTest'));
+                               'longname' => 'NormTest',
+			       'set_type' => 'open'));
 
         $this->assertEquals($tagsets,
                             $this->dbi->getTagsets(null));
@@ -405,11 +417,17 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         // getTagsetsForFile returns a slightly different array,
         // so we can't use the expected array from above.
         $this->assertEquals(array(array('id' => '1',
-                                        'class' => 'POS'),
+                                        'class' => 'POS',
+					'name' => 'ImportTest',
+					'set_type' => 'closed'),
                                   array('id' => '2',
-                                        'class' => 'norm'),
+                                        'class' => 'norm',
+					'name' => 'NormTest',
+					'set_type' => 'open'),
                                   array('id' => '3',
-                                        'class' => 'lemma')),
+                                        'class' => 'lemma',
+					'name' => 'LemmaTest',
+					'set_type' => 'open')),
                             $this->dbi->getTagsetsForFile("3"));
 
         $lemma_tagset = array(array('id' => '512',
@@ -436,7 +454,8 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         $options = array("tagset" => "1",
                          "sigle" => "i1",
                          "name" => "importtest",
-                         "project" => 1
+                         "project" => 1,
+			 "tagsets" => array("1","2","3")
                      );
         $data = new Cora_Tests_CoraDocument_Mock();
         $_SESSION["user_id"] = 3;

@@ -30,6 +30,20 @@ function get_DBInterface_expected() {
                             "columns_hidden" => null,
                             "show_error" => "1")
         ),
+	"tagsets" => array(
+			   "ts1" => array("id" => '1',
+					  "name" => "ImportTest",
+					  "class" => "POS",
+					  "set_type" => "closed"),
+			   "ts2" => array("id" => '2',
+					  "name" => "NormTest",
+					  "class" => "norm",
+					  "set_type" => "open"),
+			   "ts3" => array("id" => '3',
+					  "name" => "LemmaTest",
+					  "class" => "lemma",
+					  "set_type" => "open"),
+			   ),
         "texts" => array(
             "t1" => array("id" => "3",
                           "sigle" => "t1",
@@ -43,6 +57,13 @@ function get_DBInterface_expected() {
                           "header" => null,
                           "fullfile" => null
             ),
+            "t1_reduced" => array("id" => "3",
+                          "sigle" => "t1",
+                          "fullname" => "test-dummy",
+                          "project_id" => "1",
+                          "currentmod_id" => null,
+                          "header" => null,
+            ),
             "t2" => array("id" => "4",
                           "sigle" => "t2",
                           "fullname" => "yet another dummy",
@@ -55,6 +76,13 @@ function get_DBInterface_expected() {
                           "header" => null,
                           "fullfile" => null
             ),
+            "t2_reduced" => array("id" => "4",
+                          "sigle" => "t2",
+                          "fullname" => "yet another dummy",
+                          "project_id" => "1",
+                          "currentmod_id" => "14",
+                          "header" => null,
+            ),
             "t3" => array("id" => "5",
                           "sigle" => "t3",
                           "fullname" => "dummy without tokens",
@@ -66,7 +94,15 @@ function get_DBInterface_expected() {
                           "currentmod_id" => null,
                           "header" => null,
                           "fullfile" => null
+	    ),
+            "t3_reduced" => array("id" => "5",
+                          "sigle" => "t3",
+                          "fullname" => "dummy without tokens",
+                          "project_id" => "1",
+                          "currentmod_id" => null,
+                          "header" => null,
             )
+
         ),
         "texts_extended" => array(
             "t1" => array('project_name' => 'Default-Gruppe',

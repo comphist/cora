@@ -596,7 +596,10 @@
      }
      // otherwise, perform the lock
      $qs = "INSERT INTO {$this->db}.locks (text_id, user_id) VALUES ('{$fileid}', '{$user}')";
-     $this->criticalQuery($qs);
+     $result = $this->query($qs);
+     if($this->dbconn->last_error()) {
+       return array("success" => false);
+     }
      return array("success" => true, "lockCounts" => (string) $locksCount);
    }
 
