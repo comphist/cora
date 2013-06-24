@@ -984,13 +984,147 @@
      return $row[0];
    }
 
-   /** Retrieves all lines from a file.
+   protected function getErrorsForModern($mid) {
+     $errors = array();
+     $qs  = "SELECT error_types.name ";
+     $qs .= "FROM   {$this->db}.modern ";
+     $qs .= "  LEFT JOIN {$this->db}.mod2error ON modern.id=mod2error.mod_id ";
+     $qs .= "  LEFT JOIN {$this->db}.error_types ON mod2error.error_id=error_types.id ";
+     $qs .= "WHERE  modern.id=" . $mid;
+     $q = $this->query($qs);
+     while($row = $this->dbconn->fetch_assoc($q)) {
+       $errors[] = $row['name'];
+     }
+     return $errors;
+   }
+
+   /** Retrieves all layout information for a given document. */
+   public function getLayoutInfo($fileid) {
+     $pages = array();
+     $columns = array();
+     $lines = array();
+     $currentpage = null;
+     $currentcolumn = null;
+
+     $qs = "SELECT p.id AS page_id, p.name AS page_name, "
+       ."          p.side AS page_side, p.num AS page_num, "
+       ."          c.id AS col_id,  c.name AS col_name,  c.num AS col_num, "
+       ."          l.id AS line_id, l.name AS line_name, l.num AS line_num "
+       ."     FROM {$this->db}.page p "
+       ."LEFT JOIN {$this->db}.col  c ON c.page_id=p.id "
+       ."LEFT JOIN {$this->db}.line l ON l.col_id=c.id "
+       ."    WHERE p.text_id='{$fileid}' "
+       ." ORDER BY p.num ASC, c.num ASC, l.num ASC";
+     $q = $this->query($qs);
+     while($row = $this->dbconn->fetch_assoc($q)) {
+       if($row['page_id'] != $currentpage) {
+	 $currentpage = $row['page_id'];
+	 $pages[] = array('db_id' => $row['page_id'],
+			  'name'  => $row['page_name'],
+			  'side'  => $row['page_side'],
+			  'num'   => $row['page_num']);
+       }
+       if($row['col_id'] != $currentcolumn) {
+	 $currentcolumn = $row['col_id'];
+	 $columns[] = array('db_id' => $row['col_id'],
+			    'name'  => $row['col_name'],
+			    'num'   => $row['col_num']);
+       }
+       $lines[] = array('db_id' => $row['line_id'],
+			'name'  => $row['line_name'],
+			'num'   => $row['line_num']);
+     }
+
+     return array($pages, $columns, $lines);
+   }
+
+   /** Retrieves all tokens from a file.
+    *
+    * This function returns an array with all tokens belonging to a
+    * given file, in correct order, containing all information
+    * associated with the respective token entries.  It is mainly
+    * intended to be used during export.
+    *
+    * @param string $fileid ID of the file
+    *
+    * @return an @em array containing the tokens
     */
-   public function getAllLines($fileid) {
-     return $this->getLines($fileid, -1, -1);
+   public function getAllTokens($fileid) {
+     $tokens  = array();
+     $dipls   = array();
+     $moderns = array();
+
+     // tokens
+     $qs = "SELECT token.id, token.trans "
+       ."     FROM {$this->db}.token "
+       ."    WHERE token.text_id='{$fileid}'"
+       ."    ORDER BY token.ordnr ASC";
+     $query = $this->query($qs);
+     while($row = $this->dbconn->fetch_assoc($query)){
+       $tokens[] = array('db_id' => $row['id'],
+			 'trans' => $row['trans']);
+     }
+
+     // dipls
+     $qs = "SELECT token.id AS tok_id, dipl.id, dipl.line_id, dipl.utf, dipl.trans "
+       ."     FROM {$this->db}.token "
+       ."     LEFT JOIN {$this->db}.dipl ON dipl.tok_id=token.id "
+       ."    WHERE token.text_id='{$fileid}' "
+       ."    ORDER BY token.ordnr ASC, dipl.id ASC";
+     $query = $this->query($qs);
+     while($row = $this->dbconn->fetch_assoc($query)){
+       $dipls[] = array('db_id' => $row['id'],
+			'trans' => $row['trans'],
+			'utf'   => $row['utf'],
+			'parent_line_db_id' => $row['line_id'],
+			'parent_tok_db_id'  => $row['tok_id']);
+     }
+
+     // moderns
+     $qs = "SELECT token.id AS tok_id, modern.id, modern.trans,"
+       ."          modern.utf, modern.ascii, c1.value AS comment "
+       ."     FROM {$this->db}.token "
+       ."     LEFT JOIN {$this->db}.modern ON modern.tok_id=token.id "
+       ."     LEFT JOIN {$this->db}.comment c1 ON  c1.tok_id=token.id "
+       ."           AND c1.subtok_id=modern.id AND c1.comment_type='C' "
+       ."    WHERE token.text_id='{$fileid}' "
+       ."    ORDER BY token.ordnr ASC, dipl.id ASC";
+     $query = $this->query($qs);
+     while($row = $this->dbconn->fetch_assoc($query)){
+       $tags = array();
+
+       // Annotations
+       $qs  = "SELECT tag.value AS tag, ts.score, ts.selected, ts.source,"
+	 ."           tt.class AS type "
+	 ."      FROM   {$this->db}.modern"
+	 ."      LEFT JOIN ({$this->db}.tag_suggestion ts, {$this->db}.tag) "
+	 ."             ON (ts.tag_id=tag.id AND ts.mod_id=modern.id) "
+	 ."      LEFT JOIN {$this->db}.tagset tt ON tag.tagset_id=tt.id "
+	 ."     WHERE modern.id=" . $row['id'];
+       $q = $this->query($qs);
+       while($anno = $this->dbconn->fetch_assoc($q)){
+	 $tags[] = $anno;
+       }
+
+       $errors = $this->getErrorsForModern($row['id']);
+       $moderns[] = array('db_id' => $row['id'],
+			  'trans' => $row['trans'],
+			  'ascii' => $row['ascii'],
+			  'utf'   => $row['utf'],
+			  'tags'  => $tags,
+			  'errors' => $errors,
+			  'comment' => $row['comment'],
+			  'parent_tok_db_id'  => $row['tok_id']);
+     }
+
+     return array($tokens, $dipls, $moderns);
    }
 
    /** Retrieves a specified number of lines from a file.
+    *
+    * This function is intended to be called via AJAX requests from
+    * the client.  The values it returns are specifically adapted to
+    * the requirements of the client interface.
     *
     * @param string $fileid the file id
     * @param string $start line id of the first line to be retrieved
@@ -1066,18 +1200,12 @@
        }
 
        // Error annotations
-       $qs  = "SELECT error_types.name ";
-       $qs .= "FROM   {$this->db}.modern ";
-       $qs .= "  LEFT JOIN {$this->db}.mod2error ON modern.id=mod2error.mod_id ";
-       $qs .= "  LEFT JOIN {$this->db}.error_types ON mod2error.error_id=error_types.id ";
-       $qs .= "WHERE  modern.id='{$mid}'";
-       $q = $this->query($qs);
-       while($row = $this->dbconn->fetch_assoc($q)) {
-	 if($row['name']=='general error') {
+       $errors = $this->getErrorsForModern($mid);
+       if(in_array('general error', $errors)) {
 	   $line['general_error'] = 1;
-	 } else if($row['name']=='lemma verified') {
+       }
+       if(in_array('lemma verified', $errors)) {
 	   $line['lemma_verified'] = 1;
-	 }
        }
 
        // Annotations

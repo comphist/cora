@@ -55,8 +55,18 @@ class CoraDocument {
     $instance = new self($metadata);
     $instance->setHeader($metadata['header']);
 
-    // ...
-    $data = $db->getAllLines($fileid);
+    // Tokens
+    $data = $db->getAllTokens($fileid);
+    list($toks, $dipls, $mods) = $data;
+    $instance->setTokens($toks, $dipls, $mods);
+
+    // Layout
+    $data = $db->getLayoutInfo($fileid);
+    list($pages, $cols, $lines) = $data;
+    $instance->setLayoutInfo($pages, $cols, $lines);
+
+    // Shifttags & Comments
+    //...
 
     $db->unlockFile($fileid, $force=true);
     return $instance;
