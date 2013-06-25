@@ -578,6 +578,13 @@ table#editProjects td, table#editUsers td {
     padding: 0.2em;
 }
 
+tr.adminUserInfoRow.userActive .adminUserNameCell,
+tr.adminUserInfoRow.userActive .adminUserLastactiveCell {
+    font-weight: bold;
+    color: orangered;
+}
+
+
 .centered {
     text-align: center;
 }
@@ -948,6 +955,7 @@ div.userChangeEditTable span {
     margin: 2px;
     min-width: 6em;
 }
+
 
 /* Import dialog */
 div#transImportSpinner {

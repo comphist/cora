@@ -33,9 +33,10 @@ $ulist = $sh->getUserList();
      <?php foreach ($ulist as $user): 
              $un = $user['name'];
              $la = $user['lastactive'];
+             $uact = $user['active'] == '1';
              $admin = $user['admin'] == '1';
      ?>
-     <tr id="User_<?php echo $un; ?>" class="adminUserInfoRow">
+     <tr id="User_<?php echo $un; ?>" class="adminUserInfoRow <?php if($uact){echo 'userActive';}; ?>">
        <td class="adminUserDelete"><img src="gui/images/proxal/delete.ico" /></td>
        <td class="adminUserNameCell"><?php echo $un; ?></td>
        <td class="centered adminUserAdminStatus"><img src="gui/images/proxal/check.ico" class="adminUserAdminStatus"

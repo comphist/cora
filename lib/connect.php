@@ -257,6 +257,7 @@
  class DBInterface {
    private $dbconn;
    private $db;
+   private $timeout = 30; // timeout value in minutes
 
    /** Create a new DBInterface.
     *
@@ -346,8 +347,14 @@
     * information about their admin status.
     */
    public function getUserList() {
-     $qs = "SELECT `id`, name, admin, lastactive FROM {$this->db}.users "
-       . "  WHERE `id`!=1 ORDER BY name";
+     $to = $this->timeout;
+     $qs = "SELECT `id`, name, admin, lastactive,"
+       ."          CASE WHEN lastactive BETWEEN DATE_SUB(NOW(), INTERVAL {$to} MINUTE)"
+       ."                                   AND NOW()"
+       ."               THEN 1 ELSE 0 END AS active"
+       ."     FROM {$this->db}.users "
+       ."    WHERE `id`!=1"
+       ."    ORDER BY name";
      $query = $this->query( $qs );
      $users = array();
      while ( $row = $this->dbconn->fetch_assoc($query) ) {
@@ -1309,9 +1316,10 @@
    /** Delete locks if the locking user has been inactive for too
     * long; currently, this is set to be >30 minutes. */
    public function releaseOldLocks() {
+     $to  = $this->timeout;
      $qs  = "DELETE {$this->db}.locks FROM {$this->db}.locks";
      $qs .= "  LEFT JOIN {$this->db}.users ON users.id=locks.user_id";
-     $qs .= "  WHERE users.lastactive < (NOW() - INTERVAL 30 MINUTE)";
+     $qs .= "  WHERE users.lastactive < (NOW() - INTERVAL {$to} MINUTE)";
      $this->query($qs);
    }
 
