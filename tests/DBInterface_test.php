@@ -103,9 +103,11 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
                                   'lastactive' => '2013-01-22 15:38:32'),
                             $result);
 
-        $this->assertEquals(array($this->expected["users"]["bollmann"],
-                                  $this->expected["users"]["test"]),
-                            $this->dbi->getUserList());
+        $this->assertEquals(array(array_merge($this->expected["users"]["bollmann"],
+					      array("active" => '0')),
+				  array_merge($this->expected["users"]["test"],
+					      array("active" => '0'))),
+			    $this->dbi->getUserList(30));
     }
 
     public function testUserActions() {

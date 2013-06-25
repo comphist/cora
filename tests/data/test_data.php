@@ -13,7 +13,7 @@ function get_DBInterface_expected() {
             "system"    => array("id" => "1",
                                  "name" => "system",
                                  "admin" => "1",
-                                 "lastactive" => "2013-01-16 14:22:57"),
+                                 "lastactive" => "2013-01-16 14:22:57" ),
             "test"      => array("id" => "5",
                                  "name" => "test",
                                  "admin" => "0",

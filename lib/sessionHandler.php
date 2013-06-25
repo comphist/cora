@@ -25,6 +25,8 @@ class CoraSessionHandler {
   private $ch; /**< A CommandHandler object. */
   private $exporter; /**< An Exporter object. */
 
+  private $timeout = 30; // session timeout in minutes
+
   /** Create a new CoraSessionHandler.
    *
    * Initializes a session, constructs a new DBInterface, and sets
@@ -119,7 +121,7 @@ class CoraSessionHandler {
       privileges first. */
   public function getUserList() {
     if ($_SESSION["admin"]) {
-      return $this->db->getUserList();
+      return $this->db->getUserList($this->timeout);
     }
   }
 
@@ -372,7 +374,7 @@ class CoraSessionHandler {
 	
   /** Wraps DBInterface::getFiles() */
   public function getFiles(){
-    $this->db->releaseOldLocks();
+    $this->db->releaseOldLocks($this->timeout);
     if ($_SESSION["admin"]) {
       return $this->db->getFiles();
     } else {
@@ -564,6 +566,16 @@ class CoraSessionHandler {
       return array("success" => false, "errors" => $errors);
     }
     return null;
+  }
+
+  /** Sets the session timeout (in minutes). */
+  public function setTimeout($to) {
+    $this->timeout = $to;
+  }
+
+  /** Gets the session timeout (in minutes). */
+  public function getTimeout() {
+    return $this->timeout;
   }
 
 

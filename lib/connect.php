@@ -346,8 +346,7 @@
     * @return An @em array containing all usernames in the database and
     * information about their admin status.
     */
-   public function getUserList() {
-     $to = $this->timeout;
+   public function getUserList($to) {
      $qs = "SELECT `id`, name, admin, lastactive,"
        ."          CASE WHEN lastactive BETWEEN DATE_SUB(NOW(), INTERVAL {$to} MINUTE)"
        ."                                   AND NOW()"
@@ -1315,8 +1314,7 @@
 
    /** Delete locks if the locking user has been inactive for too
     * long; currently, this is set to be >30 minutes. */
-   public function releaseOldLocks() {
-     $to  = $this->timeout;
+   public function releaseOldLocks($to) {
      $qs  = "DELETE {$this->db}.locks FROM {$this->db}.locks";
      $qs .= "  LEFT JOIN {$this->db}.users ON users.id=locks.user_id";
      $qs .= "  WHERE users.lastactive < (NOW() - INTERVAL {$to} MINUTE)";
