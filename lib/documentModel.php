@@ -66,7 +66,10 @@ class CoraDocument {
     $instance->setLayoutInfo($pages, $cols, $lines);
 
     // Shifttags & Comments
-    //...
+    $data = $db->getShiftTags($fileid);
+    $instance->setShiftTags($data);
+    $data = $db->getComments($fileid);
+    $instance->setComments($data);
 
     $db->unlockFile($fileid, $force=true);
     return $instance;
@@ -360,6 +363,13 @@ class CoraDocument {
    */
   public function setShiftTags($shifttags) {
     $this->shifttags = $shifttags;
+    return $this;
+  }
+
+  /** Set comments directly.
+   */
+  public function setComments($comments) {
+    $this->comments = $comments;
     return $this;
   }
 

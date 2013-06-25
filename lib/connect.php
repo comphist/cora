@@ -1038,6 +1038,38 @@
      return array($pages, $columns, $lines);
    }
 
+   /** Retrieves all shift tags for a given document. */
+   public function getShiftTags($fileid) {
+     $shifttags = array();
+     $qs = "SELECT shifttags.tok_from, shifttags.tok_to, shifttags.tag_type "
+       ."     FROM {$this->db}.shifttags "
+       ."     JOIN {$this->db}.token ON token.id=shifttags.tok_from "
+       ."    WHERE token.text_id='{$fileid}'";
+     $q = $this->query($qs);
+     while($row = $this->dbconn->fetch_assoc($q)) {
+       $tag = array("type_letter" => $row['tag_type'],
+		    "db_range" => array($row['tok_from'], $row['tok_to']));
+       $shifttags[] = $tag;
+     }
+     return $shifttags;
+   }
+
+   /** Retrieves all (non-CorA) comments for a given document. */
+   public function getComments($fileid) {
+     $comments = array();
+     $qs = "SELECT comment.tok_id, comment.value, comment.comment_type "
+       ."     FROM {$this->db}.comment "
+       ."     JOIN {$this->db}.token ON token.id=comment.tok_id "
+       ."    WHERE token.text_id='{$fileid}'";
+     $q = $this->query($qs);
+     while($row = $this->dbconn->fetch_assoc($q)) {
+       $comments[] = array("parent_db_id" => $row['tok_id'],
+			   "text" => $row['value'],
+			   "type" => $row['comment_type']);
+     }
+     return $comments;
+   }
+
    /** Retrieves all tokens from a file.
     *
     * This function returns an array with all tokens belonging to a
