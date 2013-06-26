@@ -13,7 +13,7 @@ require_once( "xmlHandler.php" );
 
 /** Defines constants that represent file formats available for
  * exporting. */
-class ExportTypes {
+class ExportType {
   const CoraXML = 1; /**< CorA XML format */
   const Tagging = 2; /**< Tab-separated format containing
 			simplification and POS tags, suitable for
@@ -37,14 +37,17 @@ class Exporter {
    *
    * @param string $fileid ID of the file to be exported
    * @param string $format Desired format of the export file
+   * @param resource $handle A resource representing an output stream
+   *                         where the exported data will be sent
    *
-   * @return The modified string or array.
+   * @return ???
    */
-  public function export($fileid, $format) {
-      // make a try..catch
-      $doc = CoraDocument::fromDB($fileid);
+  public function export($fileid, $format, $handle) {
+    // make a try..catch
+    $doc = CoraDocument::fromDB($fileid);
 
   }
+
 
 }
 
