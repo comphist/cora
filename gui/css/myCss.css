@@ -772,7 +772,7 @@ div#horizontalTextView {
 }
 
 div#horizontalTextView span.highlighted {
-    background-color: lightskyblue;
+    background-color: yellow;
     color: #111;
 }
 

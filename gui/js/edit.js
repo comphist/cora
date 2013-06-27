@@ -1554,7 +1554,7 @@ var EditorModel = new Class({
 	var terminators = ['(.)', '(!)', '(?)'];
 	var maxctxlen = 50;
 	var startlimit = Math.max(0, start - maxctxlen);
-	var endlimit   = Math.min(this.lineCount + 1, end + maxctxlen);
+	var endlimit   = Math.min(this.lineCount, end + maxctxlen);
 	this.requestLines(startlimit, endlimit, false);
 	// find nearest sentence boundaries
 	for (; start>=startlimit; start--) {
