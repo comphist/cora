@@ -759,6 +759,18 @@ div.editTableLemmaLink img {
     cursor: pointer;
 }
 
+/* Text preview */
+div#horizontalTextView {
+    padding: 15px 0;
+    font-size: 1.5em;
+}
+
+div#horizontalTextView span.highlighted {
+    background-color: skyblue;
+    font-weight: bold;
+    color: #222;
+}
+
 /* POPUP */
 .addDataPopup{
     border: 3px solid #2B548C;

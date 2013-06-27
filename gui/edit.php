@@ -85,6 +85,10 @@
 
 	</table>
 	<!-- <button id="undoEditBtn">Undo</button> -->
+
+   <div id="horizontalTextView">
+   <span id="viewline_12">Daz</span> <span id="viewline_13">ist</span> ...
+   </div>
 </div>
 
 <div class="templateHolder">

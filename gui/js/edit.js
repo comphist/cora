@@ -10,7 +10,8 @@ var EditorModel = new Class({
     data: {},
     changedLines: null,
     editTable: null,
-    tries: 0,
+    tries: 0,            
+    maximumTries: 20,    // maximum number of load requests before giving up
     dynamicLoadRange: 5, // how many pages should be loaded in advance
     inputErrorClass: "", // browser-dependent CSS styling for input errors
     dropdown: null,  // contains the currently opened dropdown menu, if any
@@ -222,6 +223,13 @@ var EditorModel = new Class({
 			document.selection.empty();
 		    ref.editToken(this_id);
 		}
+	    }
+	);
+	et.addEvent(
+	    'focus:relay(input,select)',
+	    function(event, target) {
+		var this_id = target.getParent('tr').get('id').substr(5);
+		ref.highlightHorizontalView(this_id);
 	    }
 	);
 
@@ -735,11 +743,6 @@ var EditorModel = new Class({
        on first load, or because editor settings have changed),
        new lines are constructed from the class's line template.
 
-       *Caution!* Code should never expect that the page display is
-       complete when this function terminates! The function may
-       terminate early when data needs to be loaded from the server; 
-       in this case, it returns 'false' to indicate this.
-
        Parameters:
          page - Number of the page to be displayed
 
@@ -770,32 +773,13 @@ var EditorModel = new Class({
 	    pl  = end - start;
 	}
 
-	/* check whether all lines are available in memory; if not,
-	   request them from the server first */
-	for (var i=start; i<end; i++) {
-	    if(data[i] == undefined) {
-		if(this.tries++>20) { // prevent endless recursion
-		    alert("Ein Fehler ist aufgetreten: Zeilen "+i+" bis "+(end-1)+" können nicht geladen werden.");
-		    return;
-		}
-		new Request.JSON({
-		    url: 'request.php',
-		    onSuccess: function(lineArray, text) {
-			if (Object.getLength(lineArray)==0) {
-			    alert("Ein Fehler ist aufgetreten: Server-Anfrage für benötigte Zeilen "+i+" bis "+(end-1)+" lieferte kein Ergebnis zurück.");
-			    return;
-			}
-			Object.each(lineArray, function(ln) {
-			    if (this.data[ln.num] == undefined) {
-				this.data[ln.num] = ln;
-			    }
-			}.bind(this));
-			/* lazy implementation: just retry the whole method */
-			this.displayPage(page);
-		    }.bind(this)
-		}).get({'do': 'getLinesById', 'start_id': i, 'end_id': end});
-		return false;
-	    }
+	/* ensure all lines are in memory */
+	try { 
+	    this.requestLines(start, end, false);
+	}
+	catch(e) {
+	    alert(e.message);
+	    return false;
 	}
 
 	/* hide the table */
@@ -950,7 +934,10 @@ var EditorModel = new Class({
 	dlr  = this.dynamicLoadRange * (userdata.noPageLines - cl);
 	dynstart = start - dlr;
 	dynend   = end   + dlr;
-	this.dynamicLoadLines(dynstart, dynend);
+	this.requestLines(dynstart, dynend, true);
+
+	/* horizontal text view */
+	this.updateHorizontalView(start, end);
 
 	this.activePage = page;
 	this.displayedLinesStart = start;
@@ -979,20 +966,22 @@ var EditorModel = new Class({
 	return page_no;
     },
 
-    /* Function: dynamicLoadLines
+    /* Function: getMinimumLineRange
 
-       Load lines dynamically in the background.
-
-       First searches lines already in memory to ensure that
-       an optimal request is sent, i.e. only a single request
-       which needs the least amount of data in order to ensure
-       that all lines in the given range are loaded.
+       Calculates the minimum range of lines that must be requested
+       from the server to ensure that all lines in a given range are
+       in memory. Can be used to check whether lines in a given range
+       are already loaded.
 
        Parameters:
-         start - Number of the first line to load
-	 end - Number of the line after the last line to load
-    */
-    dynamicLoadLines: function(start,end) {
+         start - Number of the first line
+         end - Number of the line after the last line
+
+       Returns:
+         An array containing an optimal pair of (start, end)
+         values, or an empty array if all lines are already loaded.
+     */
+    getMinimumLineRange: function(start, end) {
 	var keys = Object.keys(this.data);
 	var brk  = false;
 
@@ -1006,7 +995,9 @@ var EditorModel = new Class({
 		break;
 	    }
 	}
-	if (!brk) { return; } // all the lines are already there
+	if (!brk) { // all the lines are already there
+	    return [];
+	} 
 
 	for (var j=end-1; j>=start; j--) {
 	    if (!keys.contains(String.from(j))) {
@@ -1015,19 +1006,55 @@ var EditorModel = new Class({
 	    }
 	}
 
+	return [start, end];
+    },
+
+
+    /* Function: requestLines
+
+       Ensures that lines in a given range are loaded in memory, and
+       requests them from the server if necessary.
+
+       Parameters:
+         start - Number of the first line to load
+	 end - Number of the line after the last line to load
+	 async - Whether or not to perform asynchronous calls
+    */
+    requestLines: function(start, end, async) {
+	var range = this.getMinimumLineRange(start, end);
+	if(range.length == 0) { // success!
+	    this.tries = 0;
+	    return true;
+	}
+	if(this.tries++>20) { // prevent endless recursion
+	    throw {
+		'name': 'FailureToLoadLines',
+		'message': "Ein Fehler ist aufgetreten: Zeilen "+start+" bis "+(end-1)+" können nicht geladen werden."
+	    };
+	    return false;
+	}
+
 	new Request.JSON({
 	    url: 'request.php',
-	    async: true,
+	    async: async,
 	    onSuccess: function(lineArray, text) {
+		if (Object.getLength(lineArray)==0) {
+		    throw {
+			'name': 'EmptyRequest',
+			'message': "Ein Fehler ist aufgetreten: Server-Anfrage für benötigte Zeilen "+start+" bis "+(end-1)+" lieferte kein Ergebnis zurück."
+		    };
+		    return;
+		}
 		Object.each(lineArray, function(ln) {
 		    if (this.data[ln.num] == undefined) {
 			this.data[ln.num] = ln;
 		    }
 		}.bind(this));
+		this.requestLines(start, end, async);
 	    }.bind(this)
-	}).get({'do': 'getLinesById', 'start_id': start, 'end_id': end});
+	}).get({'do': 'getLinesById', 'start_id': range[0], 'end_id': range[1]});
     },
-
+			    
     /* Function: saveData
 
        Send a server request to save the modified lines
@@ -1508,6 +1535,63 @@ var EditorModel = new Class({
 				  ref.updateData(this_id, 'lemma_verified', verified);
 				  ref.updateProgress(this_id, true);
 			      });
+    },
+
+    /* Function: updateHorizontalView
+
+       Updates the horizontal text preview.
+
+       TODO: This implementation is rather hacky and inelegant. It
+       contains several hardcoded values, and probably, all functions
+       related to the preview should be encapsulated in a separate
+       object.
+     */
+    updateHorizontalView: function(start, end) {
+	var data = this.data;
+	var currenttok = -1;
+	var span;
+	var view = $('horizontalTextView');
+	var terminators = ['(.)', '(!)', '(?)'];
+	var maxctxlen = 50;
+	var startlimit = Math.max(0, start - maxctxlen);
+	var endlimit   = Math.min(this.lineCount + 1, end + maxctxlen);
+	this.requestLines(startlimit, endlimit, false);
+	// find nearest sentence boundaries
+	for (; start>=startlimit; start--) {
+	    if(terminators.contains(data[start].trans)) {
+		break;
+	    }
+	}
+	start++;
+	for (; end<endlimit; end++) {
+	    if(terminators.contains(data[end].trans)) {
+		end++;
+		break;
+	    }
+	}
+
+	// update the view
+	view.empty();
+	for (var i=start; i<end; i++) {
+	    line = data[i];
+	    span = new Element('span', {'id': 'htvl_'+line.num,
+					    'text': line.trans});
+	    if(line.tok_id != currenttok) {
+		view.appendText(" ");
+		currenttok = line.tok_id;
+	    }
+	    view.adopt(span);
+	}
+    },
+
+    highlightHorizontalView: function(lineid) {
+	var view = $('horizontalTextView');
+	var span;
+	view.getElements('.highlighted').removeClass('highlighted');
+	span = view.getElement('#htvl_'+lineid);
+	if(span != null) {
+	    span.addClass('highlighted');
+	}
     }
 
 });
