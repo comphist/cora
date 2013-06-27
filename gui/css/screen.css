@@ -282,6 +282,8 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2b548c', end
 	This isn't valid for older browsers, proceed with caution!
 	-- */
 
+	border-radius: 10px;
+	box-shadow: 0px 0px 10px #e1e1e1;
 	-moz-border-radius: 10px;
 	-moz-box-shadow: #e1e1e1 0px 0px 10px;
 	-webkit-border-radius: 10px;

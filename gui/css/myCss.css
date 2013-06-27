@@ -761,14 +761,19 @@ div.editTableLemmaLink img {
 
 /* Text preview */
 div#horizontalTextView {
-    padding: 15px 0;
+    padding: 4px;
+    margin: 20px 0 0 20px;
     font-size: 1.5em;
+    background: #d8d8d8;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    max-width: 60em;
 }
 
 div#horizontalTextView span.highlighted {
-    background-color: skyblue;
-    font-weight: bold;
-    color: #222;
+    background-color: lightskyblue;
+    color: #111;
 }
 
 /* POPUP */
