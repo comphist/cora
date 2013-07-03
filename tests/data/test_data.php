@@ -53,9 +53,7 @@ function get_DBInterface_expected() {
                           "creator_id" => "1",
                           "changed" => "0000-00-00 00:00:00",
                           "changer_id" => "3",
-                          "currentmod_id" => null,
-                          "header" => null,
-                          "fullfile" => null
+                          "currentmod_id" => null
             ),
             "t1_reduced" => array("id" => "3",
                           "sigle" => "t1",
@@ -73,8 +71,6 @@ function get_DBInterface_expected() {
                           "changed" => "0000-00-00 00:00:00",
                           "changer_id" => "1",
                           "currentmod_id" => "14",
-                          "header" => null,
-                          "fullfile" => null
             ),
             "t2_reduced" => array("id" => "4",
                           "sigle" => "t2",
@@ -92,8 +88,6 @@ function get_DBInterface_expected() {
                           "changed" => "0000-00-00 00:00:00",
                           "changer_id" => "1",
                           "currentmod_id" => null,
-                          "header" => null,
-                          "fullfile" => null
 	    ),
             "t3_reduced" => array("id" => "5",
                           "sigle" => "t3",
@@ -101,7 +95,11 @@ function get_DBInterface_expected() {
                           "project_id" => "1",
                           "currentmod_id" => null,
                           "header" => null,
-            )
+	    ),
+	    "header_fullfile" => array("header" => null,
+			  "fullfile" => null
+	    )
+				       
 
         ),
         "texts_extended" => array(

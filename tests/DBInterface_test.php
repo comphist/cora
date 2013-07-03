@@ -170,10 +170,13 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
 
     public function testTextQuery() {
         $actual = $this->dbi->queryForMetadata("sigle", "t1");
-        $this->assertEquals($this->expected["texts"]["t1"], $actual);
+        $this->assertEquals(array_merge($this->expected["texts"]["t1"],
+					$this->expected["texts"]["header_fullfile"]),
+			    $actual);
         $actual = $this->dbi->queryForMetadata("fullname", "yet another dummy");
-        $this->assertEquals($this->expected["texts"]["t2"], $actual);
-
+        $this->assertEquals(array_merge($this->expected["texts"]["t2"],
+					$this->expected["texts"]["header_fullfile"]),
+			    $actual);
 
         $this->assertEquals(array('file_id' => '3', 'file_name' => 'test-dummy'),
                             $this->dbi->getLockedFiles("bollmann"));
