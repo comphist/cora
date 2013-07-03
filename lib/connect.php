@@ -818,8 +818,11 @@
     * @return an two-dimensional @em array with the meta data
     */		
    public function getFiles(){
-     $qs = "SELECT a.*, d.id as project_id, d.name as project_name, "
-       . "c.name as opened, e.name as creator_name, f.name as changer_name "
+     $qs = "SELECT a.id, a.sigle, a.fullname, a.created, "
+       . "         a.creator_id, a.changer_id, "
+       . "         a.changed, a.currentmod_id, c.name as opened, "
+       . "         d.id as project_id, d.name as project_name, "
+       . "         e.name as creator_name, f.name as changer_name "
        . "     FROM {$this->db}.text a "
        . "LEFT JOIN {$this->db}.locks b ON a.id=b.text_id "
        . "LEFT JOIN {$this->db}.users c ON b.user_id=c.id "
@@ -847,8 +850,11 @@
    public function getFilesForUser($uname){
      $user = $this->getUserByName($uname);
      $uid = $user["id"];
-     $qs = "SELECT a.*, d.id as project_id, d.name as project_name, "
-       . "c.name as opened, e.name as creator_name, f.name as changer_name "
+     $qs = "SELECT a.id, a.sigle, a.fullname, a.created, "
+       . "         a.creator_id, a.changer_id, "
+       . "         a.changed, a.currentmod_id, c.name as opened, "
+       . "         d.id as project_id, d.name as project_name, "
+       . "         e.name as creator_name, f.name as changer_name "
        . "    FROM ({$this->db}.text a, {$this->db}.user2project g) "
        . "LEFT JOIN {$this->db}.locks b ON a.id=b.text_id "
        . "LEFT JOIN {$this->db}.users c ON b.user_id=c.id "

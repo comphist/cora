@@ -577,7 +577,7 @@ var file = {
 	}
 	displayed_name += file.fullname;
         var tr = new Element('tr',{id: 'file_'+file.id, 'class': opened});
-        if((file.byUser == userdata.name) || userdata.admin){
+        if((file.creator_name == userdata.name) || userdata.admin){
             var delTD = new Element('td',{ html: '<img src="gui/images/proxal/delete.ico" />', 'class': 'deleteFile' });
             delTD.addEvent('click', function(){ ref.deleteFile(file.id,file.fullname); } );
             tr.adopt(delTD);
