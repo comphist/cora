@@ -105,8 +105,11 @@ window.addEvent('domready', function() {
 		var checked = target.get('checked');
 		var value = target.get('value');
 		userdata[value] = checked;
-		if(value=="show_error" && ref.editorModel!=null) {
-		    ref.editorModel.updateShowInputErrors();
+		if(value=="show_error") {
+		    userdata.showInputErrors = checked;
+		    if (ref.editorModel!=null) {
+			ref.editorModel.updateShowInputErrors();
+		    }
 		}
 		new Request({url: 'request.php'}).get(
 		    {'do': 'setUserEditorSetting',
