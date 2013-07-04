@@ -1145,7 +1145,7 @@ var EditorModel = new Class({
 	var chl = this.changedLines.length;
 	if (chl>0) {
 	    var zeile = (chl>1) ? "Zeilen" : "Zeile";
-	    return confirm("Warnung: Sie sind im Begriff, diese Seite zu verlassen. Im geöffneten Dokument gibt es noch ungespeicherte Änderungen in "+chl+" "+zeile+", die verloren gehen, wenn Sie fortfahren.");
+	    return confirm("Warnung: Im geöffneten Dokument gibt es noch ungespeicherte Änderungen in "+chl+" "+zeile+", die verloren gehen, wenn Sie fortfahren.");
 	} else {
 	    return true;
 	}
@@ -1189,6 +1189,7 @@ var EditorModel = new Class({
 	lcdiff - the difference in line count after the edit operation
     */
     updateDataArray: function(tok_id, lcdiff) {
+	tok_id = Number.from(tok_id);
 	// delete all lines after the changed line from memory 
 	this.data = Object.filter(this.data, function(item, index) {
 	    return index < tok_id;

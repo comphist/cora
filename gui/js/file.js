@@ -440,6 +440,11 @@ var file = {
     
     openFile: function(fileid) {
         var ref = this;
+	var emf = (edit.editorModel!=null && edit.editorModel.fileId!=null);
+
+	if (emf && !edit.editorModel.confirmClose()) {
+	    return false;
+	}
         
         var lock = new Request.JSON({
             url:'request.php',
