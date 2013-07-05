@@ -7,6 +7,9 @@
  * #$menu variable, thereby setting up references to all web pages
  * that can be displayed to the user.
  *
+ * EDIT: JavaScript files are now embedded directly in gui.php,
+ * to support combination and minimization!
+ *
  * @author Marcel Bollmann
  * @date January 2012
  */
