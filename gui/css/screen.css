@@ -1,3 +1,5 @@
+@charset 'UTF-8';
+
 * {
 	margin : 0;
 	padding : 0;
@@ -62,14 +64,6 @@ blockquote span {
 	top : 0.25em;
 }
 
-p.text input2 {
-	background : #ffffff;
-	border : 1px solid #cfcfcf;
-	padding : 0.5em;
-	margin : 0.25em 1em 0 1em;
-	
-}
-
 input.button {
 	float: left;
 	border: 0;
@@ -95,10 +89,10 @@ input.button {
 
 
 p.editor {
-	background : #ffffff;
-	border : 1px solid #cfcfcf;
-	padding : 0.25em;
-	margin : 0.25em 1em 0 1em;
+	background: #ffffff;
+	border: 1px solid #cfcfcf;
+	padding: 0.25em;
+	margin: 0.25em 1em 0 1em;
 }
 
 
@@ -109,31 +103,30 @@ p.editor textarea {
 
 
 form textarea {
-
-	width:500px;
+	width: 500px;
 }
 form p.button {
-	text-align : right;
+	text-align: right;
 }
 
 p {
-	padding : 1em 1em 0 1em;
+	padding: 1em 1em 0 1em;
 }
 
 p:first-child {
-	padding : 0 1em 0 1em;
+	padding: 0 1em 0 1em;
 }
 
 ul,
 ol {
-	padding : 1em 1em 0 3em;
+	padding: 1em 1em 0 3em;
 }
 
 #main {
-	margin : auto;
-	max-width : 99%; //65em;
-	min-width : 40em;
-	width : auto !important;
+	margin: auto;
+	max-width: 99%;
+	min-width: 40em;
+	width: auto !important;
 	padding-top: 8.3em;
 }
 

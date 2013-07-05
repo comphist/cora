@@ -58,12 +58,7 @@ function embedJSwithTimestamp($filename) {
   <?php include( "project_specific_hacks.php" ); ?>
 
 <?php
-  if(file_exists(dirname(__FILE__) . "/gui/js/master.min.js")):
-    embedJSwithTimestamp("gui/js/master.min.js");
-  else:
     embedJSwithTimestamp("gui/js/cerabox/cerabox.min.js");
-    embedJSwithTimestamp("gui/js/baseBox.js");
-    embedJSwithTimestamp("gui/js/ProgressBar.js");
     embedJSwithTimestamp("gui/js/mbox/mBox.Core.js");
     embedJSwithTimestamp("gui/js/mbox/mBox.Modal.js");
     embedJSwithTimestamp("gui/js/mbox/mBox.Notice.js");
@@ -73,6 +68,12 @@ function embedJSwithTimestamp($filename) {
     embedJSwithTimestamp("gui/js/mbox/mForm.Submit.js");
     embedJSwithTimestamp("gui/js/mbox/mForm.Element.js");
     embedJSwithTimestamp("gui/js/mbox/mForm.Element.Select.js");
+
+  if(file_exists(dirname(__FILE__) . "/gui/js/master.min.js")):
+    embedJSwithTimestamp("gui/js/master.min.js");
+  else:
+    embedJSwithTimestamp("gui/js/baseBox.js");
+    embedJSwithTimestamp("gui/js/ProgressBar.js");
     embedJSwithTimestamp("gui/js/dragtable_hack.js");
     embedJSwithTimestamp("gui/js/iFrameFormRequest.js");
     embedJSwithTimestamp("gui/js/Meio.Autocomplete.js");

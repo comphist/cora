@@ -5,29 +5,6 @@
  * @date January 2012
  */
 
-/** Perform initialization. Adds JavaScript events to interactive
- * navigation elements, e.g.\ clappable div containers, and selects
- * the default tab.
- */
-function onLoad() {
-    gui.initialize();
-
-    // default item defined in content.php, variable set in gui.php
-    gui.changeTab(default_tab);
-}
-
-function onBeforeUnload() {
-    if (typeof edit!="undefined" && edit.editorModel!==null) {
-	var chl = edit.editorModel.changedLines.length;
-	if (chl>0) {
-	    var zeile = (chl>1) ? "Zeilen" : "Zeile";
-	    return ("Im geöffneten Dokument gibt es noch ungespeicherte Änderungen in "+chl+" "+zeile+", die verloren gehen, wenn Sie fortfahren.");
-	}
-    }
-}
-
-
-
 var gui = {
     activeSpinner: null,
     keepaliveRequest: null,
@@ -169,4 +146,26 @@ var gui = {
 	}
     },
 
+}
+
+
+/** Perform initialization. Adds JavaScript events to interactive
+ * navigation elements, e.g.\ clappable div containers, and selects
+ * the default tab.
+ */
+function onLoad() {
+    gui.initialize();
+
+    // default item defined in content.php, variable set in gui.php
+    gui.changeTab(default_tab);
+}
+
+function onBeforeUnload() {
+    if (typeof edit!="undefined" && edit.editorModel!==null) {
+	var chl = edit.editorModel.changedLines.length;
+	if (chl>0) {
+	    var zeile = (chl>1) ? "Zeilen" : "Zeile";
+	    return ("Im geöffneten Dokument gibt es noch ungespeicherte Änderungen in "+chl+" "+zeile+", die verloren gehen, wenn Sie fortfahren.");
+	}
+    }
 }
