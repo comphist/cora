@@ -87,7 +87,7 @@
 	<!-- <button id="undoEditBtn">Undo</button> -->
 
    <div id="horizontalTextView">
-   <span id="viewline_12">Daz</span> <span id="viewline_13">ist</span> ...
+     <span>Fehler bei der Text-Vorschau.</span>
    </div>
 </div>
 
