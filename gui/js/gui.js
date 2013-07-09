@@ -8,8 +8,10 @@
 var gui = {
     activeSpinner: null,
     keepaliveRequest: null,
+    editKeyboard: null,
 
     initialize: function() {
+	this.addKeyboardShortcuts();
 	this.addToggleEvents();
 	this.activateKeepalive();
     },
@@ -39,6 +41,39 @@ var gui = {
 		content.hide();
             }
 	});
+    },
+
+    /* Function: addKeyboardShortcuts
+
+       Sets up keyboard shortcuts used within the application.
+     */
+    addKeyboardShortcuts: function() {
+	this.editKeyboard = new Keyboard({
+	    active: true,
+	    events: {
+		'ctrl+s': function(e) {
+		    e.stop(); 
+		    if(edit!==null && edit.editorModel!==null) {
+			edit.editorModel.saveData();
+		    }
+		}
+		/* ,
+		'alt+left': function(e) {
+		    e.stop(); 
+		    if(edit!==null && edit.editorModel!==null) {
+			edit.editorModel.displayPreviousPage();
+		    }
+		},
+		'alt+right': function(e) {
+		    e.stop(); 
+		    if(edit!==null && edit.editorModel!==null) {
+			edit.editorModel.displayNextPage();
+			edit.editorModel.focusFirstElement();
+		    }
+		} */
+	    }
+	});
+	
     },
 
     /* Function: activateKeepalive

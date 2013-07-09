@@ -531,6 +531,20 @@ var EditorModel = new Class({
 	}
     },
 
+    /* Function: focusFirstElement
+
+       Sets focus on the first editable element (input or select) in
+       the editor table.
+    */
+    focusFirstElement: function() {
+	var visible = this.editTable.getElements("input,select").filter(function(elem) {
+	    return elem.isVisible();
+	});
+	if(visible!==null && visible.length) {
+	    visible[0].focus();
+	}
+    },
+
     /* Function: renderPagesPanel
 
        Render the page navigator panel.
