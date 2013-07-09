@@ -108,7 +108,7 @@
    </div>
 
    <div id="editTokenConfirm" class="limitedWidth">
-   <p>Die neue Transkription enthält mindestens ein Trennzeichen (<code>=</code> oder <code>(=)</code>), auf das kein Leerzeichen folgt.  Dies bedeutet, dass das Trennzeichen in der Transkription <strong>nicht am Zeilenende</strong>, sondern mitten im Wort stehen wird!</p>
+   <p>Die neue Transkription enthält mindestens ein Trennzeichen, auf das kein Leerzeichen folgt.  Dies bedeutet, dass das Trennzeichen in der Transkription <strong>nicht am Zeilenende</strong>, sondern mitten im Wort stehen wird!</p>
      <p>Falls dies nicht beabsichtigt ist, muss hinter das Trennzeichen ein Leerzeichen eingefügt werden, um den Zeilenumbruch zu signalisieren.</p>
    <p>Sind Sie sicher, dass Sie diese Änderungen so durchführen wollen?</p>
    </div>
@@ -119,7 +119,7 @@
      <label for="editToken">Transkription: </label>
      <input id="editTokenBox" type="text" name="editToken" size="42" placeholder="" class="mform" />
    </p>
-   <p><strong>Achtung!</strong> Leerzeichen in der Transkription werden als Zeilenumbrüche interpretiert und dürfen <strong>nur</strong> nach einem Trennzeichen (<code>=</code> oder <code>(=)</code>) benutzt werden.</p>
+   <p><strong>Achtung!</strong> Leerzeichen in der Transkription werden als Zeilenumbrüche interpretiert und dürfen <strong>nur</strong> nach einem Trennzeichen benutzt werden.</p>
 
    <p>Wenn Sie aus einem Token zwei machen wollen, benutzen Sie bitte die Funktion &quot;Token hinzufügen&quot; und bearbeiten Sie dann die Transkription entsprechend.</p>
    </div>

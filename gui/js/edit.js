@@ -1288,7 +1288,11 @@ var EditorModel = new Class({
 		return false;
 	    }
 	    if(new_token.indexOf("=")>-1) {
-		checkstr = new_token.replace(/=\) /g, "").replace(/= /g, "");
+		checkstr = new_token.replace(/=\) /g, "").replace(/= /g, "")
+		    .replace(/=\| /g, "").replace(/<=> /g, "").replace(/<=>\| /g, "")
+		    .replace(/<<=>> /g, "").replace(/<<=>>\| /g, "")
+		    .replace(/\[=\] /g, "").replace(/\[=\]\| /g, "")
+		    .replace(/\[\[=\]\] /g, "").replace(/\[\[=\]\]\| /g, "");
 		if(checkstr.indexOf("=")>-1) {
 		    new mBox.Modal({
 			title: 'Sind Sie sicher?',

@@ -8,6 +8,22 @@
  * @date February 2013
  */
 
+class Transcription {
+  public static function endsWithSeparator($line) {
+    return (substr($line, -1)=='=' ||
+	    substr($line, -2)=='=|' ||
+	    substr($line, -3)=='(=)' ||
+	    substr($line, -3)=='<=>' ||
+	    substr($line, -3)=='[=]' ||
+	    substr($line, -4)=='<=>|' ||
+	    substr($line, -4)=='[=]|' ||
+	    substr($line, -5)=='<<=>>' ||
+	    substr($line, -5)=='[[=]]' ||
+	    substr($line, -6)=='<<=>>|' ||
+	    substr($line, -6)=='[[=]]|');
+  }
+}
+
 class CommandHandler {
 
   private $check_script = "/usr/bin/ruby /usr/local/bin/convert_check.rb -C";
@@ -106,8 +122,8 @@ class CommandHandler {
     if(count($lines)>1) {
       array_pop($lines); // last token can be whatever ...
       foreach($lines as $line) {
-	if(substr($line, -1)!=='=' && substr($line, -3)!=='(=)') {
-	  return array("Zeilenumbrüche sind nur erlaubt, wenn ihnen eines der Trennzeichen = oder (=) vorangeht.  Transkription war:", $token);
+	if(!Transcription::endsWithSeparator($line)) {
+	  return array("Zeilenumbrüche sind nur erlaubt, wenn ihnen ein Trennzeichen vorangeht.  Transkription war:", $token);
 	}
       }
     }

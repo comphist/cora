@@ -13,6 +13,7 @@
  /** The database settings. */
  require_once 'globals.php';
  require_once 'documentModel.php';
+ require_once 'commandHandler.php';
 
  /** Exception when an SQL query fails. */
  class SQLQueryException extends Exception { }
@@ -2109,7 +2110,7 @@
        $diplinsert[] = "({$diplid}, {$tokenid}, " . $this->dbconn->escapeSQL($lineids[$currentline]) . ", '" 
 	 . $this->dbconn->escapeSQL($converted['dipl_utf'][$i]) . "', '"
 	 . $this->dbconn->escapeSQL($dipltrans) . "')";
-       if(substr($dipltrans, -1)==='=' || substr($dipltrans, -3)==='(=)') {
+       if(Transcription::endsWithSeparator($dipltrans)) {
 	 $currentline++;
        }
      }
