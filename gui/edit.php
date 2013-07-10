@@ -94,7 +94,7 @@
 <div class="templateHolder">
   <div id="saveErrorPopup">
     <p></p>
-    <p><textarea cols="80" rows="3" readonly="readonly"></textarea></p>
+    <p><textarea cols="80" rows="8" readonly="readonly"></textarea></p>
   </div>
 
    <div id="jumpToLineForm">
