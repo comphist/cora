@@ -1037,3 +1037,7 @@ div#transImportSpinner .proc {
     color: #000;
     text-align: center;
 }
+
+#saveErrorPopup textarea {
+    min-height: 10em;
+}
