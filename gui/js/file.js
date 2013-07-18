@@ -701,8 +701,13 @@ var file = {
     },
 
     exportFile: function(fileid){
-	alert("Diese Funktion ist zur Zeit noch nicht implementiert!");
-	return;
+	if(!userdata.admin) {
+	    // client-side check only, admin restriction is not
+	    // critical here, just exists to discourage users to use
+	    // this before it's 100% finished
+	    alert("Diese Funktion ist zur Zeit noch nicht implementiert!");
+	    return;
+	}
 
 	new mBox.Modal({
 	    content: 'fileExportPopup',
@@ -713,7 +718,7 @@ var file = {
 		 event: function() {
 		     var format = $('fileExportFormat').getSelected()[0].get('value');
 		     this.close();
-		     window.location = 'request.php?do=exportFile&fileId='+fileid+'&format='+format;
+		     window.location = 'request.php?do=exportFile&fileid='+fileid+'&format='+format;
 		 }
 		}
 	    ]

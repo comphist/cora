@@ -84,10 +84,11 @@ $tagsets_all = $sh->getTagsetList(false, "class");
   <div id="fileExportPopup">
     <p>In welchem Format möchten Sie die Datei exportieren?</p>
 		<p>
-		<label for="exportformat">Exportformat: </label>
-		<select id="fileExportFormat" name="exportformat" size="1">
-			<option value="cora">CorA-XML</option>
-                        <option value="hist" selected="selected">Neues CorA-XML (empfohlen)</option>
+		<label for="format">Exportformat: </label>
+		<select id="fileExportFormat" name="format" size="1">
+			<option value="<?php echo ExportType::Tagging ?>" selected="selected">Textformat mit POS-Tags</option>
+                        <option value="<?php echo ExportType::CoraXML ?>">CorA-XML</option>
+                        <option value="<?php echo ExportType::Transcription ?>">Transkriptionsformat (ohne Annotationen)</option>
 		</select>
 		</p>
   <p></p>
