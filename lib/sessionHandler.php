@@ -368,7 +368,13 @@ class CoraSessionHandler {
       return false;
     }
 
-    $this->exporter->export($fileid,$format);
+    $output = fopen('php://output', 'wb');
+    header("Cache-Control: public");
+    header("Content-Type: " . ExportType::mapToContentType($format));
+    // header("Content-Transfer-Encoding: Binary");
+    // header("Content-Length:".filesize($attachment_location));
+    header("Content-Disposition: attachment; filename=".$fileid.ExportType::mapToExtension($format));
+    $this->exporter->export($fileid, $format, $output);
     return true;
   }
 	

@@ -403,13 +403,6 @@ class RequestHandler {
 	  case "deleteFile": echo json_encode($this->sh->deleteFile(self::escapeSQL($post["file_id"])));
 	    exit;
 	    
-	  case "exportFile":
-	    $status = $this->sh->exportFile(self::escapeSQL($get["fileId"]),
-					    self::escapeSQL($get["format"]));
-	    if (!$status)
-	      self::returnError(500, "Could not export file.");
-	    exit;
-	    
 	  case "getLines":   $data = $this->sh->getLines(self::escapeSQL($get['page']));
 	    echo json_encode($data);
 	    exit;
@@ -442,6 +435,10 @@ class RequestHandler {
 	    
 	  case "addToken":
 	    echo json_encode($this->sh->addToken($get['token_id'], $get['value']));
+	    exit;
+
+	  case "exportFile":
+	    $this->sh->exportFile($get['fileid'], $get['format']);
 	    exit;
 
 	  default:           self::returnError(400, "Unknown request: " + $get["do"]);

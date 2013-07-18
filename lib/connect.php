@@ -1115,7 +1115,7 @@
        ."     FROM {$this->db}.token "
        ."     LEFT JOIN {$this->db}.dipl ON dipl.tok_id=token.id "
        ."    WHERE token.text_id='{$fileid}' "
-       ."    ORDER BY token.ordnr ASC, dipl.id ASC";
+       ."    ORDER BY token.ordnr ASC, dipl.id ASC ";
      $query = $this->query($qs);
      while($row = $this->dbconn->fetch_assoc($query)){
        $dipls[] = array('db_id' => $row['id'],
@@ -1133,7 +1133,7 @@
        ."     LEFT JOIN {$this->db}.comment c1 ON  c1.tok_id=token.id "
        ."           AND c1.subtok_id=modern.id AND c1.comment_type='C' "
        ."    WHERE token.text_id='{$fileid}' "
-       ."    ORDER BY token.ordnr ASC, dipl.id ASC";
+       ."    ORDER BY token.ordnr ASC, modern.id ASC";
      $query = $this->query($qs);
      while($row = $this->dbconn->fetch_assoc($query)){
        $tags = array();
