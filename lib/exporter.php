@@ -19,6 +19,8 @@ class ExportType {
 			simplification and POS tags, suitable for
 			training a tagger model. */
   const Transcription = 3; // export in original transcription format
+  const Normalization = 4; /**< Tab-separated format containing
+			simplification, normalization, modernization. */
 
   public static function mapToContentType($format) {
     switch ($format) {
@@ -27,6 +29,7 @@ class ExportType {
       break;
     case ExportType::Tagging:
     case ExportType::Transcription:
+    case ExportType::Normalization:
       return "text/plain";
       break;
     }
@@ -39,6 +42,7 @@ class ExportType {
       break;
     case ExportType::Tagging:
     case ExportType::Transcription:
+    case ExportType::Normalization:
       return ".txt";
       break;
     }
@@ -69,6 +73,9 @@ class Exporter {
   public function export($fileid, $format, $handle) {
     if($format == ExportType::Tagging) {
       return $this->exportForTagging($fileid, $handle);
+    }
+    if($format == ExportType::Normalization) {
+      return $this->exportNormalization($fileid, $handle);
     }
 
     return; // can't do anything else yet
@@ -103,6 +110,29 @@ class Exporter {
     }
   }
 
+  /** Export a file with normalization annotations. */
+  protected function exportNormalization($fileid, $handle) {
+    $tokens = $this->db->getAllTokens($fileid);
+    $moderns = $tokens[2];
+    array_shift($moderns); // first token is dummy token which we
+			   // don't need for this purpose
+    foreach($moderns as $mod) {
+      $tok = $mod['ascii'];
+      $norm = '--'; $normbroad = '--';
+      foreach($mod['tags'] as $tag) {
+	if($tag['selected']==1) {
+	  if($tag['type']=='norm') {
+	    $norm = $tag['tag'];
+	  }
+	  else if($tag['type']=='norm_broad') {
+	    $normbroad = $tag['tag'];
+	  }
+	}
+      }
+      fwrite($handle, $tok."\t".$norm."\t".$normbroad."\n");
+    }
+  }
+ 
 }
 
 ?>

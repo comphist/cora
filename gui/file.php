@@ -86,9 +86,10 @@ $tagsets_all = $sh->getTagsetList(false, "class");
 		<p>
 		<label for="format">Exportformat: </label>
 		<select id="fileExportFormat" name="format" size="1">
-			<option value="<?php echo ExportType::Tagging ?>" selected="selected">Textformat mit POS-Tags</option>
-                        <option value="<?php echo ExportType::CoraXML ?>">CorA-XML</option>
-                        <option value="<?php echo ExportType::Transcription ?>">Transkriptionsformat (ohne Annotationen)</option>
+                        <option value="<?php echo ExportType::Tagging ?>" selected="selected">Spaltenformat (POS)</option>
+                        <option value="<?php echo ExportType::Normalization ?>">Spaltenformat (Normalisierung)</option>
+                        <option value="<?php echo ExportType::CoraXML ?>" disabled="disabled">CorA-XML</option>
+                        <option value="<?php echo ExportType::Transcription ?>" disabled="disabled">Transkriptionsformat (ohne Annotationen)</option>
 		</select>
 		</p>
   <p></p>
