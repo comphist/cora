@@ -292,13 +292,15 @@ var EditorModel = new Class({
 	/* Show/hide columns and settings checkboxes */
 	var eshc = $('editorSettingsHiddenColumns');
 	Object.each(visibility, function(visible, value) {
-	    eshc.getElements('input[value="'+value+'"]').set('checked', visible);
 	    if(visible) {
 		eshc.getElements('input#eshc-'+value+']').show();
 		eshc.getElements('label[for="eshc-'+value+'"]').show();
-		$('editTable').getElements(".editTable_"+value).show();
+		if(eshc.getElement('input#eshc-'+value+']').get('checked')) {
+		    $('editTable').getElements(".editTable_"+value).show();
+		} else {
+		    $('editTable').getElements(".editTable_"+value).hide();
+		}
 	    } else {
-//		eshc.getElements('input[value="'+value+'"]').hide();
 		eshc.getElements('input#eshc-'+value+']').hide();
 		eshc.getElements('label[for="eshc-'+value+'"]').hide();
 		$('editTable').getElements(".editTable_"+value).hide();
