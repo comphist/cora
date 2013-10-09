@@ -762,7 +762,7 @@ div.editTableLemmaLink img {
 /* Text preview */
 div#horizontalTextView {
     padding: 4px;
-    margin: 20px 0 0 20px;
+    margin: 20px 0 20px 20px;
     font-size: 1.5em;
     background: white;
     border: 1px solid #bbb;
@@ -831,20 +831,20 @@ div#horizontalTextView span.highlighted {
     margin-bottom: 20px;
 }
 
-#pagePanel{
+.pagePanel{
     font-size: 1.5em;
     padding-bottom: 0.5em;
 }
 
-#pagePanel span {
+.pagePanel span {
     text-align: center;
 }
 
-#pagePanel a {
+.pagePanel a {
     padding: 0 6px;
 }
 
-#pagePanel .currentPage{
+.pagePanel .currentPage{
     font-weight: bold;
 }
 

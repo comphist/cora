@@ -11,7 +11,7 @@
 
 <div id="editPanelDiv" class="panel">
 
-<div id="pagePanel">
+<div id="pagePanel" class="pagePanel">
 	<span>Seite: </span>
 </div>
 
@@ -54,9 +54,9 @@
 			    <input type="text" value="" />
                             <select size="1" disabled="disabled">
                               <option value=""></option>
-                              <option value="1">1</option>
-                              <option value="2">2</option>
-                              <option value="3">3</option>
+                              <option value="s">s</option>
+                              <option value="f">f</option>
+                              <option value="x">x</option>
                             </select>
 			</td>
 			<td class="editTable_POS"></td>
