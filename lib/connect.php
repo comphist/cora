@@ -90,6 +90,7 @@
    function __construct($db_server, $db_user, $db_password, $db_name) {
        $this->dbobj = mysql_connect( $db_server, $db_user, $db_password );
        $this->db = $db_name;
+       $this->query( "SET NAMES 'utf8'", $this->dbobj ); 
    }
 
    /** Check if a connection exists.
