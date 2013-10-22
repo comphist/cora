@@ -476,7 +476,7 @@ var file = {
         		            }
         		        }).send();
 				
-				$('currentfile').set('text',fileData.data.fullname);
+				$('currentfile').set('text','['+fileData.data.sigle+'] '+fileData.data.fullname);
 				ref.listFiles();
 			    }
         		}

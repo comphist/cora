@@ -111,7 +111,7 @@ project_editor.project_users[<?php echo $pid; ?>] = new Array(<?php echo $arrstr
 			<div id="header">
 				<div id="titelzeile">
 					<span id="otto"><object><h1><?php echo TITLE; ?></h1><h2><?php echo VERSION; ?></h2></object></span>
-					<span id="currentfile"><?php if(isset($_SESSION['currentName']) && !empty($_SESSION['currentName'])) echo $_SESSION['currentName']; ?></span>
+					<span id="currentfile"><!-- filled by JavaScript --></span>
 
 				</div>
 				<div id="controls">
