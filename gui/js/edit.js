@@ -460,8 +460,13 @@ var EditorModel = new Class({
 	    return;
 	}
 
-	morphopt = new Element('optgroup', {'label': "Alle Tags für '"+postag+"'",
-					    'html': fileTagset.morphHTML[postag]});
+	morphopt = new Element('optgroup', {'label': "Alle Tags für '"+postag+"'"});
+	if (fileTagset.morphHTML[postag] != undefined) {
+	    morphopt.set('html', fileTagset.morphHTML[postag]);
+	}
+	else { // ensure there is always at least the empty selection
+	    morphopt.set('html', '<option value="--">--</option>');
+	}
 	line = this.data[id];
 	if (line.suggestions) {
 	    suggestions = new Element('optgroup', {'label': 'Vorgeschlagene Tags', 'class': 'lineSuggestedTag'});
