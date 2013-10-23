@@ -240,8 +240,8 @@ var project_editor = {
 			     var new_row = $('editProjects').getElement('tr.adminProjectInfoRow').clone();
 			     new_row.set('id', 'project_'+pid);
 			     new_row.getElement('a.adminProjectDelete').set('id', 'projectdelete_'+pid);
-			     new_row.getElement('td.adminProjectNameCell').set('html', pn);
-			     new_row.getElement('td.adminProjectUsersCell').set('html', '');
+			     new_row.getElement('td.adminProjectNameCell').empty().appendText(pn);
+			     new_row.getElement('td.adminProjectUsersCell').empty();
 			     new_row.getElement('button.adminProjectUsersButton').set('id', 'projectbutton_'+pid);
 			     $('editProjects').adopt(new_row);
 			     
@@ -361,7 +361,7 @@ var project_editor = {
 	Object.each(this.project_users, function(ulist, pid) {
 	    var tr = $('project_'+pid);
 	    if(tr != undefined) {
-		tr.getElement('td.adminProjectUsersCell').set('html', ulist.join());
+		tr.getElement('td.adminProjectUsersCell').empty().appendText(ulist.join());
 	    }
 	});
     }
@@ -387,7 +387,7 @@ var tagset_editor = {
 	    var tagset     = $('aTBtagset').getSelected().get('value')[0];
 	    var tagsetname = $('aTBtagset').getSelected().get('html');
 	    var textarea   = $('aTBtextarea');
-	    textarea.set('html', '');
+	    textarea.empty();
 	    // fetch tag list and perform a quick and dirty analysis:
 	    var request = new Request.JSON(
 		{url:'request.php',
@@ -416,7 +416,7 @@ var tagset_editor = {
 			 }
 			 output += tag['value'] + "\n";
 		     });
-		     textarea.set('html', output);
+		     textarea.empty().appendText(output);
 		 }
 		}
 	    );
@@ -511,8 +511,8 @@ var tagset_editor = {
                 }
 
 		if(textarea!='') {
-		    $('adminImportPopup').getElement('p').set('html', message);
-		    $('adminImportPopup').getElement('textarea').set('html', textarea);
+		    $('adminImportPopup').getElement('p').empty().appendText(message);
+		    $('adminImportPopup').getElement('textarea').empty().appendText(textarea);
 		    message = 'adminImportPopup';
 		}
 		new mBox.Modal({

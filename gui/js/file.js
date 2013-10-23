@@ -71,8 +71,8 @@ var file = {
 		done = "error";
 		if(process.output != null) {
 		    message = "Beim Importieren sind Fehler aufgetreten.";
-		    $('fileImportPopup').getElement('p').set('html', message);
-		    $('fileImportPopup').getElement('textarea').set('html', process.output);
+		    $('fileImportPopup').getElement('p').empty().appendText(message);
+		    $('fileImportPopup').getElement('textarea').empty().appendText(process.output);
 		    new mBox.Modal({
 			title: "Fehler beim Importieren",
 			content: 'fileImportPopup',
@@ -231,8 +231,8 @@ var file = {
 //		    }
 
 		if(textarea!='') {
-		    $('fileImportPopup').getElement('p').set('html', message);
-		    $('fileImportPopup').getElement('textarea').set('html', textarea);
+		    $('fileImportPopup').getElement('p').empty().appendText(message);
+		    $('fileImportPopup').getElement('textarea').empty().appendText(textarea);
 		    message = 'fileImportPopup';
 		}
 		new mBox.Modal({
@@ -328,8 +328,8 @@ var file = {
                 }
 
 		if(textarea!='') {
-		    $('fileImportPopup').getElement('p').set('html', message);
-		    $('fileImportPopup').getElement('textarea').set('html', textarea);
+		    $('fileImportPopup').getElement('p').empty().appendText(message);
+		    $('fileImportPopup').getElement('textarea').empty().appendText(textarea);
 		    message = 'fileImportPopup';
 		}
 		new mBox.Modal({
@@ -558,7 +558,7 @@ var file = {
 		    Object.each(fileHash, function(fileArray, project){
 			var project_div = $('fileGroup').clone();
 			var project_table = project_div.getElement('table');
-			project_div.getElement('h4.projectname').set('html', projectNames[project]);
+			project_div.getElement('h4.projectname').empty().appendText(projectNames[project]);
 			fileArray.each(function(file) {
 			    project_table.adopt(ref.renderTableLine(file));
 			});

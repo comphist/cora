@@ -850,10 +850,10 @@ var EditorModel = new Class({
 	    else {
 		lineinfo = "";
 	    }
-	    tr.getElement('.editTable_line').set('html', lineinfo);
-	    tr.getElement('.editTable_tok_trans').set('html', line.trans);
-	    tr.getElement('.editTable_token').set('html', line.utf);
-	    tr.getElement('.editTable_tokenid').set('html', i+1);
+	    tr.getElement('.editTable_line').empty().appendText(lineinfo);
+	    tr.getElement('.editTable_tok_trans').empty().appendText(line.trans);
+	    tr.getElement('.editTable_token').empty().appendText(line.utf);
+	    tr.getElement('.editTable_tokenid').empty().appendText(i+1);
 	    tr.getElement('.editTable_Comment input').set('value', line.comment);
 
 	    // build annotation elements
@@ -1125,8 +1125,8 @@ var EditorModel = new Class({
 		    }
 		    
 		    if(textarea!='') {
-			$('saveErrorPopup').getElement('p').set('html', message);
-			$('saveErrorPopup').getElement('textarea').set('html', textarea);
+			$('saveErrorPopup').getElement('p').empty().appendText(message);
+			$('saveErrorPopup').getElement('textarea').empty().appendText(textarea);
 			message = 'saveErrorPopup';
 		    }
 		    new mBox.Modal({
@@ -1178,8 +1178,8 @@ var EditorModel = new Class({
 	    textarea += rows[i] + "\n";
 	}
 	if(textarea!='') {
-	    $('saveErrorPopup').getElement('p').set('html', message);
-	    $('saveErrorPopup').getElement('textarea').set('html', textarea);
+	    $('saveErrorPopup').getElement('p').empty().appendText(message);
+	    $('saveErrorPopup').getElement('textarea').empty().appendText(textarea);
 	    message = 'saveErrorPopup';
 	}
 	new mBox.Modal({
@@ -1236,7 +1236,7 @@ var EditorModel = new Class({
 	    tok_id = tok_id - 1;
 	}
 
-	$('deleteTokenToken').set('html', old_token);
+	$('deleteTokenToken').empty().appendText(old_token);
 	var confirmbox = new mBox.Modal({
 	    title: 'Löschen bestätigen',
 	    content: 'deleteTokenWarning',
@@ -1455,8 +1455,8 @@ var EditorModel = new Class({
 	}
 
 	$('addTokenBox').set('value', '');
-	$('addTokenBefore').set('html', old_token);
-	$('addTokenLineinfo').set('html', lineinfo);
+	$('addTokenBefore').empty().appendText(old_token);
+	$('addTokenLineinfo').empty().appendText(lineinfo);
 	if(this.changedLines.some(function(val) {return val >= tok_id;})) {
 	    $('addTokenWarning').show();
 	}
