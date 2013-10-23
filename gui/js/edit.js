@@ -865,13 +865,13 @@ var EditorModel = new Class({
 	    }
 	    if(mod_tr != null && mod_tr != undefined) {
 		mod_tr.set('value', line.anno_mod);
+		mod_tr.set('placeholder', line.anno_norm);
 	    }
 	    if(mod_trs != null && mod_trs != undefined) {
 		if(line.anno_mod != null && line.anno_mod != undefined) {
 		    mod_trs.set('disabled', null);
 		} else {
 		    mod_trs.set('disabled', 'disabled');
-		    mod_tr.set('placeholder', line.anno_norm);
 		}
 		mod_trs.getElement("option[value='']").set('selected', 'selected');
 		if(line.anno_modtype != null && line.anno_modtype != undefined) {
