@@ -1,0 +1,121 @@
+<!ELEMENT text (header, layoutinfo, shifttags, (token | comment)*)>
+<!ATTLIST text 
+   id     CDATA  #REQUIRED> <!-- This is CDATA because there's only one
+				 text ID per file, so we cannot enforce
+				 uniqueness anyway, and it might clash
+				 unintentionally with other IDs. -->
+
+<!-- HEADER -->
+<!ELEMENT header (#PCDATA)> <!-- Header information is currently not parsed,
+				 but only copied verbatim. This could possibly
+				 change in the future. -->
+
+<!-- LAYOUT INFORMATION -->
+<!ELEMENT layoutinfo (page+, column+, line+)>
+<!ELEMENT page EMPTY> <!-- The 'range' attributes aren't set to IDREF(S)
+			   because we use the range notation "from_id..to_id"
+			   with two dots. -->
+<!ATTLIST page
+   id     ID     #REQUIRED
+   side   (r|v)  #IMPLIED
+   range  CDATA  #REQUIRED
+   no     CDATA  #IMPLIED
+>
+<!ELEMENT column EMPTY>
+<!ATTLIST column
+   id     ID     #REQUIRED
+   range  CDATA  #REQUIRED
+   name   CDATA  #IMPLIED
+>
+<!ELEMENT line EMPTY>
+<!ATTLIST line
+   id     ID     #REQUIRED
+   range  CDATA  #REQUIRED
+   name   CDATA  #IMPLIED
+>
+
+<!-- SHIFT TAGS -->
+<!ELEMENT shifttags ((fm|lat|rub|title|marg)*)> <!-- Comments and emendations are not
+						   included here, but placed directly
+						   between individual 'token' tags. -->
+<!ELEMENT fm EMPTY> <!-- Used for +F ... @F (foreign material) -->
+<!ATTLIST fm
+   range  CDATA  #REQUIRED
+>
+<!ELEMENT lat EMPTY> <!-- Used for +L ... @L (latin text) -->
+<!ATTLIST lat
+   range  CDATA  #REQUIRED
+>
+<!ELEMENT rub EMPTY> <!-- Used for +R ... @R (rubrication) -->
+<!ATTLIST rub
+   range  CDATA  #REQUIRED
+>
+<!ELEMENT title EMPTY> <!-- Used for +Ü ... @Ü (headings) -->
+<!ATTLIST title
+   range  CDATA  #REQUIRED
+>
+<!ELEMENT marg EMPTY> <!-- Used for +M ... @M (marginalia) -->
+<!ATTLIST marg
+   range  CDATA  #REQUIRED
+>
+
+<!-- COMMENTS -->
+<!ELEMENT comment (#PCDATA)>
+<!ATTLIST comment
+   type   (K|E|Z)  #REQUIRED
+>  <!-- 'K' represents +K ... @K (comments),
+	'E' represents +E ... @E (emendations),
+	'Z' represents {...} (numbering within
+	a transcript) -->
+
+<!-- TOKENS AND ANNOTATIONS -->
+<!ELEMENT token (dipl*, mod*)>
+<!ATTLIST token
+   id      ID     #REQUIRED
+   trans   CDATA  #REQUIRED
+>
+<!ELEMENT dipl  EMPTY>
+<!ATTLIST dipl
+   id     ID     #REQUIRED
+   trans  CDATA  #REQUIRED
+   utf    CDATA  #IMPLIED
+>
+<!ELEMENT mod  (suggestions?,(norm|norm_broad|norm_type|pos|lemma|cora-comment)*)>
+<!-- Outside the suggestions, each annotation tag shouldn't appear more than once;
+     I still used the star notation here because I didn't want to fix the order -->
+<!ATTLIST mod
+   id     ID     #REQUIRED
+   trans  CDATA  #REQUIRED
+   ascii  CDATA  #IMPLIED
+   utf    CDATA  #IMPLIED
+   checked (y|n) "n"
+> <!-- 'checked' is a flag indicating whether the annotation
+       for this item has been checked for correctness -->
+<!ELEMENT cora-comment (#PCDATA)> <!-- Used for CorA-internal annotation comments -->
+<!ELEMENT suggestions ((norm|norm_broad|norm_type|pos|lemma)*)>
+
+<!ELEMENT norm       EMPTY>
+<!ATTLIST norm
+   tag    CDATA  #REQUIRED
+   score  CDATA  #IMPLIED
+>
+<!ELEMENT norm_type  EMPTY>
+<!ATTLIST norm_type
+   tag    CDATA  #REQUIRED
+   score  CDATA  #IMPLIED
+>
+<!ELEMENT norm_broad EMPTY>
+<!ATTLIST norm_broad
+   tag    CDATA  #REQUIRED
+   score  CDATA  #IMPLIED
+>
+<!ELEMENT lemma      EMPTY>
+<!ATTLIST lemma
+   tag    CDATA  #REQUIRED
+   score  CDATA  #IMPLIED
+>
+<!ELEMENT pos        EMPTY>
+<!ATTLIST pos 
+   tag    CDATA  #REQUIRED
+   score  CDATA  #IMPLIED
+>
