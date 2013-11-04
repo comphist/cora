@@ -23,8 +23,12 @@ class Cora_Tests_DBInterface_FK_test extends Cora_Tests_DbTestCase_FKAware {
     protected $backupGlobalsBlacklist = array('_SESSION');
 
     protected function setUp() {
-        $this->dbi = new DBInterface($this);
-        parent::setUp();
+      //$this->dbi = new DBInterface($this);
+      $this->dbi = new DBInterface('localhost',
+				   $GLOBALS["DB_USER"],
+				   $GLOBALS["DB_PASSWD"],
+				   $GLOBALS["DB_DBNAME"]);
+      parent::setUp();
     }
 
     public function testDeleteProjectWithUsers() {

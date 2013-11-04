@@ -99,9 +99,9 @@ class RequestHandler {
     if(array_key_exists("action", $post)) {
       switch ( $post["action"] ) {
       	case "login":
-	  $user = self::escapeSQL( $post["loginform"]["un"] );
-	  $pw   = self::escapeSQL( $post["loginform"]["pw"] );
-	  $this->sh->login( $user, $pw );
+	  $user = $post["loginform"]["un"];
+	  $pw   = $post["loginform"]["pw"];
+	  $this->sh->login($user, $pw);
 	  break;
       }
     }

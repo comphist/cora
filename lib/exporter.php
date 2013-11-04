@@ -96,8 +96,6 @@ class Exporter {
   protected function exportForTagging($fileid, $handle) {
     $tokens = $this->db->getAllTokens($fileid);
     $moderns = $tokens[2];
-    array_shift($moderns); // first token is dummy token which we
-			   // don't need for this purpose
     foreach($moderns as $mod) {
       $tok = $mod['ascii'];
       $pos = '';
@@ -114,8 +112,6 @@ class Exporter {
   protected function exportNormalization($fileid, $handle) {
     $tokens = $this->db->getAllTokens($fileid);
     $moderns = $tokens[2];
-    array_shift($moderns); // first token is dummy token which we
-			   // don't need for this purpose
     foreach($moderns as $mod) {
       $tok = $mod['ascii'];
       $norm = '--'; $normbroad = '--';

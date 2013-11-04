@@ -18,8 +18,7 @@ require_once( "lib/sessionHandler.php" );
 require_once( "lib/requestHandler.php" );
 require_once( "lib/exporter.php" );
 
-$dbc = new DBConnector(DB_SERVER, DB_USER, DB_PASSWORD, MAIN_DB);
-$dbi = new DBInterface($dbc);
+$dbi = new DBInterface(DB_SERVER, DB_USER, DB_PASSWORD, MAIN_DB);
 $exp = new Exporter($dbi);
 $xml = new XMLHandler($dbi);
 $ch = new CommandHandler();

@@ -15,240 +15,6 @@
  require_once 'documentModel.php';
  require_once 'commandHandler.php';
 
- /** Exception when an SQL query fails. */
- class SQLQueryException extends Exception { }
-
- /** Class enabling arbitrarily long SQL queries by breaking them up
-  *  into smaller parts.
-  */
- class LongSQLQuery {
-   private $head;       /**< String to be put before each query. */
-   private $tail;       /**< String to be put after each query. */
-   private $db;         /**< The database connector to be used. */
-   private $len;
-   private $qa;
-   private $delim;
-
-   public function __construct($db, $head="", $tail="", $delim=", ") {
-     $this->db   = $db;
-     $this->head = $head;
-     $this->tail = $tail;
-     $this->len  = strlen($head) + strlen($tail) + 2;
-     $this->qa   = array();
-     $this->delim = $delim;
-   }
-
-   /** Append a new list (i.e., comma-separated) item to the query. */
-   public function append($item) {
-     $newlen = $this->len + strlen($item) + 2;
-     // if query length would exceed maximum, perform a flush first:
-     if($newlen>DB_MAX_QUERY_LENGTH){
-       $this->flush();
-       $newlen = $this->len + strlen($item) + 2;
-     }
-     $this->len  = $newlen;
-     $this->qa[] = $item;
-     return False;
-   }
-
-   /** Send the query to the server. */
-   public function flush() {
-     if(empty($this->qa)){ return False; }
-
-     $query  = $this->head . ' ';
-     $query .= implode($this->delim, $this->qa);
-     $query .= ' ' . $this->tail;
-
-     if(!$this->db->query($query)){
-       throw new SQLQueryException(mysql_errno().": ".mysql_error());
-     }
-
-     $this->len = strlen($this->head) + strlen($this->tail) + 2;
-     $this->qa  = array();
-     return False;
-   }
- }
-
-
- /** Class providing a database connection.
-  *
-  * This class sets up a database connection and provides helper
-  * functions to perform database queries.  Access information (server,
-  * database name, username, password) is currently hard-coded.
-  */
- class DBConnector {
-   private $dbobj;                     /**< Database object as returned by @c mysql_connect(). */
-   private $db          = MAIN_DB;     /**< Name of the database to be used. */
-   private $transaction = false;
-   private $last_error   = null;
-
-   /** Create a new DBConnector.
-    *
-    * Creates a new SQL connection using the access information
-    * hard-coded into this class.
-    */
-   function __construct($db_server, $db_user, $db_password, $db_name) {
-       $this->dbobj = mysql_connect( $db_server, $db_user, $db_password );
-       $this->db = $db_name;
-       $this->query( "SET NAMES 'utf8'", $this->dbobj ); 
-   }
-
-   /** Check if a connection exists.
-    * @return @c true if there is a database connection
-    */
-   public function isConnected() {
-       return ($this->dbobj) ? true : false;
-   }
-
-   /** Set the default database. The name of the default database
-    * should be referenced in every SQL query string.
-    *
-    * @param string $name Name of the database to be set as default.
-    */
-   public function setDatabase( $name ) {
-     $this->db = $name;
-   }
-
-   public function getDatabase() {
-     return $this->db;
-   }
-
-   /** Select a database.
-    *
-    * @param string $name Name of the database to be selected.
-    * @deprecated Database names should always be explicitly included
-    * in the query string now.
-    */
-   protected function selectDatabase( $name ) {
-     $status = mysql_select_db( $name, $this->dbobj );
-     if ($status) {
-       $this->query( "SET NAMES 'utf8'", $this->dbobj ); 
-     }
-     return $status;
-   }
-
-   /** Start an SQL transaction. */
-   public function startTransaction() {
-     $status = $this->query( "START TRANSACTION", $this->dbobj );
-     if ($status) {
-       $status = $this->selectDatabase( $this->db );
-       $this->transaction = true;
-     }
-     return $status;
-   }
-
-   /** Commits an SQL transaction. */
-   public function commitTransaction() {
-     $this->transaction = false;
-     return $this->query( "COMMIT", $this->dbobj );
-   }
-
-   /** Rollback an SQL transaction. */
-   public function rollback() {
-     $this->transaction = false;
-     return $this->query( "ROLLBACK", $this->dbobj );
-   }
-
-   /** Perform a database query.
-    *
-    * @param string $query Query string in SQL syntax.
-    * @return The result of the respective @c mysql_query() command.
-    */
-    public function query( $query ) { 
-      return mysql_query( $query, $this->dbobj ); 
-    }
-
-   /** Fetch an associative array from a query result
-    *
-    * @param result of a call to $this->query
-    * @return associative array
-    */
-   public function fetch_assoc($result) {
-       return mysql_fetch_assoc($result);
-   }
-
-   /** Fetch an enumerated array from a query result
-    *
-    * in the standard php mysql api, fetch_row fetches an array,
-    * while fetch_array fetches an array, hash, or both. why this is,
-    * nobody knows, but it is believed to be made this way to drive
-    * programmers deliberately crazy.
-    */
-   public function fetch_array($result) {
-       return mysql_fetch_row($result);
-   }
-
-   public function fetch($result) {
-       return mysql_fetch_array($result);
-   }
-
-   public function row_count($result = null) {
-       if ($result === null) {
-	   return mysql_affected_rows();
-       } else {
-	   return mysql_num_rows($result);
-       }
-   }
-
-   /** Fetch ID of last inserted record.
-    *
-    * Calls the SQL command instead of PHP's mysql_insert_id as we are
-    * dealing with BIGINTs, which might cause problems otherwise.
-    */
-   public function last_insert_id() {
-     $q = $this->query("SELECT LAST_INSERT_ID()");
-     $r = $this->fetch_array($q);
-     return $r[0];
-   }
-
-   public function last_error() {
-     return mysql_error();
-   }
-
-   /** Perform a critical database query.
-    *
-    * Executes a database query which is always expected to succeed and
-    * critical for further operation. If the query fails, PHP execution
-    * is halted and a critical error is sent.
-    *
-    * @param string $query Query string in SQL syntax.
-    * @return The result of the respective @c mysql_query() command.
-    */
-   public function criticalQuery($query) {
-     $status = $this->query($query);
-     if (!$status) {
-       if ($this->transaction) {
-	 $this->rollback();
-       }
-       header("HTTP/1.1 500 Internal Server Error");
-       echo("Database error while processing the following query: {$query}");
-       die();
-     }
-     return $status;
-   }
-
-   /** Clone of RequestHandler::escapeSQL() */
-   public function escapeSQL( $obj ) {
-     if(is_string($obj)) {
-       return mysql_real_escape_string($obj);
-     }
-     else if(is_array($obj)) {
-       $newarray = array();
-       foreach($obj as $k => $v) {
-	 $newarray[$k] = self::escapeSQL($v);
-       }
-       return $newarray;
-     }
-     else if(is_object($obj) && get_class($obj)=='SimpleXMLElement') {
-       return self::escapeSQL((string) $obj);
-     }
-     else {
-       return $obj;
-     }
-   }
- }
-
-
  /** An interface for application-specific database requests.
   *
   * This class implements all application-specific functionality for
@@ -257,25 +23,20 @@
   * be encapsulated in a member function of this class.
   */
  class DBInterface {
-   private $dbconn;
    private $db;
    private $timeout = 30; // timeout value in minutes
+
+   private $dbo; /* new PDO object for database interaction */
 
    /** Create a new DBInterface.
     *
     * Also sets the default database to the MAIN_DB constant.
     */
-   function __construct($dbconn) {
-     $this->dbconn = $dbconn;
-     $this->db = $this->dbconn->getDatabase();
-   }
-
-   private function query($query) {
-     return $this->dbconn->query($query);
-   }
-
-   private function criticalQuery($query) {
-     return $this->dbconn->criticalQuery($query);
+   function __construct($db_server, $db_user, $db_password, $db_name) {
+     $this->dbo = new PDO('mysql:host='.$db_server.';dbname='.$db_name.';charset=utf8',
+			  $db_user, $db_password);
+     $this->dbo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+     $this->db = $db_name;
    }
 
    /** Return the hash of a given password string. */
@@ -294,28 +55,35 @@
     */
    public function getUserData( $user, $pw ) {
      $pw_hash = $this->hashPassword($pw);
-     $qs = "SELECT `id`, name, admin, lastactive FROM {$this->db}.users "
-       . "WHERE name='{$user}' AND password='{$pw_hash}' AND `id`!=1 LIMIT 1";
-     $query = $this->query( $qs );
-     return $this->dbconn->fetch_assoc( $query );
+     $qs = "SELECT `id`, name, admin, lastactive FROM users"
+       . "  WHERE  name=:name AND password=:pw AND `id`!=1 LIMIT 1";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->bindValue(':name', $user, PDO::PARAM_STR);
+     $stmt->bindValue(':pw', $pw_hash, PDO::PARAM_STR);
+     $stmt->execute();
+     return $stmt->fetch(PDO::FETCH_ASSOC);
    }
 
    /** Get user info by id.
     */
    public function getUserById($uid) {
-     $qs = "SELECT `id`, name, admin, lastactive FROM {$this->db}.users "
-       . "WHERE `id`={$uid}";
-     $query = $this->query( $qs );
-     return $this->dbconn->fetch_assoc( $query );
+     $qs = "SELECT `id`, name, admin, lastactive FROM users"
+       . "  WHERE  `id`=:id";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->bindValue(':id', $uid, PDO::PARAM_INT);
+     $stmt->execute();
+     return $stmt->fetch(PDO::FETCH_ASSOC);
    }
 
    /** Get user info by name.
     */
    public function getUserByName($uname) {
-     $qs = "SELECT `id`, name, admin, lastactive FROM {$this->db}.users "
-       . "WHERE name='{$uname}'";
-     $query = $this->query( $qs );
-     return $this->dbconn->fetch_assoc( $query );
+     $qs = "SELECT `id`, name, admin, lastactive FROM users"
+       . "  WHERE name=:name";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->bindValue(':name', $uname, PDO::PARAM_STR);
+     $stmt->execute();
+     return $stmt->fetch(PDO::FETCH_ASSOC);
    }
 
    /** Get user ID by name.  Often used because formerly, users were
@@ -324,10 +92,11 @@
     *  by ID in all tables.
     */
    public function getUserIDFromName($uname) {
-     $qs = "SELECT `id` FROM {$this->db}.users WHERE name='{$uname}'";
-     $query = $this->query( $qs );
-     $row = $this->dbconn->fetch_assoc( $query );
-     return $row['id'];
+     $qs = "SELECT `id` FROM users WHERE name=:name";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->bindValue(':name', $uname, PDO::PARAM_STR);
+     $stmt->execute();
+     return $stmt->fetch(PDO::FETCH_COLUMN);
    }
 
    /** Return settings for the current user. 
@@ -337,10 +106,13 @@
     * @return An array with the database entries from the table 'user_settings' for the given user.
     */
    public function getUserSettings($user){
-	 $qs = "SELECT lines_per_page, lines_context, "
-	     . "columns_order, columns_hidden, show_error "
-	     . "FROM {$this->db}.users WHERE name='{$user}'";
-	 return $this->dbconn->fetch_assoc( $this->query( $qs ) );
+     $qs = "SELECT lines_per_page, lines_context, "
+       . "         columns_order, columns_hidden, show_error "
+       . "    FROM users WHERE name=:name";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->bindValue(':name', $user, PDO::PARAM_STR);
+     $stmt->execute();
+     return $stmt->fetch(PDO::FETCH_ASSOC);
    }
 
    /** Get a list of all users.
@@ -353,14 +125,11 @@
        ."          CASE WHEN lastactive BETWEEN DATE_SUB(NOW(), INTERVAL {$to} MINUTE)"
        ."                                   AND NOW()"
        ."               THEN 1 ELSE 0 END AS active"
-       ."     FROM {$this->db}.users "
+       ."     FROM users "
        ."    WHERE `id`!=1"
        ."    ORDER BY name";
-     $query = $this->query( $qs );
-     $users = array();
-     while ( $row = $this->dbconn->fetch_assoc($query) ) {
-       $users[] = $row;
-     }
+     $stmt = $this->dbo->query($qs);
+     $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
      return $users;
    }
 
@@ -372,24 +141,18 @@
     * and IDs of the tagset.
     */
    public function getTagsets($class="POS", $orderby="name") {
-     $result = array();
-     if(!$class) {
-       $qs = "SELECT * FROM {$this->db}.tagset ORDER BY `{$orderby}`";
+     $qs = "SELECT `id`, `id` AS shortname, name AS longname, class, set_type"
+       . "    FROM tagset";
+     if($class) {
+       $qs .= " WHERE `class`=:class";
      }
-     else {
-       $qs = "SELECT * FROM {$this->db}.tagset WHERE `class`='{$class}' ORDER BY `{$orderby}`";
+     $qs .= " ORDER BY {$orderby}";
+     $stmt = $this->dbo->prepare($qs);
+     if($class) {
+       $stmt->bindValue(':class', $class, PDO::PARAM_STR);
      }
-     $query = $this->query($qs);
-     while ( $row = $this->dbconn->fetch_assoc($query) ) {
-       $data = array();
-       $data["id"] = $row["id"];
-       $data["class"] = $row["class"];
-       $data["set_type"] = $row["set_type"];
-       $data["shortname"] = $row["id"];
-       $data["longname"] = $row["name"];
-       $result[] = $data;
-     }
-     return $result;
+     $stmt->execute();
+     return $stmt->fetchAll(PDO::FETCH_ASSOC);
    }
 
    /** Build and return an array containing a full tagset.
@@ -405,19 +168,16 @@
     */
    public function getTagset($tagset, $limit="none") {
      $tags = array();
-     $qs  = "SELECT `id`, `value`, `needs_revision` FROM {$this->db}.tag ";
-     $qs .= "WHERE `tagset_id`='{$tagset}' ";
+     $qs  = "SELECT `id`, `value`, `needs_revision` FROM tag "
+       . "    WHERE `tagset_id`=:tagsetid";
      if($limit=='legal') {
-       $qs .= "AND `needs_revision`=0 ";
+       $qs .= " AND `needs_revision`=0";
      }
-     $qs .= "ORDER BY `value`";
-     $query = $this->query($qs);
-     while ( $row = $this->dbconn->fetch_assoc( $query ) ) {
-       $tags[] = array('id' => $row['id'],
-		       'value' => $row['value'],
-		       'needs_revision' => $row['needs_revision']);
-     }
-     return $tags;
+     $qs .= " ORDER BY `value`";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->bindValue(':tagsetid', $tagset, PDO::PARAM_INT);
+     $stmt->execute();
+     return $stmt->fetchAll(PDO::FETCH_ASSOC);
    }
 
    /** Build and return an array containing a full tagset.
@@ -430,13 +190,11 @@
     * @param string $tagset The id of the tagset to be retrieved
     */
    public function getTagsetByValue($tagset) {
-     $tags = array();
-     $qs = "SELECT `id`, `value` FROM {$this->db}.tag WHERE `tagset_id`='{$tagset}'";
-     $query = $this->query($qs);
-     while ( $row = $this->dbconn->fetch_assoc( $query ) ) {
-       $tags[$row['value']] = $row['id'];
-     }
-     return $tags;
+     $qs = "SELECT `value`, `id` FROM tag WHERE `tagset_id`=:tagsetid";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->bindValue(':tagsetid', $tagset, PDO::PARAM_INT);
+     $stmt->execute();
+     return $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
    }
 
    /** Updates the "last active" timestamp for a user.
@@ -444,8 +202,10 @@
     * @param string  $userid   ID of the user to be updated
     */
    public function updateLastactive($userid) {
-     $qs = "UPDATE {$this->db}.users SET `lastactive`=NOW() WHERE `id`={$userid}";
-     $this->query($qs);
+     $qs = "UPDATE users SET `lastactive`=NOW() WHERE `id`=:id";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->bindValue(':id', $userid, PDO::PARAM_INT);
+     $stmt->execute();
    }
 
    /** Create a new user.
@@ -458,14 +218,18 @@
     */ 
    public function createUser($username, $password, $admin) {
      $user = $this->getUserByName($username);
-     if(!empty($user)) {
+     if(!empty($user)) { // username already exists
        return false;
      }
      $hashpw = $this->hashPassword($password);
      $adm = $admin ? 1 : 0;
-     $qs = "INSERT INTO {$this->db}.users (name, password, admin) "
-       . "VALUES ('{$username}', '{$hashpw}', '{$adm}')";
-     return $this->query($qs);
+     $qs = "INSERT INTO users (name, password, admin) "
+       . "  VALUES (:name, :pw, {$adm})";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->bindValue(':name', $username, PDO::PARAM_STR);
+     $stmt->bindValue(':pw', $hashpw, PDO::PARAM_STR);
+     $stmt->execute();
+     return $stmt->rowCount();
    }
 
    /** Change the password for a user.
@@ -478,9 +242,12 @@
     */
    public function changePassword($username, $password) {
      $hashpw = $this->hashPassword($password);
-     $qs = "UPDATE {$this->db}.users SET password='{$hashpw}' "
-       . "WHERE name='{$username}'";
-     return $this->query($qs);
+     $qs = "UPDATE users SET password=:pw WHERE name=:name";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->bindValue(':name', $username, PDO::PARAM_STR);
+     $stmt->bindValue(':pw', $hashpw, PDO::PARAM_STR);
+     $stmt->execute();
+     return $stmt->rowCount();
    }
 
    /** Change project<->user associations.
@@ -491,33 +258,31 @@
     * @return The result of the corresponding @c mysql_query() command
     */
    public function changeProjectUsers($pid, $userlist) {
-     $this->dbconn->startTransaction();
-     $qs = "DELETE FROM {$this->db}.user2project WHERE project_id='".$pid."'";
-     $message = "";
-     $status = $this->query($qs);
-     if ($status) {
+     try {
+       $this->dbo->beginTransaction();
+       $qs = "DELETE FROM user2project WHERE project_id=:pid";
+       $stmt = $this->dbo->prepare($qs);
+       $stmt->bindValue(':pid', $pid, PDO::PARAM_INT);
+       $stmt->execute();
        if (!empty($userlist)) {
-	 $qs = "INSERT INTO {$this->db}.user2project (project_id, user_id) VALUES ";
-	 $values = array();
+	 $uid = null;
+	 $qs = "INSERT INTO user2project (project_id, user_id) "
+	   . "  VALUES (:pid, :uid)";
+	 $stmt = $this->dbo->prepare($qs);
+	 $stmt->bindValue(':pid', $pid, PDO::PARAM_INT);
+	 $stmt->bindParam(':uid', $uid, PDO::PARAM_INT);
 	 foreach ($userlist as $uname) {
-	   $user = $this->getUserByName($uname);
-	   $values[] = "('".$pid."', '".$user['id']."')";
+	   $uid = $this->getUserIDFromName($uname);
+	   $stmt->execute();
 	 }
-	 $qs .= implode(", ", $values);
-	 $status = $this->query($qs);
        }
-       if ($status) {
-	 $this->dbconn->commitTransaction();
-       } else {
-	 $message = $this->dbconn->last_error();
-	 $this->dbconn->rollback();
-       }
+       $this->dbo->commit();
+       return array('success' => true);
      }
-     else {
-       $message = $this->dbconn->last_error();
-       $this->dbconn->rollback();
+     catch(PDOException $ex) {
+       $this->dbo->rollBack();
+       return array('success' => false, 'message' => $ex->getMessage());
      }
-     return array('success' => $status, 'message' => $message);
    }
 
    /** Drop a user record from the database.
@@ -527,8 +292,11 @@
     * @return The result of the corresponding @c mysql_query() command.
     */
    public function deleteUser($username) {
-     $qs = "DELETE FROM {$this->db}.users WHERE name='{$username}' AND `id`!=1";
-     return $this->query($qs);
+     $qs = "DELETE FROM users WHERE name=:name AND `id`!=1";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->bindValue(':name', $username, PDO::PARAM_STR);
+     $stmt->execute();
+     return $stmt->rowCount();
    }
 
    /** Toggle administrator status of a user.
@@ -544,37 +312,30 @@
 
    /** Helper function for @c toggleAdminStatus(). */
    public function toggleUserStatus($username, $statusname) {
-     $qs = "SELECT {$statusname} FROM {$this->db}.users WHERE name='{$username}'";
-     $query = $this->query($qs);
-     $row = $this->dbconn->fetch($query);
-     if (!$row)
-       return false;
-     $status = ($row[$statusname] == 1) ? 0 : 1;
-     $qs = "UPDATE {$this->db}.users SET {$statusname}={$status} WHERE name='{$username}'";
-     return $this->query($qs);
-   }
-
-   /** Find documents with a certain key/value pair in their metadata,
-    *  e.g. documents with specific names or sigles.
-    */
-   public function queryForMetadata($metakey, $metavalue) {
-     $qs  = "SELECT * FROM {$this->db}.text ";
-     $qs .= "WHERE {$metakey}='{$metavalue}'";
-     $query = $this->query($qs);
-     $row = $this->dbconn->fetch_assoc($query);
-     return $row;
+     $qs = "SELECT {$statusname} FROM users WHERE name=:name";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':name' => $username));
+     $oldstat = $stmt->fetch(PDO::FETCH_COLUMN);
+     $newstat = ($oldstat == 1) ? 0 : 1;
+     $qs = "UPDATE users SET {$statusname}={$newstat} WHERE name=:name";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':name' => $username));
+     return $stmt->rowCount();
    }
 
    /** Lock a file for editing.
     *
-    * This function ensures restricted access when editing file data. In detail this is done by
-    * a lock table where first all entries for the given user are deleted and then tries to insert
-    * a new entry for the given file id. Note that if the file is already locked by another user,
-    * the operation will fail und it is impossible to lock the file at the moment.
+    * This function ensures restricted access when editing file
+    * data. In detail this is done by a lock table where first all
+    * entries for the given user are deleted and then tries to insert
+    * a new entry for the given file id. Note that if the file is
+    * already locked by another user, the operation will fail und it
+    * is impossible to lock the file at the moment.
     *
     * Should be called before editing any database entries concerning the file content.
     *
-    * $locksCount indicates the number of file which were locked by the given user and are unlocked now.
+    * $locksCount indicates the number of file which were locked by
+    * the given user and are unlocked now.
     *
     * @param string $fileid file id
     * @param string $user username
@@ -585,29 +346,33 @@
     * already-existing, conflicting lock.
     */	  
    public function lockFile($fileid,$uname) {
-     // first, delete all locks by the current user
-     $user = $this->getUserIDFromName($uname);
-     $qs = "DELETE FROM {$this->db}.locks WHERE user_id={$user}";
-     $this->query($qs);
-     $locksCount = $this->dbconn->row_count();
-     // then, check if file is still/already locked
-     $qs = "SELECT * FROM {$this->db}.locks WHERE text_id={$fileid}";
-     $result = $this->query($qs);
-     if($this->dbconn->row_count($result)>0) {
-       // if file is locked, return info about user currently locking the file
-       $qs  = "SELECT a.lockdate as 'locked_since', b.name as 'locked_by' ";
-       $qs .= "FROM {$this->db}.locks a, {$this->db}.users b ";
-       $qs .= "WHERE a.text_id={$fileid} AND a.user_id=b.id";
-       $query = $this->query($qs);
-       $row = $this->dbconn->fetch_assoc( $query );
-       return array("success" => false, "lock" => $row);
-     }
-     // otherwise, perform the lock
-     $qs = "INSERT INTO {$this->db}.locks (text_id, user_id) VALUES ('{$fileid}', '{$user}')";
-     $result = $this->query($qs);
-     if($this->dbconn->last_error()) {
+     // first, check if file exists
+     $stmt = $this->dbo->prepare("SELECT COUNT(*) FROM text WHERE `id`=:textid");
+     $stmt->execute(array(':textid' => $fileid));
+     if($stmt->fetch(PDO::FETCH_COLUMN)==0) {
        return array("success" => false);
      }
+     // then, delete all locks by the current user
+     $user = $this->getUserIDFromName($uname);
+     $stmt = $this->dbo->prepare("DELETE FROM locks WHERE user_id=:uid");
+     $stmt->execute(array(':uid' => $user));
+     $locksCount = $stmt->rowCount();
+     // then, check if file is still/already locked
+     $stmt = $this->dbo->prepare("SELECT * FROM locks WHERE text_id=:textid");
+     $stmt->execute(array(':textid' => $fileid));
+     if($stmt->rowCount()>0) {
+       // if file is locked, return info about user currently locking the file
+       $qs  = "SELECT a.lockdate as 'locked_since', b.name as 'locked_by' "
+	 . "     FROM locks a, users b "
+	 . "    WHERE a.text_id=:textid AND a.user_id=b.id";
+       $stmt = $this->dbo->prepare($qs);
+       $stmt->execute(array(':textid' => $fileid));
+       return array("success" => false, "lock" => $stmt->fetch(PDO::FETCH_ASSOC));
+     }
+     // otherwise, perform the lock
+     $qs = "INSERT INTO locks (text_id, user_id) VALUES (:textid, :uid)";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':textid' => $fileid, ':uid' => $user));
      return array("success" => true, "lockCounts" => (string) $locksCount);
    }
 
@@ -620,12 +385,13 @@
     * @return An @em array with file id and file name of the locked file
     */	
    public function getLockedFiles($uname){
-     $user = $this->getUserByName($uname);
-     $userid = $user['id'];
-     $qs  = "SELECT a.text_id as 'file_id', b.fullname as 'file_name' ";
-     $qs .= "FROM {$this->db}.locks a, {$this->db}.text b ";
-     $qs .= "WHERE a.user_id='{$userid}' AND a.text_id=b.id LIMIT 1";
-     return $this->dbconn->fetch_assoc($this->query($qs));
+     $uid = $this->getUserIDFromName($uname);
+     $qs  = "SELECT a.text_id as 'file_id', b.fullname as 'file_name' "
+       . "     FROM locks a, text b "
+       . "    WHERE a.user_id={$uid} AND a.text_id=b.id LIMIT 1";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute();
+     return $stmt->fetch(PDO::FETCH_ASSOC);
    }
 
    /** Unlock a file for the current user.
@@ -640,19 +406,19 @@
     * @return @em array result of the mysql query
     */		
    public function unlockFile($fileid,$uname="",$force=false) {
-     if (empty($uname)) {
+     if(empty($uname)) {
        $userid = $_SESSION['user_id'];
      } else {
-       $user = $this->getUserByName($uname);
-       $userid = $user['id'];
+       $userid = $this->getUserIDFromName($uname);
      }
-     $qs = "DELETE FROM {$this->db}.locks WHERE text_id='{$fileid}'";
+     $qs = "DELETE FROM locks WHERE text_id=:tid";
      if (!$force) {
-       $qs .= " AND user_id='{$userid}'";
+       $qs .= " AND user_id={$userid}";
      }
-     return $this->query($qs);
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':tid' => $fileid));
+     return $stmt->rowCount();
    }
-
 
    /** Get tagsets associated with a file.
     *
@@ -660,19 +426,13 @@
     * given file.
     */
    public function getTagsetsForFile($fileid) {
-     $qs  = "SELECT ts.id, ts.name, ts.class, ts.set_type ";
-     $qs .= "FROM   {$this->db}.text2tagset ttt ";
-     $qs .= "  LEFT JOIN {$this->db}.tagset ts  ON ts.id=ttt.tagset_id ";
-     $qs .= "WHERE  ttt.text_id='{$fileid}'";
-     $q = $this->query($qs);
-     $qerr = $this->dbconn->last_error();
-     if($qerr) { return $qerr; }
-
-     $tslist = array();
-     while($row = $this->dbconn->fetch_assoc($q)) {
-       $tslist[] = $row;
-     }
-     return $tslist;
+     $qs  = "SELECT ts.id, ts.name, ts.class, ts.set_type "
+       . "     FROM text2tagset ttt "
+       . "     LEFT JOIN tagset ts  ON ts.id=ttt.tagset_id "
+       . "    WHERE ttt.text_id=:tid";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':tid' => $fileid));
+     return $stmt->fetchAll(PDO::FETCH_ASSOC);
    }
 
    /** Open a file.
@@ -693,26 +453,27 @@
 
      $qs  = "SELECT text.id, text.sigle, text.fullname, text.project_id, ";
      $qs .= "       text.currentmod_id, text.header, tagset.id AS 'tagset_id' ";
-     $qs .= "FROM   ({$this->db}.text, {$this->db}.text2tagset ttt) ";
-     $qs .= "  LEFT JOIN {$this->db}.tagset ";
-     $qs .= "         ON ttt.tagset_id=tagset.id ";
-     $qs .= "WHERE  text.id='{$fileid}' AND tagset.class='POS' AND ttt.text_id='{$fileid}'";
-     $metadata = $this->dbconn->fetch_assoc($this->query($qs));
+     $qs .= "  FROM (text, text2tagset ttt) ";
+     $qs .= "  LEFT JOIN tagset ON ttt.tagset_id=tagset.id ";
+     $qs .= " WHERE text.id=:tid AND tagset.class='POS' AND ttt.text_id=:tid";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':tid' => $fileid));
+     $metadata = $stmt->fetch(PDO::FETCH_ASSOC);
      $cmid = $metadata['currentmod_id'];
      $lock['lastEditedRow'] = -1;
      if(!empty($cmid)) {
        // calculate position of currentmod_id
        $qs  = "SELECT position FROM ";
        $qs .= " (SELECT x.id, @rownum := @rownum + 1 AS position FROM ";
-       $qs .= "   (SELECT a.id FROM ({$this->db}.modern a, {$this->db}.token b) ";
-       $qs .= "    WHERE a.tok_id=b.id AND b.text_id='{$fileid}' ";
+       $qs .= "   (SELECT a.id FROM (modern a, token b) ";
+       $qs .= "    WHERE a.tok_id=b.id AND b.text_id=:tid ";
        $qs .= "    ORDER BY b.ordnr ASC, a.id ASC) x ";
        $qs .= "  JOIN (SELECT @rownum := 0) r) y ";
-       $qs .= "WHERE y.id = '{$cmid}'";
-       if($q = $this->query($qs)){
-	 $row = $this->dbconn->fetch_assoc($q);
-	 $lock['lastEditedRow'] = intval($row['position']) - 1;
-       }
+       $qs .= "WHERE y.id = {$cmid}";
+       $stmt = $this->dbo->prepare($qs);
+       $stmt->execute(array(':tid' => $fileid));
+       $position = $stmt->fetch(PDO::FETCH_COLUMN);
+       $lock['lastEditedRow'] = intval($position) - 1;
      }
 
      $metadata['tagsets'] = $this->getTagsetsForFile($fileid);
@@ -731,10 +492,11 @@
     */
    public function isAllowedToOpenFile($fileid, $uname){
      $uid = $this->getUserIDFromName($uname);
-     $qs  = "SELECT a.fullname FROM ({$this->db}.text a, {$this->db}.user2project b) ";
-     $qs .= "WHERE a.id='{$fileid}' AND b.user_id='{$uid}' AND a.project_id=b.project_id";
-     $q = $this->query($qs);
-     return ($this->dbconn->fetch_array($q)) ? true : false;
+     $qs  = "SELECT a.fullname FROM (text a, user2project b) ";
+     $qs .= "WHERE a.id=:tid AND b.user_id=:uid AND a.project_id=b.project_id";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':tid' => $fileid, ':uid' => $uid));
+     return ($stmt->fetch()) ? true : false;
    }
 
    /** Check whether a user is allowed to delete a file.
@@ -760,53 +522,60 @@
    public function deleteFile($fileid){
      // first, get all open class tags associated with this file as
      // they have to be deleted separately
-     $deletetag = array();
-     $qs  = "SELECT tag.id AS tag_id FROM {$this->db}.tag "
-       . "     LEFT JOIN {$this->db}.tag_suggestion ts ON tag.id=ts.tag_id "
-       . "     LEFT JOIN {$this->db}.tagset            ON tagset.id=tag.tagset_id "
-       . "     LEFT JOIN {$this->db}.modern            ON modern.id=ts.mod_id "
-       . "     LEFT JOIN {$this->db}.token             ON token.id=modern.tok_id "
-       . "     LEFT JOIN {$this->db}.text              ON text.id=token.text_id "
-       . "   WHERE  tagset.set_type='open' AND text.id={$fileid}";
-     $q = $this->query($qs);
-     $qerr = $this->dbconn->last_error($q);
-     if($qerr) { return "Ein interner Fehler ist aufgetreten (Code: 1040).\n" . $qerr; }
-     while($row = $this->dbconn->fetch_assoc($q)) {
-       $deletetag[] = $row['tag_id'];
+     $qs  = "SELECT tag.id AS tag_id FROM tag "
+       . "     LEFT JOIN tag_suggestion ts ON tag.id=ts.tag_id "
+       . "     LEFT JOIN tagset            ON tagset.id=tag.tagset_id "
+       . "     LEFT JOIN modern            ON modern.id=ts.mod_id "
+       . "     LEFT JOIN token             ON token.id=modern.tok_id "
+       . "     LEFT JOIN text              ON text.id=token.text_id "
+       . "   WHERE  tagset.set_type='open' AND text.id=:tid";
+     $stmt = $this->dbo->prepare($qs);
+     try {
+       $stmt->execute(array(':tid' => $fileid));
+       $deletetag = $stmt->fetchAll(PDO::FETCH_COLUMN);
+     }
+     catch(PDOException $ex) {
+       return "Ein interner Fehler ist aufgetreten (Code: 1040).\n" . $ex->getMessage();
      }
 
-     $this->dbconn->startTransaction();
+     $this->dbo->beginTransaction();
 
      // delete associated open class tags
      if(!empty($deletetag)) {
-       $qs = "DELETE FROM {$this->db}.tag_suggestion WHERE `tag_id` IN (" . implode(",", $deletetag) . ")";
-       $q = $this->query($qs);
-       $qerr = $this->dbconn->last_error($q);
-       if($qerr) {
-	 $this->dbconn->rollback();
-	 return "Ein interner Fehler ist aufgetreten (Code: 1041).\n" . $qerr;
+       $qs = "DELETE FROM tag_suggestion WHERE `tag_id` IN (" 
+	 . implode(",", $deletetag) . ")";
+       try {
+	 $stmt = $this->dbo->prepare($qs);
+	 $stmt->execute();
        }
-       $qs = "DELETE FROM {$this->db}.tag WHERE `id` IN (" . implode(",", $deletetag) . ")";
-       $q = $this->query($qs);
-       $qerr = $this->dbconn->last_error($q);
-       if($qerr) {
-	 $this->dbconn->rollback();
-	 return "Ein interner Fehler ist aufgetreten (Code: 1043).\n" . $qerr;
+       catch(PDOException $ex) {
+	 $this->dbo->rollBack();
+	 return "Ein interner Fehler ist aufgetreten (Code: 1041).\n" . $ex->getMessage();
+       }
+       $qs = "DELETE FROM tag WHERE `id` IN (" . implode(",", $deletetag) . ")";
+       try {
+	 $stmt = $this->dbo->prepare($qs);
+	 $stmt->execute();
+       }
+       catch(PDOException $ex) {
+	 $this->dbo->rollBack();
+	 return "Ein interner Fehler ist aufgetreten (Code: 1043).\n" . $ex->getMessage();
        }
      }
 
      // delete text---deletions in all other tables are triggered
      // automatically in the database via ON DELETE CASCADE
-     $qs = "DELETE FROM {$this->db}.text WHERE `id`={$fileid}";
-     $q = $this->query($qs);
-     $qerr = $this->dbconn->last_error($q);
-     if($qerr) {
-       $this->dbconn->rollback();
-       return "Ein interner Fehler ist aufgetreten (Code: 1042).\n" . $qerr;
+     try {
+       $qs = "DELETE FROM text WHERE `id`=:tid";
+       $stmt = $this->dbo->prepare($qs);
+       $stmt->execute(array(':tid' => $fileid));
+     }
+     catch(PDOException $ex) {
+       $this->dbo->rollBack();
+       return "Ein interner Fehler ist aufgetreten (Code: 1042).\n" . $ex->getMessage();
      }
 
-     $this->dbconn->commitTransaction();
-
+     $this->dbo->commit();
      return false;
    }
 
@@ -825,19 +594,16 @@
        . "         a.changed, a.currentmod_id, c.name as opened, "
        . "         d.id as project_id, d.name as project_name, "
        . "         e.name as creator_name, f.name as changer_name "
-       . "     FROM {$this->db}.text a "
-       . "LEFT JOIN {$this->db}.locks b ON a.id=b.text_id "
-       . "LEFT JOIN {$this->db}.users c ON b.user_id=c.id "
-       . "LEFT JOIN {$this->db}.project d ON a.project_id=d.id "
-       . "LEFT JOIN {$this->db}.users e ON a.creator_id=e.id "
-       . "LEFT JOIN {$this->db}.users f ON a.changer_id=f.id "
+       . "     FROM text a "
+       . "LEFT JOIN locks b ON a.id=b.text_id "
+       . "LEFT JOIN users c ON b.user_id=c.id "
+       . "LEFT JOIN project d ON a.project_id=d.id "
+       . "LEFT JOIN users e ON a.creator_id=e.id "
+       . "LEFT JOIN users f ON a.changer_id=f.id "
        . "ORDER BY sigle, fullname";
-     $query = $this->query($qs); 
-     $files = array();
-     while ( $row = $this->dbconn->fetch_assoc( $query ) ) {
-       $files[] = $row;
-     }
-     return $files;
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute();
+     return $stmt->fetchAll(PDO::FETCH_ASSOC);
    }
 
    /** Get a list of all files in projects accessible by a given
@@ -850,27 +616,23 @@
     * @return an two-dimensional @em array with the meta data
     */		
    public function getFilesForUser($uname){
-     $user = $this->getUserByName($uname);
-     $uid = $user["id"];
+     $uid = $this->getUserIDFromName($uname);
      $qs = "SELECT a.id, a.sigle, a.fullname, a.created, "
        . "         a.creator_id, a.changer_id, "
        . "         a.changed, a.currentmod_id, c.name as opened, "
        . "         d.id as project_id, d.name as project_name, "
        . "         e.name as creator_name, f.name as changer_name "
-       . "    FROM ({$this->db}.text a, {$this->db}.user2project g) "
-       . "LEFT JOIN {$this->db}.locks b ON a.id=b.text_id "
-       . "LEFT JOIN {$this->db}.users c ON b.user_id=c.id "
-       . "LEFT JOIN {$this->db}.project d ON a.project_id=d.id "
-       . "LEFT JOIN {$this->db}.users e ON a.creator_id=e.id "
-       . "LEFT JOIN {$this->db}.users f ON a.changer_id=f.id "
+       . "    FROM (text a, user2project g) "
+       . "LEFT JOIN locks b ON a.id=b.text_id "
+       . "LEFT JOIN users c ON b.user_id=c.id "
+       . "LEFT JOIN project d ON a.project_id=d.id "
+       . "LEFT JOIN users e ON a.creator_id=e.id "
+       . "LEFT JOIN users f ON a.changer_id=f.id "
        . "WHERE (a.project_id=g.project_id AND g.user_id={$uid}) "
        . "ORDER BY sigle, fullname";
-     $query = $this->query($qs); 
-     $files = array();
-     while ( $row = $this->dbconn->fetch_assoc( $query ) ) {
-       $files[] = $row;
-     }
-     return $files;
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute();
+     return $stmt->fetchAll(PDO::FETCH_ASSOC);
    }
 
    /** Get a list of all projects.  
@@ -882,13 +644,9 @@
     * @return a two-dimensional @em array with the project id and name
     */
    public function getProjects(){
-     $qs = "SELECT * FROM {$this->db}.project ORDER BY name";
-     $query = $this->query($qs); 
-     $projects = array();
-     while ( $row = $this->dbconn->fetch_assoc( $query ) ) {
-       $projects[] = $row;
-     }
-     return $projects;
+     $stmt = $this->dbo->prepare("SELECT * FROM project ORDER BY name");
+     $stmt->execute();
+     return $stmt->fetchAll(PDO::FETCH_ASSOC);
    }
 
    /** Get a list of all project user groups.  
@@ -898,15 +656,12 @@
     * @return a two-dimensional @em array with the project id and name
     */
    public function getProjectUsers(){
-     $qs = "SELECT * FROM {$this->db}.user2project";
-     $query = $this->query($qs); 
-     $projects = array();
-     while ( $row = $this->dbconn->fetch( $query ) ) {
-       $user = $this->getUserById($row["user_id"]);
-       $projects[] = array("project_id" => $row["project_id"],
-			   "username" => $user["name"]);
-     }
-     return $projects;
+     $qs = "SELECT user2project.project_id, users.name AS username "
+       . "    FROM user2project "
+       . "    LEFT JOIN users ON user2project.user_id=users.id";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute();
+     return $stmt->fetchAll(PDO::FETCH_ASSOC);
    }
 
    /** Get a list of all projects accessible by a given user.
@@ -915,15 +670,12 @@
     * @return a two-dimensional @em array with the project id and name
     */
    public function getProjectsForUser($uname){
-     $user = $this->getUserByName($uname);
-     $uid  = $user["id"];
-     $qs = "SELECT a.* FROM ({$this->db}.project a, {$this->db}.user2project b) WHERE (a.id=b.project_id AND b.user_id='{$uid}') ORDER BY `id`";
-     $query = $this->query($qs); 
-     $projects = array();
-     while ( $row = $this->dbconn->fetch_assoc( $query ) ) {
-       $projects[] = $row;
-     }
-     return $projects;
+     $uid = $this->getUserIDFromName($uname);
+     $qs = "SELECT a.* FROM (project a, user2project b) "
+       . "   WHERE (a.id=b.project_id AND b.user_id='{$uid}') ORDER BY `id`";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute();
+     return $stmt->fetchAll(PDO::FETCH_ASSOC);
    }
 
    /** Create a new project.
@@ -932,13 +684,16 @@
     * @return the project ID of the newly generated project
     */
    public function createProject($name){
-     $qs = "INSERT INTO {$this->db}.project (`name`) VALUES ('{$name}')";
-     $query = $this->query($qs);
-     $qerr = $this->dbconn->last_error($query);
-     if($qerr) {
-       return array("success" => false, "errors" => array($qerr));
+     try {
+       $qs = "INSERT INTO project (`name`) VALUES (:name)";
+       $stmt = $this->dbo->prepare($qs);
+       $stmt->bindValue(':name', $name, PDO::PARAM_STR);
+       $stmt->execute();
+       return array("success" => true, "pid" => $this->dbo->lastInsertId());
      }
-     return array("success" => true, "pid" => $this->dbconn->last_insert_id());
+     catch (PDOException $ex) {
+       return array("success" => false, "errors" => array($ex->getMessage()));
+     }
    }
 
    /** Deletes a project.  Will fail unless no document is
@@ -948,8 +703,16 @@
     * @return a boolean value indicating success
     */
    public function deleteProject($pid){
-     $qs = "DELETE FROM {$this->db}.project WHERE `id`={$pid}";
-     return ($this->query($qs)) ? true : false;
+     try {
+       $stmt = $this->dbo->prepare("DELETE FROM project WHERE `id`=:pid");
+       $stmt->bindValue(':pid', $pid, PDO::PARAM_INT);
+       $stmt->execute();
+       $result = ($stmt->rowCount()>0) ? true : false;
+     }
+     catch (PDOException $ex) {
+       return false;
+     }
+     return $result;
    }
 
    /** Save settings for given user.
@@ -961,8 +724,14 @@
     * @return bool result of the mysql query
     */			
    public function setUserSettings($user,$lpp,$cl){
-     $qs = "UPDATE {$this->db}.users SET lines_per_page={$lpp},lines_context={$cl} WHERE name='{$user}' AND `id`!=1";
-     return $this->query($qs);
+     $qs = "UPDATE users SET lines_per_page=:lpp, lines_context=:cl"
+       . "   WHERE name=:name AND `id`!=1";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->bindValue(':lpp', $lpp, PDO::PARAM_INT);
+     $stmt->bindValue(':cl', $cl, PDO::PARAM_INT);
+     $stmt->bindValue(':name', $user, PDO::PARAM_STR);
+     $stmt->execute();
+     return $stmt->rowCount();
    }
 
    /** Save a setting for given user.
@@ -977,12 +746,15 @@
      $validnames = array("lines_context", "lines_per_page", "show_error",
 			 "columns_order", "columns_hidden");
      if (in_array($name,$validnames)) {
-       $qs = "UPDATE {$this->db}.users SET {$name}='{$value}' WHERE name='{$user}' AND `id`!=1";
-       return $this->query($qs);
+       $qs = "UPDATE users SET {$name}=:value WHERE name=:user AND `id`!=1";
+       $stmt = $this->dbo->prepare($qs);
+       $stmt->bindValue(':value', $value, PDO::PARAM_STR);
+       $stmt->bindValue(':user', $user, PDO::PARAM_STR);
+       $stmt->execute();
+       return $stmt->rowCount();
      }
      return false;
    }
-
 
    /** Return the total number of lines of a given file.
     *
@@ -991,25 +763,23 @@
     * @return The number of lines for the given file
     */
    public function getMaxLinesNo($fileid){
-     $qs  = "SELECT COUNT(modern.id) FROM {$this->db}.token ";
-     $qs .= "LEFT JOIN {$this->db}.modern ON modern.tok_id=token.id ";
-     $qs .= "WHERE token.text_id='{$fileid}' ";
-     $row = $this->dbconn->fetch_array($this->query($qs));
-     return $row[0];
+     $qs  = "SELECT COUNT(modern.id) FROM token ";
+     $qs .= "LEFT JOIN modern ON modern.tok_id=token.id ";
+     $qs .= "WHERE token.text_id=:tid";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':tid' => $fileid));
+     return $stmt->fetch(PDO::FETCH_COLUMN);
    }
 
    protected function getErrorsForModern($mid) {
-     $errors = array();
      $qs  = "SELECT error_types.name ";
-     $qs .= "FROM   {$this->db}.modern ";
-     $qs .= "  LEFT JOIN {$this->db}.mod2error ON modern.id=mod2error.mod_id ";
-     $qs .= "  LEFT JOIN {$this->db}.error_types ON mod2error.error_id=error_types.id ";
+     $qs .= "FROM   modern ";
+     $qs .= "  LEFT JOIN mod2error ON modern.id=mod2error.mod_id ";
+     $qs .= "  LEFT JOIN error_types ON mod2error.error_id=error_types.id ";
      $qs .= "WHERE  modern.id=" . $mid;
-     $q = $this->query($qs);
-     while($row = $this->dbconn->fetch_assoc($q)) {
-       $errors[] = $row['name'];
-     }
-     return $errors;
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute();
+     return $stmt->fetchAll(PDO::FETCH_COLUMN);
    }
 
    /** Retrieves all layout information for a given document. */
@@ -1024,13 +794,15 @@
        ."          p.side AS page_side, p.num AS page_num, "
        ."          c.id AS col_id,  c.name AS col_name,  c.num AS col_num, "
        ."          l.id AS line_id, l.name AS line_name, l.num AS line_num "
-       ."     FROM {$this->db}.page p "
-       ."LEFT JOIN {$this->db}.col  c ON c.page_id=p.id "
-       ."LEFT JOIN {$this->db}.line l ON l.col_id=c.id "
-       ."    WHERE p.text_id='{$fileid}' "
+       ."     FROM page p "
+       ."LEFT JOIN col  c ON c.page_id=p.id "
+       ."LEFT JOIN line l ON l.col_id=c.id "
+       ."    WHERE p.text_id=:tid "
        ." ORDER BY p.num ASC, c.num ASC, l.num ASC";
-     $q = $this->query($qs);
-     while($row = $this->dbconn->fetch_assoc($q)) {
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':tid' => $fileid));
+     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+     foreach($result as $row) {
        if($row['page_id'] != $currentpage) {
 	 $currentpage = $row['page_id'];
 	 $pages[] = array('db_id' => $row['page_id'],
@@ -1056,11 +828,13 @@
    public function getShiftTags($fileid) {
      $shifttags = array();
      $qs = "SELECT shifttags.tok_from, shifttags.tok_to, shifttags.tag_type "
-       ."     FROM {$this->db}.shifttags "
-       ."     JOIN {$this->db}.token ON token.id=shifttags.tok_from "
-       ."    WHERE token.text_id='{$fileid}'";
-     $q = $this->query($qs);
-     while($row = $this->dbconn->fetch_assoc($q)) {
+       ."     FROM shifttags "
+       ."     JOIN token ON token.id=shifttags.tok_from "
+       ."    WHERE token.text_id=:tid";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':tid' => $fileid));
+     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+     foreach($result as $row) {
        $tag = array("type_letter" => $row['tag_type'],
 		    "db_range" => array($row['tok_from'], $row['tok_to']));
        $shifttags[] = $tag;
@@ -1070,18 +844,14 @@
 
    /** Retrieves all (non-CorA) comments for a given document. */
    public function getComments($fileid) {
-     $comments = array();
-     $qs = "SELECT comment.tok_id, comment.value, comment.comment_type "
-       ."     FROM {$this->db}.comment "
-       ."     JOIN {$this->db}.token ON token.id=comment.tok_id "
-       ."    WHERE token.text_id='{$fileid}'";
-     $q = $this->query($qs);
-     while($row = $this->dbconn->fetch_assoc($q)) {
-       $comments[] = array("parent_db_id" => $row['tok_id'],
-			   "text" => $row['value'],
-			   "type" => $row['comment_type']);
-     }
-     return $comments;
+     $qs = "SELECT comment.tok_id AS parent_db_id, comment.value AS text,"
+       ."          comment.comment_type AS type "
+       ."     FROM comment "
+       ."     JOIN token ON token.id=comment.tok_id "
+       ."    WHERE token.text_id=:tid";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':tid' => $fileid));
+     return $stmt->fetchAll(PDO::FETCH_ASSOC);
    }
 
    /** Retrieves all tokens from a file.
@@ -1101,67 +871,52 @@
      $moderns = array();
 
      // tokens
-     $qs = "SELECT token.id, token.trans "
-       ."     FROM {$this->db}.token "
-       ."    WHERE token.text_id='{$fileid}'"
+     $qs = "SELECT token.id AS db_id, token.trans"
+       ."     FROM token "
+       ."    WHERE token.text_id=:tid"
        ."    ORDER BY token.ordnr ASC";
-     $query = $this->query($qs);
-     while($row = $this->dbconn->fetch_assoc($query)){
-       $tokens[] = array('db_id' => $row['id'],
-			 'trans' => $row['trans']);
-     }
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':tid' => $fileid));
+     $tokens = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
      // dipls
-     $qs = "SELECT token.id AS tok_id, dipl.id, dipl.line_id, dipl.utf, dipl.trans "
-       ."     FROM {$this->db}.token "
-       ."     LEFT JOIN {$this->db}.dipl ON dipl.tok_id=token.id "
-       ."    WHERE token.text_id='{$fileid}' "
+     $qs = "SELECT token.id AS parent_tok_db_id, dipl.id AS db_id, "
+       ."          dipl.line_id AS parent_line_db_id, dipl.utf, dipl.trans "
+       ."     FROM token "
+       ."    INNER JOIN dipl ON dipl.tok_id=token.id "
+       ."    WHERE token.text_id=:tid "
        ."    ORDER BY token.ordnr ASC, dipl.id ASC ";
-     $query = $this->query($qs);
-     while($row = $this->dbconn->fetch_assoc($query)){
-       $dipls[] = array('db_id' => $row['id'],
-			'trans' => $row['trans'],
-			'utf'   => $row['utf'],
-			'parent_line_db_id' => $row['line_id'],
-			'parent_tok_db_id'  => $row['tok_id']);
-     }
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':tid' => $fileid));
+     $dipls = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
      // moderns
-     $qs = "SELECT token.id AS tok_id, modern.id, modern.trans,"
-       ."          modern.utf, modern.ascii, c1.value AS comment "
-       ."     FROM {$this->db}.token "
-       ."     LEFT JOIN {$this->db}.modern ON modern.tok_id=token.id "
-       ."     LEFT JOIN {$this->db}.comment c1 ON  c1.tok_id=token.id "
+     $qs = "SELECT token.id AS parent_tok_db_id, modern.id AS db_id, "
+       ."          modern.trans, modern.utf, modern.ascii, c1.value AS comment "
+       ."     FROM token "
+       ."    INNER JOIN modern ON modern.tok_id=token.id "
+       ."     LEFT JOIN comment c1 ON  c1.tok_id=token.id "
        ."           AND c1.subtok_id=modern.id AND c1.comment_type='C' "
-       ."    WHERE token.text_id='{$fileid}' "
+       ."    WHERE token.text_id=:tid "
        ."    ORDER BY token.ordnr ASC, modern.id ASC";
-     $query = $this->query($qs);
-     while($row = $this->dbconn->fetch_assoc($query)){
-       $tags = array();
-
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':tid' => $fileid));
+     $moderns = $stmt->fetchAll(PDO::FETCH_ASSOC);
+     foreach($moderns as &$row) {
        // Annotations
        $qs  = "SELECT tag.value AS tag, ts.score, ts.selected, ts.source,"
 	 ."           tt.class AS type "
-	 ."      FROM   {$this->db}.modern"
-	 ."      LEFT JOIN ({$this->db}.tag_suggestion ts, {$this->db}.tag) "
+	 ."      FROM   modern"
+	 ."      LEFT JOIN (tag_suggestion ts, tag) "
 	 ."             ON (ts.tag_id=tag.id AND ts.mod_id=modern.id) "
-	 ."      LEFT JOIN {$this->db}.tagset tt ON tag.tagset_id=tt.id "
-	 ."     WHERE modern.id=" . $row['id'];
-       $q = $this->query($qs);
-       while($anno = $this->dbconn->fetch_assoc($q)){
-	 $tags[] = $anno;
-       }
-
-       $errors = $this->getErrorsForModern($row['id']);
-       $moderns[] = array('db_id' => $row['id'],
-			  'trans' => $row['trans'],
-			  'ascii' => $row['ascii'],
-			  'utf'   => $row['utf'],
-			  'tags'  => $tags,
-			  'errors' => $errors,
-			  'comment' => $row['comment'],
-			  'parent_tok_db_id'  => $row['tok_id']);
+	 ."      LEFT JOIN tagset tt ON tag.tagset_id=tt.id "
+	 ."     WHERE modern.id=" . $row['db_id'];
+       $stmt = $this->dbo->prepare($qs);
+       $stmt->execute();
+       $row['tags'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+       $row['errors'] = $this->getErrorsForModern($row['db_id']);
      }
+     unset($row);
 
      return array($tokens, $dipls, $moderns);
    }
@@ -1179,26 +934,47 @@
     * @return an @em array containing the lines
     */ 	
    public function getLines($fileid,$start,$lim){		
-     $data = array();
-
      $qs  = "SELECT x.* FROM ";
      $qs .= "  (SELECT q.*, @rownum := @rownum + 1 AS num FROM ";
      $qs .= "    (SELECT modern.id, modern.trans, modern.utf, ";
      $qs .= "            modern.tok_id, token.trans AS full_trans, "; // full_trans is currently being overwritten later!
      $qs .= "            c1.value AS comment "; // ,c2.value AS k_comment
-     $qs .= "     FROM   {$this->db}.token ";
-     $qs .= "       LEFT JOIN {$this->db}.modern  ON modern.tok_id=token.id ";
-     $qs .= "       LEFT JOIN {$this->db}.comment c1 ON  c1.tok_id=token.id ";
+     $qs .= "     FROM   token ";
+     $qs .= "       LEFT JOIN modern  ON modern.tok_id=token.id ";
+     $qs .= "       LEFT JOIN comment c1 ON  c1.tok_id=token.id ";
      $qs .= "             AND c1.subtok_id=modern.id AND c1.comment_type='C' ";
-     //$qs .= "       LEFT JOIN {$this->db}.comment c2 ON  c2.tok_id=token.id ";
+     //$qs .= "       LEFT JOIN comment c2 ON  c2.tok_id=token.id ";
      //$qs .= "                                        AND c2.comment_type='K' ";
-     $qs .= "     WHERE  token.text_id='{$fileid}' ";
+     $qs .= "     WHERE  token.text_id=:tid ";
      $qs .= "     ORDER BY token.ordnr ASC, modern.id ASC) q ";
      $qs .= "   JOIN (SELECT @rownum := -1) r WHERE q.id IS NOT NULL) x ";
      if($lim && $lim != null && $lim>0) {
        $qs .= "LIMIT {$start},{$lim}";
      }
-     $query = $this->query($qs); 		
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':tid' => $fileid));
+     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+     /* Prepare statements for loop */
+     $qs  = "SELECT `trans`, `line_id` FROM dipl ";
+     $qs .= " WHERE `tok_id`=:tokid ORDER BY `id` ASC";
+     $stmt_trans = $this->dbo->prepare($qs);
+     $qs  = "SELECT l.name AS line_name, c.name AS col_name, l.num AS line_num, ";
+     $qs .= "       p.name AS page_name, p.side AS page_side, p.num AS page_num  ";
+     $qs .= "FROM   dipl d ";
+     $qs .= "  LEFT JOIN line l ON l.id=d.line_id ";
+     $qs .= "  LEFT JOIN col  c ON c.id=l.col_id ";
+     $qs .= "  LEFT JOIN page p ON p.id=c.page_id ";
+     $qs .= "WHERE  d.tok_id=:tokid ";
+     $qs .= " ORDER BY d.id ASC LIMIT 1";
+     $stmt_layout = $this->dbo->prepare($qs);
+     $qs  = "SELECT tag.value, ts.score, ts.selected, ts.source, tt.class ";
+     $qs .= "FROM   modern";
+     $qs .= "  LEFT JOIN (tag_suggestion ts, tag) ";
+     $qs .= "         ON (ts.tag_id=tag.id AND ts.mod_id=modern.id) ";
+     $qs .= "  LEFT JOIN tagset tt ON tag.tagset_id=tt.id ";
+     $qs .= "WHERE  modern.id=:modid ";
+     $stmt_anno = $this->dbo->prepare($qs);
 
      /* The following loop separately performs all queries on a
 	line-by-line basis that can potentially return more than one
@@ -1207,17 +983,14 @@
 	the 1:1 relation between rows and modern tokens is no longer
 	guaranteed).  Change this only if performance becomes an issue.
       */
-     while($line = $this->dbconn->fetch_assoc($query)){
+     foreach($data as &$line) {
        $mid = $line['id'];
 
        // Transcription including spaces for line breaks
        $ttrans = "";
-       $qs  = "SELECT `trans`, `line_id` FROM {$this->db}.dipl ";
-       $qs .= " WHERE `tok_id`=" . $line['tok_id'];
-       $qs .= " ORDER BY `id` ASC";
-       $q = $this->query($qs);
        $lastline = null;
-       while($row = $this->dbconn->fetch_assoc($q)) {
+       $stmt_trans->execute(array(':tokid' => $line['tok_id']));
+       while($row = $stmt_trans->fetch(PDO::FETCH_ASSOC)) {
 	 if($lastline!==null && $lastline!==$row['line_id']) {
 	   $ttrans .= " ";
 	 }
@@ -1228,16 +1001,8 @@
        unset($lastline);
 
        // Layout info
-       $qs  = "SELECT l.name AS line_name, c.name AS col_name, l.num AS line_num, ";
-       $qs .= "       p.name AS page_name, p.side AS page_side, p.num AS page_num  ";
-       $qs .= "FROM   {$this->db}.dipl d ";
-       $qs .= "  LEFT JOIN {$this->db}.line l ON l.id=d.line_id ";
-       $qs .= "  LEFT JOIN {$this->db}.col  c ON c.id=l.col_id ";
-       $qs .= "  LEFT JOIN {$this->db}.page p ON p.id=c.page_id ";
-       $qs .= "WHERE  d.tok_id=" . $line['tok_id'];
-       $qs .= " ORDER BY d.id ASC LIMIT 1";
-       $q = $this->query($qs);
-       $row = $this->dbconn->fetch_assoc($q);
+       $stmt_layout->execute(array(':tokid' => $line['tok_id']));
+       $row = $stmt_layout->fetch(PDO::FETCH_ASSOC);
        if($row) {
 	 $line['line_name'] = $row['line_name'] ? $row['line_name'] : $row['line_num'];
 	 $line['col_name']  = $row['col_name']  ? $row['col_name']  : "";
@@ -1255,18 +1020,12 @@
        }
 
        // Annotations
-       $qs  = "SELECT tag.value, ts.score, ts.selected, ts.source, tt.class ";
-       $qs .= "FROM   {$this->db}.modern";
-       $qs .= "  LEFT JOIN ({$this->db}.tag_suggestion ts, {$this->db}.tag) ";
-       $qs .= "         ON (ts.tag_id=tag.id AND ts.mod_id=modern.id) ";
-       $qs .= "  LEFT JOIN {$this->db}.tagset tt ON tag.tagset_id=tt.id ";
-       $qs .= "WHERE  modern.id='{$mid}' ";
-       $q = $this->query($qs);
-
+       $stmt_anno->execute(array(':modid' => $mid));
+       
        // prepare results for CorA---this is less flexible, but
        // probably faster than doing it on the client side
        $line['suggestions'] = array();
-       while($row = $this->dbconn->fetch_assoc($q)){
+       while($row = $stmt_anno->fetch(PDO::FETCH_ASSOC)){
 	 if($row['class']=='norm' && $row['selected']=='1') {
 	   $line['anno_norm'] = $row['value'];
 	 }
@@ -1302,31 +1061,26 @@
 	   }
 	 }
        }
-
-       $data[] = $line;
      }
+     unset($line);
 
      return $data;
    }
 
    /** Retrieves error types and indexes them by name. */
    public function getErrorTypes() {
-     $qs = "SELECT * FROM {$this->db}.error_types";
-     $q = $this->query($qs);
-     $errortypes = array();
-     while($row = $this->dbconn->fetch_assoc($q)) {
-       $errortypes[$row['name']] = $row['id'];
-     }
-     return $errortypes;
+     $stmt = $this->dbo->prepare("SELECT `name`, `id` FROM error_types");
+     $stmt->execute();
+     return $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
    }
 
    /** Delete locks if the locking user has been inactive for too
     * long; currently, this is set to be >30 minutes. */
    public function releaseOldLocks($to) {
-     $qs  = "DELETE {$this->db}.locks FROM {$this->db}.locks";
-     $qs .= "  LEFT JOIN {$this->db}.users ON users.id=locks.user_id";
+     $qs  = "DELETE locks FROM locks";
+     $qs .= "  LEFT JOIN users ON users.id=locks.user_id";
      $qs .= "  WHERE users.lastactive < (NOW() - INTERVAL {$to} MINUTE)";
-     $this->query($qs);
+     $this->dbo->exec($qs);
    }
 
    /** Saves changed lines.
@@ -1373,22 +1127,25 @@
        $idlist[] = $line['id'];
      }
      $modchk  = "SELECT modern.id, comment.id AS comment_id, token.id AS token_id ";
-     $modchk .= "FROM {$this->db}.modern ";
-     $modchk .= "  LEFT JOIN {$this->db}.token   ON modern.tok_id=token.id ";
-     $modchk .= "  LEFT JOIN {$this->db}.text    ON token.text_id=text.id ";
-     $modchk .= "  LEFT JOIN {$this->db}.comment ON comment.tok_id=token.id ";
+     $modchk .= "FROM modern ";
+     $modchk .= "  LEFT JOIN token   ON modern.tok_id=token.id ";
+     $modchk .= "  LEFT JOIN text    ON token.text_id=text.id ";
+     $modchk .= "  LEFT JOIN comment ON comment.tok_id=token.id ";
      $modchk .= "                               AND comment.subtok_id=modern.id ";
      $modchk .= "                               AND comment.comment_type='C' ";
-     $modchk .= "WHERE text.id='{$fileid}' AND modern.id IN (";
-     $modchk .= implode(',', $idlist);
+     $modchk .= "WHERE text.id=? AND modern.id IN (";
+     $modchk .= str_repeat('?,', count($idlist) - 1) . '?';
      $modchk .= ")";
-     $modchq  = $this->query($modchk);
-     $modchn  = $this->dbconn->row_count($modchq);
-     if($modchn!=count($idlist)) {
-       $diff = count($idlist) - $modchn;
+     $stmt = $this->dbo->prepare($modchk);
+     array_unshift($idlist, $fileid);
+     $stmt->execute($idlist);
+     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+     array_shift($idlist);
+     if(count($result)!=count($idlist)) {
+       $diff = count($idlist) - count($result);
        return "Ein interner Fehler ist aufgetreten (Code: 1074).  Die Anfrage enthielt {$diff} ungültige Token-ID(s) für das derzeit geöffnete Dokument.";
      }
-     while($row = $this->dbconn->fetch_assoc($modchq)) {
+     foreach($result as $row) {
        $comment_ids[$row['id']] = $row['comment_id'];
        $token_ids[$row['id']]   = $row['token_id'];
      }
@@ -1425,31 +1182,28 @@
      $haspos = array_key_exists('POS', $tagset_ids);
      // norm_types
      if($hasmod) {
-       $qstr  = "SELECT `id`, `value` FROM {$this->db}.tag ";
+       $qstr  = "SELECT `value`, `id` FROM tag ";
        $qstr .= "WHERE `tagset_id`='" . $tagset_ids['norm_type'] . "'";
-       $q = $this->query($qstr);
-       $qerr = $this->dbconn->last_error();
-       if($qerr) {
-	 return "Ein interner Fehler ist aufgetreten (Code: 1076).  Die Datenbank meldete:\n{$qerr}";
+       try {
+	 $stmt = $this->dbo->query($qstr);
+	 $norm_types = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
        }
-       while($row = $this->dbconn->fetch_assoc($q)) {
-	 $norm_types[$row['value']] = $row['id'];
+       catch (PDOException $ex) {
+	 return "Ein interner Fehler ist aufgetreten (Code: 1076a).  Die Datenbank meldete:\n" . $ex->getMessage();
        }
      }
      // POS
      if($haspos) {
-       $qstr  = "SELECT `id`, `value` FROM {$this->db}.tag ";
+       $qstr  = "SELECT `value`, `id` FROM tag ";
        $qstr .= "WHERE `tagset_id`='" . $tagset_ids['POS'] . "'";
-       $q = $this->query($qstr);
-       $qerr = $this->dbconn->last_error();
-       if($qerr) {
-	 return "Ein interner Fehler ist aufgetreten (Code: 1076).  Die Datenbank meldete:\n{$qerr}";
+       try {
+	 $stmt = $this->dbo->query($qstr);
+	 $pos_tags = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
        }
-       while($row = $this->dbconn->fetch_assoc($q)) {
-	 $pos_tags[$row['value']] = $row['id'];
+       catch (PDOException $ex) {
+	 return "Ein interner Fehler ist aufgetreten (Code: 1076b).  Die Datenbank meldete:\n" . $ex->getMessage();
        }
      }
-
 
      $updatetag = array();    // array with tags to be updated
      $inserttag = array();    // array with tags to be inserted
@@ -1461,21 +1215,24 @@
      $insertcom = array();    // array with comments to be inserted
      $deletecom = array();
 
+     $qstr  = "SELECT ts.id, ts.tag_id, ts.source, tag.value, tagset.class ";
+     $qstr .= "FROM   tag_suggestion ts ";
+     $qstr .= "  LEFT JOIN tag ON tag.id=ts.tag_id ";
+     $qstr .= "  LEFT JOIN tagset ON tagset.id=tag.tagset_id ";
+     $qstr .= "WHERE  ts.selected=1 AND ts.mod_id=:modid";
+     $stmt_line = $this->dbo->prepare($qstr);
+
      foreach($lines as $line) {
        /* Get currently selected annotations */
        $selected = array();
-       $qstr  = "SELECT ts.id, ts.tag_id, ts.source, tag.value, tagset.class ";
-       $qstr .= "FROM   {$this->db}.tag_suggestion ts ";
-       $qstr .= "  LEFT JOIN {$this->db}.tag ON tag.id=ts.tag_id ";
-       $qstr .= "  LEFT JOIN {$this->db}.tagset ON tagset.id=tag.tagset_id ";
-       $qstr .= "WHERE  ts.selected=1 AND ts.mod_id='" . $line['id'] . "'";
-       $q = $this->query($qstr);
-       $qerr = $this->dbconn->last_error();
-       if($qerr) {
-	 $this->dbconn->rollback();
-	 return "Ein interner Fehler ist aufgetreten (Code: 1077).  Die Datenbank meldete:\n{$qerr}";
+       try {
+	 $stmt_line->execute(array(':modid' => $line['id']));
+	 $result = $stmt_line->fetchAll(PDO::FETCH_ASSOC);
        }
-       while($row = $this->dbconn->fetch_assoc($q)) {
+       catch (PDOException $ex) {
+	 return "Ein interner Fehler ist aufgetreten (Code: 1077).  Die Datenbank meldete:\n" . $ex->getMessage();
+       }
+       foreach($result as $row) {
 	 $selected[$row['class']] = $row;
        }
 
@@ -1486,10 +1243,12 @@
 	 if(!empty($tagvalue)) {
 	   if(array_key_exists('norm', $selected)) {
 	     $tagid = $selected['norm']['tag_id'];
-	     $updatetag[] = "('{$tagid}', '{$tagvalue}')";
+	     $updatetag[] = array(':id' => $tagid, ':value' => $tagvalue);
 	   }
 	   else {
-	     $inserttag[] = array("query" => "('{$tagvalue}', 0, '" . $tagset_ids['norm'] . "')",
+	     $inserttag[] = array("query" => array(':value' => $tagvalue,
+						   ':needrev' => 0,
+						   ':tagset' => $tagset_ids['norm']),
 				  "line_id" => $line['id']);
 	   }
 	 }
@@ -1503,10 +1262,12 @@
 	   if(!empty($tagvalue)) {
 	     if(array_key_exists('norm_broad', $selected)) {
 	       $tagid = $selected['norm_broad']['tag_id'];
-	       $updatetag[] = "('{$tagid}', '{$tagvalue}')";
+	       $updatetag[] = array(':id' => $tagid, ':value' => $tagvalue);
 	     }
 	     else {
-	       $inserttag[] = array("query" => "('{$tagvalue}', 0, '" . $tagset_ids['norm_broad'] . "')",
+	       $inserttag[] = array("query" => array(':value' => $tagvalue,
+						     ':needrev' => 0,
+						     ':tagset' => $tagset_ids['norm_broad']),
 				    "line_id" => $line['id']);
 	     }
 	   }
@@ -1523,14 +1284,20 @@
 		 $tagid = $selected['norm_type']['tag_id'];
 		 if($tagid !== $newid) { // change required?
 		   $deletets[] = $selected['norm_type']['id'];
-		   $tsstr  = "(NULL, 1, 'user', '{$newid}', '" . $line['id'] . "')";
-		   $insertts[] = $tsstr;
+		   $insertts[] = array(':id' => null,
+				       ':selected' => 1,
+				       ':source' => 'user',
+				       ':tagid' => $newid,
+				       ':modid' => $line['id']);
 		 }
 	       }
 	       else {
 		 // simply insert
-		 $tsstr  = "(NULL, 1, 'user', '{$newid}', '" . $line['id'] . "')";
-		 $insertts[] = $tsstr;
+		 $insertts[] = array(':id' => null,
+				     ':selected' => 1,
+				     ':source' => 'user',
+				     ':tagid' => $newid,
+				     ':modid' => $line['id']);
 	       }
 	     }
 	     else {
@@ -1549,10 +1316,12 @@
 	 if(!empty($tagvalue)) {
 	   if(array_key_exists('lemma', $selected)) {
 	     $tagid = $selected['lemma']['tag_id'];
-	     $updatetag[] = "('{$tagid}', '{$tagvalue}')";
+	     $updatetag[] = array(':id' => $tagid, ':value' => $tagvalue);
 	   }
 	   else {
-	     $inserttag[] = array("query" => "('{$tagvalue}', 0, '" . $tagset_ids['lemma'] . "')",
+	     $inserttag[] = array("query" => array(':value' => $tagvalue,
+						   ':needrev' => 0,
+						   ':tagset' => $tagset_ids['lemma']),
 				  "line_id" => $line['id']);
 	   }
 	 }
@@ -1577,22 +1346,30 @@
 	       if($tagid !== $newid) { // change required?
 		 if($selected['POS']['source'] == 'auto') {
 		   // deselect
-		   $tsstr  = "('" . $selected['POS']['id'] . "', 0, 'auto', ";
-		   $tsstr .= "'{$tagid}', '" . $line['id'] . "')";
-		   $insertts[] = $tsstr;
+		   $insertts[] = array(':id' => $selected['POS']['id'],
+				       ':selected' => 0,
+				       ':source' => 'auto',
+				       ':tagid' => $tagid,
+				       ':modid' => $line['id']);
 		 } else {
 		   // delete
 		   $deletets[] = $selected['POS']['id'];
 		 }
 		 // insert
-		 $tsstr  = "(NULL, 1, 'user', '{$newid}', '" . $line['id'] . "')";
-		 $insertts[] = $tsstr;
+		 $insertts[] = array(':id' => null,
+				     ':selected' => 1,
+				     ':source' => 'user',
+				     ':tagid' => $newid,
+				     ':modid' => $line['id']);
 	       }
 	     }
 	     else {
 	       // simply insert
-	       $tsstr  = "(NULL, 1, 'user', '{$newid}', '" . $line['id'] . "')";
-	       $insertts[] = $tsstr;
+	       $insertts[] = array(':id' => null,
+				   ':selected' => 1,
+				   ':source' => 'user',
+				   ':tagid' => $newid,
+				   ':modid' => $line['id']);
 	     }
 	   }
 	   else {
@@ -1602,9 +1379,11 @@
 	 else if(array_key_exists('POS', $selected)) {
 	   if($selected['POS']['source'] == 'auto') {
 	     // deselect
-	     $tsstr  = "('" . $selected['POS']['id'] . "', 0, 'auto', ";
-	     $tsstr .= "'{$tagid}', '" . $line['id'] . "')";
-	     $insertts[] = $tsstr;
+	     $insertts[] = array(':id' => $selected['POS']['id'],
+				 ':selected' => 0,
+				 ':source' => 'auto',
+				 ':tagid' => $tagid,
+				 ':modid' => $line['id']);
 	   } else {
 	     // delete
 	     $deletets[] = $selected['POS']['id'];
@@ -1616,22 +1395,24 @@
        if(array_key_exists('general_error', $line)) {
 	 if($error_general) {
 	   if(intval($line['general_error']) == 1) {
-	     $inserterr[] = "('" . $line['id'] . "', '" . $error_general . "')";
+	     $inserterr[] = array(':modid' => $line['id'],
+				  ':errorid' => $error_general);
 	   }
 	   else {
-	     // hack ...
-	     $deleteerr[] = "(`mod_id`='" . $line['id'] . "' AND `error_id`='" . $error_general . "')";
+	     $deleteerr[] = array(':modid' => $line['id'],
+				  ':errorid' => $error_general);
 	   }
 	 }
        }
        if(array_key_exists('lemma_verified', $line)) {
 	 if($lemma_verified) {
 	   if(intval($line['lemma_verified']) == 1) {
-	     $inserterr[] = "('" . $line['id'] . "', '" . $lemma_verified . "')";
+	     $inserterr[] = array(':modid' => $line['id'],
+				  ':errorid' => $lemma_verified);
 	   }
 	   else {
-	     // same hack ...
-	     $deleteerr[] = "(`mod_id`='" . $line['id'] . "' AND `error_id`='" . $lemma_verified . "')";
+	     $deleteerr[] = array(':modid' => $line['id'],
+				  ':errorid' => $lemma_verified);
 	   }
 	 }
        }
@@ -1639,16 +1420,15 @@
        // CorA comment
        if(array_key_exists('comment', $line)) {
 	 $comment_id = $comment_ids[$line['id']];
-	 if($comment_id==null || empty($comment_id)) {
-	   $comment_id = "NULL";
-	 } else {
-	   $comment_id = "'{$comment_id}'";
-	   if(empty($line['comment'])) {
-	     $deletecom[] = $comment_id;
-	   }
+	 if(!empty($comment_id) && empty($line['comment'])) {
+	   $deletecom[] = $comment_id;
 	 }
 	 if(!empty($line['comment'])) {
-	   $insertcom[] = "({$comment_id}, '" . $token_ids[$line['id']] . "', '" . $this->dbconn->escapeSQL($line['comment']) . "', 'C', '" . $line['id'] . "')";
+	   $insertcom[] = array(':id' => $comment_id,
+				':tokid' => $token_ids[$line['id']],
+				':value' => $line['comment'],
+				':ctype' => 'C',
+				':subtokid' => $line['id']);
 	 }
        }
 
@@ -1656,122 +1436,96 @@
 
      /* Only now, perform all INSERTs/DELETEs/UPDATEs */
 
-     $this->dbconn->startTransaction();
+     $this->dbo->beginTransaction();
 
      try {
        if(!empty($updatetag)) {
-	 $qstr  = "INSERT INTO {$this->db}.tag (`id`, `value`) VALUES ";
-	 $qstr .= implode(",", $updatetag);
+	 $qstr  = "INSERT INTO tag (`id`, `value`) VALUES (:id, :value)";
 	 $qstr .= " ON DUPLICATE KEY UPDATE `value`=VALUES(value)";
-	 $q = $this->query($qstr);
-	 $qerr = $this->dbconn->last_error();
-         if($qerr) {
-             throw new SQLQueryException($qerr."\n".$qstr);
-         }
+	 $stmt = $this->dbo->prepare($qstr);
+	 foreach($updatetag as $param) {
+	   $stmt->execute($param);
+	 }
        }
        if(!empty($inserttag)) {
+	 $qstr = "INSERT INTO tag (`value`, `needs_revision`, `tagset_id`)"
+	   . "    VALUES (:value, :needrev, :tagset)";
+	 $stmt_ins = $this->dbo->prepare($qstr);
 	 foreach($inserttag as $insertdata) {
-	   $qstr = "INSERT INTO {$this->db}.tag (`value`, `needs_revision`, `tagset_id`)";
-	   $qstr .= "VALUES " . $insertdata['query'];
-	   $q = $this->query($qstr);
-	   $qerr = $this->dbconn->last_error();
-           if($qerr) {
-               throw new SQLQueryException($qerr."\n".$qstr);
-           }
-	   $q = $this->query("SELECT LAST_INSERT_ID()");
-	   $row = $this->dbconn->fetch_array($q);
-	   $newid = $row[0];
-	   $tsstr  = "(NULL, 1, 'user', '{$newid}', '" . $insertdata['line_id'] . "')";
-	   $insertts[] = $tsstr;
+	   $stmt_ins->execute($insertdata['query']);
+	   $newid = $this->dbo->lastInsertId();
+	   $insertts[] = array(':id' => NULL,
+			       ':selected' => 1,
+			       ':source' => 'user',
+			       ':tagid' => $newid,
+			       ':modid' => $insertdata['line_id']);
 	 }
        }
        if(!empty($deletetag)) {
-	 $qstr  = "DELETE FROM {$this->db}.tag_suggestion WHERE `tag_id` IN ('";
-	 $qstr .= implode("','", $deletetag);
-	 $qstr .= "')";
-	 $q = $this->query($qstr);
-	 $qerr = $this->dbconn->last_error();
-         if($qerr) {
-             throw new SQLQueryException($qerr."\n".$qstr);
-         }
-	 $qstr  = "DELETE FROM {$this->db}.tag WHERE `id` IN ('";
-	 $qstr .= implode("','", $deletetag);
-	 $qstr .= "')";
-	 $q = $this->query($qstr);
-	 $qerr = $this->dbconn->last_error();
-         if($qerr) {
-             throw new SQLQueryException($qerr."\n".$qstr);
-         }
+	 $qstr  = "DELETE FROM tag_suggestion WHERE `tag_id` IN (";
+	 $qstr .= implode(",", $deletetag);
+	 $qstr .= ")";
+	 $this->dbo->exec($qstr);
+	 $qstr  = "DELETE FROM tag WHERE `id` IN (";
+	 $qstr .= implode(",", $deletetag);
+	 $qstr .= ")";
+	 $this->dbo->exec($qstr);
        }
        if(!empty($insertts)) {
-	 $qstr  = "INSERT INTO {$this->db}.tag_suggestion ";
+	 $qstr  = "INSERT INTO tag_suggestion ";
 	 $qstr .= " (`id`, `selected`, `source`, `tag_id`, `mod_id`) VALUES ";
-	 $qstr .= implode(",", $insertts);
+	 $qstr .= " (:id,  :selected,  :source,  :tagid,   :modid) ";
 	 $qstr .= " ON DUPLICATE KEY UPDATE `selected`=VALUES(selected), ";
 	 $qstr .= "                         `tag_id`=VALUES(tag_id)";
-	 $q = $this->query($qstr);
-	 $qerr = $this->dbconn->last_error();
-         if($qerr) {
-             throw new SQLQueryException($qerr."\n".$qstr);
-         }
+	 $stmt = $this->dbo->prepare($qstr);
+	 foreach($insertts as $param) {
+	   $stmt->execute($param);
+	 }
        }
        if(!empty($deletets)) {
-	 $qstr  = "DELETE FROM {$this->db}.tag_suggestion WHERE `id` IN ('";
-	 $qstr .= implode("','", $deletets);
-	 $qstr .= "')";
-	 $q = $this->query($qstr);
-	 $qerr = $this->dbconn->last_error();
-         if($qerr) {
-             throw new SQLQueryException($qerr."\n".$qstr);
-         }
+	 $qstr  = "DELETE FROM tag_suggestion WHERE `id` IN (";
+	 $qstr .= implode(",", $deletets);
+	 $qstr .= ")";
+	 $this->dbo->exec($qstr);
        }
        if(!empty($deleteerr)) {
-	 $qstr  = "DELETE FROM {$this->db}.mod2error WHERE ";
-	 $qstr .= implode(" OR ", $deleteerr);
-	 $q = $this->query($qstr);
-	 $qerr = $this->dbconn->last_error();
-         if($qerr) {
-             throw new SQLQueryException($qerr."\n".$qstr);
-         }
+	 $qstr = "DELETE FROM mod2error WHERE `mod_id`=:modid AND `error_id`=:errorid";
+	 $stmt = $this->dbo->prepare($qstr);
+	 foreach($deleteerr as $param) {
+	   $stmt->execute($param);
+	 }
        }
        if(!empty($inserterr)) {
-	 $qstr  = "INSERT IGNORE INTO {$this->db}.mod2error ";
-	 $qstr .= "  (`mod_id`, `error_id`) VALUES ";
-	 $qstr .= implode(", ", $inserterr);
-	 $q = $this->query($qstr);
-	 $qerr = $this->dbconn->last_error();
-         if($qerr) {
-             throw new SQLQueryException($qerr."\n".$qstr);
-         }
+	 $qstr  = "INSERT IGNORE INTO mod2error ";
+	 $qstr .= "  (`mod_id`, `error_id`) VALUES (:modid, :errorid)";
+	 $stmt = $this->dbo->prepare($qstr);
+	 foreach($inserterr as $param) {
+	   $stmt->execute($param);
+	 }
        }
        if(!empty($insertcom)) {
-	 $qstr  = "INSERT INTO {$this->db}.comment ";
+	 $qstr  = "INSERT INTO comment ";
 	 $qstr .= "  (`id`, `tok_id`, `value`, `comment_type`, `subtok_id`) VALUES ";
-	 $qstr .= implode(",", $insertcom);
+	 $qstr .= "  (:id,  :tokid,   :value,  :ctype,         :subtokid) ";
 	 $qstr .= " ON DUPLICATE KEY UPDATE `value`=VALUES(value)";
-	 $q = $this->query($qstr);
-	 $qerr = $this->dbconn->last_error();
-         if($qerr) {
-             throw new SQLQueryException($qerr."\n".$qstr);
-         }
+	 $stmt = $this->dbo->prepare($qstr);
+	 foreach($insertcom as $param) {
+	   $stmt->execute($param);
+	 }
        }
        if(!empty($deletecom)) {
-	 $qstr  = "DELETE FROM {$this->db}.comment WHERE `id` IN (";
+	 $qstr  = "DELETE FROM comment WHERE `id` IN (";
 	 $qstr .= implode(", ", $deletecom);
 	 $qstr .= ")";
-	 $q = $this->query($qstr);
-	 $qerr = $this->dbconn->last_error();
-         if($qerr) {
-             throw new SQLQueryException($qerr."\n".$qstr);
-         }
+	 $this->dbo->exec($qstr);
        }
      }
-     catch(SQLQueryException $e) {
-       $this->dbconn->rollback();
-       return "Ein interner Fehler ist aufgetreten (Code: 1080).  Die Datenbank meldete:\n" . $e->getMessage();
+     catch(PDOException $ex) {
+       $this->dbo->rollBack();
+       return "Ein interner Fehler ist aufgetreten (Code: 1080).  Die Datenbank meldete:\n" . $ex->getMessage();
      }
 
-     $this->dbconn->commitTransaction();
+     $this->dbo->commit();
 
      // mark the last position
      $this->markLastPosition($fileid,$lasteditedrow);
@@ -1788,8 +1542,11 @@
    /** Updates "last edited" information for a file.
     */
    public function updateChangedTimestamp($fileid,$userid) {
-     $qs = "UPDATE {$this->db}.text SET `changer_id`={$userid}, `changed`=CURRENT_TIMESTAMP WHERE `id`={$fileid}";
-     return $this->query($qs);
+     $qs = "UPDATE text SET `changer_id`=:uid, "
+       . "                  `changed`=CURRENT_TIMESTAMP WHERE `id`=:tid";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':uid' => $userid, ':tid' => $fileid));
+     return $stmt->rowCount();
    }
 
 
@@ -1805,8 +1562,10 @@
     * @return bool the result of the mysql query
     */
    public function markLastPosition($fileid,$line){
-     $qs = "UPDATE {$this->db}.text SET `currentmod_id`='{$line}' WHERE `id`='{$fileid}'";
-     return $this->query($qs);
+     $qs = "UPDATE text SET `currentmod_id`=:line WHERE `id`=:tid";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':line' => $line, ':tid' => $fileid));
+     return $stmt->rowCount();
    }
 
    /** Delete a token
@@ -1824,110 +1583,130 @@
      $oldmodcount = 0;
 
      // get current mod count
-     $qs = "SELECT * FROM {$this->db}.modern WHERE `tok_id`='{$tokenid}' ORDER BY `id` ASC";
-     $q = $this->query($qs);
-     $oldmodcount = $this->dbconn->row_count($q);
+     $qs = "SELECT COUNT(*) FROM modern WHERE `tok_id`=:tokid ORDER BY `id` ASC";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':tokid' => $tokenid));
+     $oldmodcount = $stmt->fetch(PDO::FETCH_COLUMN);
 
      // find IDs of next and previous tokens
-     $qs  = "SELECT a.id FROM {$this->db}.token a ";
-     $qs .= "WHERE  a.ordnr > (SELECT b.ordnr FROM {$this->db}.token b ";
-     $qs .= "                  WHERE  b.id={$tokenid}) ";
-     $qs .= "       AND a.text_id={$textid} ";
+     $qs  = "SELECT a.id FROM token a ";
+     $qs .= "WHERE  a.ordnr > (SELECT b.ordnr FROM token b ";
+     $qs .= "                  WHERE  b.id=:tokid) ";
+     $qs .= "       AND a.text_id=:tid ";
      $qs .= "ORDER BY a.ordnr ASC LIMIT 1 ";
-     $q = $this->query($qs);
-     $qerr = $this->dbconn->last_error($q);
-     if($qerr) {
+     try {
+       $stmt = $this->dbo->prepare($qs);
+       $stmt->execute(array(':tokid' => $tokenid, ':tid' => $textid));
+       $row = $stmt->fetch(PDO::FETCH_ASSOC);
+     }
+     catch (PDOException $ex) {
        $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1220).";
-       $errors[] = $qerr . "\n" . $qs;
+       $errors[] = $ex->getMessage() . "\n" . $qs;
        return array("success" => false, "errors" => $errors);
      }
-     $row = $this->dbconn->fetch_assoc($q);
      if($row && array_key_exists('id', $row)) {
        $nexttokenid = $row['id'];
      }
-     $qs  = "SELECT a.id FROM {$this->db}.token a ";
-     $qs .= "WHERE  a.ordnr < (SELECT b.ordnr FROM {$this->db}.token b ";
-     $qs .= "                  WHERE  b.id={$tokenid}) ";
-     $qs .= "       AND a.text_id={$textid} ";
+     $qs  = "SELECT a.id FROM token a ";
+     $qs .= "WHERE  a.ordnr < (SELECT b.ordnr FROM token b ";
+     $qs .= "                  WHERE  b.id=:tokid) ";
+     $qs .= "       AND a.text_id=:tid ";
      $qs .= "ORDER BY a.ordnr DESC LIMIT 1 ";
-     $q = $this->query($qs);
-     $qerr = $this->dbconn->last_error($q);
-     if($qerr) {
-       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1221).";
-       $errors[] = $qerr . "\n" . $qs;
+     try {
+       $stmt = $this->dbo->prepare($qs);
+       $stmt->execute(array(':tokid' => $tokenid, ':tid' => $textid));
+       $row = $stmt->fetch(PDO::FETCH_ASSOC);
+     }
+     catch (PDOException $ex) {
+       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1220).";
+       $errors[] = $ex->getMessage() . "\n" . $qs;
        return array("success" => false, "errors" => $errors);
      }
-     $row = $this->dbconn->fetch_assoc($q);
      if($row && array_key_exists('id', $row)) {
        $prevtokenid = $row['id'];
      }
 
      // find shift tags attached to this token
      $stinsert = array();
-     $qs  = "SELECT `id`, `tok_from`, `tok_to` FROM {$this->db}.shifttags ";
-     $qs .= "WHERE  `tok_from`={$tokenid} OR `tok_to`={$tokenid}";
-     $q = $this->query($qs);
-     $qerr = $this->dbconn->last_error($q);
-     if($qerr) {
+     $qs  = "SELECT `id`, `tok_from`, `tok_to` FROM shifttags ";
+     $qs .= "WHERE  `tok_from`=:tokfrom OR `tok_to`=:tokto";
+     try {
+       $stmt = $this->dbo->prepare($qs);
+       $stmt->execute(array(':tokfrom' => $tokenid, ':tokto' => $tokenid));
+       $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+     }
+     catch (PDOException $ex) {
        $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1222).";
-       $errors[] = $qerr . "\n" . $qs;
+       $errors[] = $ex->getMessage() . "\n" . $qs;
        return array("success" => false, "errors" => $errors);
      }
      // if necessary, move these shift tags around to prevent them from getting deleted
-     while($row = $this->dbconn->fetch_assoc($q)) {
+     foreach($result as $row) {
        // if both refer to the current token, do nothing
        if($row['tok_from'] != $row['tok_to']) {
 	 if($row['tok_from'] == $tokenid) {
-	   $stinsert[] = "(" . $row['id'] . ", {$nexttokenid}, " . $row['tok_to'] . ")";
+	   $stinsert[] = array(':id' => $row['id'],
+			       ':tokfrom' => $nexttokenid,
+			       ':tokto' => $row['tok_to']);
 	 }
 	 else {
-	   $stinsert[] = "(" . $row['id'] . ", " . $row['tok_from'] . ", {$prevtokenid})";
+	   $stinsert[] = array(':id' => $row['id'],
+			       ':tokfrom' => $row['tok_from'],
+			       ':tokto' => $prevtokenid);
 	 }
        }
      }
 
      // perform modifications
-     $this->dbconn->startTransaction();
+     $this->dbo->beginTransaction();
 
      if(!empty($stinsert)) {
-       $qs  = "INSERT INTO {$this->db}.shifttags (`id`, `tok_from`, `tok_to`) VALUES ";
-       $qs .= implode(", ", $stinsert);
+       $qs  = "INSERT INTO shifttags (`id`, `tok_from`, `tok_to`) ";
+       $qs .= "               VALUES (:id,  :tokfrom,   :tokto) ";
        $qs .= " ON DUPLICATE KEY UPDATE `tok_from`=VALUES(tok_from), `tok_to`=VALUES(tok_to)";
-       $q = $this->query($qs);
-       $qerr = $this->dbconn->last_error($q);
-       if($qerr) {
+       try {
+	 $stmt = $this->dbo->prepare($qs);
+	 foreach($stinsert as $param) {
+	   $stmt->execute($param);
+	 }
+       }
+       catch (PDOException $ex) {
 	 $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1223).";
-	 $errors[] = $qerr . "\n" . $qs;
-	 $this->dbconn->rollback();
+	 $errors[] = $ex->getMessage() . "\n" . $qs;
+	 $this->dbo->rollBack();
 	 return array("success" => false, "errors" => $errors);
        }
      }
      // move any (non-internal) comments attached to this token
      if($prevtokenid!==null || $nexttokenid!==null) {
        $commtokenid = ($prevtokenid===null ? $nexttokenid : $prevtokenid);
-       $qs  = "UPDATE {$this->db}.comment SET `tok_id`={$commtokenid} ";
-       $qs .= "WHERE  `tok_id`={$tokenid} AND `comment_type`!='C' ";
-       $q = $this->query($qs);
-       $qerr = $this->dbconn->last_error($q);
-       if($qerr) {
+       $qs  = "UPDATE comment SET `tok_id`=:ctokid ";
+       $qs .= "WHERE  `tok_id`=:tokid AND `comment_type`!='C' ";
+       try {
+	 $stmt = $this->dbo->prepare($qs);
+	 $stmt->execute(array(':ctokid' => $commtokenid, ':tokid' => $tokenid));
+       }
+       catch (PDOException $ex) {
 	 $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1224).";
-	 $errors[] = $qerr . "\n" . $qs;
-	 $this->dbconn->rollback();
+	 $errors[] = $ex->getMessage() . "\n" . $qs;
+	 $this->dbo->rollBack();
 	 return array("success" => false, "errors" => $errors);
        }
      }
      // only now, delete the token
-     $qs = "DELETE FROM {$this->db}.token WHERE `id`={$tokenid}";
-     $q = $this->query($qs);
-     $qerr = $this->dbconn->last_error($q);
-     if($qerr) {
+     $qs = "DELETE FROM token WHERE `id`=:tokid";
+     try {
+       $stmt = $this->dbo->prepare($qs);
+       $stmt->execute(array(':tokid' => $tokenid));
+     }
+     catch (PDOException $ex) {
        $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1225).";
-       $errors[] = $qerr . "\n" . $qs;
-       $this->dbconn->rollback();
+       $errors[] = $ex->getMessage() . "\n" . $qs;
+       $this->dbo->rollBack();
        return array("success" => false, "errors" => $errors);
      }
      
-     $this->dbconn->commitTransaction();
+     $this->dbo->commit();
      $this->updateChangedTimestamp($textid,$userid);
      return array("success" => true, "oldmodcount" => $oldmodcount);
    }
@@ -1948,87 +1727,96 @@
      $ordnr = null; $lineid = null;
 
      // fetch ordnr for token
-     $qs = "SELECT `ordnr` FROM {$this->db}.token WHERE `id`={$oldtokenid}";
-     $q = $this->query($qs);
-     $row = $this->dbconn->fetch_assoc($q);
-     $ordnr = $row['ordnr'];
+     $qs = "SELECT `ordnr` FROM token WHERE `id`=:id";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':id' => $oldtokenid));
+     $ordnr = $stmt->fetch(PDO::FETCH_COLUMN);
      // fetch line for first dipl
-     $qs  = "SELECT `line_id` FROM {$this->db}.dipl WHERE `tok_id`={$oldtokenid} ";
+     $qs  = "SELECT `line_id` FROM dipl WHERE `tok_id`=:id ";
      $qs .= "ORDER BY `id` ASC LIMIT 1";
-     $q = $this->query($qs);
-     $row = $this->dbconn->fetch_assoc($q);
-     $lineid = $row['line_id'];
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':id' => $oldtokenid));
+     $lineid = $stmt->fetch(PDO::FETCH_COLUMN);
 
-     $this->dbconn->startTransaction();
+     $this->dbo->beginTransaction();
      // add token
-     $qs  = "INSERT INTO {$this->db}.token (`text_id`, `trans`, `ordnr`) VALUES ";
-     $qs .= "({$textid}, '" . $this->dbconn->escapeSQL($toktrans) . "', '{$ordnr}')";
-     $q = $this->query($qs);
-     $qerr = $this->dbconn->last_error($q);
-     if($qerr) {
+     $qs  = "INSERT INTO token (`text_id`, `trans`, `ordnr`) ";
+     $qs .= "           VALUES (:tid,      :trans,  :ordnr)";
+     try {
+       $stmt = $this->dbo->prepare($qs);
+       $stmt->execute(array(':tid' => $textid,
+			    ':trans' => $toktrans,
+			    ':ordnr' => $ordnr));
+     }
+     catch (PDOException $ex) {
        $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1230).";
-       $errors[] = $qerr . "\n" . $qs;
-       $this->dbconn->rollback();
+       $errors[] = $ex->getMessage() . "\n" . $qs;
+       $this->dbo->rollBack();
        return array("success" => false, "errors" => $errors);
      }
-     $tokenid = $this->dbconn->last_insert_id();
+     $tokenid = $this->dbo->lastInsertId();
      
      // re-order tokens
-     $qs  = "UPDATE {$this->db}.token SET `ordnr`=`ordnr`+1 ";
-     $qs .= "WHERE `text_id`={$textid} AND (`id`={$oldtokenid} OR `ordnr`>{$ordnr})";
-     $q = $this->query($qs);
-     $qerr = $this->dbconn->last_error($q);
-     if($qerr) {
+     $qs  = "UPDATE token SET `ordnr`=`ordnr`+1 ";
+     $qs .= "WHERE `text_id`=:tid AND (`id`=:id OR `ordnr`>:ordnr)";
+     try {
+       $stmt = $this->dbo->prepare($qs);
+       $stmt->execute(array(':tid' => $textid,
+			    ':id' => $oldtokenid,
+			    ':ordnr' => $ordnr));
+     }
+     catch (PDOException $ex) {
        $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1231).";
-       $errors[] = $qerr . "\n" . $qs;
-       $this->dbconn->rollback();
+       $errors[] = $ex->getMessage() . "\n" . $qs;
+       $this->dbo->rollBack();
        return array("success" => false, "errors" => $errors);
      }
 
      // insert dipl
-     $diplinsert = array();
-     $diplcount = count($converted['dipl_trans']);
-     for($i = 0; $i < $diplcount; $i++) { // loop by index because two arrays are involved
-       $diplinsert[] = "({$tokenid}, {$lineid}, '" 
-	 . $this->dbconn->escapeSQL($converted['dipl_utf'][$i]) . "', '"
-	 . $this->dbconn->escapeSQL($converted['dipl_trans'][$i]) . "')";
+     try {
+       $qs  = "INSERT INTO dipl (`tok_id`, `line_id`, `utf`, `trans`) ";
+       $qs .= "          VALUES (:tokid,   :lineid,   :utf,  :trans) ";
+       $stmt = $this->dbo->prepare($qs);
+       $diplcount = count($converted['dipl_trans']);
+       for($i = 0; $i < $diplcount; $i++) { // loop by index because two arrays are involved
+	 $stmt->execute(array(':tokid' => $tokenid,
+			      ':lineid' => $lineid,
+			      ':utf' => $converted['dipl_utf'][$i],
+			      ':trans' => $converted['dipl_trans'][$i]));
+       }
      }
-     $qs  = "INSERT INTO {$this->db}.dipl (`tok_id`, `line_id`, `utf`, `trans`) VALUES ";
-     $qs .= implode(", ", $diplinsert);
-     $q = $this->query($qs);
-     $qerr = $this->dbconn->last_error($q);
-     if($qerr) {
+     catch (PDOException $ex) {
        $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1232).";
-       $errors[] = $qerr . "\n" . $qs;
-       $this->dbconn->rollback();
+       $errors[] = $ex->getMessage() . "\n" . $qs;
+       $this->dbo->rollBack();
        return array("success" => false, "errors" => $errors);
      }
 
      // insert mod
-     $modinsert = array();
-     $modcount  = count($converted['mod_trans']);
-     for($j = 0; $j < $modcount; $j++) {
-       $modinsert[] = "({$tokenid}, '" . $this->dbconn->escapeSQL($converted['mod_trans'][$j]) . "', '"
-	 . $this->dbconn->escapeSQL($converted['mod_ascii'][$j]) . "', '"
-	 . $this->dbconn->escapeSQL($converted['mod_utf'][$j]) . "')";
+     try {
+       $qs  = "INSERT INTO modern (`tok_id`, `ascii`, `utf`, `trans`) ";
+       $qs .= "            VALUES (:tokid,   :ascii,  :utf,  :trans) ";
+       $stmt = $this->dbo->prepare($qs);
+       $modcount  = count($converted['mod_trans']);
+       for($j = 0; $j < $modcount; $j++) {
+	 $stmt->execute(array(':tokid' => $tokenid,
+			      ':ascii' => $converted['mod_ascii'][$j],
+			      ':utf' => $converted['mod_utf'][$j],
+			      ':trans' => $converted['mod_trans'][$j]));
+       }
      }
-     $qs  = "INSERT INTO {$this->db}.modern (`tok_id`, `trans`, `ascii`, `utf`) VALUES ";
-     $qs .= implode(", ", $modinsert);
-     $q = $this->query($qs);
-     $qerr = $this->dbconn->last_error($q);
-     if($qerr) {
+     catch (PDOException $ex) {
        $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1233).";
-       $errors[] = $qerr . "\n" . $qs;
-       $this->dbconn->rollback();
+       $errors[] = $ex->getMessage() . "\n" . $qs;
+       $this->dbo->rollBack();
        return array("success" => false, "errors" => $errors);
      }
 
      // done!
-     $this->dbconn->commitTransaction();
+     $this->dbo->commit();
      $this->updateChangedTimestamp($textid,$userid);
      return array("success" => true, "newmodcount" => $modcount);
    }
-
 
    /** Change a token.
     *
@@ -2049,10 +1837,11 @@
      $toktrans = str_replace("\n", "", $toktrans);
 
      // get current dipls
-     $qs = "SELECT * FROM {$this->db}.dipl WHERE `tok_id`='{$tokenid}' ORDER BY `id` ASC";
-     $q = $this->query($qs);
+     $qs = "SELECT * FROM dipl WHERE `tok_id`=:tokid ORDER BY `id` ASC";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':tokid' => $tokenid));
      $lastline = "";
-     while($row = $this->dbconn->fetch_assoc($q)) {
+     while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
        $olddipl[] = $row;
        if($row['line_id'] !== $lastline) {
 	 $lineids[] = $row['line_id'];
@@ -2074,21 +1863,23 @@
        // fetch the first dipl of the next token and check if it is on
        // a different line than the last dipl of the current token -->
        // if so, this works, if not, then it's an error
-       $qs  = "SELECT d.line_id FROM {$this->db}.dipl d ";
-       $qs .= "  WHERE d.tok_id IN (SELECT t.id AS tok_id FROM {$this->db}.token t ";
-       $qs .= "                      WHERE t.text_id='{$textid}' ";
-       $qs .= "                        AND t.ordnr > (SELECT u.ordnr FROM {$this->db}.token u ";
-       $qs .= "                                        WHERE u.id='{$tokenid}') ";
+       $qs  = "SELECT d.line_id FROM dipl d ";
+       $qs .= "  WHERE d.tok_id IN (SELECT t.id AS tok_id FROM token t ";
+       $qs .= "                      WHERE t.text_id=:tid ";
+       $qs .= "                        AND t.ordnr > (SELECT u.ordnr FROM token u ";
+       $qs .= "                                        WHERE u.id=:tokid) ";
        $qs .= "                      ORDER BY t.ordnr ASC) ";
        $qs .= " ORDER BY d.id ASC LIMIT 1";
-       $q = $this->query($qs);
-       $qerr = $this->dbconn->last_error($q);
-       if($qerr) {
+       try {
+	 $stmt = $this->dbo->prepare($qs);
+	 $stmt->execute(array(':tid' => $textid, ':tokid' => $tokenid));
+	 $row = $stmt->fetch(PDO::FETCH_ASSOC);
+       }
+       catch (PDOException $ex) {
 	 $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1210).";
-	 $errors[] = $qerr . "\n" . $qs;
+	 $errors[] = $ex->getMessage() . "\n" . $qs;
 	 return array("success" => false, "errors" => $errors);
        }
-       $row = $this->dbconn->fetch_assoc($q);
        if(empty($row) || !isset($row['line_id'])) {
 	 $errors[] = "Die neue Transkription enthält einen Zeilenumbruch mehr als die vorherige, es konnte jedoch keine passende Zeile gefunden werden. (Befindet sich die Transkription in der letzten Zeile des Dokuments?)";
 	 return array("success" => false, "errors" => $errors);
@@ -2108,9 +1899,11 @@
      for($i = 0; $i < $diplcount; $i++) { // loop by index because three arrays are involved
        $diplid = (isset($olddipl[$i]) ? $olddipl[$i]['id'] : "NULL");
        $dipltrans = $converted['dipl_trans'][$i];
-       $diplinsert[] = "({$diplid}, {$tokenid}, " . $this->dbconn->escapeSQL($lineids[$currentline]) . ", '" 
-	 . $this->dbconn->escapeSQL($converted['dipl_utf'][$i]) . "', '"
-	 . $this->dbconn->escapeSQL($dipltrans) . "')";
+       $diplinsert[] = array(':diplid' => $diplid,
+			     ':tokid'  => $tokenid,
+			     ':lineid' => $lineids[$currentline],
+			     ':utf'    => $converted['dipl_utf'][$i],
+			     ':trans'  => $dipltrans);
        if(Transcription::endsWithSeparator($dipltrans)) {
 	 $currentline++;
        }
@@ -2122,11 +1915,10 @@
      }
 
      // get current mods
-     $qs = "SELECT * FROM {$this->db}.modern WHERE `tok_id`='{$tokenid}' ORDER BY `id` ASC";
-     $q = $this->query($qs);
-     while($row = $this->dbconn->fetch_assoc($q)) {
-       $oldmod[] = $row;
-     }
+     $qs = "SELECT * FROM modern WHERE `tok_id`=:tokid ORDER BY `id` ASC";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':tokid' => $tokenid));
+     $oldmod = $stmt->fetchAll(PDO::FETCH_ASSOC);
      
      // prepare mod queries
      $modinsert = array();
@@ -2134,9 +1926,11 @@
      $modcount  = count($converted['mod_trans']);
      for($j = 0; $j < $modcount; $j++) {
        $modid = (isset($oldmod[$j]) ? $oldmod[$j]['id'] : "NULL");
-       $modinsert[] = "({$modid}, {$tokenid}, '" . $this->dbconn->escapeSQL($converted['mod_trans'][$j]) . "', '"
-	 . $this->dbconn->escapeSQL($converted['mod_ascii'][$j]) . "', '"
-	 . $this->dbconn->escapeSQL($converted['mod_utf'][$j]) . "')";
+       $modinsert[] = array(':modid' => $modid,
+			    ':tokid' => $tokenid,
+			    ':trans' => $converted['mod_trans'][$j],
+			    ':ascii' => $converted['mod_ascii'][$j],
+			    ':utf'   => $converted['mod_utf'][$j]);
      }
      // are there mods that need to be deleted?
      while(isset($oldmod[$j])) {
@@ -2145,83 +1939,100 @@
      }
 
      // perform actual queries
-     $this->dbconn->startTransaction();
+     $this->dbo->beginTransaction();
      // dipl
      if(!empty($diplinsert)) { // e.g., standalone edition numberings have no dipl
-       $qs  = "INSERT INTO {$this->db}.dipl (`id`, `tok_id`, `line_id`, `utf`, `trans`) VALUES ";
-       $qs .= implode(", ", $diplinsert);
-       $qs .= " ON DUPLICATE KEY UPDATE `line_id`=VALUES(line_id), `utf`=VALUES(utf), `trans`=VALUES(trans)";
-       $q = $this->query($qs);
-       $qerr = $this->dbconn->last_error($q);
-       if($qerr) {
+       $qs  = "INSERT INTO dipl (`id`, `tok_id`, `line_id`, `utf`, `trans`) ";
+       $qs .= "          VALUES (:diplid, :tokid, :lineid,  :utf,  :trans) ";
+       $qs .= " ON DUPLICATE KEY UPDATE `line_id`=VALUES(line_id), ";
+       $qs .= "                    `utf`=VALUES(utf), `trans`=VALUES(trans)";
+       try {
+	 $stmt = $this->dbo->prepare($qs);
+	 foreach($diplinsert as $param) {
+	   $stmt->execute($param);
+	 }
+       }
+       catch (PDOException $ex) {
 	 $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1211).";
-	 $errors[] = $qerr . "\n" . $qs;
-	 $this->dbconn->rollback();
+	 $errors[] = $ex->getMessage() . "\n" . $qs;
+	 $this->dbo->rollBack();
 	 return array("success" => false, "errors" => $errors);
        }
      }
      if(!empty($dipldelete)) {
-       $qs = "DELETE FROM {$this->db}.dipl WHERE `id` IN (" . implode(", ", $dipldelete) . ")";
-       $q = $this->query($qs);
-       $qerr = $this->dbconn->last_error($q);
-       if($qerr) {
+       $qs = "DELETE FROM dipl WHERE `id` IN (" . implode(", ", $dipldelete) . ")";
+       try {
+	 $this->dbo->exec($qs);
+       }
+       catch (PDOException $ex) {
 	 $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1212).";
-	 $errors[] = $qerr . "\n" . $qs;
-	 $this->dbconn->rollback();
+	 $errors[] = $ex->getMessage() . "\n" . $qs;
+	 $this->dbo->rollBack();
 	 return array("success" => false, "errors" => $errors);
        }
      }
      // modern
      if(!empty($modinsert)) { // this can happen for struck words, e.g. *[vnd*]
-       $qs  = "INSERT INTO {$this->db}.modern (`id`, `tok_id`, `trans`, `ascii`, `utf`) VALUES ";
-       $qs .= implode(", ", $modinsert);
-       $qs .= " ON DUPLICATE KEY UPDATE `trans`=VALUES(trans), `ascii`=VALUES(ascii), `utf`=VALUES(utf)";
-       $q = $this->query($qs);
-       $qerr = $this->dbconn->last_error($q);
-       if($qerr) {
+       $qs  = "INSERT INTO modern (`id`, `tok_id`, `trans`, `ascii`, `utf`) ";
+       $qs .= "            VALUES (:modid, :tokid, :trans,  :ascii,  :utf) ";
+       $qs .= " ON DUPLICATE KEY UPDATE `trans`=VALUES(trans), ";
+       $qs .= "                    `ascii`=VALUES(ascii), `utf`=VALUES(utf)";
+       try {
+	 $stmt = $this->dbo->prepare($qs);
+	 foreach($modinsert as $param) {
+	   $stmt->execute($param);
+	 }
+       }
+       catch (PDOException $ex) {
 	 $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1213).";
-	 $errors[] = $qerr . "\n" . $qs;
-	 $this->dbconn->rollback();
+	 $errors[] = $ex->getMessage() . "\n" . $qs;
+	 $this->dbo->rollBack();
 	 return array("success" => false, "errors" => $errors);
        }
      }
      if(!empty($moddelete)) {
-       $qs = "DELETE FROM {$this->db}.modern WHERE `id` IN (" . implode(", ", $moddelete) . ")";
-       $q = $this->query($qs);
-       $qerr = $this->dbconn->last_error($q);
-       if($qerr) {
+       $qs = "DELETE FROM modern WHERE `id` IN (" . implode(", ", $moddelete) . ")";
+       try {
+	 $this->dbo->exec($qs);
+       }
+       catch (PDOException $ex) {
 	 $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1214).";
-	 $errors[] = $qerr . "\n" . $qs;
-	 $this->dbconn->rollback();
+	 $errors[] = $ex->getMessage() . "\n" . $qs;
+	 $this->dbo->rollBack();
 	 return array("success" => false, "errors" => $errors);
        }
        // delete CorA comments attached to this modern token
-       $qs  = "DELETE FROM {$this->db}.comment WHERE `tok_id`={$tokenid} AND `comment_type`='C' ";
+       $qs  = "DELETE FROM comment WHERE `tok_id`=:tokid AND `comment_type`='C' ";
        $qs .= " AND `subtok_id` IN (" . implode(", ", $moddelete) . ")";
-       $q = $this->query($qs);
+       $stmt = $this->dbo->prepare($qs);
+       $stmt->execute(array(':tokid' => $tokenid));
        // if 'currentmod_id' is set to one of the deleted tokens, set it to something feasible
-       $qs  = "SELECT currentmod_id FROM {$this->db}.text WHERE `id`={$textid} AND `currentmod_id` IN (";
-       $qs .= implode(", ", $moddelete) . ")";
-       $q = $this->query($qs);
-       if($this->dbconn->row_count($q) > 0) {
+       $qs  = "SELECT currentmod_id FROM text WHERE `id`=:tid ";
+       $qs .= "  AND `currentmod_id` IN (" . implode(", ", $moddelete) . ")";
+       $stmt = $this->dbo->prepare($qs);
+       $stmt->execute(array(':tid' => $textid));
+       if($stmt->rowCount() > 0) {
 	 $cmid = $oldmod[0]['id'];
-	 $qs = "UPDATE {$this->db}.text SET `currentmod_id`={$cmid} WHERE `id`={$textid}";
-	 $q = $this->query($qs);
+	 $qs = "UPDATE text SET `currentmod_id`=:cmid WHERE `id`=:tid";
+	 $stmt = $this->dbo->prepare($qs);
+	 $stmt->execute(array(':cmid' => $cmid, ':tid' => $textid));
        }
      }
      // token
-     $qs = "UPDATE {$this->db}.token SET `trans`='"
-       . $this->dbconn->escapeSQL($toktrans) . "' WHERE `id`={$tokenid}";
-     $q = $this->query($qs);
-     $qerr = $this->dbconn->last_error($q);
-     if($qerr) {
+     $qs = "UPDATE token SET `trans`=:trans WHERE `id`=:tokid";
+     try {
+       $stmt = $this->dbo->prepare($qs);
+       $stmt->execute(array(':tokid' => $tokenid,
+			    ':trans' => $toktrans));
+     }
+     catch (PDOException $ex) {
        $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1215).";
-       $errors[] = $qerr . "\n" . $qs;
-       $this->dbconn->rollback();
+       $errors[] = $ex->getMessage() . "\n" . $qs;
+       $this->dbo->rollBack();
        return array("success" => false, "errors" => $errors);
      }
 
-     $this->dbconn->commitTransaction();
+     $this->dbo->commit();
      $this->updateChangedTimestamp($textid,$userid);
      return array("success" => true, "oldmodcount" => count($oldmod), "newmodcount" => $modcount);
    }
@@ -2295,25 +2106,25 @@
     
     // otherwise, perform the import
     try{
-      $this->dbconn->startTransaction();
-      $qs  = "INSERT INTO {$this->db}.tagset (name, set_type, class) ";
-      $qs .= "VALUES ('{$tagsetname}', 'closed', 'POS')";
-      if(!$this->query($qs)) {
-	return array("success"=>false, "errors"=>array($this->dbconn->last_error()));
-      }
-      $tagsetid = $this->dbconn->last_insert_id();
-      $qhead  = "INSERT INTO {$this->db}.tag (`value`, `needs_revision`, ";
-      $qhead .= "`tagset_id`) VALUES";
-      $query  = new LongSQLQuery($this->dbconn, $qhead, '');
+      $this->dbo->beginTransaction();
+      $qs  = "INSERT INTO tagset (name, set_type, class) ";
+      $qs .= "VALUES (:name, 'closed', 'POS')";
+      $stmt = $this->dbo->prepare($qs);
+      $stmt->execute(array(':name' => $tagsetname));
+      $tagsetid = $this->dbo->lastInsertId();
+
+      $qhead  = "INSERT INTO tag (`value`, `needs_revision`, ";
+      $qhead .= "`tagset_id`) VALUES (:value, :needrev, :tagset) ";
+      $stmt = $this->dbo->prepare($qs);
       foreach($tagarray as $tagname => $tagnc) {
-	$qs = "('" . $tagname . "', " . ($tagnc ? '1' : '0') . ", {$tagsetid})";
-	$query->append($qs);
+	$stmt->execute(array(':value' => $tagname,
+			     ':needrev' => ($tagnc ? '1' : '0'),
+			     ':tagset' => $tagsetid));
       }
-      $query->flush();
-      $this->dbconn->commitTransaction();
-    } catch (SQLQueryException $e) {
-      $this->dbconn->rollback();
-      return array("success"=>false, "errors"=>array($e->getMessage()));
+      $this->dbo->commit();
+    } catch (DBOException $ex) {
+      $this->dbo->rollBack();
+      return array("success"=>false, "errors"=>array($ex->getMessage()));
     }
     
     // done!
@@ -2322,26 +2133,21 @@
 
   /** Find the text ID for a given token ID. */
   public function getTextIdForToken($tokenid) {
-    $textid = null;
-    $qs = "SELECT `text_id` FROM {$this->db}.token WHERE `id`='{$tokenid}'";
-    $q = $this->query($qs);
-    if($row = $this->dbconn->fetch_assoc($q)) {
-      $textid = $row['text_id'];
-    }
-    return $textid;
+    $qs = "SELECT `text_id` FROM token WHERE `id`=:tokid";
+    $stmt = $this->dbo->prepare($qs);
+    $stmt->execute(array(':tokid' => $tokenid));
+    return $stmt->fetch(PDO::FETCH_COLUMN);
   }
 
   /** Find the project ID and ascii value for a given modern ID. */
   private function getProjectAndAscii($modid) {
-    $qs = "SELECT text.project_id, modern.ascii FROM {$this->db}.text "
-      . "    LEFT JOIN {$this->db}.token ON token.text_id=text.id "
-      . "    LEFT JOIN {$this->db}.modern ON modern.tok_id=token.id "
-      . "  WHERE  modern.id='{$modid}' LIMIT 1";
-    $q = $this->query($qs);
-    if($row = $this->dbconn->fetch_assoc($q)) {
-      return $row;
-    }
-    return array();
+    $qs = "SELECT text.project_id, modern.ascii FROM text "
+      . "    LEFT JOIN token ON token.text_id=text.id "
+      . "    LEFT JOIN modern ON modern.tok_id=token.id "
+      . "  WHERE  modern.id=:modid LIMIT 1";
+    $stmt = $this->dbo->prepare($qs);
+    $stmt->execute(array(':modid' => $modid));
+    return $stmt->fetch(PDO::FETCH_ASSOC);
   }
 
   /** Insert a new document.
@@ -2381,166 +2187,206 @@
     }
 
     // Start insertions
-    $this->dbconn->startTransaction();
+    $this->dbo->beginTransaction();
 
     // Table 'text'
-    $qstr  = "INSERT INTO {$this->db}.text ";
+    $qstr  = "INSERT INTO text ";
     $qstr .= "  (`sigle`, `fullname`, `project_id`, `created`, `creator_id`, ";
     $qstr .= "   `currentmod_id`, `header`, `fullfile`) VALUES ";
-    $qstr .= "('" . $this->dbconn->escapeSQL($options['sigle']) . "', ";
-    $qstr .= "'" . $this->dbconn->escapeSQL($options['name']) . "', ";
-    $qstr .= "'" . $options['project'] . "', CURRENT_TIMESTAMP, ";
-    $qstr .= "'" . $_SESSION['user_id'] . "', NULL, ";
-    $qstr .= "'" . $this->dbconn->escapeSQL($data->getHeader()) . "', ";
+    $qstr .= "  (:sigle, :name, :project, CURRENT_TIMESTAMP, :uid, ";
+    $qstr .= "     NULL, :header, :fullfile) ";
     if(isset($options['trans_file']) && !empty($options['trans_file'])) {
-      // $qstr .= "LOAD_FILE('" . $options['trans_file'] . "')";
-      $qstr .= "'" . $this->dbconn->escapeSQL($options['trans_file']) . "'";
+      $fullfile = $options['trans_file'];
     } else {
-      $qstr .= "NULL";
+      $fullfile = NULL;
     }
-    $qstr .= ")";
-    $q = $this->query($qstr);
-    if($qerr = $this->dbconn->last_error()) {
-      $this->dbconn->rollback();
-      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1091).\n" . $qerr;
+    try {
+      $stmt = $this->dbo->prepare($qstr);
+      $stmt->execute(array(':sigle' => $options['sigle'],
+			   ':name'  => $options['name'],
+			   ':project' => $options['project'],
+			   ':uid' => $_SESSION['user_id'],
+			   ':header' => $data->getHeader(),
+			   ':fullfile' => $fullfile));
+      $fileid = $this->dbo->lastInsertId();
     }
-    $fileid = $this->dbconn->last_insert_id();
+    catch (PDOException $ex) {
+      $this->dbo->rollBack();
+      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1091).\n" . $ex->getMessage();
+    }
 
     // Table 'text2tagset'
-    $qstr  = "INSERT INTO {$this->db}.text2tagset ";
+    $qstr  = "INSERT INTO text2tagset ";
     $qstr .= "  (`text_id`, `tagset_id`, `complete`) VALUES ";
-    $qarr  = array();
-    foreach($options['tagsets'] as $tagsetid) {
-      $qarr[] = "('{$fileid}', '{$tagsetid}', 0)";
+    $qstr .= "  (:tid, :tagset, :complete)";
+    try {
+      $stmt = $this->dbo->prepare($qstr);
+      foreach($options['tagsets'] as $tagsetid) {
+	$stmt->execute(array(':tid' => $fileid,
+			     ':tagset' => $tagsetid,
+			     ':complete' => 0));
+      }
     }
-    $qstr .= implode(",", $qarr);
-    $q = $this->query($qstr);
-    if($qerr = $this->dbconn->last_error()) {
-      $this->dbconn->rollback();
-      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1092).\n" . $qerr;
+    catch (PDOException $ex) {
+      $this->dbo->rollBack();
+      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1092).\n" . $ex->getMessage();
     }
     
     /* Note: The next blocks all follow a very similar structure. Can
        we refactor this into a loop? */
 
     // Table 'page'
-    $qstr  = "INSERT INTO {$this->db}.page (`name`, `side`, `text_id`, `num`) VALUES ";
-    $qarr  = array();
+    $qstr  = "INSERT INTO page (`name`, `side`, `text_id`, `num`) VALUES ";
+    $qstr .= "                 (:name,  :side,  :tid,      :num)";
     $pages = $data->getPages();
-    foreach($pages as $page) {
-      $qarr[] = "('" . $this->dbconn->escapeSQL($page['name']) . "', '" 
-	. $this->dbconn->escapeSQL($page['side']) . "', '{$fileid}', '" 
-	. $page['num'] . "')";
+    $first_id = null;
+    try {
+      $stmt = $this->dbo->prepare($qstr);
+      foreach($pages as $page) {
+	$stmt->execute(array(':name' => $page['name'],
+			     ':side' => $page['side'],
+			     ':tid'  => $fileid,
+			     ':num'  => $page['num']));
+	if(is_null($first_id)) {
+	  $first_id = $this->dbo->lastInsertId();
+	}
+      }
     }
-    $qstr .= implode(",", $qarr);
-    $q = $this->query($qstr);
-    if($qerr = $this->dbconn->last_error()) {
-      $this->dbconn->rollback();
-      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1093).\n" . $qerr;
+    catch (PDOException $ex) {
+      $this->dbo->rollBack();
+      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1093).\n" . $ex->getMessage();
     }
-    $first_id = $this->dbconn->last_insert_id();
     $data->fillPageIDs($first_id);
 
     // Table 'col'
-    $qstr  = "INSERT INTO {$this->db}.col (`name`, `num`, `page_id`) VALUES ";
-    $qarr  = array();
+    $qstr  = "INSERT INTO col (`name`, `num`, `page_id`) VALUES ";
+    $qstr .= "                (:name,  :num,  :pageid) ";
+    $first_id = null;
     $cols  = $data->getColumns();
-    foreach($cols as $col) {
-      $qarr[] = "('" . $this->dbconn->escapeSQL($col['name']) . "', '" 
-	. $col['num'] . "', '" . $col['parent_db_id'] . "')";
+    try {
+      $stmt = $this->dbo->prepare($qstr);
+      foreach($cols as $col) {
+	$stmt->execute(array(':name' => $col['name'],
+			     ':num'  => $col['num'],
+			     ':pageid' => $col['parent_db_id']));
+	if(is_null($first_id)) {
+	  $first_id = $this->dbo->lastInsertId();
+	}
+      }
     }
-    $qstr .= implode(",", $qarr);
-    $q = $this->query($qstr);
-    if($qerr = $this->dbconn->last_error()) {
-      $this->dbconn->rollback();
-      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1094).\n" . $qerr;
+    catch (PDOException $ex) {
+      $this->dbo->rollBack();
+      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1094).\n" . $ex->getMessage();
     }
-    $first_id = $this->dbconn->last_insert_id();
     $data->fillColumnIDs($first_id);
     
     // Table 'line'
-    $qstr  = "INSERT INTO {$this->db}.line (`name`, `num`, `col_id`) VALUES ";
-    $qarr  = array();
+    $qstr  = "INSERT INTO line (`name`, `num`, `col_id`) VALUES ";
+    $qstr .= "                 (:name,  :num,  :colid) ";
+    $first_id = null;
     $lines = $data->getLines();
-    foreach($lines as $line) {
-      $qarr[] = "('" . $this->dbconn->escapeSQL($line['name']) . "', '" 
-	. $line['num'] . "', '"	. $line['parent_db_id'] . "')";
+    try {
+      $stmt = $this->dbo->prepare($qstr);
+      foreach($lines as $line) {
+	$stmt->execute(array(':name' => $line['name'],
+			     ':num'  => $line['num'],
+			     ':colid' => $line['parent_db_id']));
+	if(is_null($first_id)) {
+	  $first_id = $this->dbo->lastInsertId();
+	}
+      }
     }
-    $qstr .= implode(",", $qarr);
-    $q = $this->query($qstr);
-    if($qerr = $this->dbconn->last_error()) {
-      $this->dbconn->rollback();
-      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1095).\n" . $qerr;
+    catch (PDOException $ex) {
+      $this->dbo->rollBack();
+      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1095).\n" . $ex->getMessage();
     }
-    $first_id = $this->dbconn->last_insert_id();
     $data->fillLineIDs($first_id);
     
     // Table 'token'
-    $qstr  = "INSERT INTO {$this->db}.token (`trans`, `ordnr`, `text_id`) VALUES ";
-    $qarr  = array();
+    $qstr  = "INSERT INTO token (`trans`, `ordnr`, `text_id`) VALUES ";
+    $qstr .= "                  (:trans,  :ordnr,  :tid) ";
+    $first_id = null;
     $tokens = $data->getTokens();
-    foreach($tokens as $token) {
-      $qarr[] = "('" . $this->dbconn->escapeSQL($token['trans']) . "', '" 
-	. $token['ordnr'] . "', '{$fileid}')";
+    try {
+      $stmt = $this->dbo->prepare($qstr);
+      foreach($tokens as $token) {
+	$stmt->execute(array(':trans' => $token['trans'],
+			     ':ordnr' => $token['ordnr'],
+			     ':tid'   => $fileid));
+	if(is_null($first_id)) {
+	  $first_id = $this->dbo->lastInsertId();
+	}
+      }
     }
-    $qstr .= implode(",", $qarr);
-    $q = $this->query($qstr);
-    if($qerr = $this->dbconn->last_error()) {
-      $this->dbconn->rollback();
-      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1096).\n" . $qerr;
+    catch (PDOException $ex) {
+      $this->dbo->rollBack();
+      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1096).\n" . $ex->getMessage();
     }
-    $first_id = $this->dbconn->last_insert_id();
     $data->fillTokenIDs($first_id);
 
     // Table 'dipl'
-    $qstr  = "INSERT INTO {$this->db}.dipl (`trans`, `utf`, `tok_id`, `line_id`) VALUES ";
-    $qarr  = array();
+    $qstr  = "INSERT INTO dipl (`trans`, `utf`, `tok_id`, `line_id`) VALUES ";
+    $qstr .= "                 (:trans,  :utf,  :tokid,   :lineid) ";
+    $first_id = null;
     $dipls = $data->getDipls();
-    foreach($dipls as $dipl) {
-      $qarr[] = "('" . $this->dbconn->escapeSQL($dipl['trans']) . "', '" 
-	. $this->dbconn->escapeSQL($dipl['utf']) . "', '"
-	. $dipl['parent_tok_db_id'] . "', '" . $dipl['parent_line_db_id'] . "')";
+    try {
+      $stmt = $this->dbo->prepare($qstr);
+      foreach($dipls as $dipl) {
+	$stmt->execute(array(':trans' => $dipl['trans'],
+			     ':utf'   => $dipl['utf'],
+			     ':tokid' => $dipl['parent_tok_db_id'],
+			     ':lineid' => $dipl['parent_line_db_id']));
+	if(is_null($first_id)) {
+	  $first_id = $this->dbo->lastInsertId();
+	}
+      }
     }
-    $qstr .= implode(",", $qarr);
-    $q = $this->query($qstr);
-    if($qerr = $this->dbconn->last_error()) {
-      $this->dbconn->rollback();
-      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1097).\n" . $qerr;
+    catch (PDOException $ex) {
+      $this->dbo->rollBack();
+      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1097).\n" . $ex->getMessage();
     }
-    $first_id = $this->dbconn->last_insert_id();
     $data->fillDiplIDs($first_id);
 
     // Table 'modern'
-    $qstr  = "INSERT INTO {$this->db}.modern (`trans`, `utf`, `ascii`, `tok_id`) VALUES ";
-    $qarr  = array();
+    $qstr  = "INSERT INTO modern (`trans`, `utf`, `ascii`, `tok_id`) VALUES ";
+    $qstr .= "                   (:trans,  :utf,  :ascii,  :tokid) ";
+    $first_id = null;
     $moderns = $data->getModerns();
-    foreach($moderns as $mod) {
-      $qarr[] = "('" . $this->dbconn->escapeSQL($mod['trans']) . "', '" 
-	. $this->dbconn->escapeSQL($mod['utf']) . "', '"
-	. $this->dbconn->escapeSQL($mod['ascii']) . "', '" . $mod['parent_db_id'] . "')";
+    try {
+      $stmt = $this->dbo->prepare($qstr);
+      foreach($moderns as $mod) {
+	$stmt->execute(array(':trans' => $mod['trans'],
+			     ':utf'   => $mod['utf'],
+			     ':tokid' => $mod['parent_db_id'],
+			     ':ascii' => $mod['ascii']));
+	if(is_null($first_id)) {
+	  $first_id = $this->dbo->lastInsertId();
+	}
+      }
     }
-    $qstr .= implode(",", $qarr);
-    $q = $this->query($qstr);
-    if($qerr = $this->dbconn->last_error()) {
-      $this->dbconn->rollback();
-      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1098).\n" . $qerr;
+    catch (PDOException $ex) {
+      $this->dbo->rollBack();
+      return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1098).\n" . $ex->getMessage();
     }
-    $first_id = $this->dbconn->last_insert_id();
     $data->fillModernIDs($first_id);
 
     // Table 'tag_suggestion'
-    $qstr  = "INSERT INTO {$this->db}.tag_suggestion ";
+    $qstr  = "INSERT INTO tag_suggestion ";
     $qstr .= "  (`score`, `selected`, `source`, `tag_id`, `mod_id`) VALUES ";
-    $qarr  = array();
-    $moderns = $data->getModerns();
-    $tistr  = "INSERT INTO {$this->db}.tag ";
+    $qstr .= "  (:score,  :selected,  :source,  :tagid,   :modid)";
+    $tistr  = "INSERT INTO tag ";
     $tistr .= "  (`value`, `needs_revision`, `tagset_id`) VALUES ";
+    $tistr .= "  (:value,  :needrev,         :tagset)";
+    $stmt_ts  = $this->dbo->prepare($qstr);
+    $stmt_tag = $this->dbo->prepare($tistr);
+
+    $moderns = $data->getModerns();
     foreach($moderns as $mod) {
       foreach($mod['tags'] as $sugg) {
 	// for POS tags, just refer to the respective tag ID
 	if($sugg['type']==='pos') {
 	  if(!array_key_exists($sugg['tag'], $tagset_pos)) {
-	    $this->dbconn->rollback();
+	    $this->dbo->rollBack();
 	    return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1099). Der folgende POS-Tag ist ungültig: " . $sugg['tag'];
 	  }
 	  $tag_id = $tagset_pos[$sugg['tag']];
@@ -2548,74 +2394,80 @@
 	// for modernisation types, too
 	else if($sugg['type']==='norm_type') {
 	  if(!array_key_exists($sugg['tag'], $tagset_norm_type)) {
-	    $this->dbconn->rollback();
+	    $this->dbo->rollBack();
 	    return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1099). Der folgende Modernisierungstyp ist ungültig: " . $sugg['tag'];
 	  }
 	  $tag_id = $tagset_norm_type[$sugg['tag']];
 	}
 	// for all other tags, create a new tag entry first
 	else {
-	  $tqstr = $tistr . "('" . $this->dbconn->escapeSQL($sugg['tag']) . "', 0, '"
-	    . $tagset_ids[$sugg['type']] . "')";
-	  $tq = $this->query($tqstr);
-	  if($qerr = $this->dbconn->last_error()) {
-	    $this->dbconn->rollback();
-	    return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1100, Tagset-Typ: " . $sugg['type'] . ").\n" . $qerr;
+	  try {
+	    $stmt_tag->execute(array(':value' => $sugg['tag'],
+				     ':needrev' => 0,
+				     ':tagset' => $tagset_ids[$sugg['type']]));
+	    $tag_id = $this->dbo->lastInsertId();
 	  }
-	  $tag_id = $this->dbconn->last_insert_id();
+	  catch (PDOException $ex) {
+	    $this->dbo->rollBack();
+	    return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1100, Tagset-Typ: " . $sugg['type'] . ").\n" . $ex->getMessage();
+	  }
 	}
 	// then append the proper values
-	$qarr[] = "('" . $sugg['score'] . "', '" . $sugg['selected'] . "', '"
-	  . $sugg['source'] . "', '{$tag_id}', '" . $mod['db_id'] . "')";
-      }
-    }
-    if(!empty($qarr)) {
-      $qstr .= implode(",", $qarr);
-      $q = $this->query($qstr);
-      if($qerr = $this->dbconn->last_error()) {
-	$this->dbconn->rollback();
-	return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1101).\n" . $qerr;
+	try {
+	  $stmt_ts->execute(array(':score' => $sugg['score'],
+				  ':selected' => $sugg['selected'],
+				  ':source' => $sugg['source'],
+				  ':tagid' => $tag_id,
+				  ':modid' => $mod['db_id']));
+	  }
+	  catch (PDOException $ex) {
+	    $this->dbo->rollBack();
+	    return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1101).\n" . $ex->getMessage();
+	  }
       }
     }
 
     // Table 'shifttags'
     $qstr  = "INSERT INTO {$this->db}.shifttags ";
     $qstr .= "  (`tok_from`, `tok_to`, `tag_type`) VALUES ";
-    $qarr  = array();
+    $qstr .= "  (:tokfrom,   :tokto,   :type)";
     $shifttags = $data->getShifttags();
     if(!empty($shifttags)) {
-      foreach($shifttags as $shtag) {
-	$qarr[] = "('" . $shtag['db_range'][0] . "', '" . $shtag['db_range'][1] . "', '"
-	  . $shtag['type_letter'] . "')";
+      try {
+	$stmt = $this->dbo->prepare($qstr);
+	foreach($shifttags as $shtag) {
+	  $stmt->execute(array(':tokfrom' => $shtag['db_range'][0],
+			       ':tokto'   => $shtag['db_range'][1],
+			       ':type'    => $shtag['type_letter']));
+	}
       }
-      $qstr .= implode(",", $qarr);
-      $q = $this->query($qstr);
-      if($qerr = $this->dbconn->last_error()) {
-	$this->dbconn->rollback();
-	return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1102).\n" . $qerr;
+      catch (PDOException $ex) {
+	$this->dbo->rollBack();
+	return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1102).\n" . $ex->getMessage();
       }
     }
 
     // Table 'comment'
     $qstr  = "INSERT INTO {$this->db}.comment ";
     $qstr .= "  (`tok_id`, `value`, `comment_type`) VALUES ";
-    $qarr  = array();
+    $qstr .= "  (:tokid,   :value,  :ctype)";
     $comments = $data->getComments();
     if(!empty($comments)) {
-      foreach($comments as $comment) {
-	$qarr[] = "('" . $comment['parent_db_id'] . "', '" 
-	  . $this->dbconn->escapeSQL($comment['text']) . "', '"
-	  . $this->dbconn->escapeSQL($comment['type']) . "')";
+      try {
+	$stmt = $this->dbo->prepare($qstr);
+	foreach($comments as $comment) {
+	  $stmt->execute(array(':tokid' => $comment['parent_db_id'],
+			       ':value' => $comment['text'],
+			       ':ctype' => $comment['type']));
+	}
       }
-      $qstr .= implode(",", $qarr);
-      $q = $this->query($qstr);
-      if($qerr = $this->dbconn->last_error()) {
-	$this->dbconn->rollback();
-	return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1103).\n" . $qerr . "\n" . $qstr;
+      catch (PDOException $ex) {
+	$this->dbo->rollBack();
+	return "Beim Importieren in die Datenbank ist ein Fehler aufgetreten (Code: 1103).\n" . $ex->getMessage() . "\n" . $qstr;
       }
     }
 
-    $this->dbconn->commitTransaction();
+    $this->dbo->commit();
     return False;
   }
 
@@ -2638,46 +2490,50 @@
 
     // get automatic suggestions stored with the line number
     $qstr  = "SELECT ts.id, ts.tag_id, ts.source, tag.value, tagset.class ";
-    $qstr .= "FROM   {$this->db}.tag_suggestion ts ";
-    $qstr .= "  LEFT JOIN {$this->db}.tag ON tag.id=ts.tag_id ";
-    $qstr .= "  LEFT JOIN {$this->db}.tagset ON tagset.id=tag.tagset_id ";
-    $qstr .= "WHERE  ts.mod_id='{$linenum}' AND tagset.class='lemma' AND ts.source='auto'";
-    $query = $this->query($qstr);
-    while($row = $this->dbconn->fetch_assoc($query)) {
+    $qstr .= "FROM   tag_suggestion ts ";
+    $qstr .= "  LEFT JOIN tag ON tag.id=ts.tag_id ";
+    $qstr .= "  LEFT JOIN tagset ON tagset.id=tag.tagset_id ";
+    $qstr .= "WHERE  ts.mod_id=:modid AND tagset.class='lemma' AND ts.source='auto'";
+    $stmt = $this->dbo->prepare($qstr);
+    $stmt->execute(array(':modid' => $linenum));
+    while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
       $suggestions[] = array("id" => $row['tag_id'], "v" => $row['value'], "t" => "s");
     }
 
     // get confirmed selected lemmas from tokens with identical simplification
-     $errortypes = $this->getErrorTypes();
-     if(array_key_exists('lemma verified', $errortypes)) {
-       $lemma_verified = $errortypes['lemma verified'];
-       $paa = $this->getProjectAndAscii($linenum);
-       if($paa && !empty($paa)) {
-	 $line_ascii = $paa['ascii'];
-	 $line_project = $paa['project_id'];
-	 $qstr  = "SELECT tag.id, tag.value, ts.id AS ts_id "
-	   . "     FROM   {$this->db}.tag "
-	   . "       LEFT JOIN {$this->db}.tagset ON tag.tagset_id=tagset.id "
-	   . "       LEFT JOIN {$this->db}.tag_suggestion ts ON ts.tag_id=tag.id "
-	   . "       LEFT JOIN {$this->db}.modern ON modern.id=ts.mod_id "
-	   . "       LEFT JOIN {$this->db}.token ON modern.tok_id=token.id "
-	   . "       LEFT JOIN {$this->db}.text ON token.text_id=text.id "
-	   . "       LEFT JOIN {$this->db}.mod2error ON mod2error.mod_id=modern.id "
-	   . "     WHERE  mod2error.error_id='{$lemma_verified}' "
-	   . "        AND UPPER(modern.ascii)=UPPER('{$line_ascii}') "
-	   . "        AND text.project_id='{$line_project}' "
-	   . "        AND tagset.class='lemma' "
-	   . "        AND ts.selected=1 ";
-	 $query = $this->query($qstr);
-	 $processed_lemmas = array();
-	 while($row = $this->dbconn->fetch_assoc($query)) {
-	   if(!in_array($row['value'], $processed_lemmas)) {
-	     $suggestions[] = array("id" => $row['id'], "v" => $row['value'], "t" => "c");
-	     $processed_lemmas[] = $row['value'];
-	   }
-	 }
-       }
-     }
+    $errortypes = $this->getErrorTypes();
+    if(array_key_exists('lemma verified', $errortypes)) {
+      $lemma_verified = $errortypes['lemma verified'];
+      $paa = $this->getProjectAndAscii($linenum);
+      if($paa && !empty($paa)) {
+	$line_ascii = $paa['ascii'];
+	$line_project = $paa['project_id'];
+	$qstr  = "SELECT tag.id, tag.value, ts.id AS ts_id "
+	  . "     FROM   tag "
+	  . "       LEFT JOIN tagset ON tag.tagset_id=tagset.id "
+	  . "       LEFT JOIN tag_suggestion ts ON ts.tag_id=tag.id "
+	  . "       LEFT JOIN modern ON modern.id=ts.mod_id "
+	  . "       LEFT JOIN token ON modern.tok_id=token.id "
+	  . "       LEFT JOIN text ON token.text_id=text.id "
+	  . "       LEFT JOIN mod2error ON mod2error.mod_id=modern.id "
+	  . "     WHERE  mod2error.error_id=:errid "
+	  . "        AND UPPER(modern.ascii)=UPPER(:ascii) "
+	  . "        AND text.project_id=:projectid "
+	  . "        AND tagset.class='lemma' "
+	  . "        AND ts.selected=1 ";
+	$stmt = $this->dbo->prepare($qstr);
+	$stmt->execute(array(':errid' => $lemma_verified,
+			     ':ascii' => $line_ascii,
+			     ':projectid' => $line_project));
+	$processed_lemmas = array();
+	while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+	  if(!in_array($row['value'], $processed_lemmas)) {
+	    $suggestions[] = array("id" => $row['id'], "v" => $row['value'], "t" => "c");
+	    $processed_lemmas[] = $row['value'];
+	  }
+	}
+      }
+    }
 
     // get lemma matches for query string
     if(strlen($q)>0) {
@@ -2691,11 +2547,12 @@
 	}
       }
       if($tsid && $tsid != 0) {
-	$qs = "SELECT `id`, `value` FROM {$this->db}.tag "
+	$qs = "SELECT `id`, `value` FROM tag "
 	  . "  WHERE `tagset_id`='{$tsid}' AND `value` LIKE '{$q}%' "
 	  . "  ORDER BY `value` LIMIT {$limit}";
-	$query = $this->query($qs);
-	while ( $row = $this->dbconn->fetch_assoc( $query ) ) {
+	$stmt = $this->dbo->prepare($qs);
+	$stmt->execute();
+	while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 	  $suggestions[] = array("id" => $row['id'], "v" => $row['value'], "t" => "q");
 	}
       }

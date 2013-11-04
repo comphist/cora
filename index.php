@@ -35,8 +35,7 @@ $menu; /**< A Menu object containing the menu items and references to
             content.php. */
 
 /* Initiate session */
-$dbc = new DBConnector(DB_SERVER, DB_USER, DB_PASSWORD, MAIN_DB);
-$dbi = new DBInterface($dbc);
+$dbi = new DBInterface(DB_SERVER, DB_USER, DB_PASSWORD, MAIN_DB);
 $xml = new XMLHandler($dbi);
 $exp = new Exporter($dbi);
 $ch = new CommandHandler();
