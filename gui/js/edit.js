@@ -1058,7 +1058,8 @@ var EditorModel = new Class({
 	new Request.JSON({
 	    url: 'request.php',
 	    async: async,
-	    onSuccess: function(lineArray, text) {
+	    onSuccess: function(status, text) {
+		var lineArray = status['data'];
 		if (Object.getLength(lineArray)==0) {
 		    throw {
 			'name': 'EmptyRequest',
@@ -1584,13 +1585,13 @@ var EditorModel = new Class({
 	this.requestLines(startlimit, endlimit, false);
 	// find nearest sentence boundaries
 	for (; start>=startlimit; start--) {
-	    if(terminators.contains(data[start].trans)) {
+	    if(data[start]!==undefined && terminators.contains(data[start].trans)) {
 		break;
 	    }
 	}
 	start++;
 	for (; end<endlimit; end++) {
-	    if(terminators.contains(data[end].trans)) {
+	    if(data[end]!==undefined && terminators.contains(data[end].trans)) {
 		end++;
 		break;
 	    }

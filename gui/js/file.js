@@ -471,7 +471,8 @@ var file = {
 				    method: 'get',
 				    data: {'do':'fetchTagset','tagset_id':fileData.data.tagset_id,'limit':'legal'},
         		            onComplete: function(response){
-					ref.preprocessTagset(response);
+					// TODO: error handling?!
+					ref.preprocessTagset(response['data']);
 					afterLoadTagset();
         		            }
         		        }).send();
@@ -501,7 +502,7 @@ var file = {
 		new Request({
 		    url: "request.php",
 		    onSuccess: function(data) {
-			if (!data) {
+			if (!data['success']) {
 			    console.log("Error closing file?");
 			}
 			ref.listFiles();
@@ -522,9 +523,7 @@ var file = {
 		new Request({
 		    url:"request.php",
 		    onSuccess: function(data){
-			if(data){
-			    ref.listFiles();
-			}
+			ref.listFiles();
 		    }
 		}).get({'do': 'unlockFile', 'fileid': fileid, 'force': true});
 	    }
@@ -539,8 +538,14 @@ var file = {
         var ref = this;
         var files = new Request.JSON({
             url:'request.php',
-    		onSuccess: function(filesArray, text) {
+    		onSuccess: function(status, text) {
+		    if(!status['success']) {
+			// TODO
+			return;
+		    }
+
 		    var files_div = $('files').empty();
+		    var filesArray = status['data'];
 
 		    var fileHash = {};
 		    var projectNames = {};
@@ -684,14 +689,14 @@ var file = {
     	     },
     	     onSuccess: function(tlist, x) {
 		 // show tagset associations
-		 if(!tlist) {
+		 if(!tlist['success']) {
 		     alert("Fehler: Konnte Tagset-Verknüpfungen nicht laden.");
 		     spinner.destroy();
 		     content.close();
 		 }
 		 contentdiv.getElement('table.tagset-list')
 		     .getElements('input').each(function(input) {
-			 var checked = tlist.contains(input.value) ? "yes" : "";
+			 var checked = tlist['data'].contains(input.value) ? "yes" : "";
 			 input.set('checked', checked);
 		     });
 		 spinner.destroy();
@@ -733,9 +738,9 @@ var file = {
 
 window.addEvent('domready', function() {
     file.initialize();    
-                    
+
     $$('div.fileViewRefresh img').addEvent('click',function(e){ e.stop(); file.listFiles() });
-    
+
     file.listFiles();
     if(userdata.currentFileId)
         file.openFile(userdata.currentFileId);

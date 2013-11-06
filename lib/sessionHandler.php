@@ -92,7 +92,8 @@ class CoraSessionHandler {
 
   /** Wraps DBInterface::getTagset(). */
   public function getTagset($tagset, $limit) {
-    return $this->db->getTagset($tagset, $limit);
+    $data = $this->db->getTagset($tagset, $limit);
+    return array('success' => true, 'data' => $data);
   }
 
   /** Wraps DBInterface::getTagsetsForFile() and filters it to create
@@ -103,18 +104,14 @@ class CoraSessionHandler {
     foreach($tagsets as $tagset) {
       $tlist[] = $tagset['id'];
     }
-    return $tlist;
+    return array('success' => true, 'data' => $tlist);
   }
 
-  /** Wraps DBInterface::fetchLemmaSuggestion(). */
+  /** Wraps DBInterface::getLemmaSuggestion(). */
   public function getLemmaSuggestion($linenum, $q, $limit) {
-    return $this->db->getLemmaSuggestion($_SESSION['currentFileId'],
-					 $linenum, $q, $limit);
-    /*    return array(
-		 array("v" => "lemma1"),
-		 array("v" => "lemma2"),
-		 array("v" => "lemma3")
-		 );*/
+    $data = $this->db->getLemmaSuggestion($_SESSION['currentFileId'],
+					  $linenum, $q, $limit);
+    return $data;
   }
 
   /** Wraps DBInterface::getUserList(), checking for administrator
@@ -137,16 +134,18 @@ class CoraSessionHandler {
       privileges first. */
   public function createUser( $username, $password, $admin ) {
     if (!$_SESSION["admin"])
-      return false;
-    return $this->db->createUser($username, $password, $admin);
+      return array('success' => false);
+    $status = $this->db->createUser($username, $password, $admin);
+    return array('success' => (bool) $status);
   }
 
   /** Wraps DBInterface::changePassword(), checking for administrator
       privileges first. */
   public function changePassword( $username, $password ) {
     if (!$_SESSION["admin"])
-      return false;
-    return $this->db->changePassword($username, $password);
+      return array('success' => false);
+    $status = $this->db->changePassword($username, $password);
+    return array('success' => (bool) $status);
   }
 
   /** Wraps DBInterface::changePassword(), intended for users
@@ -154,9 +153,9 @@ class CoraSessionHandler {
   public function changeUserPassword( $oldpw, $newpw ) {
     if ($this->db->getUserData($_SESSION["user"], $oldpw)) {
       $this->db->changePassword($_SESSION["user"], $newpw);
-      return array("success"=>True);
+      return array("success"=>true);
     }
-    return array("success"=>False, "errcode"=>"oldpwmm");
+    return array("success"=>false, "errcode"=>"oldpwmm");
   }
 
   /** Wraps DBInterface::changeProjectUsers(), checking for
@@ -171,16 +170,18 @@ class CoraSessionHandler {
       privileges first. */
   public function deleteUser( $username ) {
     if (!$_SESSION["admin"])
-      return false;
-    return $this->db->deleteUser($username);
+      return array('success' => false);
+    $status = $this->db->deleteUser($username);
+    return array('success' => (bool) $status);
   }
 
   /** Wraps DBInterface::toggleAdminStatus(), checking for
       administrator privileges first. */
   public function toggleAdminStatus( $username ) {
     if (!$_SESSION["admin"])
-      return false;
-    return $this->db->toggleAdminStatus($username);
+      return array('success' => false);
+    $status = $this->db->toggleAdminStatus($username);
+    return array('success' => (bool) $status);
   }
 
   /** Wraps XMLHandler::import() */
@@ -225,6 +226,7 @@ class CoraSessionHandler {
       }
     }
     $status['output'] = implode("\n", $output);
+    $status['success'] = true;
     return $status;
   }
 
@@ -321,14 +323,14 @@ class CoraSessionHandler {
   /** Wraps DBInterface::unlockFile(), unset the session data of the file */ 
   public function unlockFile( $fileid ) {
     $force = (bool) $_SESSION["admin"]; // admins can unlock any file
-    if($ans = $this->db->unlockFile( $fileid, $_SESSION['user'], $force )){
+    $ans = $this->db->unlockFile($fileid, $_SESSION['user'], $force);
+    if($ans) {
       unset($_SESSION['currentName']);
       unset($_SESSION['currentFileId']);
-      return true;
     }
-    return $ans;
+    return array('success' => (bool) $ans);
   }
-	
+
   /** Calculate the page number on which a given line appears.
    *
    * @param int $line The line number
@@ -382,10 +384,11 @@ class CoraSessionHandler {
   public function getFiles(){
     $this->db->releaseOldLocks($this->timeout);
     if ($_SESSION["admin"]) {
-      return $this->db->getFiles();
+      $data = $this->db->getFiles();
     } else {
-      return $this->db->getFilesForUser($_SESSION["user"]);
+      $data = $this->db->getFilesForUser($_SESSION["user"]);
     }
+    return array('success' => true, 'data' => $data);
   }
 
   /** Wraps DBInterface::getProjects() */
@@ -454,7 +457,6 @@ class CoraSessionHandler {
   public function getMaxLinesNo(){
     $anz = $this->db->getMaxLinesNo($_SESSION['currentFileId']);
     return $anz;
-    // was: return $this->calculateEditorPage($anz);
   }
   
   /** Save file data to the database.
@@ -475,11 +477,6 @@ class CoraSessionHandler {
     } else {
       return array("success"=>true);
     }
-  }
-
-  /** Wraps DBInterface::getHighestTagId() */
-  public function getHighestTagId($tagset){
-    return $this->db->getHighestTagId($tagset);
   }
 
   /** Delete a token from a file.

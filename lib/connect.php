@@ -202,10 +202,16 @@
     * @param string  $userid   ID of the user to be updated
     */
    public function updateLastactive($userid) {
-     $qs = "UPDATE users SET `lastactive`=NOW() WHERE `id`=:id";
-     $stmt = $this->dbo->prepare($qs);
-     $stmt->bindValue(':id', $userid, PDO::PARAM_INT);
-     $stmt->execute();
+     try {
+       $qs = "UPDATE users SET `lastactive`=NOW() WHERE `id`=:id";
+       $stmt = $this->dbo->prepare($qs);
+       $stmt->bindValue(':id', $userid, PDO::PARAM_INT);
+       $stmt->execute();
+       return true;
+     }
+     catch (PDOException $ex) {
+       return false;
+     }
    }
 
    /** Create a new user.

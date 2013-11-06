@@ -93,7 +93,7 @@ var user_editor = {
 	}
 
 	// send request
-	var request = new Request(
+	var request = new Request.JSON(
 	    {'url': 'request.php?do=createUser',
 	     'async': false,
 	     'data': 'username='+username+'&password='+password,
@@ -101,6 +101,10 @@ var user_editor = {
 		 alert("Fehler: Der Server lieferte folgende Fehlermeldung zurück:\n\n" + xhr.responseText);
 	     },
 	     onSuccess: function(data, xml) {
+		 if(!data['success']) {
+		     alert("Fehler: Benutzer konnte nicht hinzugefügt werden!");
+		     return;
+		 }
 		 var row = $$('.adminUserInfoRow')[0].clone();
 		 row.set('id', 'User_'+username);
 		 row.getElement('td.adminUserNameCell').set('text', username);
@@ -137,7 +141,7 @@ var user_editor = {
 	if (!confirm(dialog))
 	    return;
 
-	var request = new Request(
+	var request = new Request.JSON(
 	    {'url': 'request.php?do=deleteUser',
 	     'async': false,
 	     'data': 'username='+username,
@@ -145,6 +149,10 @@ var user_editor = {
 		 alert("Fehler: Der Server lieferte folgende Fehlermeldung zurück:\n\n" + xhr.responseText);
 	     },
 	     onSuccess: function(data, xml) {
+		 if(!data['success']) {
+		     alert("Fehler: Benutzer konnte nicht gelöscht werden!");
+		     return;
+		 }
 		 parentrow.dispose();
 	     }
 	    }
@@ -154,7 +162,7 @@ var user_editor = {
     toggleStatus: function(event, statusname) {
 	var parentrow = event.target.getParent('tr');
 	var username = parentrow.get('id').substr(5);
-	var request = new Request(
+	var request = new Request.JSON(
 	    {'url': 'request.php?do=toggle'+statusname,
 	     'async': false,
 	     'data': 'username='+username,
@@ -162,6 +170,10 @@ var user_editor = {
 		 alert("Fehler: Der Server lieferte folgende Fehlermeldung zurück:\n\n" + xhr.responseText);
 	     },
 	     onSuccess: function(data, xml) {
+		 if(!data['success']) {
+		     alert("Fehler: Aktion konnte nicht durchgeführt werden!");
+		     return;
+		 }
 		 var arrow = parentrow.getElement('img.adminUser'+statusname+'Status');
 		 if(arrow.isDisplayed()) {
 		     arrow.hide();
@@ -189,7 +201,7 @@ var user_editor = {
 	}
 
 	// send request
-	var request = new Request(
+	var request = new Request.JSON(
 	    {'url': 'request.php?do=changePassword',
 	     'async': false,
 	     'data': 'username='+username+'&password='+password,
@@ -197,6 +209,10 @@ var user_editor = {
 		 alert("Fehler: Der Server lieferte folgende Fehlermeldung zurück:\n\n" + xhr.responseText);
 	     },
 	     onSuccess: function(data, xml) {
+		 if(!data['success']) {
+		     alert("Fehler: Passwort konnte nicht geändert werden!");
+		     return;
+		 }
 		 alert("Passwort erfolgreich geändert.");
 		 CeraBoxWindow.close();
 	     }
@@ -391,31 +407,38 @@ var tagset_editor = {
 	    // fetch tag list and perform a quick and dirty analysis:
 	    var request = new Request.JSON(
 		{url:'request.php',
-		 onSuccess: function(data, text) {
-		     var postags = new Array();
-		     var output = tagsetname + " (ID: " + tagset + ") has ";
-		     output += data.length + " tags ";
-		     Array.each(data, function(tag) {
-			 var pos;
-			 var dot = tag['value'].indexOf('.');
-			 if(dot>=0 && dot<tag['value'].length-1) {
-			     pos = tag['value'].slice(0, dot);
-			 } else {
-			     pos = tag['value'];
-			 }
-			 postags.push(pos);
-		     });
-		     postags = postags.unique();
-		     output += "in " + postags.length + " base POS categories.\n\n";
-		     output += "Base POS categories are:\n";
-		     output += postags.join(", ");
-		     output += "\n\nAll tags:\n";
-		     Array.each(data, function(tag) {
-			 if(tag['needs_revision']==1) {
-			     output += "^";
-			 }
-			 output += tag['value'] + "\n";
-		     });
+		 onSuccess: function(status, text) {
+		     var output;
+		     if(status['success']) {
+			 var data = status['data'];
+			 var postags = new Array();
+			 output = tagsetname + " (ID: " + tagset + ") has ";
+			 output += data.length + " tags ";
+			 Array.each(data, function(tag) {
+			     var pos;
+			     var dot = tag['value'].indexOf('.');
+			     if(dot>=0 && dot<tag['value'].length-1) {
+				 pos = tag['value'].slice(0, dot);
+			     } else {
+				 pos = tag['value'];
+			     }
+			     postags.push(pos);
+			 });
+			 postags = postags.unique();
+			 output += "in " + postags.length + " base POS categories.\n\n";
+			 output += "Base POS categories are:\n";
+			 output += postags.join(", ");
+			 output += "\n\nAll tags:\n";
+			 Array.each(data, function(tag) {
+			     if(tag['needs_revision']==1) {
+				 output += "^";
+			     }
+			     output += tag['value'] + "\n";
+			 });
+		     }
+		     else {
+			 output = "Fehler beim Laden des Tagsets.";
+		     }
 		     textarea.empty().appendText(output);
 		 }
 		}

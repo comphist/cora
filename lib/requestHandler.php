@@ -23,58 +23,6 @@ class RequestHandler {
     $this->sh = $sessionHandler;
   }
 
-  /** Escape all SQL-specific characters.
-   *
-   * Calls @c stripslashes() and @c mysql_real_escape_string() to
-   * remove potentially dangerous characters before doing an SQL
-   * query.
-   *
-   * @param object $obj The object to be escaped; can be a @em string
-   * or an @em array of strings. If an array is given, this function
-   * is called recursively for all array entries.
-   *
-   * @return The modified string or array.
-   */
-  private function escapeSQL( $obj ) {
-    if(is_string($obj)) {
-      return mysql_real_escape_string(stripslashes($obj));
-    }
-    else if(is_array($obj)) {
-      $newarray = array();
-      foreach($obj as $k => $v) {
-	$newarray[$k] = self::escapeSQL($v);
-      }
-      return $newarray;
-    }
-    else {
-      return $obj;
-    }
-  }
-
-  /** Send an HTTP status code indicating that an error has occured,
-   * then exit.
-   *
-   * @note JavaScript functions that are sending requests should
-   * typically watch out for and catch these errors.
-   *
-   * @param integer $code An HTTP status code (default: 500)
-   * @param string  $msg  An error message
-   */
-  private function returnError($code, $msg) {
-    switch($code) {
-    case 400:
-      header("HTTP/1.1 400 Bad Request");
-      break;
-    case 500:
-    default:
-      header("HTTP/1.1 500 Internal Server Error");
-      break;
-    }
-
-    echo($msg);
-    die();
-  }
-
   /** Handle requests sent to index.php.
    *
    * Supports the following GET requests:
@@ -115,7 +63,7 @@ class RequestHandler {
     }
 
     if(array_key_exists("lang", $get)) {
-      $_SESSION["lang"] = self::escapeSQL( $get["lang"] );
+      $_SESSION["lang"] = $get["lang"];
     }
   }
 
@@ -148,304 +96,261 @@ class RequestHandler {
    *
    * Intended for requests sent through JavaScript. This will
    * typically call the respective functions in the SessionHandler
-   * object. If data is to be returned, it will be converted to a JSON
-   * string.
+   * object and return (or rather echo) an associative array encoded
+   * as a JSON string.  This array always contains at least the key
+   * 'success' indicating the return status of the request.
    *
-   * Requests should typically send a GET value for the key @c do that
-   * specifies the type of request, regardless of whether the content
-   * of the request is sent via GET or POST.
+   * Only a few requests deviate from this behaviour:
+   * - "fetchLemmaSugg" outputs an array with lemma suggestions
+   *   (without a 'success' value)
+   * - "exportFile" directly outputs the exported file
    *
-   * Supports the following GET requests (as values of @c do):
-   * *** THIS LIST IS NO LONGER UP-TO-DATE ***
-   * @arg @c getHighestTagId - Retrieve maximal tag id from specified tagset
-   * @arg @c lockTagset - Lock the tagset specified in @c name
-   * @arg @c unlockTagset - Unlock the tagset specified in @c name
-   * @arg @c fetchTagset - Retrieve the tagset specified in @c name
-   * @arg @c getTagsetTags - Return string with tagset tags as html <option> objects
-   * @arg @c saveTagset - Save modifications to a tagset; expects the
-   * data as a JSON string via POST.
-   * @arg @c saveCopyTagset - Copy a specified tagset and saves changes to the copy;
-   * expects the data as a JSON string.
-   * @arg @c createUser - Create a new user.
-   * @arg @c deleteUser - Delete a user.
-   * @arg @c toggleAdmin - Toggle administrator status of a user.
-   * @arg @c changePassword - Change the password a user.
-   * @arg @c listFiles - List all saved files.
-   * @arg @c getLastImportedFile - Return information about the last imported file.
-   * @arg @c lockFile - Lock the file specified in @c fileid.
-   * @arg @c unlockFile - Unlock the file specified in @c fileid.
-   * @arg @c openFile - Open the file specified in @c fileid.
-   * @arg @c deleteFile - Delete the file specified in @c fileid.
-   * @arg @c getLines - Retrieve all lines for the page specified in @c page.
-   * @arg @c getMaxLinesNo - Return the total number of lines for the current opened file.
-   * @arg @c copyTagset - @c not @c implemented @c yet
-   * @arg @c saveEditorUserSettings - Save user settings specified in
-   * @c noPageLines (number of lines per page) and @c contextLines
-   * (number of lines to show the context) to the database.
-   * @arg @c markLastPosition - Save user progress indicated by the @line id for the current opened file.
-   * @arg @c undoLastEdit - Undo last progress change.
-   *
-   * Supports the following POST requests (as values of @c action):
-   * @arg @c insertXMLData - Add a new document from XML format.
-   * 
-   * @return Depending on the type of request, either:
-   * @li a @em string in JavaScript Object Notation (JSON);
-   * @li an error in the form of HTTP status code 400 or 500;
-   * @li or nothing.
+   * The actual request handling is done in @c performJSONRequest() --
+   * this function mainly serves as a wrapper to catch all exceptions
+   * and ensure that there is always a valid JSON response.
    */
-  public function handleJSONRequest( $get, $post ) {
-    $this->sh->updateLastactive();
+  public function handleJSONRequest($get, $post) {
+    // any request causes the user issuing it to be marked as active
+    $this->sh->updateLastactive(); 
 
-	if (array_key_exists("action", $post)) {
-	  switch( $post["action"]) {
-	  case "changeUserPassword":$status = $this->sh->changeUserPassword(
-								    self::escapeSQL($post["oldpw"]),
-								    self::escapeSQL($post["newpw"])
-								    );
-	    echo json_encode($status);
-	    exit;
+    try {
+      $status = $this->performJSONRequest($get, $post);
+      // make sure a success value is set
+      if(!array_key_exists('success', $status) || !is_bool($status['success'])) {
+	$status['success'] = false;
+      }
+    }
+    catch (PDOException $ex) {
+      $status = array('success' => false,
+		      'errors' => array('Unbekannter Datenbankfehler:\n' . $ex->getMessage())
+		      );
+    }
+    catch (Exception $ex) {
+      $status = array('success' => false,
+		      'errors' => array('Unbekannter Serverfehler:\n' . $ex->getMessage())
+		      );
+    }
 
-	  case "changeProjectUsers":
-	    $status = $this->sh->changeProjectUsers($post["project_id"], $post["allowedUsers"]);
-	    echo json_encode($status);
-	    exit;
+    // return JSON object
+    echo json_encode($status);
+  }
 
-	  case "importTagsetTxt":
-	    $errmsg = $this->checkFileUpload($_FILES['txtFile']);
-	    if($errmsg) {
-	      echo json_encode(array("success"=>false,
-				     "errors"=>array("Fehler beim Upload: ".$errmsg)));
-	      exit;
-	    }
-	    if(empty($post['tagset_name'])) {
-	      echo json_encode(array("success"=>false,
-				     "errors"=>array("Kein Tagset-Name angegeben.")));
-	    }
-	    $taglist = explode('\n', self::escapeSQL(file_get_contents($_FILES['txtFile']['tmp_name'])));
-	    $result = $this->sh->importTagList($taglist,self::escapeSQL($post['tagset_name']));
-	    echo json_encode($result);
-	    exit;
+  public function performJSONRequest($get, $post) {
+    /*** POST REQUESTS ***/
+    /* Some POST requests are handled in the GET section if they
+       happen to signal their action via a URL parameter... this is a
+       bit quirky and should probably be changed at some point. */
+    if(array_key_exists("action", $post)) {
+      switch( $post["action"]) {
+      case "changeUserPassword":
+	return $this->sh->changeUserPassword($post["oldpw"],
+					     $post["newpw"]);
 
-	  case "importXMLFile":
-	    $errmsg = $this->checkFileUpload($_FILES['xmlFile']);
-	    if($errmsg) {
-	      echo json_encode(array("success"=>false,
-				     "errors"=>array("Fehler beim Upload: ".$errmsg)));
-	      exit;
-	    }
+      case "changeProjectUsers":
+	return $this->sh->changeProjectUsers($post["project_id"],
+					     $post["allowedUsers"]);
 
-	    $data = $_FILES['xmlFile'];
-	    $options = array();
-	    if(!empty($post['xmlName'])) {
-	      $options['name'] = $post['xmlName'];
-	    }
-	    if(!empty($post['sigle'])) {
-	      $options['sigle'] = $post['sigle'];
-	    }
-	    if(!empty($post['extid'])) {
-	      $options['ext_id'] = $post['extid'];
-	    }
-	    $options['tagsets'] = $post['linktagsets'];
-	    $options['project'] = $post['project'];
-
-	    try {
-	      $result = $this->sh->importFile($data,self::escapeSQL($options));
-	      echo json_encode($result);
-	    }
-	    catch (Exception $e) {
-	      echo json_encode(array("success"=>false,
-				     "errors"=>array("PHPException: ".
-						     $e->getMessage())));
-	    }
-	    exit;
-
-	  case "importTransFile":
-	    $tmpfname = tempnam(sys_get_temp_dir(), 'coraIL');
-	    $_SESSION['importLogFile'] = $tmpfname;
-	    $_SESSION['importInProgress'] = true;
-
-	    // we perform a lengthy operation, so release the session
-	    session_write_close();
-
-	    $errmsg = $this->checkFileUpload($_FILES['transFile']);
-	    if($errmsg) {
-	      echo json_encode(array("success"=>false,
-				     "errors"=>array("Fehler beim Upload: ".$errmsg)));
-	      exit;
-	    }
-	    
-	    // send a JSON message indicating successful file upload,
-	    // then close the connection and proceed with the import
-	    // in background
-	    $response = json_encode(array("success"=>true));
-	    ignore_user_abort(true);
-	    set_time_limit(1800);
-	    ob_end_clean();
-	    header("Connection: close");
-	    ob_start();
-	    echo $response;
-	    $response_size = ob_get_length();
-	    header("Content-Length: " . $response_size);
-	    ob_end_flush();
-	    flush();
-
-	    // from here on, the client connection should be closed
-	    $data = $_FILES['transFile'];
-	    $options = array();
-	    if(!empty($post['fileEnc'])) {
-	      $options['encoding'] = $post['fileEnc'];
-	    }
-	    if(!empty($post['transName'])) {
-	      $options['name'] = $post['transName'];
-	    }
-	    if(!empty($post['sigle'])) {
-	      $options['sigle'] = $post['sigle'];
-	    }
-	    $options['tagsets'] = $post['linktagsets'];
-	    $options['project'] = $post['project'];
-	    $options['logfile'] = $tmpfname;
-
-	    try {
-	      $success = $this->sh->importTranscriptionFile($data,self::escapeSQL($options));
-	      if($success) {
-		$logfile = fopen($tmpfname, 'a');
-		fwrite($logfile, "~FINISHED\n");
-		fclose($logfile);
-	      }
-	    }
-	    catch (Exception $e) {
-	      $logfile = fopen($tmpfname, 'a');
-	      fwrite($logfile, "~ERROR PHPEXCEPTION\n");
-	      fwrite($logfile, $e->getMessage() . "\n");
-	      fclose($logfile);
-	    }
-
-	    session_start();
-	    $_SESSION["importInProgress"] = false;
-	    exit;
-	    
-	  default:	exit();
-	  }
+      case "importTagsetTxt":
+	$errmsg = $this->checkFileUpload($_FILES['txtFile']);
+	if($errmsg) {
+	  return array("errors"=>array("Fehler beim Upload: ".$errmsg));
 	}
+	if(empty($post['tagset_name'])) {
+	  return array("errors"=>array("Kein Tagset-Name angegeben."));
+	}
+	$taglist = explode('\n', file_get_contents($_FILES['txtFile']['tmp_name']));
+	return $this->sh->importTagList($taglist, $post['tagset_name']);
+
+      case "importXMLFile":
+	$errmsg = $this->checkFileUpload($_FILES['xmlFile']);
+	if($errmsg) {
+	  return array("errors"=>array("Fehler beim Upload: ".$errmsg));
+	}
+	$data = $_FILES['xmlFile'];
+	$options = array();
+	if(!empty($post['xmlName'])) {
+	  $options['name'] = $post['xmlName'];
+	}
+	if(!empty($post['sigle'])) {
+	  $options['sigle'] = $post['sigle'];
+	}
+	if(!empty($post['extid'])) {
+	  $options['ext_id'] = $post['extid'];
+	}
+	$options['tagsets'] = $post['linktagsets'];
+	$options['project'] = $post['project'];
+	return $this->sh->importFile($data,$options);
+
+      case "importTransFile":
+	return $this->importTranscription($post);
 	
-	if (array_key_exists("do", $get)) {
-	  switch ( $get["do"] ) {
-	  case "keepalive":
-	    exit;
+      default:
+	return array("errors" => array("Unknown POST request."));
+      }
+    }
 
-	  case "getImportStatus":
-	    echo json_encode($this->sh->getImportStatus());
-	    exit;
+    /*** GET REQUESTS ***/
+    if(array_key_exists("do", $get)) {
+      switch($get["do"]) {
+      case "keepalive":
+	return array('success' => true);
+	
+      case "getLinesById":
+	$data = $this->sh->getLinesById($get['start_id'], $get['end_id']);
+	return array('success' => true, 'data' => $data);
 
-	  case "getHighestTagId": echo $this->sh->getHighestTagId(self::escapeSQL($get["tagset"]));
-	    exit;
+      case "getImportStatus":
+	return $this->sh->getImportStatus();
+
+      case "fetchTagset":
+	return $this->sh->getTagset($get["tagset_id"], $get["limit"]);
+
+      case "getTagsetsForFile":
+	return $this->sh->getTagsetsForFile($get["file_id"]);
+
+      case "fetchLemmaSugg":
+	return $this->sh->getLemmaSuggestion($get["linenum"],
+					     $get["q"],
+					     $get["limit"]);
+
+      case "createUser":
+	return $this->sh->createUser($post["username"],
+				     $post["password"],
+				     false);
+	
+      case "deleteUser":
+	return $this->sh->deleteUser($post["username"]);
+	
+      case "toggleAdmin":
+	return $this->sh->toggleAdminStatus($post["username"]);
+
+      case "changePassword":
+	return $this->sh->changePassword($post["username"],
+					 $post["password"]);
+
+      case "listFiles":
+	return $this->sh->getFiles();
+
+      case "lockFile":
+	return $this->sh->lockFile($get["fileid"]);
+    
+      case "unlockFile":
+	return $this->sh->unlockFile($get["fileid"]);
 	    
-	  case "fetchTagset":
-	    $data = $this->sh->getTagset(self::escapeSQL($get["tagset_id"]), $get["limit"]);
-	    echo json_encode($data);
-	    exit;
-
-	  case "getTagsetsForFile":
-	    $data = $this->sh->getTagsetsForFile(self::escapeSQL($get["file_id"]));
-	    echo json_encode($data);
-	    exit;
-
-	  case "fetchLemmaSugg":
-	    $data = $this->sh->getLemmaSuggestion(self::escapeSQL($get["linenum"]),
-						  self::escapeSQL($get["q"]),
-						  $get["limit"]);
-	    echo json_encode($data);
-	    exit;
-
-	  case "createUser":    $status = $this->sh->createUser(
-								self::escapeSQL($post["username"]),
-								self::escapeSQL($post["password"]),
-								false
-								);
-	    if(!$status) 
-	      self::returnError(500, "Could not perform query. Check if username already exists.");
-	    exit;
+      case "openFile":
+	return $this->sh->openFile($get['fileid']);
 	    
-	  case "deleteUser":    $status = $this->sh->deleteUser(self::escapeSQL($post["username"]));
-	    if (!$status)
-	      self::returnError(500, "Could not delete user.");
-	    exit;
-	    
-	  case "toggleAdmin":   $status = $this->sh->toggleAdminStatus(self::escapeSQL($post["username"]));
-	    if(!$status)
-	      self::returnError(500, "Could not toggle admin status.");
-	    exit;
+      case "deleteFile":
+	return $this->sh->deleteFile($post["file_id"]);
 
-	  case "changePassword":$status = $this->sh->changePassword(
-								    self::escapeSQL($post["username"]),
-								    self::escapeSQL($post["password"])
-								    );
-	    if (!$status)
-	      self::returnError(500, "Could not change password.");
-	    exit;
+      case "createProject": 
+	return $this->sh->createProject($get['project_name']);
 
-	  case "listFiles":  $data = $this->sh->getFiles();
-	    echo json_encode($data);
-	    exit;
+      case "deleteProject":
+	return $this->sh->deleteProject($get['project_id']);
 
-	  case "lockFile":   $data = $this->sh->lockFile(self::escapeSQL($get["fileid"]));
-	    $data = json_encode($data);
-	    echo $data;
-	    exit;
-	    
-	  case "unlockFile": $data = $this->sh->unlockFile(self::escapeSQL($get["fileid"]));
-	    echo json_encode($data);
-	    exit;
-	    
-	  case "openFile":   echo json_encode($this->sh->openFile($get['fileid']));
-	    exit;
-	    
-	  case "deleteFile": echo json_encode($this->sh->deleteFile(self::escapeSQL($post["file_id"])));
-	    exit;
-	    
-	  case "getLines":   $data = $this->sh->getLines(self::escapeSQL($get['page']));
-	    echo json_encode($data);
-	    exit;
-	  case "getLinesById":   $data = $this->sh->getLinesById(self::escapeSQL($get['start_id']),self::escapeSQL($get['end_id']));
-	    echo json_encode($data);
-	    exit;
-	  case "getMaxLinesNo": echo $this->sh->getMaxLinesNo(); exit;
+      case "saveData":
+	return $this->sh->saveData($get['lastEditedRow'],
+				   json_decode(file_get_contents("php://input"), true));
+      
+      case "saveEditorUserSettings":
+	$status = $this->sh->setUserSettings($get['noPageLines'],$get['contextLines']);
+	return array('success' => $status);
+	
+      case "setUserEditorSetting":
+	$status = $this->sh->setUserSetting($get['name'],$get['value']);
+	return array('success' => $status);
+	
+      case "editToken":
+	return $this->sh->editToken($get['token_id'], $get['value']);
 
-	  case "createProject": echo json_encode($this->sh->createProject(self::escapeSQL($get['project_name']))); exit;
+      case "deleteToken":
+	return $this->sh->deleteToken($get['token_id']);
+      
+      case "addToken":
+	return $this->sh->addToken($get['token_id'], $get['value']);
 
-	  case "deleteProject": echo json_encode($this->sh->deleteProject(self::escapeSQL($get['project_id']))); exit;
-	    
-	  case "saveData":
-	    $status = $this->sh->saveData(self::escapeSQL($get['lastEditedRow']), self::escapeSQL(json_decode(file_get_contents("php://input"), true)));
-	    echo json_encode($status);
-	    exit;
-	      
-	  case "saveEditorUserSettings": return $this->sh->setUserSettings(self::escapeSQL($get['noPageLines']),self::escapeSQL($get['contextLines'])); exit;
-	    
-	  case "setUserEditorSetting": return $this->sh->setUserSetting(self::escapeSQL($get['name']),self::escapeSQL($get['value'])); exit;
-	    
+      case "exportFile":
+	$this->sh->exportFile($get['fileid'], $get['format']);
+	exit;
+	
+      default:
+	return array("errors" => array("Unknown GET request."));
+      }
+    }
+    
+    return array("errors" => array("Unknown request."));
+  }
 
-	  case "editToken":
-	    echo json_encode($this->sh->editToken($get['token_id'], $get['value']));
-	    exit;
+  /** Imports a transcription file into the database.
+   *
+   * Due to the time-consuming nature of the import process, the
+   * client connection is closed before the actual import is started.
+   * The status of the import is written to a log file which can be
+   * accessed with the "getImportStatus" GET request.
+   */
+  private function importTranscription($post) {
+    $tmpfname = tempnam(sys_get_temp_dir(), 'coraIL');
+    $_SESSION['importLogFile'] = $tmpfname;
+    $_SESSION['importInProgress'] = true;
 
-	  case "deleteToken":
-	    echo json_encode($this->sh->deleteToken($get['token_id']));
-	    exit;
-	    
-	  case "addToken":
-	    echo json_encode($this->sh->addToken($get['token_id'], $get['value']));
-	    exit;
+    $errmsg = $this->checkFileUpload($_FILES['transFile']);
+    if($errmsg) {
+      return array("errors"=>array("Fehler beim Upload: ".$errmsg));
+    }
 
-	  case "exportFile":
-	    $this->sh->exportFile($get['fileid'], $get['format']);
-	    exit;
+    // we perform a lengthy operation, so release the session
+    session_write_close();
+    
+    // send a JSON message indicating successful file upload,
+    // then close the connection and proceed with the import
+    // in background
+    $response = json_encode(array("success"=>true));
+    ignore_user_abort(true);
+    set_time_limit(1800);
+    ob_end_clean();
+    header("Connection: close");
+    ob_start();
+    echo $response;
+    $response_size = ob_get_length();
+    header("Content-Length: " . $response_size);
+    ob_end_flush();
+    flush();
 
-	  default:           self::returnError(400, "Unknown request: " + $get["do"]);
-	  }
-   }
-
-   self::returnError(400, "Unknown request.");
+    // from here on, the client connection should be closed
+    $data = $_FILES['transFile'];
+    $options = array();
+    if(!empty($post['fileEnc'])) {
+      $options['encoding'] = $post['fileEnc'];
+    }
+    if(!empty($post['transName'])) {
+      $options['name'] = $post['transName'];
+    }
+    if(!empty($post['sigle'])) {
+      $options['sigle'] = $post['sigle'];
+    }
+    $options['tagsets'] = $post['linktagsets'];
+    $options['project'] = $post['project'];
+    $options['logfile'] = $tmpfname;
+    
+    try {
+      $success = $this->sh->importTranscriptionFile($data,$options);
+      if($success) {
+	$logfile = fopen($tmpfname, 'a');
+	fwrite($logfile, "~FINISHED\n");
+	fclose($logfile);
+      }
+    }
+    catch (Exception $e) {
+      $logfile = fopen($tmpfname, 'a');
+      fwrite($logfile, "~ERROR PHPEXCEPTION\n");
+      fwrite($logfile, $e->getMessage() . "\n");
+      fclose($logfile);
+    }
+    
+    session_start();
+    $_SESSION["importInProgress"] = false;
+    exit(); // we don't return because there's no client connection left
   }
 
 }
