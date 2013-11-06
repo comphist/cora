@@ -1130,24 +1130,14 @@ var EditorModel = new Class({
 			}
 		    }
 		    
-		    if(textarea!='') {
-			$('saveErrorPopup').getElement('p').empty().appendText(message);
-			$('saveErrorPopup').getElement('textarea').empty().appendText(textarea);
-			message = 'saveErrorPopup';
-		    }
-		    new mBox.Modal({
-			title: 'Speichern fehlgeschlagen',
-			content: message,
-			buttons: [ {title: "OK"} ]
-		    }).open();
+		    gui.showTextDialog('Speichern fehlgeschlagen', message, textarea);
 		}
 		gui.hideSpinner();
 	    },
 	    onFailure: function(xhr) {
-		new mBox.Modal({
-		    title: 'Speichern fehlgeschlagen',
-		    content: 'Das Speichern der Datei war nicht erfolgreich! Server lieferte folgende Antwort: "'+xhr.responseText+'" ('+xhr.statusText+').'
-		}).open();
+		var message = 'Das Speichern der Datei war nicht erfolgreich! Server lieferte folgende Antwort:';
+		gui.showTextDialog('Speichern fehlgeschlagen', message,
+				   xhr.responseText+' ('+xhr.statusText+')');
 		gui.hideSpinner();
 	    }
 	});
@@ -1171,30 +1161,6 @@ var EditorModel = new Class({
 	} else {
 	    return true;
 	}
-    },
-
-    /* Function: showFailureMessage
-
-       Generic function to display an error popup with a textarea.
-
-    */
-    showFailureMessage: function(message, rows, title) {
-	var textarea = "";
-	for(var i=0;i<rows.length;i++){
-	    textarea += rows[i] + "\n";
-	}
-	if(textarea!='') {
-	    $('saveErrorPopup').getElement('p').empty().appendText(message);
-	    $('saveErrorPopup').getElement('textarea').empty().appendText(textarea);
-	    message = 'saveErrorPopup';
-	}
-	new mBox.Modal({
-	    title: title,
-	    content: message,
-	    buttons: [ {title: "OK"} ],
-	    options: {fade: {close: false}},
-	    closeOnBodyClick: false,
-	}).open();
     },
 
     /* Function: updateDataArray
@@ -1262,7 +1228,7 @@ var EditorModel = new Class({
 			     }
 			     else {
 				 var rows = (status!=null ? status.errors : ["Ein unbekannter Fehler ist aufgetreten."]);
-				 ref.showFailureMessage("Das Löschen des Tokens war nicht erfolgreich.", rows, "Löschen fehlgeschlagen");
+				 gui.showTextDialog("Löschen fehlgeschlagen", "Das Löschen des Tokens war nicht erfolgreich.", rows);
 			     }
 			     gui.hideSpinner();
 			 },
@@ -1353,7 +1319,7 @@ var EditorModel = new Class({
 		    }
 		    else {
 			var rows = (status!=null ? status.errors : ["Ein unbekannter Fehler ist aufgetreten."]);
-			ref.showFailureMessage("Das Ändern der Transkription war nicht erfolgreich.", rows, "Bearbeiten fehlgeschlagen");
+			gui.showTextDialog("Bearbeiten fehlgeschlagen", "Das Ändern der Transkription war nicht erfolgreich.", rows);
 		    }
 		    gui.hideSpinner();
 		},
@@ -1445,7 +1411,7 @@ var EditorModel = new Class({
 		    }
 		    else {
 			var rows = (status!=null ? status.errors : ["Ein unbekannter Fehler ist aufgetreten."]);
-			ref.showFailureMessage("Das Hinzufügen der Transkription war nicht erfolgreich.", rows, "Hinzufügen fehlgeschlagen");
+			gui.showTextDialog("Hinzufügen fehlgeschlagen", "Das Hinzufügen der Transkription war nicht erfolgreich.", rows);
 		    }
 		    gui.hideSpinner();
 		},

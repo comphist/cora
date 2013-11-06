@@ -95,11 +95,6 @@ $tagsets_all = $sh->getTagsetList(false, "class");
   <p></p>
   </div>
 
-  <div id="fileImportPopup">
-    <p></p>
-    <p><textarea cols="80" rows="10" readonly="readonly"></textarea></p>
-  </div>
-
   <div id="fileImportForm" class="limitedWidth">
 	<form action="request.php" id="newFileImportForm" method="post" accept-charset="utf-8" enctype="multipart/form-data">
   <p class="error_text">Bitte wählen Sie eine Datei zum Importieren aus!</p>

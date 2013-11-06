@@ -92,11 +92,6 @@
 </div>
 
 <div class="templateHolder">
-  <div id="saveErrorPopup">
-    <p></p>
-    <p><textarea cols="80" rows="8" readonly="readonly"></textarea></p>
-  </div>
-
    <div id="jumpToLineForm">
      <label for="jumpTo">Zeilennummer: </label>
      <input id="jumpToBox" type="text" name="jumpTo" placeholder="" size="6" class="mform" />

@@ -71,15 +71,7 @@ var file = {
 		done = "error";
 		if(process.output != null) {
 		    message = "Beim Importieren sind Fehler aufgetreten.";
-		    $('fileImportPopup').getElement('p').empty().appendText(message);
-		    $('fileImportPopup').getElement('textarea').empty().appendText(process.output);
-		    new mBox.Modal({
-			title: "Fehler beim Importieren",
-			content: 'fileImportPopup',
-			closeOnBodyClick: false,
-			closeOnEsc: false,
-			buttons: [ {title: "OK", addClass: "mform button_green"} ]
-		    }).open();
+		    gui.showTextDialog("Fehler beim Importieren", message, process.output);
 		}
 	    }
 	}
@@ -230,18 +222,7 @@ var file = {
 //			}
 //		    }
 
-		if(textarea!='') {
-		    $('fileImportPopup').getElement('p').empty().appendText(message);
-		    $('fileImportPopup').getElement('textarea').empty().appendText(textarea);
-		    message = 'fileImportPopup';
-		}
-		new mBox.Modal({
-		    title: title,
-		    content: message,
-		    closeOnBodyClick: false,
-		    buttons: [ {title: "OK", addClass: "mform button_green"} ]
-		}).open();
-
+		gui.showTextDialog(title, message, textarea);
 		import_progress.close();
 		gui.hideSpinner();
             }
@@ -327,18 +308,7 @@ var file = {
 		    ref.listFiles();
                 }
 
-		if(textarea!='') {
-		    $('fileImportPopup').getElement('p').empty().appendText(message);
-		    $('fileImportPopup').getElement('textarea').empty().appendText(textarea);
-		    message = 'fileImportPopup';
-		}
-		new mBox.Modal({
-		    title: title,
-		    content: message,
-		    closeOnBodyClick: false,
-		    buttons: [ {title: "OK", addClass: "mform button_green"} ]
-		}).open();
-
+		gui.showTextDialog(title, message, textarea);
 		gui.hideSpinner();
             }
 	});

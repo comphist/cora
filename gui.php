@@ -132,5 +132,12 @@ project_editor.project_users[<?php echo $pid; ?>] = new Array(<?php echo $arrstr
 			<div id="footer">
 			</div>
 		</div><!-- end main -->
+
+                <div class="templateHolder">
+                  <div id="genericTextMsgPopup">
+                   <p></p>
+                   <p><textarea cols="80" rows="10" readonly="readonly"></textarea></p>
+                  </div>
+                </div>
 	</body>
 </html>

@@ -181,6 +181,47 @@ var gui = {
 	}
     },
 
+    /* Function: showTextDialog
+
+       Displays a modal dialog that optionally includes a textarea for
+       longer warnings, errors, etc.
+
+       Parameters:
+        title - Title of the dialog window
+        message - First line of text in the dialog
+	textarea - Content of the textarea; if empty, the textarea will
+	           not be displayed, and the dialog will consist of the
+		   message only; if this is an array, its elements will
+		   be appended to the textarea separated by line breaks
+    */
+    showTextDialog: function(title, message, textarea) {
+	var content;
+	if(textarea===undefined || textarea=='') {
+	    content = message;
+	}
+	else {
+	    content = $('genericTextMsgPopup');
+	    content.getElement('p').empty().appendText(message);
+	    content.getElement('textarea').empty();
+	    if(typeOf(textarea) == 'array') {
+		Array.each(textarea, function(item, idx) {
+		    content.getElement('textarea').appendText(item + '\n');
+		});
+	    }
+	    else {
+		content.getElement('textarea').appendText(textarea);
+	    }
+	}
+
+	new mBox.Modal({
+	    title: title,
+	    content: content,
+	    closeOnBodyClick: false,
+	    closeOnEsc: false,
+	    buttons: [ {title: "OK", addClass: "mform button_green"} ]
+	}).open();
+    },
+
 }
 
 
