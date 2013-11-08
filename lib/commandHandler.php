@@ -52,6 +52,18 @@ class CommandHandler {
     return $tmpfname;
   }
 
+  /** Checks the MIME type of a file.
+   */
+  public function checkMimeType($filename, $mimetype) {
+    $output = array();
+    $errors = array();
+    exec("file -b --mime-type " . $filename, $output);
+    if($output[0]!=$mimetype) {
+      array_unshift($errors, "Falsches Dateiformat (erwartet: {$mimetype}; gefunden: {$output[0]})");
+    }
+    return $errors;
+  }
+
   /** Call the check script to verify the validity of a file.
    */
   public function checkFile($filename) {
@@ -108,7 +120,7 @@ class CommandHandler {
     }
     exec("iconv -f utf-8 -t utf-8 {$filename} 2>&1", $output, $retval);
     if ($retval) {
-      array_unshift($errors, "Falsches Encoding angegeben: Datei konnte nicht nach UTF-8 umgewandelt werden!");
+      array_unshift($errors, "Datei konnte nicht nach UTF-8 umgewandelt werden. Prüfen Sie, ob Sie das richtige Encoding angegeben haben.");
     }
     return $errors;
   }

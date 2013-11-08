@@ -237,23 +237,22 @@ class CoraSessionHandler {
     $logfile = fopen($options['logfile'], 'a');
     // convert to utf-8
     fwrite($logfile, "~BEGIN CHECK\n");
-    $errors = $this->ch->convertToUtf($localname, $options['encoding']);
-    if(!empty($errors)) {
-      fwrite($logfile, "~ERROR CHECK\n");
-      fwrite($logfile, implode("\n", $errors) . "\n");
-      fclose($logfile);
-      return false;
+    $errors = $this->ch->checkMimeType($localname, 'text/plain');
+    if(empty($errors)) {
+      $errors = $this->ch->convertToUtf($localname, $options['encoding']);
     }
-    $options['trans_file'] = file_get_contents($localname);
-    // run through check script
-    $errors = $this->ch->checkFile($localname);
+    if(empty($errors)) {
+      $errors = $this->ch->checkFile($localname);
+    }
     if(!empty($errors)) {
       fwrite($logfile, "~ERROR CHECK\n");
-      fwrite($logfile, implode("\n", $errors) . "\n");
+      fwrite($logfile, implode("\n", $errors) . "\n\n");
+      fwrite($logfile, "(HINWEIS: Transkriptionsdateien müssen immer als .txt-Datei im Bonner Transkriptionsformat hochgeladen werden.)\n");
       fclose($logfile);
       return false;
     }
     fwrite($logfile, "~SUCCESS CHECK\n");
+    $options['trans_file'] = file_get_contents($localname);
     // run through XML conversion (& tagging)
     $xmlname = null;
     fwrite($logfile, "~BEGIN XMLCALL\n");
