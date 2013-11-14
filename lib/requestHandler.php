@@ -122,12 +122,12 @@ class RequestHandler {
     }
     catch (PDOException $ex) {
       $status = array('success' => false,
-		      'errors' => array('Unbekannter Datenbankfehler:\n' . $ex->getMessage())
+		      'errors' => array("Unbekannter Datenbankfehler:\n" . $ex->getMessage())
 		      );
     }
     catch (Exception $ex) {
       $status = array('success' => false,
-		      'errors' => array('Unbekannter Serverfehler:\n' . $ex->getMessage())
+		      'errors' => array("Unbekannter Serverfehler:\n" . $ex->getMessage())
 		      );
     }
 

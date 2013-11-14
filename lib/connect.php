@@ -2119,8 +2119,8 @@
       $stmt->execute(array(':name' => $tagsetname));
       $tagsetid = $this->dbo->lastInsertId();
 
-      $qhead  = "INSERT INTO tag (`value`, `needs_revision`, ";
-      $qhead .= "`tagset_id`) VALUES (:value, :needrev, :tagset) ";
+      $qs  = "INSERT INTO tag (`value`, `needs_revision`, ";
+      $qs .= "`tagset_id`) VALUES (:value, :needrev, :tagset) ";
       $stmt = $this->dbo->prepare($qs);
       foreach($tagarray as $tagname => $tagnc) {
 	$stmt->execute(array(':value' => $tagname,
