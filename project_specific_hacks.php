@@ -6,8 +6,10 @@
  * at some time (e.g. into the database).
  */
 
-$project_specific_hacks = array("autotag" => '8'
-				);
+
+
+// session_handler.php contains another hack marked with a "HACK"
+comment
 
 ?>
 
