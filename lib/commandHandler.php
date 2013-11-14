@@ -28,7 +28,7 @@ class CommandHandler {
 
   private $check_script = "/usr/bin/ruby /usr/local/bin/convert_check.rb -C";
   private $conv_script  = "/usr/bin/ruby /usr/local/bin/convert_check.rb -T";
-  private $xml_script   = "/usr/bin/python -u /usr/local/bin/convert_coraxml.py -t -g";
+  private $xml_script   = "/usr/bin/python -u /usr/local/bin/convert_coraxml.py -g";
   private $single_token_flag = "-L";
   private $conv_opt = array("mod_trans" => "-c orig -t all -p leave -r leave -i original -d leave -s delete -e leave",
 			    "mod_ascii" => "-c simple -t all -p leave -r delete -i leave -d delete -s delete -e delete",
@@ -89,11 +89,15 @@ class CommandHandler {
 
   /** Call the conversion script to convert a transcription file to
       CorA XML. */
-  public function convertTransToXML(&$transname, &$xmlname, $logfile) {
+  public function convertTransToXML(&$transname, &$xmlname, $logfile, $tagging=TRUE) {
     $output = array();
     $xmlname = tempnam(sys_get_temp_dir(), 'cora');
     $retval = 0;
-    $command = $this->xml_script . " {$transname} {$xmlname} >>{$logfile} 2>&1";
+    $command = $this->xml_script;
+    if($tagging) {
+      $command .= " -t";
+    }
+    $command .= " {$transname} {$xmlname} >>{$logfile} 2>&1";
     exec($command, $output, $retval);
     if($retval) {
       if(count($output) > 500) {

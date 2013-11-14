@@ -6,6 +6,9 @@
  * at some time (e.g. into the database).
  */
 
+$project_specific_hacks = array("autotag" => 8
+				);
+
 ?>
 
 <script type="text/javascript">

@@ -257,7 +257,8 @@ class CoraSessionHandler {
     $xmlname = null;
     fwrite($logfile, "~BEGIN XMLCALL\n");
     fclose($logfile);
-    $errors = $this->ch->convertTransToXML($localname, $xmlname, $options['logfile']);
+    $autotag = in_array($project_specific_hacks['autotag'], $options['tagset']);
+    $errors = $this->ch->convertTransToXML($localname, $xmlname, $options['logfile'], $autotag);
     $logfile = fopen($options['logfile'], 'a');
     if(!empty($errors)) {
       fwrite($logfile, "~ERROR XML\n");
