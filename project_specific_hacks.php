@@ -25,6 +25,8 @@ comment
      // Anselm
      7: [2, 3, 10, 11, 13],
      9: [2, 3, 10, 11, 13],
+     // Pilotstudie MHD
+     13: [2, 3, 10, 11, 17],
      // Default
      'default': [2, 3, 10, 11, 8]
  };
