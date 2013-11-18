@@ -1124,6 +1124,18 @@
 
      $warnings = array();
 
+     /* Check if there is nothing to do---these lines are duplicated
+	from the end of the function so we can return early here and
+	avoid a giant if clause. */
+     if(empty($lines)) {
+       // mark the last position
+       $this->markLastPosition($fileid,$lasteditedrow);
+       // update timestamp
+       $userid = $this->getUserIDFromName($uname);
+       $this->updateChangedTimestamp($fileid,$userid);
+       return False;
+     }
+
      /* Check if all IDs belong to the currently opened document
 	(--this is done because IDs are managed on the client side and
 	therefore could potentially be manipulated)
