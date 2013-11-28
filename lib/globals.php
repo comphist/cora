@@ -8,8 +8,6 @@ define( "DB_USER",     "cora"      );
 define( "DB_PASSWORD", "trustthetext" );
 /** The name of the database. */
 define( "MAIN_DB",     "cora"      );
-/** The maximum allowed length of a query string. */
-define( "DB_MAX_QUERY_LENGTH",   500000 );
 
 /* Globals */
 define( "TITLE",              "CorA"	                  );

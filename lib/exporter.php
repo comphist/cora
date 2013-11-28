@@ -114,7 +114,7 @@ class Exporter {
     $moderns = $tokens[2];
     foreach($moderns as $mod) {
       $tok = $mod['ascii'];
-      $norm = '--'; $normbroad = '--';
+      $norm = '--'; $normbroad = '--'; $normtype = '';
       foreach($mod['tags'] as $tag) {
 	if($tag['selected']==1) {
 	  if($tag['type']=='norm') {
@@ -123,9 +123,16 @@ class Exporter {
 	  else if($tag['type']=='norm_broad') {
 	    $normbroad = $tag['tag'];
 	  }
+	  else if($tag['type']=='norm_type') {
+	    $normtype = $tag['tag'];
+	  }
 	}
       }
-      fwrite($handle, $tok."\t".$norm."\t".$normbroad."\n");
+      fwrite($handle, $tok."\t".$norm);
+      if($normbroad!='--') {
+	fwrite($handle, "\t".$normbroad."\t".$normtype);
+      }
+      fwrite($handle, "\n");
     }
   }
  
