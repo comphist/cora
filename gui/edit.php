@@ -89,6 +89,11 @@
    <div id="horizontalTextView">
      <span>Fehler bei der Text-Vorschau.</span>
    </div>
+
+   <div id="pagePanel_bottom" class="pagePanel">
+	<span>Seite: </span>
+   </div>
+
 </div>
 
 <div class="templateHolder">

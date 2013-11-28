@@ -580,12 +580,15 @@ var EditorModel = new Class({
 	var x, y, max_page, dropdown, el;
 	var jumpto, jumptoFunc, jumptoBox;
 	var pp = $('pagePanel');
+	var ppb = $('pagePanel_bottom');
 	var ref = this;
 	active_page = Number.from(active_page);
 	
 	pp.hide();
         pp.getElements('a').dispose();
 	pp.getElements('select').dispose();
+	ppb.hide();
+        ppb.getElements('a').dispose();
 
 	/* calculate the total number of pages */
 	x = (this.lineCount - userdata.contextLines);
@@ -600,26 +603,29 @@ var EditorModel = new Class({
 	}
 
 	/* create navigation elements */
-        pp.adopt(new Element('a',{
-	    href: 'first', text: '|<<',
-	    events: {
-		click: function(e) {
-		    e.stop();
-		    $('pageSelector').set('value', 1);
-		    ref.displayPage(1);
-		}
-	    },
-	}));
-	
-        pp.adopt(new Element('a',{
-	    href: 'back', text: '<',
-	    events: {
-		click: function(e) {
-		    e.stop();
-		    ref.displayPreviousPage();
-		}
-	    },
-	}));
+
+	Array(pp, ppb).each(function(elem) {
+            elem.adopt(new Element('a',{
+		href: 'first', text: '|<<',
+		events: {
+		    click: function(e) {
+			e.stop();
+			$('pageSelector').set('value', 1);
+			ref.displayPage(1);
+		    }
+		},
+	    }));
+
+            elem.adopt(new Element('a',{
+		href: 'back', text: '<',
+		events: {
+		    click: function(e) {
+			e.stop();
+			ref.displayPreviousPage();
+		    }
+		},
+	    }));
+	});
 	
 	dropdown = new Element('select', {
 	    id: 'pageSelector',
@@ -638,27 +644,29 @@ var EditorModel = new Class({
 	    dropdown.adopt(el);
         };
 	pp.adopt(dropdown);
-	
-        pp.adopt(new Element('a',{
-	    href: 'forward', text: '>',
-	    events: {
-		click: function(e) {
-		    e.stop();
-		    ref.displayNextPage();
-		}
-	    },
-	}));
-	
-        pp.adopt(new Element('a',{
-	    href: 'last', text: '>>|',
-	    events: {
-		click: function(e) {
-		    e.stop();
-		    $('pageSelector').set('value', ref.maxPage);
-		    ref.displayPage(ref.maxPage);
-		}
-	    },
-	}));
+
+	Array(pp, ppb).each(function(elem) {
+            elem.adopt(new Element('a',{
+		href: 'forward', text: '>',
+		events: {
+		    click: function(e) {
+			e.stop();
+			ref.displayNextPage();
+		    }
+		},
+	    }));
+
+	    elem.adopt(new Element('a',{
+		href: 'last', text: '>>|',
+		events: {
+		    click: function(e) {
+			e.stop();
+			$('pageSelector').set('value', ref.maxPage);
+			ref.displayPage(ref.maxPage);
+		    }
+		},
+	    }));
+	});
 
 	// Jump to line
 	// Whoa, this is a mess ...
@@ -703,6 +711,7 @@ var EditorModel = new Class({
 	});
 
 	pp.show();
+	ppb.show();
     },
 
     /* Function: updateProgress
