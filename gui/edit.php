@@ -130,6 +130,19 @@
    <p>Die neue Transkription wird <strong>vor</strong> dem Token &quot;<span id="addTokenBefore"></span>&quot; auf Zeile &quot;<span id="addTokenLineinfo"></span>&quot; in das Originaldokument eingefügt.</p>
    </div>
 
+   <div id="automaticAnnotationForm" class="limitedWidth">
+   <p>
+   <label for="tagger">Tagger: </label>
+   <select name="tagger" size="1">
+   </select>
+   </p>
+
+   <p>
+   <input type="checkbox" name="retrain" checked="checked" /><label for="retrain"> Vor der Annotation erst neu trainieren</label>
+   </p>
+
+   </div>
+
 </div>	
 
 </div>

@@ -247,6 +247,15 @@ var EditorModel = new Class({
 	    e.stop();
 	    file.closeFile(ref.fileId); // breaks OO...
 	});
+	btn = mr.getElement('li#tagButton');
+	if(btn && btn !== undefined) {
+	    btn.removeEvents();
+	    btn.addEvent('click', function(e) {
+		e.stop();
+		ref.showAnnotationOptions();
+	    });
+	}
+
 	mr.show();
 
 	this.initializeColumnVisibility();
@@ -1585,6 +1594,36 @@ var EditorModel = new Class({
 	if(span != null) {
 	    span.addClass('highlighted');
 	}
+    },
+
+    /* Function: showAnnotationOptions
+
+       Displays a dialog window for performing automatic annotation on
+       the currently opened file.
+     */
+    showAnnotationOptions: function() {
+	var ref = this;
+	var content = $('automaticAnnotationForm');
+	var mbox = new mBox.Modal({
+	    title: 'Automatisch neu annotieren',
+	    content: 'automaticAnnotationForm',
+	    buttons: [ {title: "Starten", addClass: "mform button_green",
+			id: "annoStartButton",
+			event: ref.performAnnotation},
+		       {title: "Abbrechen", addClass: "mform",
+			event: function() { this.close(); }}
+		     ]
+	});
+	mbox.open();
+    },
+
+    /* Function: performAnnotation
+
+       Starts the automatic annotation (and, if desired, retraining)
+       process.
+     */
+    performAnnotation: function() {
+	alert("I don't do anything yet!");
     }
 
 });
