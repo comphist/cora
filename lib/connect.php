@@ -441,6 +441,58 @@
      return $stmt->fetchAll(PDO::FETCH_ASSOC);
    }
 
+   /** Get a list of all taggers with their associated tagset links.
+    */
+   public function getTaggerList() {
+     $tlist = array();
+     $qs = "SELECT t.id, t.name, (t.cmd_train IS NOT NULL) AS trainable, ts.tagset_id "
+       . "    FROM tagger2tagset ts "
+       . "    LEFT JOIN tagger t ON t.id=ts.tagger_id";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute();
+     while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+       if(array_key_exists($row['id'], $tlist)) {
+	 $tlist[$row['id']]['tagsets'][] = $row['tagset_id'];
+       }
+       else {
+	 $tlist[$row['id']] = array('name' => $row['name'],
+				    'trainable' => $row['trainable']==1 ? true : false,
+				    'tagsets' => array($row['tagset_id']));
+       }
+     }
+     return $tlist;
+   }
+
+   /** Get applicable taggers for a given file.
+    *
+    * Returns information about taggers where all associated tagsets
+    * are also associated with the given file.
+    */
+   public function getTaggersForFile($fileid) {
+     $applicable = array();
+     $tslist = array();
+     $taggers = $this->getTaggerList();
+     $tagsets = $this->getTagsetsForFile($fileid);
+     foreach($tagsets as $ts) {
+       $tslist[] = $ts['id'];
+     }
+     foreach($taggers as $id => $tagger) {
+       $is_applicable = true;
+       foreach($tagger['tagsets'] as $ts) {
+	 if(!in_array($ts, $tslist)) {
+	   $is_applicable = false;
+	 }
+       }
+       if($is_applicable) {
+	 $applicable[] = array('id' => $id,
+			       'name' => $tagger['name'],
+			       'trainable' => $tagger['trainable'],
+			       'tagsets' => $tagger['tagsets']);
+       }
+     }
+     return $applicable;
+   }
+
    /** Open a file.
     *
     * Retrieves metadata and users progress data for the given file.
@@ -483,6 +535,7 @@
      }
 
      $metadata['tagsets'] = $this->getTagsetsForFile($fileid);
+     $metadata['taggers'] = $this->getTaggersForFile($fileid);
      $lock['data'] = $metadata;
      $lock['success'] = true;
      return $lock;

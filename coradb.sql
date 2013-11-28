@@ -347,6 +347,54 @@ CREATE TABLE `token` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Table structure for table `taggers`
+--
+
+DROP TABLE IF EXISTS `tagger_locks`;
+DROP TABLE IF EXISTS `tagger2tagset`;
+DROP TABLE IF EXISTS `tagger`;
+
+CREATE TABLE `tagger` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `name` varchar(255) NOT NULL,
+    `cmd_train` varchar(255) DEFAULT NULL,
+    `cmd_tag` varchar(255) NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `tagger_locks`
+--
+
+CREATE TABLE `tagger_locks` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `tagger_id` int(11) NOT NULL,
+    `project_id` int(11) NOT NULL,
+    `lockdate` timestamp DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `tagger_id` (`tagger_id`),
+    KEY `project_id` (`project_id`),
+    CONSTRAINT `tagger_locks_ibfk_1` FOREIGN KEY (`tagger_id`) REFERENCES `tagger` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `tagger_locks_ibfk_2` FOREIGN KEY (`project_id`) REFERENCES `project` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `tagger_links`
+--
+
+CREATE TABLE `tagger2tagset` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `tagger_id` int(11) NOT NULL,
+    `tagset_id` int(11) NOT NULL,
+    PRIMARY KEY (`id`),
+    KEY `tagger_id` (`tagger_id`),
+    KEY `tagset_id` (`tagset_id`),
+    CONSTRAINT `tagger2tagset_ibfk_1` FOREIGN KEY (`tagger_id`) REFERENCES `tagger` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `tagger2tagset_ibfk_2` FOREIGN KEY (`tagset_id`) REFERENCES `tagset` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

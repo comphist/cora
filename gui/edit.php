@@ -143,7 +143,7 @@
    </p>
 
    <p>
-   <input type="checkbox" name="retrain" checked="checked" /><label for="retrain"> Vor der Annotation erst neu trainieren</label>
+   <label><input type="checkbox" name="retrain" checked="checked" /> Vor der Annotation erst neu trainieren</label>
    </p>
 
    </div>

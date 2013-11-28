@@ -12,6 +12,7 @@ var fileTagset = {
     morphHTML: {},
     list: [],
 };
+var fileTaggers = [];
 
 // ***********************************************************************
 // ********** CLASS FILE ******************************************
@@ -425,6 +426,7 @@ var file = {
         		onComplete: function(fileData) {        		         
         		    if(fileData.success){
 				fileTagset.list = fileData.data.tagsets;
+				fileTaggers = fileData.data.taggers;
 
        				// load tagset
         		        var afterLoadTagset = function() {

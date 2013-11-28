@@ -260,6 +260,9 @@ var EditorModel = new Class({
 
 	this.initializeColumnVisibility();
 
+	/* prepare automatic annotation dialog */
+	this.prepareAnnotationOptions();
+
 	/* render pages panel and set start page */
 	start_page = Number.from(start_page);
 	if(start_page==null || start_page<1) { start_page = 1; }
@@ -1603,6 +1606,33 @@ var EditorModel = new Class({
 	if(span != null) {
 	    span.addClass('highlighted');
 	}
+    },
+
+    /* Function: prepareAnnotationOptions
+     */
+    prepareAnnotationOptions: function() {
+	var aaselect = $('automaticAnnotationForm').getElement('select[name="tagger"]');
+	var trainbox = $('automaticAnnotationForm').getElement('input[name="retrain"]');
+	var onTaggerChange = function(e) {
+	    var id = e.target.getSelected()[0].get('value');
+	    Array.each(fileTaggers, function(tagger) {
+		if(tagger.id == id) {
+		    trainbox.set('disabled', !tagger.trainable);
+		    if(!tagger.trainable) {
+			trainbox.set('checked', false);
+		    }
+		}
+	    });
+	};
+	aaselect.empty();
+	Array.each(fileTaggers, function(tagger) {
+	    aaselect.adopt(new Element('option',
+				       {'value': tagger.id,
+					'text':  tagger.name}));
+	});
+	aaselect.removeEvents();
+	aaselect.addEvent('change', onTaggerChange);
+	onTaggerChange({'target': aaselect});
     },
 
     /* Function: showAnnotationOptions
