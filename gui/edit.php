@@ -137,16 +137,36 @@
 
    <div id="automaticAnnotationForm" class="limitedWidth">
    <p>
+     <b>Achtung!</b>  Dieser Vorgang überschreibt vorhandene Annotationen in allen Zeilen, die <b>nicht</b> mittels des Fortschrittsbalkens grün markiert sind.
+   </p>
+
+   <p>
    <label for="tagger">Tagger: </label>
    <select name="tagger" size="1">
    </select>
    </p>
 
    <p>
-   <label><input type="checkbox" name="retrain" checked="checked" /> Vor der Annotation erst neu trainieren</label>
+   <label><input type="checkbox" name="retrain" checked="checked" />  Auf vorhandenen Daten neu trainieren</label>
    </p>
 
    </div>
+
+  <div id="editAnnotateSpinner">
+   <div id="editAnnotateStatusContainer">
+   <!--
+   <table>
+   <tr id="tIS_upload"><td class="proc proc-running"></td><td>Datei übermitteln</td></tr>
+   <tr id="tIS_check"><td class="proc" /></td><td>Transkription prüfen</td></tr>
+   <tr id="tIS_convert"><td class="proc" /></td><td>Transkription analysieren</td></tr>
+   <tr id="tIS_tag"><td class="proc" /></td><td>Automatisch vorannotieren</td></tr>
+   <tr id="tIS_import"><td class="proc" /></td><td>Importieren abschließen</td></tr>
+   </table>
+   -->
+   <div id="eAS_progress"></div>
+   </div>
+  </div>
+
 
 </div>	
 

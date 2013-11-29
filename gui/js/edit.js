@@ -250,10 +250,7 @@ var EditorModel = new Class({
 	btn = mr.getElement('li#tagButton');
 	if(btn && btn !== undefined) {
 	    btn.removeEvents();
-	    btn.addEvent('click', function(e) {
-		e.stop();
-		ref.showAnnotationOptions();
-	    });
+	    ref.activateAnnotationDialog(btn);
 	}
 
 	mr.show();
@@ -1635,34 +1632,81 @@ var EditorModel = new Class({
 	onTaggerChange({'target': aaselect});
     },
 
-    /* Function: showAnnotationOptions
+    /* Function: activateAnnotationDialog
 
-       Displays a dialog window for performing automatic annotation on
-       the currently opened file.
+       Activates the dialog window for performing automatic annotation
+       on the currently opened file, along with the GUI functionality
+       for requesting the annotation.
+
+       Parameters:
+         button - the element to which the dialog should be attached
      */
-    showAnnotationOptions: function() {
+    activateAnnotationDialog: function(button) {
 	var ref = this;
+	var mbox;
 	var content = $('automaticAnnotationForm');
-	var mbox = new mBox.Modal({
+	var performAnnotation = function() {
+	    var retrain = $('automaticAnnotationForm').getElement('input[name="retrain"]').get('checked');
+	    var taggerID = $('automaticAnnotationForm').getElement('select[name="tagger"]').getSelected()[0];
+	    gui.showSpinner({message: 'Bitte warten...'});
+	    new Request.JSON({
+		url: 'request.php',
+		async: false,
+		onSuccess: function(status, text) {
+		    if (status!=null && status.success) {
+			// set up periodical poll
+			var annoUpdate = new Request.JSON({
+			    url: 'request.php',
+			    initialDelay: 1000, delay: 1000, limit: 5000,
+			    onSuccess: function(response) {
+				if(response && response.finished) {
+				    annoUpdate.stopTimer();
+				    gui.hideSpinner();
+				    if(response.success) {
+					gui.showNotice('ok', 'Automatische Annotation war erfolgreich.');
+					// clear and reload all lines
+					ref.updateDataArray(0, 0); 
+				    } else {
+					gui.showNotice('error', 'Annotation fehlgeschlagen.');
+					gui.showTextDialog('Annotation fehlgeschlagen',
+							   'Bei der automatischen Annotation ist ein Fehler aufgetreten.',
+							   response.errors);
+				    }
+				}
+			    }
+			});
+			annoUpdate.startTimer();
+		    }
+		    else {
+			var rows = (status!=null ? status.errors : ["Ein unbekannter Fehler ist aufgetreten."]);
+			gui.showTextDialog("Annotation fehlgeschlagen", "Die automatische Annotation lieferte einen Fehler zurück.", rows);
+			gui.hideSpinner();
+		    }
+		},
+		onFailure: function(xhr) {
+		    new mBox.Modal({
+			title: 'Annotation fehlgeschlagen',
+			content: 'Ein interner Fehler ist aufgetreten. Server lieferte folgende Antwort: "'+xhr.responseText+'" ('+xhr.statusText+').'
+		    }).open();
+		    gui.hideSpinner();
+		}
+	    }).get({'do': 'performAnnotation', 'retrain': retrain, 'tagger': taggerID});
+	    mbox.close();
+	}
+
+	// define the dialog window
+	mbox = new mBox.Modal({
 	    title: 'Automatisch neu annotieren',
 	    content: 'automaticAnnotationForm',
+	    attach: button,
 	    buttons: [ {title: "Starten", addClass: "mform button_green",
 			id: "annoStartButton",
-			event: ref.performAnnotation},
+			event: function() { this.close();
+					    performAnnotation(); }},
 		       {title: "Abbrechen", addClass: "mform",
 			event: function() { this.close(); }}
 		     ]
 	});
-	mbox.open();
-    },
-
-    /* Function: performAnnotation
-
-       Starts the automatic annotation (and, if desired, retraining)
-       process.
-     */
-    performAnnotation: function() {
-	alert("I don't do anything yet!");
     }
 
 });
