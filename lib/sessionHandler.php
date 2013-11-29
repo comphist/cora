@@ -480,6 +480,14 @@ class CoraSessionHandler {
     }
   }
 
+  /** Perform automatic training and/or annotation.
+   */
+  public function performAnnotation($taggerid, $retrain) {
+    // do something here
+    sleep(5);
+    return array("success"=>true);
+  }
+
   /** Delete a token from a file.
    *
    * @param string $tokenid ID of the token to be deleted

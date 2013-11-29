@@ -1651,36 +1651,18 @@ var EditorModel = new Class({
 	    gui.showSpinner({message: 'Bitte warten...'});
 	    new Request.JSON({
 		url: 'request.php',
-		async: false,
-		onSuccess: function(status, text) {
-		    if (status!=null && status.success) {
-			// set up periodical poll
-			var annoUpdate = new Request.JSON({
-			    url: 'request.php',
-			    initialDelay: 1000, delay: 1000, limit: 5000,
-			    onSuccess: function(response) {
-				if(response && response.finished) {
-				    annoUpdate.stopTimer();
-				    gui.hideSpinner();
-				    if(response.success) {
-					gui.showNotice('ok', 'Automatische Annotation war erfolgreich.');
-					// clear and reload all lines
-					ref.updateDataArray(0, 0); 
-				    } else {
-					gui.showNotice('error', 'Annotation fehlgeschlagen.');
-					gui.showTextDialog('Annotation fehlgeschlagen',
-							   'Bei der automatischen Annotation ist ein Fehler aufgetreten.',
-							   response.errors);
-				    }
-				}
-			    }
-			});
-			annoUpdate.startTimer();
-		    }
-		    else {
-			var rows = (status!=null ? status.errors : ["Ein unbekannter Fehler ist aufgetreten."]);
-			gui.showTextDialog("Annotation fehlgeschlagen", "Die automatische Annotation lieferte einen Fehler zurück.", rows);
-			gui.hideSpinner();
+		async: true,
+		onComplete: function(response) {
+		    gui.hideSpinner();
+		    if(response && response.success) {
+			gui.showNotice('ok', 'Automatische Annotation war erfolgreich.');
+			// clear and reload all lines
+			ref.updateDataArray(0, 0); 
+		    } else {
+			gui.showNotice('error', 'Annotation fehlgeschlagen.');
+			gui.showTextDialog('Annotation fehlgeschlagen',
+					   'Bei der automatischen Annotation ist ein Fehler aufgetreten.',
+					   response.errors);
 		    }
 		},
 		onFailure: function(xhr) {

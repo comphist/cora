@@ -273,6 +273,9 @@ class RequestHandler {
       case "exportFile":
 	$this->sh->exportFile($get['fileid'], $get['format']);
 	exit;
+
+      case "performAnnotation":
+	return $this->sh->performAnnotation($get['taggerID'], $get['retrain']);
 	
       default:
 	return array("errors" => array("Unknown GET request."));
