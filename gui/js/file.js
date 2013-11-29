@@ -471,10 +471,10 @@ var file = {
 	if (emf) {
 	    if (edit.editorModel.confirmClose()) {
 		$('overlay').show();
-		new Request({
+		new Request.JSON({
 		    url: "request.php",
 		    onSuccess: function(data) {
-			if (!data['success']) {
+			if (!data.success) {
 			    console.log("Error closing file?");
 			}
 			ref.listFiles();
