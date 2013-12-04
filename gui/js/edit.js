@@ -1614,7 +1614,7 @@ var EditorModel = new Class({
 	    var id;
 	    try {
 		id = e.target.getSelected()[0].get('value'); 
-	    } catch {
+	    } catch(e) {
 		trainbox.set('disabled', true);
 		trainbox.set('checked', false);
 		return;
