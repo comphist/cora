@@ -11,6 +11,7 @@ require_once( "connect.php" );
 require_once( "xmlHandler.php" );
 require_once( "commandHandler.php" );
 require_once( "exporter.php" );
+require_once( "automaticAnnotation.php" );
 
 /** Manages session-specific data.
  *
@@ -23,6 +24,7 @@ class CoraSessionHandler {
   private $db; /**< A DBInterface object. */
   private $xml; /**< An XMLHandler object. */
   private $ch; /**< A CommandHandler object. */
+  private $aa; /**< An AutomaticAnnotator object. */
   private $exporter; /**< An Exporter object. */
 
   private $timeout = 30; // session timeout in minutes
@@ -40,6 +42,7 @@ class CoraSessionHandler {
     $this->xml = $xml;
     $this->exporter = $exp;
     $this->ch = $ch;
+    $this->aa = new AutomaticAnnotator($db);
 
     $defaults = array( "lang"        => DEFAULT_LANGUAGE,
 		       "loggedIn"    => false,
@@ -481,10 +484,16 @@ class CoraSessionHandler {
   }
 
   /** Perform automatic training and/or annotation.
+   *
+   * @param string $taggerid Database ID of the tagger to be used
+   * @param bool $retrain Whether to perform retraining first
    */
   public function performAnnotation($taggerid, $retrain) {
+    $userid = $_SESSION['user_id'];
+    $fileid = $_SESSION['currentFileId'];
     // do something here
-    sleep(5);
+    //$this->aa->something();
+    sleep(2);
     return array("success"=>true);
   }
 
