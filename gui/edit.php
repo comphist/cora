@@ -30,6 +30,7 @@
 			<th class="editTable_POS">POS-Tag</th>
 			<th class="editTable_Morph">Morphologie-Tag</th>
 			<th class="editTable_Lemma">Lemma</th>
+			<th class="editTable_LemmaPOS">Lemma-Tag</th>
 			<th class="editTable_Comment">Kommentar</th>
 			<th class="editTable_dropdown"></th>
 		</tr>
@@ -68,6 +69,7 @@
                                 <img src="gui/images/proxal/chat-event.ico" />
                             </div>
 			</td>
+			<td class="editTable_LemmaPOS"></td>
 			<td class="editTable_Comment">
 			    <input type="text" value="" />
 			</td>

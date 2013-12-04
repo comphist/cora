@@ -28,7 +28,7 @@ var EditorModel = new Class({
 	 start_page - The page to first display
     */
     initialize: function(fileid, line_count, last_edited_row, start_page) {
-	var elem, td, spos, smorph, et, mr, btn;
+	var elem, td, spos, smorph, slempos, et, mr, btn;
 	var ref = this;
 
 	if(Browser.chrome) {
@@ -62,6 +62,11 @@ var EditorModel = new Class({
 	td = elem.getElement('td.editTable_Morph');
 	td.empty();
 	td.adopt(smorph);
+
+	slempos = new Element('select');
+	td = elem.getElement('td.editTable_LemmaPOS');
+	td.empty();
+	td.adopt(slempos);
 	
 	this.lineTemplate = elem;
 
@@ -144,7 +149,12 @@ var EditorModel = new Class({
 		    ref.updateData(this_id, 'anno_modtype', new_value);
 		    if (userdata.showInputErrors)
 			ref.updateInputError(target.getParent('tr'));
+		} else if (parent.hasClass("editTable_LemmaPOS")) {
+		    ref.updateData(this_id, 'anno_lemmaPOS', new_value);
+		    if (userdata.showInputErrors)
+			ref.updateInputError(target.getParent('tr'));
 		}
+
 		ref.updateProgress(this_id, true);
 	    }
 	);
@@ -275,9 +285,10 @@ var EditorModel = new Class({
     */
     initializeColumnVisibility: function() {
 	var visibility = {
-	    "Norm":  false,
-	    "Mod":   false,
-	    "Lemma": false,
+	    "Norm":     false,
+	    "Mod":      false,
+	    "Lemma":    false,
+	    "LemmaPOS": false
 	};
 	var normbroad = false;
 	var normtype = false;
@@ -290,6 +301,7 @@ var EditorModel = new Class({
 		    this.useLemmaLookup = true;
 		}
 	    }
+	    if(tagset['class'] == "lemmaPOS") { visibility["LemmaPOS"] = true; }
 	    if(tagset['class'] == "norm") { visibility["Norm"] = true; }
 	    if(tagset['class'] == "norm_broad") { normbroad = true; }
 	    if(tagset['class'] == "norm_type") { normtype = true; }
@@ -914,6 +926,18 @@ var EditorModel = new Class({
 	     * instantiated regardless of this.useLemmaLookup */
 	    this.makeNewAutocomplete(lemma_input, line.num);
 
+	    // Lemma-POS
+	    var lemma_pos = tr.getElement('.editTable_LemmaPOS select');
+	    if(lemma_pos != null && lemma_pos != undefined) {
+		lemma_pos.getElements('.lineSuggestedTag').destroy();
+		lemma_pos.grab(new Element('option',{
+		    html: line.anno_lemmaPOS,
+		    value: line.anno_lemmaPOS,
+		    selected: 'selected',
+		    'class': 'lineSuggestedTag'
+		}),'top');
+	    }
+
             // POS
 	    posopt = tr.getElement('.editTable_POS select');
 	    posopt.getElements('.lineSuggestedTag').destroy();
@@ -1118,6 +1142,7 @@ var EditorModel = new Class({
 		general_error: line.general_error,
 		lemma_verified: line.lemma_verified,
 		anno_lemma: line.anno_lemma,
+		anno_lemmaPOS: line.anno_lemmaPOS,
 		anno_POS: tp, //.replace(/\s[\d\.]+/g,""),
 		anno_morph: tm, //.replace(/\s[\d\.]+/g,""),
 		anno_norm: line.anno_norm,

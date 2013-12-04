@@ -8,8 +8,10 @@ var debugMode = false;
 var fileTagset = {
     pos: null,
     morph: null,
+    lemmapos: null,
     posHTML: "",
     morphHTML: {},
+    lemmaposHTML: "",
     list: [],
 };
 var fileTaggers = [];

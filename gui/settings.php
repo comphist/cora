@@ -38,6 +38,7 @@
 	    <input type="checkbox" name="displayedColumns" id="eshc-POS" value="POS" checked="yes" /><label for="eshc-POS">POS-Tag</label>
 	    <input type="checkbox" name="displayedColumns" id="eshc-Morph" value="Morph" checked="yes" /><label for="eshc-Morph">Morphologie-Tag</label>
 	    <input type="checkbox" name="displayedColumns" id="eshc-Lemma" value="Lemma" checked="yes" /><label for="eshc-Lemma">Lemma</label>
+	    <input type="checkbox" name="displayedColumns" id="eshc-LemmaPOS" value="LemmaPOS" checked="yes" /><label for="eshc-LemmaPOS">Lemma-Tag</label>
 	    <input type="checkbox" name="displayedColumns" id="eshc-Comment" value="Comment" checked="yes" /><label for="eshc-Comment">Kommentar</label>
 	</p>
 	</div>
