@@ -1611,7 +1611,14 @@ var EditorModel = new Class({
 	var aaselect = $('automaticAnnotationForm').getElement('select[name="tagger"]');
 	var trainbox = $('automaticAnnotationForm').getElement('input[name="retrain"]');
 	var onTaggerChange = function(e) {
-	    var id = e.target.getSelected()[0].get('value');
+	    var id;
+	    try {
+		id = e.target.getSelected()[0].get('value'); 
+	    } catch {
+		trainbox.set('disabled', true);
+		trainbox.set('checked', false);
+		return;
+	    }
 	    Array.each(fileTaggers, function(tagger) {
 		if(tagger.id == id) {
 		    trainbox.set('disabled', !tagger.trainable);
