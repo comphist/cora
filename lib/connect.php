@@ -2613,7 +2613,7 @@
       $tslist = $this->getTagsetsForFile($fileid);
       $tsid = 0;
       foreach($tslist as $tagset) {
-	if($tagset['class']=="lemma" && $tagset['set_type']=="closed") {
+	if($tagset['class']=="lemma_sugg") {
 	  $tsid = $tagset['id'];
 	}
       }
