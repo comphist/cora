@@ -71,7 +71,7 @@
 			</td>
 			<td class="editTable_LemmaPOS"></td>
 			<td class="editTable_Comment">
-			    <input type="text" value="" />
+			    <input type="text" value="" maxlength="255" />
 			</td>
 			<td class="editTable_dropdown">
    <div class="editTableDropdown"><img class="editTableDropdownIcon" src="gui/images/proxal/arrow-down.ico"/></div>
