@@ -254,6 +254,7 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
             array("lastEditedRow" => -1,
                   "data" => array_merge($this->expected["texts"]["t1_reduced"],
                                         array("tagset_id" => "1",
+					      "taggers" => array(),
 					      "tagsets" => array(
 						 $this->expected["tagsets"]["ts1"],
 						 $this->expected["tagsets"]["ts2"],
@@ -270,6 +271,7 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
             array("lastEditedRow" => 1,
                   "data" => array_merge($this->expected["texts"]["t2_reduced"],
                                         array("tagset_id" => "1",
+					      "taggers" => array(),
 					      "tagsets" => array(
 						 $this->expected["tagsets"]["ts1"]
 								 ))),
@@ -377,10 +379,10 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         $result = $this->dbi->saveLines("3", "9", $lines, "bollmann");
         $this->assertFalse($result);
         $expected = $this->createXMLDataset("data/saved_lines.xml");
-        $this->assertTablesEqual($expected->getTable("tag_suggestion"),
+	$this->assertTablesEqual($expected->getTable("tag_suggestion"),
             $this->getConnection()->createQueryTable("tag_suggestion",
              "SELECT id,selected,source,tag_id,mod_id "
-            ."FROM tag_suggestion WHERE mod_id > 2 and mod_id < 9"));
+	     ."FROM tag_suggestion WHERE mod_id > 2 and mod_id < 9"));
         $this->assertTablesEqual($expected->getTable("tag"),
             $this->getConnection()->createQueryTable("tag",
             "SELECT * FROM tag WHERE id > 509"));
@@ -393,12 +395,8 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
             "SELECT * FROM comment"));
 
         $lines = array(array('id'=>'14'));
+	$this->setExpectedException('DocumentAccessViolation');
         $result = $this->dbi->saveLines("3", "1", $lines, "bollmann");
-        $this->assertEquals(
-              "Ein interner Fehler ist aufgetreten (Code: 1074).  "
-             ."Die Anfrage enthielt 1 ungültige Token-ID(s) für "
-             ."das derzeit geöffnete Dokument.",
-             $result);
     }
 
     public function testTags() {
