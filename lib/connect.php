@@ -1007,7 +1007,7 @@
     *
     * @return an @em array containing the lines
     */ 	
-   public function getLines($fileid,$start,$lim){		
+   public function getLines($fileid,$start,$lim){
      $qs  = "SELECT x.* FROM ";
      $qs .= "  (SELECT q.*, @rownum := @rownum + 1 AS num FROM ";
      $qs .= "    (SELECT modern.id, modern.trans, modern.utf, ";
@@ -1111,6 +1111,9 @@
 	 }
 	 else if($row['class']=='lemma' && $row['selected']=='1') {
 	   $line['anno_lemma'] = $row['value'];
+	 }
+	 else if($row['class']=='lemmaPOS' && $row['selected']=='1') {
+	   $line['anno_lemmaPOS'] = $row['value'];
 	 }
 	 else if($row['class']=='POS') {
 	   $tag = $row['value'];

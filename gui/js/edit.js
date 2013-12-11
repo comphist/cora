@@ -63,11 +63,14 @@ var EditorModel = new Class({
 	td.empty();
 	td.adopt(smorph);
 
-	slempos = new Element('select');
-	td = elem.getElement('td.editTable_LemmaPOS');
-	td.empty();
-	td.adopt(slempos);
-	
+	if(file.tagsets['lemmaPOS'] !== undefined) {
+	    slempos = new Element('select');
+	    slempos.grab(new Element('optgroup', {'html': file.tagsets['lemmaPOS']['html'], 'label': 'Alle Tags'}));
+	    td = elem.getElement('td.editTable_LemmaPOS');
+	    td.empty();
+	    td.adopt(slempos);
+	}
+
 	this.lineTemplate = elem;
 
 	/* clear out any previously generated lines */
