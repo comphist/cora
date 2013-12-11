@@ -16,12 +16,13 @@ comment
 <script type="text/javascript">
    var cora_project_default_tagsets = {
      // ReF
+     15: [3, 14, 19, 20],
+     10: [3, 14, 19, 20],
+     12: [3, 14, 19, 20],
+     // Projekte mit altem ReF-Tagset
      6: [3, 8, 14],
-     // Übung(en) ReF
      5: [3, 8, 14],
-     10: [3, 8, 14],
      11: [3, 8, 14],
-     12: [3, 8, 14],
      // Anselm
      7: [2, 3, 10, 11, 13],
      9: [2, 3, 10, 11, 13],
