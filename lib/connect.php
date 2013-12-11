@@ -1196,7 +1196,6 @@
      $this->updateChangedTimestamp($fileid,$userid);
 
      $warnings = $dw->getWarnings();
-     print implode("\n", $warnings);
      if(!empty($warnings)) {
        return "Der Speichervorgang wurde abgeschlossen, einige Informationen wurden jedoch möglicherweise nicht gespeichert.  Das System meldete:\n" . implode("\n", $warnings);
      }
