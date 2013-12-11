@@ -17,4 +17,7 @@ define( "DESCRIPTION",        "A corpus annotation tool." );
 define( "KEYWORDS",           "annotation,corpus,POS"     );
 define( "DEFAULT_LANGUAGE",   "de"                        );
 
+// HACK
+define( "TRANS_IMPORT_AUTOTAG_TAGSET", 8 );
+
 ?>
