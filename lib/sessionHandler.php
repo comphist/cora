@@ -268,8 +268,10 @@ class CoraSessionHandler {
     fclose($logfile);
     // HACK: project-specific hack hidden here!
     $cmdopt = null;
-    if(in_array($TRANS_IMPORT_AUTOTAG_OPTIONS, $options['tagsets'])) {
-      $cmdopt = $TRANS_IMPORT_AUTOTAG_OPTIONS[$options['tagsets']];
+    foreach($options['tagsets'] as $tsid) {
+      if(in_array($TRANS_IMPORT_AUTOTAG_OPTIONS, $tsid)) {
+	$cmdopt = $TRANS_IMPORT_AUTOTAG_OPTIONS[$tsid];
+      }
     }
     $errors = $this->ch->convertTransToXML($localname, $xmlname, $options['logfile'], $cmdopt);
     $logfile = fopen($options['logfile'], 'a');
