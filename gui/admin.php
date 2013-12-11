@@ -82,7 +82,12 @@ $ulist = $sh->getUserList();
        <td class="adminProjectNameCell"><?php echo $pn; ?></td>
        <td class="adminProjectUsersCell">
        <?php 
-	       echo implode(',', $project_users[$pid]);
+	       if(in_array($pid, $project_users)) {
+		 echo implode(',', $project_users[$pid]);
+	       }
+	       else {
+		 echo "<i>(Keine Benutzer gefunden)</i>";
+	       }
        ?>
        </td>
        <td>

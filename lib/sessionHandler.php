@@ -266,11 +266,14 @@ class CoraSessionHandler {
     $xmlname = null;
     fwrite($logfile, "~BEGIN XMLCALL\n");
     fclose($logfile);
-    // HACK: project-specific hack hidden here!
+    // HACK: project-specific hacks hidden here!
     $cmdopt = null;
     foreach($options['tagsets'] as $tsid) {
-      if(array_key_exists($tsid, $TRANS_IMPORT_AUTOTAG_OPTIONS)) {
-	$cmdopt = $TRANS_IMPORT_AUTOTAG_OPTIONS[$tsid];
+      if($tsid=='8') {
+	$cmdopt = '-t -p /usr/local/share/rftagger/lib/bonn.par';
+      }
+      else if ($tsid=='20') {
+	$cmdopt = '-t -p /usr/local/share/rftagger/lib/bonn-hits.par';
       }
     }
     $errors = $this->ch->convertTransToXML($localname, $xmlname, $options['logfile'], $cmdopt);

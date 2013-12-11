@@ -354,7 +354,7 @@ class RequestHandler {
       fclose($logfile);
     }
     
-    session_start();
+    @session_start();
     $_SESSION["importInProgress"] = false;
     exit(); // we don't return because there's no client connection left
   }
