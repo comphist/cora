@@ -269,7 +269,7 @@ class CoraSessionHandler {
     // HACK: project-specific hack hidden here!
     $cmdopt = null;
     foreach($options['tagsets'] as $tsid) {
-      if(array_key_exists($TRANS_IMPORT_AUTOTAG_OPTIONS, $tsid)) {
+      if(array_key_exists($tsid, $TRANS_IMPORT_AUTOTAG_OPTIONS)) {
 	$cmdopt = $TRANS_IMPORT_AUTOTAG_OPTIONS[$tsid];
       }
     }
