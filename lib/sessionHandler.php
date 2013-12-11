@@ -267,8 +267,11 @@ class CoraSessionHandler {
     fwrite($logfile, "~BEGIN XMLCALL\n");
     fclose($logfile);
     // HACK: project-specific hack hidden here!
-    $autotag = in_array(TRANS_IMPORT_AUTOTAG_TAGSET, $options['tagsets']);
-    $errors = $this->ch->convertTransToXML($localname, $xmlname, $options['logfile'], $autotag);
+    $cmdopt = null;
+    if(in_array($TRANS_IMPORT_AUTOTAG_OPTIONS, $options['tagsets'])) {
+      $cmdopt = $TRANS_IMPORT_AUTOTAG_OPTIONS[$options['tagsets']];
+    }
+    $errors = $this->ch->convertTransToXML($localname, $xmlname, $options['logfile'], $cmdopt);
     $logfile = fopen($options['logfile'], 'a');
     if(!empty($errors)) {
       fwrite($logfile, "~ERROR XML\n");

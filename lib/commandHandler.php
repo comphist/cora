@@ -89,13 +89,13 @@ class CommandHandler {
 
   /** Call the conversion script to convert a transcription file to
       CorA XML. */
-  public function convertTransToXML(&$transname, &$xmlname, $logfile, $tagging=TRUE) {
+  public function convertTransToXML(&$transname, &$xmlname, $logfile, $cmdopt=null) {
     $output = array();
     $xmlname = tempnam(sys_get_temp_dir(), 'cora');
     $retval = 0;
     $command = $this->xml_script;
-    if($tagging) {
-      $command .= " -t";
+    if($cmdopt) {
+      $command .= " " . $cmdopt;
     }
     $command .= " {$transname} {$xmlname} >>{$logfile} 2>&1";
     exec($command, $output, $retval);

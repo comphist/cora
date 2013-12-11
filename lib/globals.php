@@ -18,6 +18,7 @@ define( "KEYWORDS",           "annotation,corpus,POS"     );
 define( "DEFAULT_LANGUAGE",   "de"                        );
 
 // HACK
-define( "TRANS_IMPORT_AUTOTAG_TAGSET", 8 );
+static $TRANS_IMPORT_AUTOTAG_OPTIONS = array('8' => '-t -p /usr/local/share/rftagger/lib/bonn.par',
+					     '20' => '-t -p /usr/local/share/rftagger/lib/bonn-hits.par');
 
 ?>
