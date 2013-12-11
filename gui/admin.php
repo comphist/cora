@@ -82,7 +82,7 @@ $ulist = $sh->getUserList();
        <td class="adminProjectNameCell"><?php echo $pn; ?></td>
        <td class="adminProjectUsersCell">
        <?php 
-	       if(in_array($pid, $project_users)) {
+	       if(array_key_exists($pid, $project_users)) {
 		 echo implode(',', $project_users[$pid]);
 	       }
 	       else {
