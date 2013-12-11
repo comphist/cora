@@ -53,7 +53,7 @@ var EditorModel = new Class({
 	elem = $('line_template');
 	
 	spos = new Element('select');
-	spos.grab(new Element('optgroup', {'html': fileTagset.posHTML, 'label': 'Alle Tags'}));
+	spos.grab(new Element('optgroup', {'html': file.tagsets['POS']['html'], 'label': 'Alle Tags'}));
 	td = elem.getElement('td.editTable_POS')
 	td.empty();
 	td.adopt(spos);
@@ -293,7 +293,7 @@ var EditorModel = new Class({
 	var normbroad = false;
 	var normtype = false;
 	/* Check tagset associations */
-	fileTagset.list.each(function(tagset) {
+	file.tagsetlist.each(function(tagset) {
 	    if(tagset['class'] == "lemma") {
 		if(tagset['set_type'] == "open") {
 		    visibility["Lemma"] = true;
@@ -344,9 +344,9 @@ var EditorModel = new Class({
 	morph - the morphology tag
      */
     isValidTagCombination: function(pos,morph) {
-	if(pos && morph && fileTagset.pos.contains(pos) &&
-	   fileTagset.morph[pos]!==null &&
-	   fileTagset.morph[pos].contains(morph)) {
+	if(pos && morph && file.tagsets["POS"]['tags'].contains(pos) &&
+	   file.tagsets["morph"][pos]!== null &&
+	   file.tagsets["morph"][pos]['tags'].contains(morph)) {
 		return true;
 	}
 	return false;
@@ -407,7 +407,7 @@ var EditorModel = new Class({
 	    return;
 	}
 	if(ptag!="") {
-	    if(!fileTagset.pos.contains(ptag)) {
+	    if(!file.tagsets["POS"]['tags'].contains(ptag)) {
 		pselect.addClass(iec);
 	    } else {
 		pselect.removeClass(iec);
@@ -482,8 +482,8 @@ var EditorModel = new Class({
 	}
 
 	morphopt = new Element('optgroup', {'label': "Alle Tags für '"+postag+"'"});
-	if (fileTagset.morphHTML[postag] != undefined) {
-	    morphopt.set('html', fileTagset.morphHTML[postag]);
+	if (file.tagsets["morph"][postag] != undefined) {
+	    morphopt.set('html', file.tagsets["morph"][postag]['html']);
 	}
 	else { // ensure there is always at least the empty selection
 	    morphopt.set('html', '<option value="--">--</option>');
@@ -807,9 +807,6 @@ var EditorModel = new Class({
 	var data = this.data;
 	var et = this.editTable;
 	var ler = this.lastEditedRow;
-	var morphhtml = fileTagset.morphHTML;
-	var morph = fileTagset.morph;
-	var pos = fileTagset.pos;
 	var end, start, tr, line, posopt, morphopt, mselect, trs, j;
 	var optgroup, elem, lemma_input;
 	var dlr, dynstart, dynend;
@@ -981,8 +978,16 @@ var EditorModel = new Class({
 	    }
 
 	    if (line.anno_POS!=null) {
-		mselect.grab(new Element('optgroup', {'label': "Alle Tags für '"+line.anno_POS+"'",
-						      html: morphhtml[line.anno_POS]}));
+		if (file.tagsets["morph"][line.anno_POS] != undefined) {
+		    mselect.grab(new Element('optgroup',
+					     {'label': "Alle Tags für '"+line.anno_POS+"'",
+					      html: file.tagsets["morph"][line.anno_POS]['html']}));
+		}
+		else {
+		    mselect.grab(new Element('optgroup',
+					     {'label': "Alle Tags für '"+line.anno_POS+"'",
+					      html: '<option value="--">--</option>'}));
+		}
 	    }
 
 	    if(userdata.showInputErrors) {
@@ -1644,7 +1649,7 @@ var EditorModel = new Class({
 		trainbox.set('checked', false);
 		return;
 	    }
-	    Array.each(fileTaggers, function(tagger) {
+	    Array.each(file.taggers, function(tagger) {
 		if(tagger.id == id) {
 		    trainbox.set('disabled', !tagger.trainable);
 		    if(!tagger.trainable) {
@@ -1654,7 +1659,7 @@ var EditorModel = new Class({
 	    });
 	};
 	aaselect.empty();
-	Array.each(fileTaggers, function(tagger) {
+	Array.each(file.taggers, function(tagger) {
 	    aaselect.adopt(new Element('option',
 				       {'value': tagger.id,
 					'text':  tagger.name}));

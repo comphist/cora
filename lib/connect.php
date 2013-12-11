@@ -14,6 +14,7 @@
  require_once 'globals.php';
  require_once 'documentModel.php';
  require_once 'commandHandler.php';
+ require_once 'connect/DocumentAccessor.php';
  require_once 'connect/DocumentWriter.php';
 
  /** An interface for application-specific database requests.
@@ -179,6 +180,19 @@
      $stmt->bindValue(':tagsetid', $tagset, PDO::PARAM_INT);
      $stmt->execute();
      return $stmt->fetchAll(PDO::FETCH_ASSOC);
+   }
+
+   /** Fetch all tagsets for a given file.
+    *
+    * Retrieves information about tagsets associated with a given
+    * file, including all tags for each closed class tagset.
+    *
+    * @param string $fileid A file ID
+    */
+   public function fetchTagsetsForFile($fileid) {
+     $da = new DocumentAccessor($this, $this->dbo, $fileid);
+     $da->retrieveTagsetInformation();
+     return $da->getTagsets();
    }
 
    /** Build and return an array containing a full tagset.

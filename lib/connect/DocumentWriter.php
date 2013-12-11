@@ -13,7 +13,6 @@ require_once('DocumentAccessor.php');
  */
 class DocumentWriter extends DocumentAccessor {
   protected $flagtypes;
-  protected $tagsets = array();
 
   /* Prepared SQL statements that are typically called multiple times
      during one save process. */
@@ -85,35 +84,16 @@ class DocumentWriter extends DocumentAccessor {
 
   /**********************************************/
 
-  /** Determine if tagset values should be preloaded. */
-  private function isPreloadTagset($tagset) {
-    return ($tagset['set_type']=="closed" && $tagset['class']!='lemma_sugg');
-  }
-
   /** Preload a tagset.
    *
    * Retrieves all tags for a given tagset and stores them for future
    * reference.
+   *
+   * OVERRIDE: for writing, fetch tagset as key/value pairs
    */
-  private function preloadTagset($tagset) {
+  protected function preloadTagset($tagset) {
     $tags = $this->dbi->getTagsetByValue($tagset['id']);
     $this->tagsets[$tagset['class']]['tags'] = $tags;
-  }
-
-  /** Retrieve information about tagsets linked to the associated
-   * file.
-   *
-   * Retrieves all associated tagsets and automatically loads all tag
-   * values where appropriate.
-   */
-  private function retrieveTagsetInformation() {
-    $tslist = $this->dbi->getTagsetsForFile($this->fileid);
-    foreach($tslist as $ts) { // index by class
-      $this->tagsets[$ts['class']] = $ts;
-      if($this->isPreloadTagset($ts)) {
-	$this->preloadTagset($ts);
-      }
-    }
   }
 
   /** Check whether all mod IDs belong to the associated file.

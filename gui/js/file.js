@@ -5,23 +5,15 @@
 
 var debugMode = false;
 
-var fileTagset = {
-    pos: null,
-    morph: null,
-    lemmapos: null,
-    posHTML: "",
-    morphHTML: {},
-    lemmaposHTML: "",
-    list: [],
-};
-var fileTaggers = [];
-
 // ***********************************************************************
 // ********** CLASS FILE ******************************************
 // ***********************************************************************
 
 var file = {
     transImportProgressBar: null,
+    tagsets: {},
+    tagsetlist: [],
+    taggers: [],
 
     initialize: function(){
         this.activateImportForm();
@@ -354,16 +346,13 @@ var file = {
 
        Parses tagset data and builds HTML code for drop-down boxes.
     */
-    preprocessTagset: function(taglist) {
-	var posarray = new Array();
-	fileTagset.pos = new Array();
-	fileTagset.morph = {};
+    preprocessTagset: function(tslist) {
+	var ref = this;
+	var splitAtFirstDot;
 
-	Array.each(taglist, function(data) {
-	    var tag = data.value;
-	    var pos = "", morph = "";
-	    // split into POS + morph
+	splitAtFirstDot = function(tag) {
 	    var dotidx = tag.indexOf('.');
+	    var pos = null; var morph = null;
 	    if(dotidx<0 || dotidx==(tag.length-1)) {
 		pos = tag;
 	    }
@@ -371,44 +360,68 @@ var file = {
 		pos = tag.substr(0, dotidx);
 		morph = tag.substr(dotidx+1);
 	    }
+	    return [pos, morph];
+	};
 
-	    // add POS
-	    posarray.push(pos);
-	    // add morph
-	    if(morph !== "") {
-		if(!(pos in fileTagset.morph)) {
-		    fileTagset.morph[pos] = new Array();
-		}
-		fileTagset.morph[pos].push(morph);
+	// collect tags into arrays, splitting POS if applicable
+	Object.each(tslist, function(tagset, tclass) {
+	    if(typeof tagset.tags === 'undefined'
+	       || tagset.tags.length < 1) return;
+	    ref.tagsets[tclass] = {'tags': [],
+				   'html': ""};
+	    if(tclass === "POS") {
+		ref.tagsets["morph"] = {};
 	    }
+	    Array.each(tagset.tags, function(data) {
+		var tag;
+		if(data.needs_revision==1) return;
+		if(tclass === "POS") {
+		    tag = splitAtFirstDot(data.value);
+		    ref.tagsets["POS"]['tags'].push(tag[0]);
+		    if(tag[1] != null) {
+			if(!(tag[0] in ref.tagsets["morph"])) {
+			    ref.tagsets["morph"][tag[0]] = {'tags': [],
+							    'html': ""};
+			}
+			ref.tagsets["morph"][tag[0]]['tags'].push(tag[1]);
+		    }
+		}
+		else {
+		    tag = data.value;
+		    ref.tagsets[tclass]['tags'].push(tag);
+		}
+	    });
 	});
-	fileTagset.pos = posarray.unique();
+
+	if("POS" in ref.tagsets) {
+	    ref.tagsets["POS"]['tags'] = ref.tagsets["POS"]['tags'].unique();
+	}
 	
 	// generate HTML code
-	var posHTML = "";
-	Array.each(fileTagset.pos, function(pos) {
-	    var morphHTML = "";
-	    posHTML += '<option value="';
-	    posHTML += pos;
-	    posHTML += '">';
-	    posHTML += pos;
-	    posHTML += "</option>";
-	    if(fileTagset.morph[pos]) {
-		Array.each(fileTagset.morph[pos], function(morph) {
-		    morphHTML += '<option value="';
-		    morphHTML += morph;
-		    morphHTML += '">';
-		    morphHTML += morph;
-		    morphHTML += "</option>";
-		});
-	    }
-	    else {
-		fileTagset.morph[pos] = new Array("--");
-		morphHTML = '<option value="--">--</option>';
-	    }
-	    fileTagset.morphHTML[pos] = morphHTML;
+	Object.each(ref.tagsets, function(tagset, tclass) {
+	    if(tclass==="morph") return;
+	    var html = "";
+	    Array.each(tagset.tags, function(tag) {
+		html += '<option value="' + tag + '">';
+		html += tag + '</option>';
+		if(tclass==="POS") {
+		    var morph_html = "";
+		    if(ref.tagsets['morph'][tag]) {
+			Array.each(ref.tagsets['morph'][tag]['tags'], function(morph) {
+			    morph_html += '<option value="' + morph + '">';
+			    morph_html += morph + '</option>';
+			});
+			ref.tagsets['morph'][tag]['html'] = morph_html;
+		    }
+		    else {
+			morph_html = '<option value="--">--</option>';
+			ref.tagsets['morph'][tag] = {'tags': ['--'],
+						     'html': morph_html};
+		    }
+		}
+	    });
+	    ref.tagsets[tclass]['html'] = html;
 	});
-	fileTagset.posHTML = posHTML;
     },
     
     openFile: function(fileid) {
@@ -427,8 +440,8 @@ var file = {
         		url: 'request.php',
         		onComplete: function(fileData) {        		         
         		    if(fileData.success){
-				fileTagset.list = fileData.data.tagsets;
-				fileTaggers = fileData.data.taggers;
+				ref.tagsetlist = fileData.data.tagsets;
+				ref.taggers = fileData.data.taggers;
 
        				// load tagset
         		        var afterLoadTagset = function() {
@@ -443,7 +456,7 @@ var file = {
         		            url: "request.php",
         		            async: true,
 				    method: 'get',
-				    data: {'do':'fetchTagset','tagset_id':fileData.data.tagset_id,'limit':'legal'},
+				    data: {'do':'fetchTagsetsForFile','file_id':fileid},
         		            onComplete: function(response){
 					// TODO: error handling?!
 					ref.preprocessTagset(response['data']);

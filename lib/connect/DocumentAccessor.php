@@ -19,6 +19,7 @@ class DocumentAccessor {
   protected $dbi; /**< DBInterface object to use for queries */
   protected $dbo; /**< PDO object to use for own queries */
   protected $fileid; /**< ID of the associated file */
+  protected $tagsets = array();
 
   protected $warnings = array();
 
@@ -48,6 +49,10 @@ class DocumentAccessor {
 
   public function getWarnings() {
     return $this->warnings;
+  }
+
+  public function getTagsets() {
+    return $this->tagsets;
   }
 
   /**********************************************
@@ -126,5 +131,35 @@ class DocumentAccessor {
     return $annotations;
   }
 
+  /** Determine if tagset values should be preloaded. */
+  protected function isPreloadTagset($tagset) {
+    return ($tagset['set_type']=="closed" && $tagset['class']!='lemma_sugg');
+  }
+
+  /** Preload a tagset.
+   *
+   * Retrieves all tags for a given tagset and stores them for future
+   * reference.
+   */
+  protected function preloadTagset($tagset) {
+    $tags = $this->dbi->getTagset($tagset['id']);
+    $this->tagsets[$tagset['class']]['tags'] = $tags;
+  }
+
+  /** Retrieve information about tagsets linked to the associated
+   * file.
+   *
+   * Retrieves all associated tagsets and automatically loads all tag
+   * values where appropriate.
+   */
+  public function retrieveTagsetInformation() {
+    $tslist = $this->dbi->getTagsetsForFile($this->fileid);
+    foreach($tslist as $ts) { // index by class
+      $this->tagsets[$ts['class']] = $ts;
+      if($this->isPreloadTagset($ts)) {
+	$this->preloadTagset($ts);
+      }
+    }
+  }
 
 }

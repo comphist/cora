@@ -158,7 +158,7 @@ class RequestHandler {
 	if(empty($post['tagset_name'])) {
 	  return array("errors"=>array("Kein Tagset-Name angegeben."));
 	}
-	$taglist = explode('\n', file_get_contents($_FILES['txtFile']['tmp_name']));
+	$taglist = explode("\n", file_get_contents($_FILES['txtFile']['tmp_name']));
 	return $this->sh->importTagList($taglist, $post['tagset_name']);
 
       case "importXMLFile":
@@ -207,6 +207,9 @@ class RequestHandler {
 
       case "getTagsetsForFile":
 	return $this->sh->getTagsetsForFile($get["file_id"]);
+
+      case "fetchTagsetsForFile":
+	return $this->sh->fetchTagsetsForFile($get["file_id"]);
 
       case "fetchLemmaSugg":
 	return $this->sh->getLemmaSuggestion($get["linenum"],

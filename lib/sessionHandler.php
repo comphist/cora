@@ -110,6 +110,12 @@ class CoraSessionHandler {
     return array('success' => true, 'data' => $tlist);
   }
 
+  /** Wraps DBInterface::fetchTagsetsForFile(). */
+  public function fetchTagsetsForFile($fileid) {
+    $data = $this->db->fetchTagsetsForFile($fileid);
+    return array('success' => true, 'data' => $data);
+  }
+
   /** Wraps DBInterface::getLemmaSuggestion(). */
   public function getLemmaSuggestion($linenum, $q, $limit) {
     $data = $this->db->getLemmaSuggestion($_SESSION['currentFileId'],
