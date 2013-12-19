@@ -441,6 +441,53 @@
      return $stmt->rowCount();
    }
 
+   /** Locks a project for automatic annotation.
+    *
+    * @param string $pid The project ID 
+    * @param string $tid The tagger ID
+    *
+    * @return A boolean indicating whether the lock was successful
+    */
+   public function lockProjectForTagger($pid,$tid) {
+     $qs = "SELECT COUNT(*) FROM tagger_locks WHERE `project_id`=:pid";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':pid' => $pid));
+     if($stmt->fetch(PDO::FETCH_COLUMN)!=0) {
+       return false;
+     }
+     $qs = "INSERT INTO tagger_locks (tagger_id, project_id)"
+       . "  VALUES (:tid, :pid)";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':tid' => $tid, ':pid' => $pid));
+     return true;
+   }
+
+   /** Releases the annotation lock for a given project.
+    *
+    * @param string $pid The project ID 
+    */
+   public function unlockProjectForTagger($pid) {
+     $qs = "DELETE FROM tagger_locks WHERE project_id=:pid";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':pid' => $pid));
+   }
+
+   /** Get metadata for a list of tagsets.
+    *
+    * @param array $idlist An array of tagset IDs
+    *
+    * @return An array containing one associative array with metadata
+    * for each tagset in the input list.
+    */
+   public function getTagsetMetadata($idlist) {
+     $qs  = "SELECT ts.id, ts.name, ts.class, ts.set_type "
+       . "     FROM tagset ts "
+       . "    WHERE ts.id=?";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute($idlist);
+     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+   }
+
    /** Get tagsets associated with a file.
     *
     * Retrieves a list of tagsets with their respective class for the
@@ -460,7 +507,8 @@
     */
    public function getTaggerList() {
      $tlist = array();
-     $qs = "SELECT t.id, t.name, (t.cmd_train IS NOT NULL) AS trainable, ts.tagset_id "
+     $qs = "SELECT t.id, t.name, (t.cmd_train IS NOT NULL) AS trainable, "
+       . "         t.cmd_train, t.cmd_tag, ts.tagset_id "
        . "    FROM tagger2tagset ts "
        . "    LEFT JOIN tagger t ON t.id=ts.tagger_id";
      $stmt = $this->dbo->prepare($qs);
@@ -472,6 +520,8 @@
        else {
 	 $tlist[$row['id']] = array('name' => $row['name'],
 				    'trainable' => $row['trainable']==1 ? true : false,
+				    'cmd_train' => $row['cmd_train'],
+				    'cmd_tag' => $row['cmd_tag'],
 				    'tagsets' => array($row['tagset_id']));
        }
      }
@@ -752,6 +802,19 @@
      return $stmt->fetchAll(PDO::FETCH_ASSOC);
    }
 
+   /** Get the project ID of a given file.
+    *
+    * @param int $fileid A file ID
+    * @return the project ID of the given file
+    */
+   public function getProjectForFile($fileid) {
+     $qs = "SELECT `project_id` FROM text WHERE `id`=:fileid";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->bindParam(':fileid', $fileid, PDO::PARAM_INT);
+     $stmt->execute();
+     return $stmt->fetch(PDO::FETCH_COLUMN);
+   }
+
    /** Create a new project.
     *
     * @param string $name project name
@@ -845,6 +908,12 @@
      return $stmt->fetch(PDO::FETCH_COLUMN);
    }
 
+   /** Return all error annotations for a given mod.
+    *
+    * @param string $mid A mod ID
+    *
+    * @return An array of all selected error annotations
+    */
    protected function getErrorsForModern($mid) {
      $qs  = "SELECT error_types.name ";
      $qs .= "FROM   modern ";
@@ -964,6 +1033,14 @@
      $stmt->execute(array(':tid' => $fileid));
      $dipls = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+     /* TODO: this is temporary until "verified" status is marked
+	directly with the modern */
+     $qs = "SELECT `currentmod_id` FROM text WHERE `id`=:tid";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':tid' => $fileid));
+     $currentmod_id = $stmt->fetch(PDO::FETCH_COLUMN);
+     $verified = ($currentmod_id && $currentmod_id != null && !empty($currentmod_id));
+
      // moderns
      $qs = "SELECT token.id AS parent_tok_db_id, modern.id AS db_id, "
        ."          modern.trans, modern.utf, modern.ascii, c1.value AS comment "
@@ -989,6 +1066,13 @@
        $stmt->execute();
        $row['tags'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
        $row['errors'] = $this->getErrorsForModern($row['db_id']);
+
+       /* TODO: this is temporary until "verified" status is marked
+	  directly with the modern */
+       $row['verified'] = $verified;
+       if($row['db_id'] == $currentmod_id) {
+	 $verified = false;
+       }
      }
      unset($row);
 
@@ -1186,20 +1270,23 @@
        return "lock failed";
      }
      
-     $dw = new DocumentWriter($this, $this->dbo, $fileid);
-     if(!empty($lines)) {
-       $dw->saveLines($lines);
-     }
-
+     $warnings = $this->performSaveLines($fileid,$lines);
      $this->markLastPosition($fileid,$lasteditedrow);
      $userid = $this->getUserIDFromName($uname);
      $this->updateChangedTimestamp($fileid,$userid);
 
-     $warnings = $dw->getWarnings();
      if(!empty($warnings)) {
        return "Der Speichervorgang wurde abgeschlossen, einige Informationen wurden jedoch möglicherweise nicht gespeichert.  Das System meldete:\n" . implode("\n", $warnings);
      }
      return False;
+   }
+
+   public function performSaveLines($fileid, $lines) {
+     $dw = new DocumentWriter($this, $this->dbo, $fileid);
+     if(!empty($lines)) {
+       $dw->saveLines($lines);
+     }
+     return $dw->getWarnings();
    }
 
    /** Updates "last edited" information for a file.

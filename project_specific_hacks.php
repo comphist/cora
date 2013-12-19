@@ -8,8 +8,8 @@
 
 
 
-// session_handler.php contains another hack marked with a "HACK"
-comment
+/* session_handler.php contains another hack marked with a "HACK"
+   comment */
 
 ?>
 

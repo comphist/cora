@@ -24,7 +24,6 @@ class CoraSessionHandler {
   private $db; /**< A DBInterface object. */
   private $xml; /**< An XMLHandler object. */
   private $ch; /**< A CommandHandler object. */
-  private $aa; /**< An AutomaticAnnotator object. */
   private $exporter; /**< An Exporter object. */
 
   private $timeout = 30; // session timeout in minutes
@@ -42,7 +41,6 @@ class CoraSessionHandler {
     $this->xml = $xml;
     $this->exporter = $exp;
     $this->ch = $ch;
-    $this->aa = new AutomaticAnnotator($db);
 
     $defaults = array( "lang"        => DEFAULT_LANGUAGE,
 		       "loggedIn"    => false,
@@ -504,10 +502,22 @@ class CoraSessionHandler {
    */
   public function performAnnotation($taggerid, $retrain) {
     $userid = $_SESSION['user_id'];
-    $fileid = $_SESSION['currentFileId'];
-    // do something here
-    //$this->aa->something();
-    sleep(2);
+    $fid = $_SESSION['currentFileId'];
+    $pid = $this->db->getProjectForFile($fid);
+    $aa = new AutomaticAnnotator($this->db, $taggerid, $pid);
+    if($retrain) {
+      // do something here
+    }
+
+    try {
+      $aa->annotate($fid);
+    }
+    catch(Exception $ex) {
+      return array("success"=>false,
+		   "errors"=>$ex->getMessage());
+    }
+
+    $this->db->updateChangedTimestamp($fid,$userid);
     return array("success"=>true);
   }
 

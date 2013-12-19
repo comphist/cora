@@ -17,4 +17,6 @@ define( "DESCRIPTION",        "A corpus annotation tool." );
 define( "KEYWORDS",           "annotation,corpus,POS"     );
 define( "DEFAULT_LANGUAGE",   "de"                        );
 
+define( "EXTERNAL_PARAM_DIR", "/var/lib/cora"             );
+
 ?>

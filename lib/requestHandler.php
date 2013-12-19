@@ -278,7 +278,7 @@ class RequestHandler {
 	exit;
 
       case "performAnnotation":
-	return $this->sh->performAnnotation($get['taggerID'], $get['retrain']);
+	return $this->sh->performAnnotation($get['tagger'], $get['retrain']);
 	
       default:
 	return array("errors" => array("Unknown GET request."));

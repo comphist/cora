@@ -72,7 +72,7 @@ class Exporter {
    */
   public function export($fileid, $format, $handle) {
     if($format == ExportType::Tagging) {
-      return $this->exportForTagging($fileid, $handle);
+      return $this->exportPOS($fileid, $handle);
     }
     if($format == ExportType::Normalization) {
       return $this->exportNormalization($fileid, $handle);
@@ -84,7 +84,50 @@ class Exporter {
     $doc = CoraDocument::fromDB($fileid, $this->db);
   }
 
-  /** Export a file for tagging.
+  /** Export all mods with several annotation layers.
+   *
+   * Outputs a tab-separated text format with modern tokens (in their
+   * simplified version) and any number of given annotation layers.
+   *
+   * @param string $fileid ID of the file to be exported
+   * @param resource $handle A resource representing an output stream
+   * @param array $classes An array containing the tagset classes
+   *                       that should be exported
+   * @param bool $header If true, the first output line will be
+   *                     a header containing the tagset classes
+   *
+   * @return An array of mods as provided by @c
+   * DBInterface::getAllTokens.
+   */
+  public function exportForTagging($fileid, $handle, $classes, $header=TRUE) {
+    $tokens = $this->db->getAllTokens($fileid);
+    $moderns = $tokens[2];
+    if($header) {
+      fwrite($handle, 'ascii');
+      foreach($classes as $class) {
+	fwrite($handle, "\t".$class);
+      }
+      fwrite($handle, "\n");
+    }
+    foreach($moderns as $mod) {
+      $annotations = array();
+      foreach($mod['tags'] as $tag) {
+	if($tag['selected']==1) {
+	  $annotations[$tag['type']] = $tag['tag'];
+	}
+      }
+      fwrite($handle, $mod['ascii']);
+      foreach($classes as $class) {
+	$anno = array_key_exists($class, $annotations) ?
+	  $annotations[$class] : "";
+	fwrite($handle, "\t".$anno);
+      }
+      fwrite($handle, "\n");
+    }
+    return $moderns;
+  }
+
+  /** Export a file with POS annotations.
    *
    * Outputs a tab-separated text format with modern tokens (in their
    * simplified version) and their selected POS tags.
@@ -93,7 +136,7 @@ class Exporter {
    * @param resource $handle A resource representing an output stream
    *                         where the exported data will be sent
    */
-  protected function exportForTagging($fileid, $handle) {
+  protected function exportPOS($fileid, $handle) {
     $tokens = $this->db->getAllTokens($fileid);
     $moderns = $tokens[2];
     foreach($moderns as $mod) {

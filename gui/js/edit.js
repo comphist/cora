@@ -1687,7 +1687,7 @@ var EditorModel = new Class({
 	var content = $('automaticAnnotationForm');
 	var performAnnotation = function() {
 	    var retrain = $('automaticAnnotationForm').getElement('input[name="retrain"]').get('checked');
-	    var taggerID = $('automaticAnnotationForm').getElement('select[name="tagger"]').getSelected()[0];
+	    var taggerID = $('automaticAnnotationForm').getElement('select[name="tagger"]').getSelected()[0].get('value');
 	    gui.showSpinner({message: 'Bitte warten...'});
 	    new Request.JSON({
 		url: 'request.php',
@@ -1704,6 +1704,13 @@ var EditorModel = new Class({
 					   'Bei der automatischen Annotation ist ein Fehler aufgetreten.',
 					   response.errors);
 		    }
+		},
+		onError: function(response) {
+		    new mBox.Modal({
+			title: 'Annotation fehlgeschlagen',
+			content: 'Ein unbekannter Fehler ist aufgetreten.'
+		    }).open();
+		    gui.hideSpinner();		    
 		},
 		onFailure: function(xhr) {
 		    new mBox.Modal({
