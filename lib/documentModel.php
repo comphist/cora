@@ -77,17 +77,19 @@ class CoraDocument {
 
   /** Add a comment.
    *
-   * @param string $tok_id Database ID of the token (dipl) to which comment is attached
-   * @param string $xml_id XML ID of the token (dipl) to which comment is attached
+   * @param string $tok_id Database ID of the token to which comment is attached
+   * @param string $xml_id XML ID of the token to which comment is attached
    * @param string $text Comment as string
    * @param string $type Comment type as a single letter (e.g. K, E)
+   * @param string $subtok_id Modern ID of the token to which comment is attached
    */
-  public function addComment($tok_id, $xml_id, $text, $type) {
+  public function addComment($tok_id, $xml_id, $text, $type, $subtok_id=NULL) {
     $comment = array();
     $comment['parent_db_id']  = $tok_id;
     $comment['parent_xml_id'] = $xml_id;
     $comment['text']   = $text;
     $comment['type']   = $type;
+    $comment['subtok_db_id']  = $subtok_id;
     $this->comments[] = $comment;
     return $this;
   }

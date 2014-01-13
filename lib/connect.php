@@ -2109,8 +2109,12 @@
 			     ':utf'   => $mod['utf'],
 			     ':tokid' => $mod['parent_db_id'],
 			     ':ascii' => $mod['ascii']));
+	$last_insert_id = $this->dbo->lastInsertId();
+	if(array_key_exists('comment', $mod) && !empty($mod['comment'])) {
+	  $data->addComment($mod['parent_db_id'], null, $mod['comment'], "C", $last_insert_id);
+	}
 	if(is_null($first_id)) {
-	  $first_id = $this->dbo->lastInsertId();
+	  $first_id = $last_insert_id;
 	}
       }
     }
@@ -2199,8 +2203,8 @@
 
     // Table 'comment'
     $qstr  = "INSERT INTO {$this->db}.comment ";
-    $qstr .= "  (`tok_id`, `value`, `comment_type`) VALUES ";
-    $qstr .= "  (:tokid,   :value,  :ctype)";
+    $qstr .= "  (`tok_id`, `value`, `comment_type`, `subtok_id`) VALUES ";
+    $qstr .= "  (:tokid,   :value,  :ctype,         :subtokid)";
     $comments = $data->getComments();
     if(!empty($comments)) {
       try {
@@ -2208,7 +2212,8 @@
 	foreach($comments as $comment) {
 	  $stmt->execute(array(':tokid' => $comment['parent_db_id'],
 			       ':value' => $comment['text'],
-			       ':ctype' => $comment['type']));
+			       ':ctype' => $comment['type'],
+			       ':subtokid' => $comment['subtok_db_id']));
 	}
       }
       catch (PDOException $ex) {

@@ -154,7 +154,10 @@ class XMLHandler {
       // then, parse all selected annotations
       foreach($modnode->children() as $annonode) {
 	$annotype = $annonode->getName();
-	if($annotype!=='suggestions') {
+	if($annotype=='cora-comment') {
+	  $modern['comment'] = (string) $annonode;
+	}
+	else if($annotype!=='suggestions') {
 	  $annotag  = (string) $annonode['tag'];
 	  $found = false;
 	  // loop over all suggestions to check whether the annotation
