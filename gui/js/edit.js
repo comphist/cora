@@ -298,11 +298,10 @@ var EditorModel = new Class({
 	/* Check tagset associations */
 	file.tagsetlist.each(function(tagset) {
 	    if(tagset['class'] == "lemma") {
-		if(tagset['set_type'] == "open") {
-		    visibility["Lemma"] = true;
-		} else {
-		    this.useLemmaLookup = true;
-		}
+		visibility["Lemma"] = true;
+            }
+            if(tagset['class'] == "lemma_sugg") {
+		this.useLemmaLookup = true;
 	    }
 	    if(tagset['class'] == "lemmaPOS") { visibility["LemmaPOS"] = true; }
 	    if(tagset['class'] == "norm") { visibility["Norm"] = true; }

@@ -84,6 +84,11 @@ class Exporter {
     $doc = CoraDocument::fromDB($fileid, $this->db);
   }
 
+
+  public function exportForTraining($projectid, $handle, $classes, $header=TRUE) {
+
+  }
+
   /** Export all mods with several annotation layers.
    *
    * Outputs a tab-separated text format with modern tokens (in their
