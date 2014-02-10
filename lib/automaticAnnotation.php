@@ -128,35 +128,57 @@ class AutomaticAnnotator {
     // $filetagsets = $this->db->getTagsetsForFile($fileid);
 
     try {
-      // export for tagging
-      $tmpin  = tempnam(sys_get_temp_dir(), 'cora_aa');
-      $handle = fopen($tmpin, 'w');
-      $moderns = $this->exp->exportForTagging($fileid, $handle, $this->tagset_cls, true);
-      fclose($handle);
-
-      // call tagger
-      $output = array();
-      $retval = 0;
-      $cmd = $this->buildCommand($this->cmd_tag, $tmpin);
-      exec($cmd, $output, $retval);
-      unlink($tmpin);
-      if($retval) {
-	throw new Exception("Der Befehl gab den Status-Code {$retval} zurück.");
-      }
-
-      // import the annotations
-      $this->updateAnnotation($fileid, $output, $moderns);
+        // export for tagging
+        $tmpin  = tempnam(sys_get_temp_dir(), 'cora_aa');
+        $handle = fopen($tmpin, 'w');
+        $moderns = $this->exp->exportForTagging($fileid, $handle, $this->tagset_cls, true);
+        fclose($handle);
+        
+        // call tagger
+        $output = array();
+        $retval = 0;
+        $cmd = $this->buildCommand($this->cmd_tag, $tmpin);
+        exec($cmd, $output, $retval);
+        unlink($tmpin);
+        if($retval) {
+            throw new Exception("Der Befehl gab den Status-Code {$retval} zurück.\n"
+                                .implode("\n", $output));
+        }
+        
+        // import the annotations
+        $this->updateAnnotation($fileid, $output, $moderns);
     }
     catch(Exception $e) {
-      @unlink($tmpin);
-      throw $e;
+        @unlink($tmpin);
+        throw $e;
     }
   }
 
-  public function train($fileid) {
+  public function train() {
+      try {
+          // export for training
+          $tmpin  = tempnam(sys_get_temp_dir(), 'cora_at');
+          $handle = fopen($tmpin, 'w');
+          $this->exp->exportForTraining($this->projectid, $handle,
+                                        $this->tagset_cls, true);
+          fclose($handle);
 
+          // call tagger
+          $output = array();
+          $retval = 0;
+          $cmd = $this->buildCommand($this->cmd_train, $tmpin);
+          exec($cmd, $output, $retval);
+          unlink($tmpin);
+          if($retval) {
+              throw new Exception("Der Befehl gab den Status-Code {$retval} zurück.\n"
+                                  .implode("\n", $output));
+          }
+      }
+      catch(Exception $e) {
+          @unlink($tmpin);
+          throw $e;
+      }
   }
-
 
 }
 

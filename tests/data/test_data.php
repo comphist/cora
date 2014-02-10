@@ -890,7 +890,7 @@ function get_AutomaticAnnotator_data() {
                                                                          "score" => 0.1,
                                                                          "selected" => 1,
                                                                          "source" => "auto",
-                                                                         "type" => "POS")
+                                                                         "type" => "norm")
                                                                    ),
                                                    "errors" => array()
                                                    ),
@@ -960,6 +960,98 @@ function get_AutomaticAnnotator_data() {
                                            "anno_norm" => "ging",
                                            "anno_POS" => "VVFIN")
                                      )
+                 );
+}
+
+function get_Exporter_data() {
+    return array("all_tokens" => array(array(), // tokens
+                                       array(), // dipls
+                                       array(   // moderns
+                                             array("parent_tok_db_id" => 701,
+                                                   "db_id" => 801,
+                                                   "trans" => "vnd",
+                                                   "ascii" => "vnd",
+                                                   "utf"   => "vnd",
+                                                   "comment" => "",
+                                                   "verified" => 0,
+                                                   "tags" => array(
+                                                                   array("tag" => "DARTU",
+                                                                         "score" => 0.1,
+                                                                         "selected" => 1,
+                                                                         "source" => "auto",
+                                                                         "type" => "POS"),
+                                                                   array("tag" => "und",
+                                                                         "score" => 0.1,
+                                                                         "selected" => 1,
+                                                                         "source" => "auto",
+                                                                         "type" => "norm")
+                                                                   ),
+                                                   "errors" => array()
+                                                   ),
+                                             array("parent_tok_db_id" => 702,
+                                                   "db_id" => 802,
+                                                   "trans" => "jn",
+                                                   "ascii" => "jn",
+                                                   "utf"   => "jn",
+                                                   "comment" => "",
+                                                   "verified" => 1,
+                                                   "tags" => array(
+                                                                   array("tag" => "PPER",
+                                                                         "score" => 0.8,
+                                                                         "selected" => 1,
+                                                                         "source" => "auto",
+                                                                         "type" => "POS"),
+                                                                   array("tag" => "ihn",
+                                                                         "score" => 0.8,
+                                                                         "selected" => 1,
+                                                                         "source" => "user",
+                                                                         "type" => "norm"),
+                                                                   array("tag" => "ihnen",
+                                                                         "score" => 0.8,
+                                                                         "selected" => 1,
+                                                                         "source" => "user",
+                                                                         "type" => "norm_broad"),
+                                                                   array("tag" => "f",
+                                                                         "score" => 0.8,
+                                                                         "selected" => 1,
+                                                                         "source" => "user",
+                                                                         "type" => "norm_type")
+                                                                   ),
+                                                   "errors" => array()
+                                                   ),
+                                             array("parent_tok_db_id" => 703,
+                                                   "db_id" => 803,
+                                                   "trans" => "gi\ebt",
+                                                   "ascii" => "giebt",
+                                                   "utf"   => "giēbt",
+                                                   "comment" => "",
+                                                   "verified" => 0,
+                                                   "tags" => array(
+                                                                   array("tag" => "NE",
+                                                                         "score" => 0.5,
+                                                                         "selected" => 1,
+                                                                         "source" => "auto",
+                                                                         "type" => "POS"),
+                                                                   array("tag" => "VVIMP",
+                                                                         "score" => 0.75,
+                                                                         "selected" => 0,
+                                                                         "source" => "auto",
+                                                                         "type" => "POS"),
+                                                                   array("tag" => "giebel",
+                                                                         "score" => 0.8,
+                                                                         "selected" => 1,
+                                                                         "source" => "auto",
+                                                                         "type" => "norm")
+                                                                   ),
+                                                   "errors" => array()
+                                                   )
+                                                )
+                                       ),
+                 "expected_POS" => "vnd\tDARTU\njn\tPPER\ngiebt\tNE\n",
+                 "expected_norm" => "vnd\tund\njn\tihn\tihnen\tf\ngiebt\tgiebel\n",
+                 "expected_tagging_1" => "ascii\tPOS\tnorm\nvnd\tDARTU\tund\n"
+                                         ."jn\tPPER\tihn\ngiebt\tNE\tgiebel\n",
+                 "expected_tagging_2" => "vnd\tund\njn\tihn\ngiebt\tgiebel\n"
                  );
 }
 
