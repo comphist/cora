@@ -5,7 +5,7 @@ require_once"../lib/exporter.php";
 
 /** A mock DBInterface
  */
-class Cora_Tests_DBInterface_Mock {
+class Cora_Tests_DBInterface_Exporter_Mock {
     private $test_data;
 
     function __construct() {
@@ -26,9 +26,24 @@ class Cora_Tests_DBInterface_Mock {
     {
         return $this->test_data["expected_tagging_2"];
     }
+    public function getExpectedTraining()
+    {
+        return $this->test_data["expected_training"];
+    }
+
+    public function getFilesForProject($projectid) {
+        return array(array("id" => 42),
+                     array("id" => 43));
+    }
 
     public function getAllTokens($fileid) {
-        return $this->test_data["all_tokens"];
+        if($fileid == 42) {
+            return $this->test_data["all_tokens"];
+        } else if ($fileid == 43) {
+            return $this->test_data["all_tok_43"];
+        } else {
+            return array();
+        }
     }
 }
 
@@ -37,7 +52,7 @@ class Cora_Tests_Exporter_test extends PHPUnit_Framework_TestCase {
     protected $exp;
 
     protected function setUp() {
-        $this->dbi = new Cora_Tests_DBInterface_Mock();
+        $this->dbi = new Cora_Tests_DBInterface_Exporter_Mock();
         $this->exp = new Exporter($this->dbi);
     }
 
@@ -84,6 +99,17 @@ class Cora_Tests_Exporter_test extends PHPUnit_Framework_TestCase {
                             stream_get_contents($stream));
         $this->assertEquals($this->dbi->getAllTokens(42)[2],
                             $moderns);
+        fclose($stream);
+    }
+
+    public function testExportForTraining() {
+        $classes = array("POS", "norm");
+        $stream  = fopen("php://memory", 'r+');
+        $this->exp->exportForTraining(99, $stream, $classes, true);
+        rewind($stream);
+
+        $this->assertEquals($this->dbi->getExpectedTraining(),
+                            stream_get_contents($stream));
         fclose($stream);
     }
 

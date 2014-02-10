@@ -759,6 +759,20 @@
      return $stmt->fetchAll(PDO::FETCH_ASSOC);
    }
 
+   /** Get a list of all files in a given project.
+    *
+    * @param string $pid Project ID
+    * @return an two-dimensional @em array with the meta data
+    */		
+   public function getFilesForProject($pid){
+     $uid = $this->getUserIDFromName($uname);
+     $qs = "SELECT a.id, a.sigle, a.fullname " 
+         . "FROM  text a WHERE a.project_id={$pid}";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute();
+     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+   }
+
    /** Get a list of all projects.  
     *
     * Should only be called for administrators; otherwise, use @c

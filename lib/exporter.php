@@ -84,9 +84,48 @@ class Exporter {
     $doc = CoraDocument::fromDB($fileid, $this->db);
   }
 
+  protected function exportFileForTraining($fileid, $handle, $classes) {
+      $tokens = $this->db->getAllTokens($fileid);
+      $moderns = $tokens[2];
+      $skip = false;
+      foreach($moderns as $mod) {
+          if(!$mod['verified']) {
+              if(!$skip) {
+                  fwrite($handle, "\n");
+                  $skip = true;
+              }
+              continue;
+          }
+          $skip = false;
+
+          $annotations = array();
+          foreach($mod['tags'] as $tag) {
+              if($tag['selected']==1) {
+                  $annotations[$tag['type']] = $tag['tag'];
+              }
+          }
+          fwrite($handle, $mod['ascii']);
+          foreach($classes as $class) {
+              $anno = array_key_exists($class, $annotations) ?
+                  $annotations[$class] : "";
+              fwrite($handle, "\t".$anno);
+          }
+          fwrite($handle, "\n");
+      }
+  }
 
   public function exportForTraining($projectid, $handle, $classes, $header=TRUE) {
-
+      $all_files = $this->db->getFilesForProject($projectid);
+      if($header) {
+          fwrite($handle, 'ascii');
+          foreach($classes as $class) {
+              fwrite($handle, "\t".$class);
+          }
+          fwrite($handle, "\n");
+      }
+      foreach($all_files as $f) {
+          $this->exportFileForTraining($f['id'], $handle, $classes);
+      }
   }
 
   /** Export all mods with several annotation layers.

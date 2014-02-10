@@ -5,7 +5,7 @@ require_once"../lib/automaticAnnotation.php";
 
 /** A mock DBInterface
  */
-class Cora_Tests_DBInterface_Mock {
+class Cora_Tests_DBInterface_AA_Mock {
     private $test_data;
 
     public $saved_fileid;
@@ -54,7 +54,7 @@ class Cora_Tests_AutomaticAnnotator_test extends PHPUnit_Framework_TestCase {
     protected $aa;
 
     protected function setUp() {
-        $this->dbi = new Cora_Tests_DBInterface_Mock();
+        $this->dbi = new Cora_Tests_DBInterface_AA_Mock();
         $this->exp = new Exporter($this->dbi);
         $this->aa = new AutomaticAnnotator($this->dbi, $this->exp, 1, 7);
     }

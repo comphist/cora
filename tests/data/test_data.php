@@ -973,7 +973,7 @@ function get_Exporter_data() {
                                                    "ascii" => "vnd",
                                                    "utf"   => "vnd",
                                                    "comment" => "",
-                                                   "verified" => 0,
+                                                   "verified" => 1,
                                                    "tags" => array(
                                                                    array("tag" => "DARTU",
                                                                          "score" => 0.1,
@@ -994,7 +994,7 @@ function get_Exporter_data() {
                                                    "ascii" => "jn",
                                                    "utf"   => "jn",
                                                    "comment" => "",
-                                                   "verified" => 1,
+                                                   "verified" => 0,
                                                    "tags" => array(
                                                                    array("tag" => "PPER",
                                                                          "score" => 0.8,
@@ -1025,7 +1025,7 @@ function get_Exporter_data() {
                                                    "ascii" => "giebt",
                                                    "utf"   => "giēbt",
                                                    "comment" => "",
-                                                   "verified" => 0,
+                                                   "verified" => 1,
                                                    "tags" => array(
                                                                    array("tag" => "NE",
                                                                          "score" => 0.5,
@@ -1047,11 +1047,73 @@ function get_Exporter_data() {
                                                    )
                                                 )
                                        ),
+                 "all_tok_43" => array(array(), // tokens
+                                       array(), // dipls
+                                       array(   // moderns
+                                             array("parent_tok_db_id" => 721,
+                                                   "db_id" => 821,
+                                                   "ascii" => "eyns",
+                                                   "verified" => 0,
+                                                   "tags" => array(
+                                                                   array("tag" => "CARD",
+                                                                         "selected" => 1,
+                                                                         "type" => "POS"),
+                                                                   array("tag" => "eins",
+                                                                         "selected" => 1,
+                                                                         "type" => "norm")
+                                                                   ),
+                                                   "errors" => array()
+                                                   ),
+                                             array("parent_tok_db_id" => 722,
+                                                   "db_id" => 822,
+                                                   "ascii" => "zwey",
+                                                   "verified" => 1,
+                                                   "tags" => array(
+                                                                   array("tag" => "CARD",
+                                                                         "selected" => 1,
+                                                                         "type" => "POS"),
+                                                                   array("tag" => "zwei",
+                                                                         "selected" => 1,
+                                                                         "type" => "norm")
+                                                                   ),
+                                                   "errors" => array()
+                                                   ),
+                                             array("parent_tok_db_id" => 723,
+                                                   "db_id" => 823,
+                                                   "ascii" => "drey",
+                                                   "verified" => 1,
+                                                   "tags" => array(
+                                                                   array("tag" => "CARD",
+                                                                         "selected" => 1,
+                                                                         "type" => "POS"),
+                                                                   array("tag" => "drei",
+                                                                         "selected" => 1,
+                                                                         "type" => "norm")
+                                                                   ),
+                                                   "errors" => array()
+                                                   ),
+                                             array("parent_tok_db_id" => 724,
+                                                   "db_id" => 824,
+                                                   "ascii" => "vier",
+                                                   "verified" => 1,
+                                                   "tags" => array(
+                                                                   array("tag" => "vier",
+                                                                         "selected" => 1,
+                                                                         "type" => "norm")
+                                                                   ),
+                                                   "errors" => array()
+                                                   ),
+                                             )
+                                       ),
                  "expected_POS" => "vnd\tDARTU\njn\tPPER\ngiebt\tNE\n",
                  "expected_norm" => "vnd\tund\njn\tihn\tihnen\tf\ngiebt\tgiebel\n",
                  "expected_tagging_1" => "ascii\tPOS\tnorm\nvnd\tDARTU\tund\n"
                                          ."jn\tPPER\tihn\ngiebt\tNE\tgiebel\n",
-                 "expected_tagging_2" => "vnd\tund\njn\tihn\ngiebt\tgiebel\n"
+                 "expected_tagging_2" => "vnd\tund\njn\tihn\ngiebt\tgiebel\n",
+                 "expected_training"  => "ascii\tPOS\tnorm\nvnd\tDARTU\tund\n"
+                                         ."\ngiebt\tNE\tgiebel\n"
+                                         ."\nzwey\tCARD\tzwei\ndrey\tCARD\tdrei"
+                                         ."\nvier\t\tvier\n"
                  );
 }
 
