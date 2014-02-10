@@ -504,7 +504,8 @@ class CoraSessionHandler {
     $userid = $_SESSION['user_id'];
     $fid = $_SESSION['currentFileId'];
     $pid = $this->db->getProjectForFile($fid);
-    $aa = new AutomaticAnnotator($this->db, $taggerid, $pid);
+    $exp = new Exporter($this->db);
+    $aa = new AutomaticAnnotator($this->db, $exp, $taggerid, $pid);
     if($retrain) {
       // do something here
     }

@@ -14,6 +14,7 @@ require_once( "exporter.php" );
 
 class AutomaticAnnotator {
   protected $db; /**< A DBInterface object. */
+  protected $exp; /**< An Exporter object. */
   protected $taggerid;
   protected $projectid;
 
@@ -30,8 +31,9 @@ class AutomaticAnnotator {
    * Annotator objects are always specific to a combination of
    * annotator ("tagger") and CorA project.
    */
-  function __construct($db, $taggerid, $projectid) {
+  function __construct($db, $exp, $taggerid, $projectid) {
     $this->db = $db;
+    $this->exp = $exp;
     if(!isset($taggerid) || empty($taggerid)) {
       throw new Exception("Tagger ID cannot be empty.");
     }
@@ -136,8 +138,7 @@ class AutomaticAnnotator {
       // export for tagging
       $tmpin  = tempnam(sys_get_temp_dir(), 'cora_aa');
       $handle = fopen($tmpin, 'w');
-      $exp = new Exporter($this->db);
-      $moderns = $exp->exportForTagging($fileid, $handle, $this->tagset_cls, true);
+      $moderns = $this->exp->exportForTagging($fileid, $handle, $this->tagset_cls, true);
       fclose($handle);
 
       // call tagger

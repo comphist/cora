@@ -864,4 +864,104 @@ function get_CoraDocument_data() {
     );
 }
 
+/** Test data for automatic annotation
+ *
+ * 02/2014 Marcel Bollmann
+ */
+function get_AutomaticAnnotator_data() {
+    $outfile = dirname(__FILE__) . "/tagger_output.txt";
+    return array("all_tokens" => array(array(), // tokens
+                                       array(), // dipls
+                                       array(   // moderns
+                                             array("parent_tok_db_id" => 701,
+                                                   "db_id" => 801,
+                                                   "trans" => "vnd",
+                                                   "ascii" => "vnd",
+                                                   "utf"   => "vnd",
+                                                   "comment" => "",
+                                                   "verified" => 0,
+                                                   "tags" => array(
+                                                                   array("tag" => "DARTU",
+                                                                         "score" => 0.1,
+                                                                         "selected" => 1,
+                                                                         "source" => "auto",
+                                                                         "type" => "POS"),
+                                                                   array("tag" => "und",
+                                                                         "score" => 0.1,
+                                                                         "selected" => 1,
+                                                                         "source" => "auto",
+                                                                         "type" => "POS")
+                                                                   ),
+                                                   "errors" => array()
+                                                   ),
+                                             array("parent_tok_db_id" => 702,
+                                                   "db_id" => 802,
+                                                   "trans" => "er",
+                                                   "ascii" => "er",
+                                                   "utf"   => "er",
+                                                   "comment" => "",
+                                                   "verified" => 1,
+                                                   "tags" => array(
+                                                                   array("tag" => "PPER",
+                                                                         "score" => 0.8,
+                                                                         "selected" => 1,
+                                                                         "source" => "auto",
+                                                                         "type" => "POS"),
+                                                                   array("tag" => "er",
+                                                                         "score" => 0.8,
+                                                                         "selected" => 1,
+                                                                         "source" => "auto",
+                                                                         "type" => "norm")
+                                                                   ),
+                                                   "errors" => array()
+                                                   ),
+                                             array("parent_tok_db_id" => 703,
+                                                   "db_id" => 803,
+                                                   "trans" => "gi\ebt",
+                                                   "ascii" => "giebt",
+                                                   "utf"   => "giēbt",
+                                                   "comment" => "",
+                                                   "verified" => 0,
+                                                   "tags" => array(
+                                                                   array("tag" => "NE",
+                                                                         "score" => 0.5,
+                                                                         "selected" => 1,
+                                                                         "source" => "auto",
+                                                                         "type" => "POS"),
+                                                                   array("tag" => "giebel",
+                                                                         "score" => 0.8,
+                                                                         "selected" => 1,
+                                                                         "source" => "auto",
+                                                                         "type" => "norm")
+                                                                   ),
+                                                   "errors" => array()
+                                                   )
+                                                )
+                                       ),
+                 "taggerlist" => array('1' => array('name' => "Mock-Tagger",
+                                                    'trainable' => true,
+                                                    'cmd_train' => "sleep 1",
+                                                    'cmd_tag' => "cat {$outfile}",
+                                                    'tagsets' => array('1', '2'))
+                                       ),
+                 "tagsetlist" => array("ts1" => array("id" => '1',
+                                                      "name" => "ImportTest",
+                                                      "class" => "POS",
+                                                      "set_type" => "closed"),
+                                       "ts2" => array("id" => '2',
+                                                      "name" => "NormTest",
+                                                      "class" => "norm",
+                                                      "set_type" => "open")
+                                       ),
+                 "expected" => array(array("id" => 801,
+                                           "anno_norm" => "und",
+                                           "anno_POS" => "KOKOM"),
+                                     array("id" => 803,
+                                           "anno_norm" => "ging",
+                                           "anno_POS" => "VVFIN")
+                                     )
+                 );
+}
+
+
 ?>
