@@ -127,13 +127,6 @@ class AutomaticAnnotator {
     */
     // $filetagsets = $this->db->getTagsetsForFile($fileid);
 
-    if(!$this->db->lockProjectForTagger($this->projectid, $this->taggerid)) {
-      // TODO: this probably shouldn't be an exception
-      throw new Exception("Für dieses Projekt wird derzeit bereits ein Tagger"
-			  ." ausgeführt.  Bitte warten Sie einen Moment und"
-			  ." führen dann den Vorgang erneut aus.");
-    }
-
     try {
       // export for tagging
       $tmpin  = tempnam(sys_get_temp_dir(), 'cora_aa');
@@ -153,13 +146,15 @@ class AutomaticAnnotator {
 
       // import the annotations
       $this->updateAnnotation($fileid, $output, $moderns);
-      $this->db->unlockProjectForTagger($this->projectid);
     }
     catch(Exception $e) {
       @unlink($tmpin);
-      $this->db->unlockProjectForTagger($this->projectid);
       throw $e;
     }
+  }
+
+  public function train($fileid) {
+
   }
 
 

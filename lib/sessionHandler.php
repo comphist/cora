@@ -504,18 +504,26 @@ class CoraSessionHandler {
     $userid = $_SESSION['user_id'];
     $fid = $_SESSION['currentFileId'];
     $pid = $this->db->getProjectForFile($fid);
-    $exp = new Exporter($this->db);
-    $aa = new AutomaticAnnotator($this->db, $exp, $taggerid, $pid);
-    if($retrain) {
-      // do something here
+    if(!$this->db->lockProjectForTagger($pid, $taggerid)) {
+        // TODO: find more elegant way to handle this
+        return array("success"=>false,
+                     "errors"=>array("Für dieses Projekt wird derzeit bereits ein Tagger"
+                                     ." ausgeführt.  Bitte warten Sie einen Moment und"
+                                     ." führen dann den Vorgang erneut aus."));
     }
 
     try {
-      $aa->annotate($fid);
+        $exp = new Exporter($this->db);
+        $aa = new AutomaticAnnotator($this->db, $exp, $taggerid, $pid);
+        if($retrain) {
+            // do something here
+        }
+        $aa->annotate($fid);
     }
-    catch(Exception $ex) {
-      return array("success"=>false,
-		   "errors"=>$ex->getMessage());
+    catch(Exception $e) {
+        $this->db->unlockProjectForTagger($pid);
+        return array("success"=>false,
+                     "errors"=>$ex->getMessage());
     }
 
     $this->db->updateChangedTimestamp($fid,$userid);
