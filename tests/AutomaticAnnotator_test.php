@@ -56,20 +56,8 @@ class Cora_Tests_AutomaticAnnotator_test extends PHPUnit_Framework_TestCase {
     protected function setUp() {
         $this->dbi = new Cora_Tests_DBInterface_AA_Mock();
         $this->exp = new Exporter($this->dbi);
-        $this->aa = new AutomaticAnnotator($this->dbi, $this->exp, 1, 7);
+        $this->aa = new AutomaticAnnotationWrapper($this->dbi, $this->exp, 1, 7);
     }
-
-    /*
-    public function testUpdateAnnotation() {
-        // intentionally break the encapsulation ... this is evil[tm]
-        // and suggests refactoring of the Annotator class ...
-        $updateAnnotation = new ReflectionMethod("AutomaticAnnotator",
-                                                 "updateAnnotation");
-        $updateAnnotation->setAccessible(true);
-        $updateAnnotation->invokeArgs($this->aa,
-                                      array(11, $this->test_lines, $this->test_mods));
-
-                                      }*/
 
     public function testAnnotate() {
         $this->aa->annotate(11);

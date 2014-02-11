@@ -12,7 +12,7 @@
 require_once( "globals.php" );
 require_once( "exporter.php" );
 
-class AutomaticAnnotator {
+class AutomaticAnnotationWrapper {
   protected $db; /**< A DBInterface object. */
   protected $exp; /**< An Exporter object. */
   protected $taggerid;

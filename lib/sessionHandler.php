@@ -514,7 +514,7 @@ class CoraSessionHandler {
 
     try {
         $exp = new Exporter($this->db);
-        $aa = new AutomaticAnnotator($this->db, $exp, $taggerid, $pid);
+        $aa = new AutomaticAnnotationWrapper($this->db, $exp, $taggerid, $pid);
         if($retrain) {
             // do something here
         }
