@@ -11,6 +11,7 @@
 //require_once( "documentModel.php" );
 require_once( "globals.php" );
 require_once( "exporter.php" );
+require_once( "annotation/AutomaticAnnotator.php" );
 
 class AutomaticAnnotationWrapper {
   protected $db; /**< A DBInterface object. */

@@ -1011,6 +1011,55 @@
      return $stmt->fetchAll(PDO::FETCH_ASSOC);
    }
 
+   /** Retrieves all moderns from a file, including annotations.
+    *
+    * @param string $fileid ID of the file
+    */
+   public function getAllModerns($fileid) {
+     /* TODO: this is temporary until "verified" status is marked
+	directly with the modern */
+     $qs = "SELECT `currentmod_id` FROM text WHERE `id`=:tid";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':tid' => $fileid));
+     $currentmod_id = $stmt->fetch(PDO::FETCH_COLUMN);
+     $verified = ($currentmod_id && $currentmod_id != null && !empty($currentmod_id));
+
+     $qs = "SELECT token.id AS parent_tok_db_id, modern.id AS db_id, "
+       ."          modern.trans, modern.utf, modern.ascii, c1.value AS comment "
+       ."     FROM token "
+       ."    INNER JOIN modern ON modern.tok_id=token.id "
+       ."     LEFT JOIN comment c1 ON  c1.tok_id=token.id "
+       ."           AND c1.subtok_id=modern.id AND c1.comment_type='C' "
+       ."    WHERE token.text_id=:tid "
+       ."    ORDER BY token.ordnr ASC, modern.id ASC";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':tid' => $fileid));
+     $moderns = $stmt->fetchAll(PDO::FETCH_ASSOC);
+     foreach($moderns as &$row) {
+       // Annotations
+       $qs  = "SELECT tag.value AS tag, ts.score, ts.selected, ts.source,"
+	 ."           tt.class AS type "
+	 ."      FROM   modern"
+	 ."      LEFT JOIN (tag_suggestion ts, tag) "
+	 ."             ON (ts.tag_id=tag.id AND ts.mod_id=modern.id) "
+	 ."      LEFT JOIN tagset tt ON tag.tagset_id=tt.id "
+	 ."     WHERE modern.id=" . $row['db_id'];
+       $stmt = $this->dbo->prepare($qs);
+       $stmt->execute();
+       $row['tags'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+       $row['errors'] = $this->getErrorsForModern($row['db_id']);
+
+       /* TODO: this is temporary until "verified" status is marked
+	  directly with the modern */
+       $row['verified'] = $verified;
+       if($row['db_id'] == $currentmod_id) {
+	 $verified = false;
+       }
+     }
+     unset($row);
+     return $moderns;
+   }
+
    /** Retrieves all tokens from a file.
     *
     * This function returns an array with all tokens belonging to a
@@ -1047,48 +1096,8 @@
      $stmt->execute(array(':tid' => $fileid));
      $dipls = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-     /* TODO: this is temporary until "verified" status is marked
-	directly with the modern */
-     $qs = "SELECT `currentmod_id` FROM text WHERE `id`=:tid";
-     $stmt = $this->dbo->prepare($qs);
-     $stmt->execute(array(':tid' => $fileid));
-     $currentmod_id = $stmt->fetch(PDO::FETCH_COLUMN);
-     $verified = ($currentmod_id && $currentmod_id != null && !empty($currentmod_id));
-
      // moderns
-     $qs = "SELECT token.id AS parent_tok_db_id, modern.id AS db_id, "
-       ."          modern.trans, modern.utf, modern.ascii, c1.value AS comment "
-       ."     FROM token "
-       ."    INNER JOIN modern ON modern.tok_id=token.id "
-       ."     LEFT JOIN comment c1 ON  c1.tok_id=token.id "
-       ."           AND c1.subtok_id=modern.id AND c1.comment_type='C' "
-       ."    WHERE token.text_id=:tid "
-       ."    ORDER BY token.ordnr ASC, modern.id ASC";
-     $stmt = $this->dbo->prepare($qs);
-     $stmt->execute(array(':tid' => $fileid));
-     $moderns = $stmt->fetchAll(PDO::FETCH_ASSOC);
-     foreach($moderns as &$row) {
-       // Annotations
-       $qs  = "SELECT tag.value AS tag, ts.score, ts.selected, ts.source,"
-	 ."           tt.class AS type "
-	 ."      FROM   modern"
-	 ."      LEFT JOIN (tag_suggestion ts, tag) "
-	 ."             ON (ts.tag_id=tag.id AND ts.mod_id=modern.id) "
-	 ."      LEFT JOIN tagset tt ON tag.tagset_id=tt.id "
-	 ."     WHERE modern.id=" . $row['db_id'];
-       $stmt = $this->dbo->prepare($qs);
-       $stmt->execute();
-       $row['tags'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
-       $row['errors'] = $this->getErrorsForModern($row['db_id']);
-
-       /* TODO: this is temporary until "verified" status is marked
-	  directly with the modern */
-       $row['verified'] = $verified;
-       if($row['db_id'] == $currentmod_id) {
-	 $verified = false;
-       }
-     }
-     unset($row);
+     $moderns = $this->getAllModerns($fileid);
 
      return array($tokens, $dipls, $moderns);
    }
