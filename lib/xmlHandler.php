@@ -312,8 +312,24 @@ class XMLHandler {
   }
 
   /****** FUNCTIONS RELATED TO DATA EXPORT ******/
-  
-  // currently none
+
+  public function serializeDocument($document) {
+      // prepare document
+      $document->mapIDsToRanges();
+
+      // create DOM object
+      $doc = new DOMDocument();
+      $root = $doc->createElement('text');
+      $root->setAttribute('id', $document->getSigle());
+      $doc->appendChild($root);
+
+      $header = $doc->createElement('header');
+      $hdrtxt = $doc->createTextNode($document->getHeader());
+      $header->appendChild($hdrtxt);
+      $root->appendChild($header);
+
+      return $doc;
+  }
 
 }
 

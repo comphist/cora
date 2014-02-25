@@ -48,10 +48,11 @@ class CoraDocument {
    */
   public static function fromDB($fileid, $db) {
     // File metadata
-    $metadata = $db->openFile($fileid);
-    if(!$metadata || !$metadata['success']) {
+    $openfile = $db->openFile($fileid);
+    if(!$openfile || !$openfile['success']) {
       throw new DocumentImportException("Couldn't open the file in the database.");
     }
+    $metadata = $openfile['data'];
     $instance = new self($metadata);
     $instance->setHeader($metadata['header']);
 
@@ -71,7 +72,7 @@ class CoraDocument {
     $data = $db->getComments($fileid);
     $instance->setComments($data);
 
-    $db->unlockFile($fileid, $force=true);
+    $db->unlockFile($fileid, "", true);
     return $instance;
   }
 
@@ -367,13 +368,21 @@ class CoraDocument {
 
   /* GETTERS AND SETTERS */
 
-  function setHeader($value) {
+  public function setHeader($value) {
     $this->header = $value;
     return $this;
   }
 
-  function getHeader() {
+  public function getHeader() {
     return $this->header;
+  }
+
+  public function getSigle() {
+      return $this->sigle;
+  }
+
+  public function getName() {
+      return $this->fullname;
   }
 
   public function setMetadata($options) {

@@ -78,10 +78,12 @@ class Exporter {
       return $this->exportNormalization($fileid, $handle);
     }
 
-    return; // can't do anything else yet
-
     // make a try..catch
     $doc = CoraDocument::fromDB($fileid, $this->db);
+
+    if($format == ExportType::CoraXML) {
+        return $this->exportCoraXML($doc, $handle);
+    }
   }
 
   protected function exportFileForTraining($fileid, $handle, $classes) {
@@ -222,7 +224,15 @@ class Exporter {
       fwrite($handle, "\n");
     }
   }
- 
+
+  /** Export a file as CorA XML. */
+  protected function exportCoraXML($document, $handle) {
+      $xmlhandler = new XMLHandler($this->db);
+      $dom = $xmlhandler->serializeDocument($document);
+      $dom->formatOutput = true;
+      fwrite($handle, $dom->saveXML());
+  }
+
 }
 
 ?>
