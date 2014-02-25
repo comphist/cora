@@ -291,6 +291,79 @@ class CoraDocument {
     return $this;
   }
 
+  /** Translate ID references (as found in the database) to ranges (as
+      found in the XML). */
+  public function mapIDsToRanges() {
+      // danger, spaghetti code ahead
+      // collect ranges for lines
+      $lines_by_id = array();
+      foreach($this->dipls as $currentdipl) {
+          $lnid = $currentdipl["parent_line_db_id"];
+          $dpid = $currentdipl["db_id"];
+          if(!array_key_exists($lnid, $lines_by_id)) {
+              // this dipl is the start (and currently-known end) 
+              // of the span
+              $lines_by_id[$lnid] = array($dpid, $dpid);
+          }
+          else {
+              // this dipl becomes the new end of the span
+              $lines_by_id[$lnid][1] = $dpid;
+          }
+      }
+      // consolidate & collect ranges for columns
+      $col_by_id = array();
+      foreach($this->lines as &$currentline) {
+          $lnid = $currentline["db_id"];
+          $clid = $currentline["parent_db_id"];
+          if(!array_key_exists($lnid, $lines_by_id)) {
+              // line without any token ... this shouldn't happen;
+              // throwing exceptions would prevent faulty texts from
+              // being exported at all, though ...
+          }
+          else {
+              $currentline["range"] = $lines_by_id[$lnid];
+          }
+          
+          if(!array_key_exists($clid, $col_by_id)) {
+              $col_by_id[$clid] = array($lnid, $lnid);
+          }
+          else {
+              $col_by_id[$clid][1] = $lnid;
+          }
+      }
+      // consolidate & collect ranges for pages
+      $pages_by_id = array();
+      foreach($this->columns as &$currentcol) {
+          $clid = $currentcol["db_id"];
+          $pgid = $currentcol["parent_db_id"];
+          if(!array_key_exists($clid, $col_by_id)) {
+              // same as above
+          }
+          else {
+              $currentcol["range"] = $col_by_id[$clid];
+          }
+
+          if(!array_key_exists($pgid, $pages_by_id)) {
+              $pages_by_id[$pgid] = array($clid, $clid);
+          }
+          else {
+              $pages_by_id[$pgid][1] = $clid;
+          }
+      }
+      // consolidate once more
+      foreach($this->pages as &$currentpage) {
+          $pgid = $currentpage["db_id"];
+          if(!array_key_exists($pgid, $pages_by_id)) {
+              // same as above
+          }
+          else {
+              $currentpage["range"] = $pages_by_id[$pgid];
+          }
+      }
+      // done!
+      return $this;
+  }
+
 
   /* GETTERS AND SETTERS */
 

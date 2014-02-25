@@ -971,11 +971,13 @@
 	 $currentcolumn = $row['col_id'];
 	 $columns[] = array('db_id' => $row['col_id'],
 			    'name'  => $row['col_name'],
-			    'num'   => $row['col_num']);
+			    'num'   => $row['col_num'],
+                            'parent_db_id' => $row['page_id']);
        }
        $lines[] = array('db_id' => $row['line_id'],
 			'name'  => $row['line_name'],
-			'num'   => $row['line_num']);
+			'num'   => $row['line_num'],
+                        'parent_db_id' => $row['col_id']);
      }
 
      return array($pages, $columns, $lines);
