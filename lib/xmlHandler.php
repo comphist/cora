@@ -8,7 +8,7 @@
  */
 
 require_once( "documentModel.php" );
-
+//require_once( "pqp/classes/PhpQuickProfiler.php" );
 
 class XMLHandler {
 
@@ -316,19 +316,286 @@ class XMLHandler {
   public function serializeDocument($document) {
       // prepare document
       $document->mapIDsToRanges();
+      $tokens   = $document->getTokens();
+      $dipls    = $document->getDiplsByTokenID();
+      $moderns  = $document->getModernsByTokenID();
+      $comments = $document->getCommentsByTokenID();
+      $pages    = $document->getPages();
+      $columns  = $document->getColumns();
+      $lines    = $document->getLines();
+      $id_map   = $this->generateXMLIDs($tokens, $dipls, $moderns,
+                                        $pages,  $columns, $lines);
 
       // create DOM object
       $doc = new DOMDocument();
       $root = $doc->createElement('text');
       $root->setAttribute('id', $document->getSigle());
       $doc->appendChild($root);
+      $this->serializeHeader($document, $doc, $root);
+
+      // layoutinfo
+      $this->serializeLayout($pages, $columns, $lines, $doc, $root);
+
+      // shifttags
+      $this->serializeShiftTags($document->getShiftTags(),
+                                $id_map["tokens"], $doc, $root);
+
+      // first token is virtual---only used to attach comments
+      $currenttok = array_shift($tokens);
+      if(array_key_exists($currenttok['db_id'], $comments)) {
+          $this->serializeComments($comments[$currenttok['db_id']], $doc, $root);
+      }
+
+      // <token>s
+      foreach($tokens as &$currenttok) {
+          $tok_id = $currenttok['db_id'];
+          $xmltoken = $doc->createElement('token');
+          $xmltoken->setAttribute('id', $currenttok['xml_id']);
+          $xmltoken->setAttribute('trans', $currenttok['trans']);
+          if(array_key_exists($tok_id, $dipls)) {
+              $this->serializeDipls($dipls[$tok_id], $doc, $xmltoken);
+          }
+          if(array_key_exists($tok_id, $moderns)) {
+              $this->serializeModerns($moderns[$tok_id], $doc, $xmltoken);
+          }
+          $root->appendChild($xmltoken);
+
+          // comments go between tokens, so check for them here
+          if(array_key_exists($tok_id, $comments)) {
+              $this->serializeComments($comments[$tok_id], $doc, $root);
+          }
+      }
+      unset($currenttok);
+
+      return $doc;
+  }
+
+  private function serializeHeader(&$document, &$doc, &$root) {
+      $header = $doc->createElement('cora-header');
+      $header->setAttribute('sigle', $document->getSigle());
+      $header->setAttribute('name',  $document->getName());
+      $root->appendChild($header);
 
       $header = $doc->createElement('header');
       $hdrtxt = $doc->createTextNode($document->getHeader());
       $header->appendChild($hdrtxt);
       $root->appendChild($header);
+  }
 
-      return $doc;
+  private function serializeLayout(&$pages, &$columns, &$lines,
+                                   &$doc, &$root) {
+      $container = $doc->createElement('layoutinfo');
+      foreach($pages as &$currentpage) {
+          $elem = $doc->createElement('page');
+          $elem->setAttribute('id', $currentpage['xml_id']);
+          $elem->setAttribute('side', $currentpage['side']);
+          $elem->setAttribute('no', $currentpage['name']);
+          $elem->setAttribute('range', $currentpage['xml_range']);
+          $container->appendChild($elem);
+      }
+      foreach($columns as &$currentcol) {
+          $elem = $doc->createElement('column');
+          $elem->setAttribute('id', $currentcol['xml_id']);
+          if(!empty($currentcol['name'])) {
+              $elem->setAttribute('name', $currentcol['name']);
+          }
+          $elem->setAttribute('range', $currentcol['xml_range']);
+          $container->appendChild($elem);
+      }
+      foreach($lines as &$currentline) {
+          $elem = $doc->createElement('line');
+          $elem->setAttribute('id', $currentline['xml_id']);
+          if(!empty($currentline['name'])) {
+              $elem->setAttribute('name', $currentline['name']);
+          }
+          $elem->setAttribute('range', $currentline['xml_range']);
+          $container->appendChild($elem);
+      }
+      $root->appendChild($container);
+      unset($currentpage);
+      unset($currentcol);
+      unset($currentline);
+  }
+
+  private function serializeShiftTags(&$shifttags, &$id_map, &$doc, &$root) {
+      $letter_to_tag = array("R" => "rub",
+                             "T" => "title",
+                             "L" => "lat",
+                             "M" => "marg",
+                             "F" => "fm");
+      $container = $doc->createElement('shifttags');
+      foreach($shifttags as &$shifttag) {
+          if(array_key_exists($shifttag['type_letter'], $letter_to_tag)) {
+              $tagname = $letter_to_tag[$shifttag['type_letter']];
+          }
+          else {
+              $tagname = $shifttag['type_letter'];
+          }
+          $elem = $doc->createElement($tagname);
+          list($from_id, $to_id) = $shifttag['db_range'];
+          $range = $id_map[$from_id]."..".$id_map[$to_id];
+          $elem->setAttribute('range', $range);
+          $container->appendChild($elem);
+      }
+      unset($shifttag);
+      $root->appendChild($container);      
+  }
+
+  private function serializeDipls(&$dipls, &$doc, &$root) {
+      foreach($dipls as &$dipl) {
+          $elem = $doc->createElement('dipl');
+          $elem->setAttribute('id', $dipl['xml_id']);
+          $elem->setAttribute('trans', $dipl['trans']);
+          $elem->setAttribute('utf', $dipl['utf']);
+          $root->appendChild($elem);
+      }
+      unset($dipl);
+  }
+
+  private function serializeModerns(&$moderns, &$doc, &$root) {
+      foreach($moderns as &$mod) {
+          $elem = $doc->createElement('mod');
+          $elem->setAttribute('id', $mod['xml_id']);
+          $elem->setAttribute('trans', $mod['trans']);
+          $elem->setAttribute('utf', $mod['utf']);
+          $elem->setAttribute('ascii', $mod['ascii']);
+          $elem->setAttribute('checked', ($mod['verified'] ? 'y' : 'n'));
+          $suggestions = $doc->createElement('suggestions');
+          foreach($mod['tags'] as &$currenttag) {
+              // tagset type is lowercased ... maybe define a mapping instead?
+              $anno = $doc->createElement(strtolower($currenttag['type']));
+              $anno->setAttribute('tag', $currenttag['tag']);
+              if($currenttag['selected']==1) {
+                  $elem->appendChild($anno);
+              }
+              else {
+                  if(!is_null($currenttag['score'])) {
+                      $anno->setAttribute('score', $currenttag['score']);
+                  }
+                  if(!is_null($currenttag['source'])) {
+                      $anno->setAttribute('source', $currenttag['source']);
+                  }
+                  $suggestions->appendChild($anno);
+              }
+          }
+          if($suggestions->hasChildNodes()) {
+              $elem->appendChild($suggestions);
+          }
+
+          // TODO: what about markings: lemma_verified and general_error?
+
+          // CorA-internal comment
+          if(!empty($mod['comment'])) {
+              $com = $doc->createElement('cora-comment');
+              $txt = $doc->createTextNode($mod['comment']);
+              $com->appendChild($txt);
+              $elem->appendChild($com);
+          }
+
+          $root->appendChild($elem);
+      }
+      unset($moderns);
+  }
+
+  private function serializeComments(&$comments, &$doc, &$root) {
+      foreach($comments as &$comment) {
+          if($comment['type']!=="C") { // CorA comments already written in mod
+              $elem = $doc->createElement('comment');
+              $elem->setAttribute('type', $comment['type']);
+              $txt  = $doc->createTextNode($comment['text']);
+              $elem->appendChild($txt);
+              $root->appendChild($elem);
+          }
+      }
+      unset($comment);
+  }
+
+  /** Generates XML IDs for tokens, dipls, and moderns, and returns
+      arrays mapping DB IDs to XML IDs. */
+  private function generateXMLIDs(&$tokens, &$dipls, &$moderns,
+                                  &$pages, &$columns, &$lines) {
+      $tok_db_to_xml  = array();
+      $dipl_db_to_xml = array();
+      $tid = 0; // so empty virtual token gets 0
+      foreach($tokens as &$currenttok) {
+          $dbid  = $currenttok['db_id'];
+          $xmlid = 't'.$tid++;
+          $tok_db_to_xml[$dbid] = $xmlid;
+          $currenttok['xml_id'] = $xmlid;
+          $dipl_id = 1;
+          $mod_id  = 1;
+          if(isset($dipls[$dbid])) {
+              foreach($dipls[$dbid] as &$currentdipl) {
+                  $dipl_xmlid = $xmlid."_d".$dipl_id++;
+                  $dipl_db_to_xml[$currentdipl['db_id']] = $dipl_xmlid;
+                  $currentdipl['xml_id'] = $dipl_xmlid;
+              }
+          }
+          unset($currentdipl);
+          if(isset($moderns[$dbid])) {
+              foreach($moderns[$dbid] as &$currentmod) {
+                  $mod_xmlid = $xmlid."_m".$mod_id++;
+                  $currentmod['xml_id'] = $mod_xmlid;
+              }
+          }
+          unset($currentmod);
+      }
+      unset($currenttok);
+
+      $line_db_to_xml = array();
+      $col_db_to_xml  = array();
+      $lid = 1;
+      foreach($lines as &$currentline) {
+          $dbid = $currentline['db_id'];
+          $xmlid = 'l'.$lid++;
+          $line_db_to_xml[$dbid] = $xmlid;
+          $currentline['xml_id'] = $xmlid;
+          if(array_key_exists('range', $currentline)) {
+              list($from, $to) = $currentline['range'];
+              if($from==$to) {
+                  $currentline['xml_range'] = $dipl_db_to_xml[$from];
+              }
+              else {
+                  $currentline['xml_range'] = $dipl_db_to_xml[$from]
+                      ."..".$dipl_db_to_xml[$to];
+              } 
+          }
+      }
+      $lid = 1;
+      foreach($columns as &$currentcol) {
+          $dbid = $currentcol['db_id'];
+          $xmlid = 'c'.$lid++;
+          $col_db_to_xml[$dbid] = $xmlid;
+          $currentcol['xml_id'] = $xmlid;
+          if(array_key_exists('range', $currentcol)) {
+              list($from, $to) = $currentcol['range'];
+              if($from==$to) {
+                  $currentcol['xml_range'] = $line_db_to_xml[$from];
+              }
+              else {
+                  $currentcol['xml_range'] = $line_db_to_xml[$from]
+                      ."..".$line_db_to_xml[$to];
+              }
+          }
+      }
+      $lid = 1;
+      foreach($pages as &$currentpage) {
+          $dbid = $currentpage['db_id'];
+          $xmlid = 'p'.$lid++;
+          $currentpage['xml_id'] = $xmlid;
+          if(array_key_exists('range', $currentpage)) {
+              list($from, $to) = $currentpage['range'];
+              if($from==$to) {
+                  $currentpage['xml_range'] = $col_db_to_xml[$from];
+              }
+              else {
+                  $currentpage['xml_range'] = $col_db_to_xml[$from]
+                      ."..".$col_db_to_xml[$to];
+              }
+          }
+      }
+      return array("tokens" => $tok_db_to_xml,
+                   "dipls"  => $dipl_db_to_xml);
   }
 
 }

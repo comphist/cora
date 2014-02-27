@@ -211,7 +211,6 @@ class CoraDocument {
     return $this;
   }
 
-
   /** Translate ranges (as found in the XML) to ID references (as
       found in the database). */
   public function mapRangesToIDs() {
@@ -365,6 +364,49 @@ class CoraDocument {
       return $this;
   }
 
+  /** Return all dipls sorted by the ID of their parent token. */
+  public function getDiplsByTokenID() {
+      $tok_by_id = array();
+      // collect dipls
+      foreach($this->dipls as &$currentdipl) {
+          $pid = $currentdipl["parent_tok_db_id"];
+          if(!array_key_exists($pid, $tok_by_id)) {
+              $tok_by_id[$pid] = array();
+          }
+          $tok_by_id[$pid][] = $currentdipl;
+      }
+      unset($currentdipl);
+      return $tok_by_id;
+  }
+
+  /** Return all moderns sorted by the ID of their parent token. */
+  public function getModernsByTokenID() {
+      $tok_by_id = array();
+      // collect moderns
+      foreach($this->moderns as &$currentmod) {
+          $pid = $currentmod["parent_tok_db_id"];
+          if(!array_key_exists($pid, $tok_by_id)) {
+              $tok_by_id[$pid] = array();
+          }
+          $tok_by_id[$pid][] = $currentmod;
+      }
+      unset($currentmod);
+      return $tok_by_id;
+  }
+
+  /** Return all comments sorted by the ID of their parent token. */
+  public function getCommentsByTokenID() {
+      $tok_by_id = array();
+      foreach($this->comments as &$currentcom) {
+          $pid = $currentcom["parent_db_id"];
+          if(!array_key_exists($pid, $tok_by_id)) {
+              $tok_by_id[$pid] = array();
+          }
+          $tok_by_id[$pid][] = $currentcom;
+      }
+      unset($currentcom);
+      return $tok_by_id;
+  }
 
   /* GETTERS AND SETTERS */
 
@@ -391,6 +433,9 @@ class CoraDocument {
     }
     if(isset($options['name']) && !empty($options['name'])) {
       $this->fullname = $options['name'];
+    }
+    if(isset($options['fullname']) && !empty($options['fullname'])) {
+      $this->fullname = $options['fullname'];
     }
     if(isset($options['currentmod_id']) && !empty($options['currentmod_id'])) {
       $this->internal['currentmod_id'] = $options['currentmod_id'];
@@ -436,7 +481,7 @@ class CoraDocument {
   public function getModerns() {
     return $this->moderns;
   }
-  public function getShifttags() {
+  public function getShiftTags() {
     return $this->shifttags;
   }
   public function getComments() {

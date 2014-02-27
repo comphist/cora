@@ -10,6 +10,7 @@
 
 require_once( "documentModel.php" );
 require_once( "xmlHandler.php" );
+//require_once( "pqp/classes/PhpQuickProfiler.php" );
 
 /** Defines constants that represent file formats available for
  * exporting. */
