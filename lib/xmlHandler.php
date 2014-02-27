@@ -417,7 +417,7 @@ class XMLHandler {
       unset($currentline);
   }
 
-  private function serializeShiftTags(&$shifttags, &$id_map, &$doc, &$root) {
+  private function serializeShiftTags($shifttags, &$id_map, &$doc, &$root) {
       $letter_to_tag = array("R" => "rub",
                              "T" => "title",
                              "L" => "lat",
@@ -462,6 +462,7 @@ class XMLHandler {
           $elem->setAttribute('checked', ($mod['verified'] ? 'y' : 'n'));
           $suggestions = $doc->createElement('suggestions');
           foreach($mod['tags'] as &$currenttag) {
+              if(empty($currenttag['tag'])) { continue; }
               // tagset type is lowercased ... maybe define a mapping instead?
               $anno = $doc->createElement(strtolower($currenttag['type']));
               $anno->setAttribute('tag', $currenttag['tag']);
