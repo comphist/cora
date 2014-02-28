@@ -12,7 +12,7 @@ var gui = {
 
     initialize: function() {
 	this.addKeyboardShortcuts();
-	this.addToggleEvents();
+	this.addToggleEvents($$('.clappable'));
 	this.activateKeepalive();
     },
 
@@ -24,14 +24,15 @@ var gui = {
        container that toggle the visibility of its contents.  Also,
        automatically hides all contents of .starthidden containers.
     */
-    addToggleEvents: function() {
-	$$('.clappable').each(function (clappable) {
+    addToggleEvents: function(objects) {
+	objects.each(function (clappable) {
             var clapper, content;
 	    
             // add toggle event
             clapper = clappable.getElement('.clapp');
             content = clappable.getElement('div');
             if (clapper !== null) {
+                clapper.removeEvents();
 		clapper.addEvent('click', function () {
                     content.toggle();
 		});

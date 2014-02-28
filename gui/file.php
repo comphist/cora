@@ -58,8 +58,8 @@ $tagsets_all = $sh->getTagsetList(false, "class");
    </div>
   </div>
    
-  <div class="panel" id="fileGroup">
-    <h4 class="projectname">Projektname</h4>
+  <div class="panel clappable" id="fileGroup">
+    <h4 class="projectname clapp">Projektname</h4>
         <div>
 		<table class="fileList">
 			<tr class="fileTableHeadLine">

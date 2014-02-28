@@ -556,6 +556,7 @@ var file = {
 			});
 			project_div.inject(files_div);
 		    });
+                    gui.addToggleEvents(files_div.getElements('.clappable'));
 		}
     	});
         files.get({'do': 'listFiles'});
