@@ -7,6 +7,8 @@
  * @date March 2014
  */
 
+require_once( "AutomaticAnnotator.php" );
+
 class RFTaggerAnnotator extends AutomaticAnnotator {
     protected $name = "RFTagger";
     private $tmpfiles = array();
@@ -15,6 +17,9 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         parent::__construct($prfx, $opts);
         if(!array_key_exists("par", $this->options)) {
             $this->options["par"] = $this->prefix . "RFTagger.par";
+        }
+        if(!array_key_exists("wc", $this->options)) {
+            $this->options["wc"] = $this->prefix . "RFTagger.wc";
         }
         if(!array_key_exists("flags", $this->options)) {
             $this->options["flags"] = "-c 2 -q";
@@ -41,7 +46,7 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         $this->tmpfiles[] = $filename;
         $handle = fopen($filename, "w");
         foreach($tokens as $tok) {
-            fwrite($handle, $mod['ascii']);
+            fwrite($handle, $tok['ascii']);
             if($training) {
                 $pos = "";
                 foreach($tok['tags'] as $tag) {
@@ -65,7 +70,7 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         if($mod['ascii'] != $line[0]) {
             throw new Exception("Token mismatch: ".$mod['ascii']." != ".$line[0]);
         }
-        return array("id" => $mod['id'],
+        return array("id" => $mod['db_id'],
                      "ascii" => $mod['ascii'],
                      "anno_POS" => $line[1]);
     }
@@ -82,14 +87,15 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         $retval = 0;
         $cmd = implode(" ", array($this->options["annotate"],
                                   $this->options["par"],
-                                  $tmpfname));
+                                  $tmpfname,
+                                  "2>/dev/null"));
         exec($cmd, $output, $retval);
         if($retval) {
             throw new Exception("RFTagger gab den Status-Code {$retval} zurück.");
         }
 
         // process RFTagger output & return
-        return array_map($this->makeAnnotationArray, $tokens, $output);
+        return array_map(array($this, 'makeAnnotationArray'), $tokens, $output);
     }
 
     public function train($tokens) {

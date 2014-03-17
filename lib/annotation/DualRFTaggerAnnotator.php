@@ -7,7 +7,8 @@
  * @date March 2014
  */
 
-require_once("RFTaggerAnnotator.php");
+require_once( "AutomaticAnnotator.php" );
+require_once( "RFTaggerAnnotator.php" );
 
 class DualRFTaggerAnnotator extends AutomaticAnnotator {
     protected $name = "DualRFTagger";
@@ -71,7 +72,7 @@ class DualRFTaggerAnnotator extends AutomaticAnnotator {
         $variable = $this->variableRFT->annotate($tokens);
         $this->loadVocabulary();
         
-        return array_map($this->chooseTag, $fixed, $variable);
+        return array_map(array($this, 'chooseTag'), $fixed, $variable);
     }
 
     public function train($tokens) {

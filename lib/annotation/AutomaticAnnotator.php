@@ -20,9 +20,10 @@ class AutomaticAnnotator {
 
     public function __construct($prfx, $opts) {
         $this->prefix  = $prfx;
-        $this->parseOptions($opts);
+        $this->options = $opts;
     }
 
+    /*
     private function parseOptions($opts) {
         $pieces = explode(",", $opts);
         foreach($pieces as $piece) {
@@ -32,6 +33,7 @@ class AutomaticAnnotator {
             }
         }
     }
+    */
 
     public function getName() {
         return $name;
