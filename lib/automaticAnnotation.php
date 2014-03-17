@@ -12,6 +12,8 @@
 require_once( "globals.php" );
 require_once( "exporter.php" );
 require_once( "annotation/AutomaticAnnotator.php" );
+require_once( "annotation/RFTaggerAnnotator.php" );
+require_once( "annotation/DualRFTaggerAnnotator.php" );
 
 class AutomaticAnnotationWrapper {
   protected $db; /**< A DBInterface object. */
@@ -19,13 +21,15 @@ class AutomaticAnnotationWrapper {
   protected $taggerid;
   protected $projectid;
 
-  protected $cmd_train;  /**< Shell command for training. */
-  protected $cmd_tag;    /**< Shell command for tagging. */
+  protected $tagger;
   protected $tagset_ids; /**< Array of associated tagset IDs. */
   protected $tagset_cls; /**< Array of associated tagset classes. */
   protected $tagsets;    /**< Array of associated tagset metadata. */
 
   protected $paramdir = EXTERNAL_PARAM_DIR;
+
+  private $tagger_objects = array("RFTagger"     => "RFTaggerAnnotator",
+                                  "DualRFTagger" => "DualRFTaggerAnnotator");
 
   /** Construct a new AutomaticAnnotator object.
    *
@@ -39,22 +43,31 @@ class AutomaticAnnotationWrapper {
       throw new Exception("Tagger ID cannot be empty.");
     }
     $this->taggerid = $taggerid;
-    $this->getTaggerInformation();
     if(!isset($projectid) || empty($projectid)) {
       throw new Exception("Project ID cannot be empty.");
     }
     $this->projectid = $projectid;
+
+    $this->instantiateTagger();
   }
 
-  /** Fetch information about the tagger and its associated tagsets.
+  /** Fetch information about the tagger and its associated tagsets,
+   *  and instantiate the respective tagger class.
    */
-  private function getTaggerInformation() {
+  private function instantiateTagger() {
     $tagger = $this->db->getTaggerList();
     if(!$tagger || empty($tagger) || !array_key_exists($this->taggerid, $tagger)) {
       throw new Exception ("Illegal tagger ID: {$this->taggerid}");
     }
-    $this->cmd_train  = $tagger[$this->taggerid]['cmd_train'];
-    $this->cmd_tag    = $tagger[$this->taggerid]['cmd_tag'];
+    // instantiate class object
+    $class_name = $tagger[$this->taggerid]['class_name'];
+    if(!array_key_exists($class_name, $this->tagger_objects)) {
+      throw new Exception ("Unknown tagger class: {$class_name}");
+    }
+    $options = $this->db->getTaggerOptions($this->taggerid);
+    $this->tagger = new $this->tagger_objects[$class_name]($this->getPrefix(),
+                                                           $options);
+    // get info about associated tagsets
     $this->tagset_ids = $tagger[$this->taggerid]['tagsets'];
     $this->tagsets    = $this->db->getTagsetMetadata($this->tagset_ids);
     $this->tagset_cls = array();
@@ -66,14 +79,17 @@ class AutomaticAnnotationWrapper {
   /** Get the filename prefix for parameter files.
    */
   protected function getPrefix() {
-    return $this->paramdir . "/" . $this->projectid . "-" . $this->taggerid;
+    return $this->paramdir . "/" . $this->projectid . "-" . $this->taggerid . "-";
   }
 
-  protected function buildCommand($cmd, $tmpfname) {
-    $cmd = str_replace('%prefix%', $this->getPrefix(), $cmd);
-    $cmd = str_replace('%file%', $tmpfname, $cmd);
-    // $cmd .= " 2>&1"; // DEBUG
-    return $cmd;
+  protected function containsOnlyValidAnnotations($anno) {
+      foreach($anno as $k => $v) {
+          if((substr($k, 0, 5) == "anno_")
+             && (!in_array(substr($k, 5), $this->tagset_cls))) {
+              return false;
+          }
+      }
+      return true;
   }
 
   /** Updates the database with new annotations.
@@ -84,75 +100,30 @@ class AutomaticAnnotationWrapper {
    * @param array $moderns Array of all mods as they are currently
    *                       stored in the database
    */
-  protected function updateAnnotation($fileid, $lines, $moderns) {
-    $idx = array();
-    // parse header
-    $header = array_shift($lines);
-    if($header==null || count($lines)!=count($moderns)) {
-      throw new Exception("Ein interner Fehler ist aufgetreten:\nDatei hat "
-			  . count($moderns) . " Tokens, der Tagger lieferte"
-			  . " aber nur " . count($lines) . " zurück.");
-    }
-    $headings = explode("\t", $header);
-    foreach($headings as $i => $heading) {
-      if(in_array($heading, $this->tagset_cls)) {
-	$idx[$heading] = $i;
-      }
-    }
+  protected function updateAnnotation($fileid, $tokens, $annotated) {
+      $is_not_verified = function ($tok) { return !$tok['verified']; };
+      $extract_id      = function ($tok) { return $tok['db_id']; };
+      $valid_id_list   = array_map($extract_id,
+                                   array_filter($tokens, $is_not_verified));
 
-    // parse lines
-    $lines_to_save = array();
-    $count = count($moderns);
-    for($i=0; $i<$count; $i++) {
-      if($moderns[$i]['verified']) { // don't change verified lines!
-	continue;
-      }
-      $line = explode("\t", $lines[$i]);
-      $save = array();
-      foreach($idx as $cls => $j) {
-	$save["anno_".$cls] = $line[$j];
-      }
-      if(!empty($save)) {
-	$save["id"] = $moderns[$i]["db_id"];
-	$lines_to_save[] = $save;
-      }
-    }
-    
-    // warnings are ignored here ...
-    $this->db->performSaveLines($fileid, $lines_to_save);
+      $is_valid_annotation = function ($elem) use (&$valid_id_list) {
+          return !empty($elem) 
+              && in_array($elem['id'], $valid_id_list)
+              && $this->containsOnlyValidAnnotations($elem);
+      };
+      $lines_to_save = array_filter($annotated, $is_valid_annotation);
+
+      // warnings are ignored here ...
+      $this->db->performSaveLines($fileid, $lines_to_save);
   }
 
   public function annotate($fileid) {
     /* TODO: verify that file belongs to project && has the necessary
        tagset links?
     */
-    // $filetagsets = $this->db->getTagsetsForFile($fileid);
-
-    try {
-        // export for tagging
-        $tmpin  = tempnam(sys_get_temp_dir(), 'cora_aa');
-        $handle = fopen($tmpin, 'w');
-        $moderns = $this->exp->exportForTagging($fileid, $handle, $this->tagset_cls, true);
-        fclose($handle);
-        
-        // call tagger
-        $output = array();
-        $retval = 0;
-        $cmd = $this->buildCommand($this->cmd_tag, $tmpin);
-        exec($cmd, $output, $retval);
-        unlink($tmpin);
-        if($retval) {
-            throw new Exception("Der Befehl gab den Status-Code {$retval} zurück.\n"
-                                .implode("\n", $output));
-        }
-        
-        // import the annotations
-        $this->updateAnnotation($fileid, $output, $moderns);
-    }
-    catch(Exception $e) {
-        @unlink($tmpin);
-        throw $e;
-    }
+    $tokens = $this->db->getAllModerns($fileid);
+    $annotated = $this->tagger->annotate($tokens);
+    $this->updateAnnotation($fileid, $tokens, $annotated);
   }
 
   public function train() {

@@ -10,7 +10,6 @@
 require_once( "AutomaticAnnotator.php" );
 
 class RFTaggerAnnotator extends AutomaticAnnotator {
-    protected $name = "RFTagger";
     private $tmpfiles = array();
 
     public function __construct($prfx, $opts) {
@@ -91,7 +90,8 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
                                   "2>/dev/null"));
         exec($cmd, $output, $retval);
         if($retval) {
-            throw new Exception("RFTagger gab den Status-Code {$retval} zurück.");
+            throw new Exception("RFTagger gab den Status-Code {$retval} zurück.".
+                                "\nAufruf war: {$cmd}");
         }
 
         // process RFTagger output & return

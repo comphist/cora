@@ -352,14 +352,15 @@ CREATE TABLE `token` (
 --
 
 DROP TABLE IF EXISTS `tagger_locks`;
+DROP TABLE IF EXISTS `tagger_options`;
 DROP TABLE IF EXISTS `tagger2tagset`;
 DROP TABLE IF EXISTS `tagger`;
 
 CREATE TABLE `tagger` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
-    `name` varchar(255) NOT NULL,
-    `cmd_train` varchar(255) DEFAULT NULL,
-    `cmd_tag` varchar(255) NOT NULL,
+    `class_name` varchar(255) NOT NULL,
+    `display_name` varchar(255) NOT NULL,
+    `trainable` boolean NOT NULL DEFAULT 0,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -380,7 +381,7 @@ CREATE TABLE `tagger_locks` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Table structure for table `tagger_links`
+-- Table structure for table `tagger2tagset`
 --
 
 CREATE TABLE `tagger2tagset` (
@@ -392,6 +393,20 @@ CREATE TABLE `tagger2tagset` (
     KEY `tagset_id` (`tagset_id`),
     CONSTRAINT `tagger2tagset_ibfk_1` FOREIGN KEY (`tagger_id`) REFERENCES `tagger` (`id`) ON DELETE CASCADE,
     CONSTRAINT `tagger2tagset_ibfk_2` FOREIGN KEY (`tagset_id`) REFERENCES `tagset` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `tagger_options`
+--
+
+CREATE TABLE `tagger_options` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `tagger_id` int(11) NOT NULL,
+    `opt_key` varchar(255) NOT NULL,
+    `opt_value` varchar(255),
+    PRIMARY KEY (`id`),
+    KEY `tagger_id` (`tagger_id`),
+    CONSTRAINT `tagger_options_ibfk_1` FOREIGN KEY (`tagger_id`) REFERENCES `tagger` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

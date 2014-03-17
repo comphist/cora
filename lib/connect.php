@@ -507,8 +507,8 @@
     */
    public function getTaggerList() {
      $tlist = array();
-     $qs = "SELECT t.id, t.name, (t.cmd_train IS NOT NULL) AS trainable, "
-       . "         t.cmd_train, t.cmd_tag, ts.tagset_id "
+     $qs = "SELECT t.id, t.class_name, t.display_name, "
+       . "         t.trainable, ts.tagset_id "
        . "    FROM tagger2tagset ts "
        . "    LEFT JOIN tagger t ON t.id=ts.tagger_id";
      $stmt = $this->dbo->prepare($qs);
@@ -518,14 +518,23 @@
 	 $tlist[$row['id']]['tagsets'][] = $row['tagset_id'];
        }
        else {
-	 $tlist[$row['id']] = array('name' => $row['name'],
+	 $tlist[$row['id']] = array('name' => $row['display_name'],
+                                    'class_name' => $row['class_name'],
 				    'trainable' => $row['trainable']==1 ? true : false,
-				    'cmd_train' => $row['cmd_train'],
-				    'cmd_tag' => $row['cmd_tag'],
 				    'tagsets' => array($row['tagset_id']));
        }
      }
      return $tlist;
+   }
+
+   /** Get data about a specific tagger in order to instantiate it. */
+   public function getTaggerOptions($taggerid) {
+       $qs = "SELECT opt_key, opt_value "
+           . "  FROM tagger_options "
+           . " WHERE `tagger_id`=?";
+       $stmt = $this->dbo->prepare($qs);
+       $stmt->execute(array($taggerid));
+       return $stmt->fetchAll(PDO::FETCH_COLUMN|PDO::FETCH_GROUP|PDO::FETCH_UNIQUE);
    }
 
    /** Get applicable taggers for a given file.

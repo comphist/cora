@@ -14,7 +14,6 @@
  * annotator on its own, and will effectively do nothing then.
  */
 class AutomaticAnnotator {
-    protected $name = "__template__";
     protected $options = array();
     protected $prefix = "";
 

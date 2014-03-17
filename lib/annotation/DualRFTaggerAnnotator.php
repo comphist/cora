@@ -11,7 +11,6 @@ require_once( "AutomaticAnnotator.php" );
 require_once( "RFTaggerAnnotator.php" );
 
 class DualRFTaggerAnnotator extends AutomaticAnnotator {
-    protected $name = "DualRFTagger";
     private $fixedRFT;
     private $variableRFT;
     private $vocabulary = array();
