@@ -15,6 +15,23 @@
  */
 class AutomaticAnnotator {
     protected $name = "__template__";
+    protected $options = array();
+    protected $prefix = "";
+
+    public function __construct($prfx, $opts) {
+        $this->prefix  = $prfx;
+        $this->parseOptions($opts);
+    }
+
+    private function parseOptions($opts) {
+        $pieces = explode(",", $opts);
+        foreach($pieces as $piece) {
+            $opt = explode("=", $piece, 2);
+            if(count($opt) == 2) {
+                $options[$opt[0]] = $opt[1];
+            }
+        }
+    }
 
     public function getName() {
         return $name;
@@ -34,6 +51,9 @@ class AutomaticAnnotator {
         // tokens, then send it straight to save lines?
         // --> but check class restrictions (may not change classes
         //     that are not linked to the tagger)
+    }
+
+    public function train($tokens) {
     }
 
 }
