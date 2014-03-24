@@ -103,12 +103,14 @@ class AutomaticAnnotationWrapper {
   protected function updateAnnotation($fileid, $tokens, $annotated) {
       $is_not_verified = function ($tok) { return !$tok['verified']; };
       $extract_id      = function ($tok) { return $tok['db_id']; };
-      $valid_id_list   = array_map($extract_id,
-                                   array_filter($tokens, $is_not_verified));
+      $valid_id_list   = array();
+      foreach(array_filter($tokens, $is_not_verified) as $ftok) {
+          $valid_id_list[$ftok['db_id']] = true;
+      }
 
       $is_valid_annotation = function ($elem) use (&$valid_id_list) {
           return !empty($elem) 
-              && in_array($elem['id'], $valid_id_list)
+              && isset($valid_id_list[$elem['id']])
               && $this->containsOnlyValidAnnotations($elem);
       };
       $lines_to_save = array_filter($annotated, $is_valid_annotation);
