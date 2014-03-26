@@ -536,6 +536,7 @@ var file = {
 
 		    var fileHash = {};
 		    var projectNames = {};
+                    var projectIds = [];
 		    filesArray.each(function(file){
 			var prj = file.project_id;
 			if(fileHash[prj]) {
@@ -545,9 +546,15 @@ var file = {
 			}
 			projectNames[prj] = file.project_name;
 		    });
+                    // sort projects alphabetically by name
+                    projectIds = Object.keys(projectNames);
+                    projectIds.sort(function(obj1, obj2) {
+                        return (projectNames[obj1] > projectNames[obj2]);
+                    });
 		    
 		    ref.fileHash = fileHash;
-		    Object.each(fileHash, function(fileArray, project){
+		    Array.each(projectIds, function(project){
+                        var fileArray = fileHash[project];
 			var project_div = $('fileGroup').clone();
 			var project_table = project_div.getElement('table');
 			project_div.getElement('h4.projectname').empty().appendText(projectNames[project]);
