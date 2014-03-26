@@ -102,10 +102,10 @@ class AutomaticAnnotationWrapper {
    */
   protected function updateAnnotation($fileid, $tokens, $annotated) {
       $is_not_verified = function ($tok) { return !$tok['verified']; };
-      $extract_id      = function ($tok) { return $tok['db_id']; };
+      $extract_id      = function ($tok) { return $tok['id']; };
       $valid_id_list   = array();
       foreach(array_filter($tokens, $is_not_verified) as $ftok) {
-          $valid_id_list[$ftok['db_id']] = true;
+          $valid_id_list[$ftok['id']] = true;
       }
 
       $is_valid_annotation = function ($elem) use (&$valid_id_list) {
@@ -123,35 +123,19 @@ class AutomaticAnnotationWrapper {
     /* TODO: verify that file belongs to project && has the necessary
        tagset links?
     */
-    $tokens = $this->db->getAllModerns($fileid);
-    $annotated = $this->tagger->annotate($tokens);
-    $this->updateAnnotation($fileid, $tokens, $annotated);
+      $tokens = $this->db->getAllModerns_simple($fileid, false);
+      $annotated = $this->tagger->annotate($tokens);
+      $this->updateAnnotation($fileid, $tokens, $annotated);
   }
 
   public function train() {
-      try {
-          // export for training
-          $tmpin  = tempnam(sys_get_temp_dir(), 'cora_at');
-          $handle = fopen($tmpin, 'w');
-          $this->exp->exportForTraining($this->projectid, $handle,
-                                        $this->tagset_cls, true);
-          fclose($handle);
-
-          // call tagger
-          $output = array();
-          $retval = 0;
-          $cmd = $this->buildCommand($this->cmd_train, $tmpin);
-          exec($cmd, $output, $retval);
-          unlink($tmpin);
-          if($retval) {
-              throw new Exception("Der Befehl gab den Status-Code {$retval} zurück.\n"
-                                  .implode("\n", $output));
-          }
+      $all_files = $this->db->getFilesForProject($this->projectid);
+      $tokens = array();
+      foreach($all_files as $f) {
+          $tokens = array_merge($tokens,
+                                $this->db->getAllModerns_simple($f['id'], true));
       }
-      catch(Exception $e) {
-          @unlink($tmpin);
-          throw $e;
-      }
+      $this->tagger->train($tokens);
   }
 
 }

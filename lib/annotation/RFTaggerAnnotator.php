@@ -11,6 +11,7 @@ require_once( "AutomaticAnnotator.php" );
 
 class RFTaggerAnnotator extends AutomaticAnnotator {
     private $tmpfiles = array();
+    private $minimum_span_size = 5;
 
     public function __construct($prfx, $opts) {
         parent::__construct($prfx, $opts);
@@ -47,13 +48,7 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         foreach($tokens as $tok) {
             fwrite($handle, $tok['ascii']);
             if($training) {
-                $pos = "";
-                foreach($tok['tags'] as $tag) {
-                    if($tag['selected']==1 && $tag['type']=="POS") {
-                        $pos = $tag['tag'];
-                    }
-                }
-                fwrite($handle, "\t".$pos);
+                fwrite($handle, "\t".$tok['tags']['POS']);
             }
             fwrite($handle, "\n");
         }
@@ -69,7 +64,7 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         if($mod['ascii'] != $line[0]) {
             throw new Exception("Token mismatch: ".$mod['ascii']." != ".$line[0]);
         }
-        return array("id" => $mod['db_id'],
+        return array("id" => $mod['id'],
                      "ascii" => $mod['ascii'],
                      "anno_POS" => $line[1]);
     }
@@ -98,7 +93,31 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         return array_map(array($this, 'makeAnnotationArray'), $tokens, $output);
     }
 
+    private function filterForTraining($tokens) {
+        $filtered = array();
+        $currentlist = array();
+        $currentspan = 0;
+        foreach($tokens as $tok) {
+            if($tok['verified'] && isset($tok['tags']['POS'])
+               && !empty($tok['ascii'])) {
+                $currentspan++;
+                $currentlist[] = $tok;
+            }
+            else {
+                if($currentspan == 0) continue;
+                if($currentspan >= $this->minimum_span_size) {
+                    $filtered = array_merge($filtered, $currentlist);
+                }
+                $currentlist = array();
+                $currentspan = 0;
+            }
+        }
+        return $filtered;
+    }
+
     public function train($tokens) {
+        $tokens = $this->filterForTraining($tokens);
+
         // write tokens to temporary file
         $tmpfname = $this->writeTaggerInput($tokens, true);
 
@@ -112,9 +131,9 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
                                   $this->options["flags"]));
         exec($cmd, $output, $retval);
         if($retval) {
-            throw new Exception("RFTagger gab den Status-Code {$retval} zurück.");
+            throw new Exception("RFTagger gab den Status-Code {$retval} zurück.\n".
+                                "\nAufruf war: {$cmd}");
         }
-
     }
 
 }

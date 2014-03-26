@@ -772,9 +772,8 @@
     *
     * @param string $pid Project ID
     * @return an two-dimensional @em array with the meta data
-    */		
+    */
    public function getFilesForProject($pid){
-     $uid = $this->getUserIDFromName($uname);
      $qs = "SELECT a.id, a.sigle, a.fullname " 
          . "FROM  text a WHERE a.project_id={$pid}";
      $stmt = $this->dbo->prepare($qs);
@@ -1046,17 +1045,17 @@
      $stmt = $this->dbo->prepare($qs);
      $stmt->execute(array(':tid' => $fileid));
      $moderns = $stmt->fetchAll(PDO::FETCH_ASSOC);
-     foreach($moderns as &$row) {
-       // Annotations
-       $qs  = "SELECT tag.value AS tag, ts.score, ts.selected, ts.source,"
+     $qs  = "SELECT tag.value AS tag, ts.score, ts.selected, ts.source,"
 	 ."           tt.class AS type "
 	 ."      FROM   modern"
 	 ."      LEFT JOIN (tag_suggestion ts, tag) "
 	 ."             ON (ts.tag_id=tag.id AND ts.mod_id=modern.id) "
 	 ."      LEFT JOIN tagset tt ON tag.tagset_id=tt.id "
-	 ."     WHERE modern.id=" . $row['db_id'];
-       $stmt = $this->dbo->prepare($qs);
-       $stmt->execute();
+         ."     WHERE modern.id=:mid";
+     $stmt = $this->dbo->prepare($qs);
+     foreach($moderns as &$row) {
+       // Annotations
+       $stmt->execute(array(':mid' => $row['db_id']));
        $row['tags'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
        $row['errors'] = $this->getErrorsForModern($row['db_id']);
 
@@ -1066,6 +1065,66 @@
        if($row['db_id'] == $currentmod_id) {
 	 $verified = false;
        }
+     }
+     unset($row);
+     return $moderns;
+   }
+
+   /** Retrieves all moderns from a file.
+    *
+    * Compared to getAllModerns(), this function returns a reduced set
+    * of information about the moderns, i.e., their ASCII value and
+    * _selected_ annotations (if the flag is set).  Additionally,
+    * moderns are returned indexed by ID.
+    *
+    * @param string $fileid ID of the file
+    * @param boolean $do_anno Whether annotation should be included
+    */
+   public function getAllModerns_simple($fileid, $do_anno=true) {
+     /* TODO: this is temporary until "verified" status is marked
+	directly with the modern */
+     $qs = "SELECT `currentmod_id` FROM text WHERE `id`=:tid";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':tid' => $fileid));
+     $currentmod_id = $stmt->fetch(PDO::FETCH_COLUMN);
+     $verified = ($currentmod_id && $currentmod_id != null && !empty($currentmod_id));
+
+     $qs = "SELECT modern.id, modern.ascii "
+       ."     FROM token "
+       ."    INNER JOIN modern ON modern.tok_id=token.id "
+       ."    WHERE token.text_id=:tid "
+       ."    ORDER BY token.ordnr ASC, modern.id ASC";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':tid' => $fileid));
+     $moderns = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+     if($do_anno) {
+         $qs  = "SELECT modern.id, tag.value AS tag, tt.class AS type "
+             ."      FROM   modern"
+             ."      LEFT JOIN (tag_suggestion ts, tag) "
+             ."             ON (ts.tag_id=tag.id AND ts.mod_id=modern.id) "
+             ."      LEFT JOIN tagset tt ON tag.tagset_id=tt.id "
+             ."      LEFT JOIN token ON token.id=modern.tok_id "
+             ."     WHERE token.text_id=:tid AND ts.selected=1";
+         $stmt = $this->dbo->prepare($qs);
+         $stmt->execute(array(':tid' => $fileid));
+         $annotations = $stmt->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
+
+         foreach($moderns as &$row) {
+             $row['tags'] = array();
+             if(isset($annotations[$row['id']])) {
+                 foreach($annotations[$row['id']] as $anno) {
+                     $row['tags'][$anno['type']] = $anno['tag'];
+                 }
+             }
+
+             /* TODO: this is temporary until "verified" status is marked
+                directly with the modern */
+             $row['verified'] = $verified;
+             if($row['id'] == $currentmod_id) {
+                 $verified = false;
+             }
+         }
      }
      unset($row);
      return $moderns;
