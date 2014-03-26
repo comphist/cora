@@ -728,6 +728,7 @@ window.addEvent('domready', function() {
     file.initialize();    
 
     $$('div.fileViewRefresh img').addEvent('click',function(e){ e.stop(); file.listFiles() });
+    $$('div.fileViewRefresh a.collapseAll').addEvent('click',function(e){ e.stop(); $$('.clappable div').hide(); });
 
     file.listFiles();
     if(userdata.currentFileId)

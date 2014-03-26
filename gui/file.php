@@ -37,6 +37,9 @@ $tagsets_all = $sh->getTagsetList(false, "class");
 	<div class="fileViewRefresh">	
 	<h3>Datei öffnen</h3>
 		<img src="gui/images/View-refresh.svg" width="20px" height="20px"/>
+                <p>
+                <a class="collapseAll" href="#">[Alle Projektgruppen zuklappen]</a>
+                </p>
 	</div>
 
 	<div id="files">
