@@ -549,7 +549,7 @@ var file = {
                     // sort projects alphabetically by name
                     projectIds = Object.keys(projectNames);
                     projectIds.sort(function(obj1, obj2) {
-                        return (projectNames[obj1] > projectNames[obj2]);
+                        return projectNames[obj1].localeCompare(projectNames[obj2]);
                     });
 		    
 		    ref.fileHash = fileHash;
@@ -735,7 +735,7 @@ window.addEvent('domready', function() {
     file.initialize();    
 
     $$('div.fileViewRefresh img').addEvent('click',function(e){ e.stop(); file.listFiles() });
-    $$('div.fileViewRefresh a.collapseAll').addEvent('click',function(e){ e.stop(); $$('.clappable div').hide(); });
+    $$('div.fileViewRefresh a.collapseAll').addEvent('click',function(e){ e.stop(); $$('div#files .clappable div').hide(); });
 
     file.listFiles();
     if(userdata.currentFileId)
