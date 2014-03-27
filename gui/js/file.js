@@ -701,14 +701,6 @@ var file = {
     },
 
     exportFile: function(fileid){
-	if(!userdata.admin) {
-	    // client-side check only, admin restriction is not
-	    // critical here, just exists to discourage users to use
-	    // this before it's 100% finished
-	    alert("Diese Funktion ist zur Zeit noch nicht implementiert!");
-	    return;
-	}
-
 	new mBox.Modal({
 	    content: 'fileExportPopup',
 	    title: 'Datei exportieren',

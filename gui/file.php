@@ -90,9 +90,13 @@ $tagsets_all = $sh->getTagsetList(false, "class");
 		<label for="format">Exportformat: </label>
 		<select id="fileExportFormat" name="format" size="1">
                         <option value="<?php echo ExportType::Tagging ?>" selected="selected">Spaltenformat (POS)</option>
+   <?php if($_SESSION["admin"]): ?>
                         <option value="<?php echo ExportType::Normalization ?>">Spaltenformat (Normalisierung)</option>
+   <?php endif; ?>
                         <option value="<?php echo ExportType::CoraXML ?>">CorA-XML</option>
+   <?php if($_SESSION["admin"]): ?>
                         <option value="<?php echo ExportType::Transcription ?>" disabled="disabled">Transkriptionsformat (ohne Annotationen)</option>
+   <?php endif; ?>
 		</select>
 		</p>
   <p></p>
