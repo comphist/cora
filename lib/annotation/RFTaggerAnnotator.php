@@ -24,6 +24,9 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         if(!array_key_exists("flags", $this->options)) {
             $this->options["flags"] = "-c 2 -q";
         }
+        if(array_key_exists("minimum_span_size", $this->options)) {
+            $this->minimum_span_size = $this->options["minimum_span_size"];
+        }
     }
 
     public function __destruct() {
@@ -40,7 +43,14 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
             $this->options["par"] = $filename;
         }
     }
-    
+
+    /** Writes an input file for RFTagger.
+     *
+     * @param array $tokens Tokens to write
+     * @param boolean $training If true, include POS tags
+     *
+     * @return Name of the newly created file
+     */
     private function writeTaggerInput($tokens, $training=false) {
         $filename = tempnam(sys_get_temp_dir(), "cora_rft");
         $this->tmpfiles[] = $filename;
@@ -56,6 +66,13 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         return $filename;
     }
 
+    /** Converts RFTagger output to an array for saving it back to CorA.
+     *
+     * @param array $mod The original input token
+     * @param string $line Output line from RFTagger
+     *
+     * @return An array element suitable for DBInterface::saveLines()
+     */
     private function makeAnnotationArray($mod, $line) {
         $line = explode("\t", $line);
         if(empty($line) || empty($mod) || count($line) != 2) {
@@ -69,9 +86,51 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
                      "anno_POS" => $line[1]);
     }
 
-    /** 
+
+    /** Filter a list of tokens to be used for training.
+     *
+     * Only non-empty tokens marked as 'verified' and having a
+     * non-empty POS annotation will be used for training.
+     * Furthermore, as POS tagging is n-gram-based, only spans
+     * containing at least {$this->minimum_span_size} of such tokens
+     * are considered.  Tokens discarded via this span criterion can
+     * still be used as a lexical resource and are returned as a
+     * separate array.
+     *
+     * @param array $tokens An array of tokens
+     *
+     * @return 1) A filtered sequence of tokens to be used of
+     * training; and 2) an array of tokens to be used as an additional
+     * lexicon.
      */
-    // $tokens should be what DBInterface::getAllModerns($fileid) returns
+    private function filterForTraining($tokens) {
+        $filtered = array();   /**< sequence of tokens for training */
+        $additional = array(); /**< tokens discarded for training due to
+                                    context length restrictions, but still
+                                    usable for lexicon comparison */
+        $currentlist = array();
+        $currentspan = 0;
+        foreach($tokens as $tok) {
+            if($tok['verified'] && isset($tok['tags']['POS'])
+               && !empty($tok['ascii'])) {
+                $currentspan++;
+                $currentlist[] = $tok;
+            }
+            else {
+                if($currentspan == 0) continue;
+                if($currentspan >= $this->minimum_span_size) {
+                    $filtered = array_merge($filtered, $currentlist);
+                }
+                else {
+                    $additional = array_merge($additional, $currentlist);
+                }
+                $currentlist = array();
+                $currentspan = 0;
+            }
+        }
+        return array($filtered, $additional);
+    }
+
     public function annotate($tokens) {
         // write tokens to temporary file
         $tmpfname = $this->writeTaggerInput($tokens, false);
@@ -93,33 +152,17 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         return array_map(array($this, 'makeAnnotationArray'), $tokens, $output);
     }
 
-    private function filterForTraining($tokens) {
-        $filtered = array();
-        $currentlist = array();
-        $currentspan = 0;
-        foreach($tokens as $tok) {
-            if($tok['verified'] && isset($tok['tags']['POS'])
-               && !empty($tok['ascii'])) {
-                $currentspan++;
-                $currentlist[] = $tok;
-            }
-            else {
-                if($currentspan == 0) continue;
-                if($currentspan >= $this->minimum_span_size) {
-                    $filtered = array_merge($filtered, $currentlist);
-                }
-                $currentlist = array();
-                $currentspan = 0;
-            }
-        }
-        return $filtered;
-    }
-
     public function train($tokens) {
-        $tokens = $this->filterForTraining($tokens);
+        list($tokens, $lextokens) = $this->filterForTraining($tokens);
+        if(empty($tokens)) return;
 
         // write tokens to temporary file
         $tmpfname = $this->writeTaggerInput($tokens, true);
+        $flags = $this->options["flags"];
+        if(!empty($lextokens)) {
+            $tmplname = $this->writeTaggerInput($lextokens, true);
+            $flags = $flags . " -l " . $tmplname;
+        }
 
         // call RFTagger
         $output = array();
@@ -128,7 +171,7 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
                                   $tmpfname,
                                   $this->options["wc"],
                                   $this->options["par"],
-                                  $this->options["flags"]));
+                                  $flags));
         exec($cmd, $output, $retval);
         if($retval) {
             throw new Exception("RFTagger gab den Status-Code {$retval} zurück.\n".

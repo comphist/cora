@@ -526,6 +526,7 @@ class CoraSessionHandler {
                      "errors"=>$e->getMessage());
     }
 
+    $this->db->unlockProjectForTagger($pid);
     $this->db->updateChangedTimestamp($fid,$userid);
     return array("success"=>true);
   }
