@@ -25,6 +25,7 @@ class AutomaticAnnotationWrapper {
   protected $tagset_ids; /**< Array of associated tagset IDs. */
   protected $tagset_cls; /**< Array of associated tagset classes. */
   protected $tagsets;    /**< Array of associated tagset metadata. */
+  protected $trainable;
 
   protected $paramdir = EXTERNAL_PARAM_DIR;
 
@@ -60,6 +61,7 @@ class AutomaticAnnotationWrapper {
       throw new Exception ("Illegal tagger ID: {$this->taggerid}");
     }
     // instantiate class object
+    $this->trainable = $tagger[$this->taggerid]['trainable'];
     $class_name = $tagger[$this->taggerid]['class_name'];
     if(!array_key_exists($class_name, $this->tagger_objects)) {
       throw new Exception ("Unknown tagger class: {$class_name}");
@@ -129,6 +131,7 @@ class AutomaticAnnotationWrapper {
   }
 
   public function train() {
+      if(!$this->trainable) return;
       $all_files = $this->db->getFilesForProject($this->projectid);
       $tokens = array();
       foreach($all_files as $f) {

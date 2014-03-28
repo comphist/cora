@@ -516,14 +516,14 @@ class CoraSessionHandler {
         $exp = new Exporter($this->db);
         $aa = new AutomaticAnnotationWrapper($this->db, $exp, $taggerid, $pid);
         if($retrain) {
-            // do something here
+            $aa->train();
         }
         $aa->annotate($fid);
     }
     catch(Exception $e) {
         $this->db->unlockProjectForTagger($pid);
         return array("success"=>false,
-                     "errors"=>$ex->getMessage());
+                     "errors"=>$e->getMessage());
     }
 
     $this->db->updateChangedTimestamp($fid,$userid);
