@@ -173,7 +173,7 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         }
 
         list($tokens, $lextokens) = $this->filterForTraining($tokens);
-        if(empty($tokens)) return;
+        if(empty($tokens)) return array();
 
         // write tokens to temporary file
         $tmpfname = $this->writeTaggerInput($tokens, true);
@@ -196,6 +196,8 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
             throw new Exception("RFTagger gab den Status-Code {$retval} zurück.\n".
                                 "\nAufruf war: {$cmd}");
         }
+
+        return $tokens;
     }
 
 }
