@@ -12,6 +12,7 @@ require_once( "AutomaticAnnotator.php" );
 class RFTaggerAnnotator extends AutomaticAnnotator {
     private $tmpfiles = array();
     private $minimum_span_size = 5;
+    private $lowercase_all = false;
 
     public function __construct($prfx, $opts) {
         parent::__construct($prfx, $opts);
@@ -23,6 +24,9 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         }
         if(!array_key_exists("flags", $this->options)) {
             $this->options["flags"] = "-c 2 -q";
+        }
+        if(array_key_exists("lowercase_all", $this->options)) {
+            $this->lowercase_all = (bool) $this->options["lowercase_all"];
         }
         if(array_key_exists("minimum_span_size", $this->options)) {
             $this->minimum_span_size = $this->options["minimum_span_size"];
@@ -131,7 +135,18 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         return array($filtered, $additional);
     }
 
+    private function lowercaseAscii($tok) {
+        if(array_key_exists('ascii', $tok)) {
+            $tok['ascii'] = mb_strtolower($tok['ascii'], 'UTF-8');
+        }
+        return $tok;
+    }
+
     public function annotate($tokens) {
+        if($this->lowercase_all) {
+            $tokens = array_map(array($this, 'lowercaseAscii'), $tokens);
+        }
+
         // write tokens to temporary file
         $tmpfname = $this->writeTaggerInput($tokens, false);
 
@@ -153,6 +168,10 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
     }
 
     public function train($tokens) {
+        if($this->lowercase_all) {
+            $tokens = array_map(array($this, 'lowercaseAscii'), $tokens);
+        }
+
         list($tokens, $lextokens) = $this->filterForTraining($tokens);
         if(empty($tokens)) return;
 
