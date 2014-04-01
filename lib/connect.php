@@ -480,9 +480,10 @@
     * for each tagset in the input list.
     */
    public function getTagsetMetadata($idlist) {
+     $place_holders = implode(',', array_fill(0, count($idlist), '?'));
      $qs  = "SELECT ts.id, ts.name, ts.class, ts.set_type "
        . "     FROM tagset ts "
-       . "    WHERE ts.id=?";
+       . "    WHERE ts.id IN ($place_holders)";
      $stmt = $this->dbo->prepare($qs);
      $stmt->execute($idlist);
      return $stmt->fetchAll(PDO::FETCH_ASSOC);

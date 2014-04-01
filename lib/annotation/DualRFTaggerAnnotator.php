@@ -45,9 +45,9 @@ class DualRFTaggerAnnotator extends AutomaticAnnotator {
            || !is_readable($this->options["vocab"])) {
             return;
         }
-        $vocabfile = split("\n", file_get_contents($this->options["vocab"]));
+        $vocabfile = explode("\n", file_get_contents($this->options["vocab"]));
         foreach($vocabfile as $vocabline) {
-            $line = split("\t", $vocabline);
+            $line = explode("\t", $vocabline);
             $this->vocabulary[$line[0]] = $line[1];
         }
     }

@@ -14,6 +14,7 @@ require_once( "exporter.php" );
 require_once( "annotation/AutomaticAnnotator.php" );
 require_once( "annotation/RFTaggerAnnotator.php" );
 require_once( "annotation/DualRFTaggerAnnotator.php" );
+require_once( "annotation/Lemmatizer.php" );
 
 class AutomaticAnnotationWrapper {
   protected $db; /**< A DBInterface object. */
@@ -30,7 +31,8 @@ class AutomaticAnnotationWrapper {
   protected $paramdir = EXTERNAL_PARAM_DIR;
 
   private $tagger_objects = array("RFTagger"     => "RFTaggerAnnotator",
-                                  "DualRFTagger" => "DualRFTaggerAnnotator");
+                                  "DualRFTagger" => "DualRFTaggerAnnotator",
+                                  "Lemmatizer"   => "Lemmatizer");
 
   /** Construct a new AutomaticAnnotator object.
    *
@@ -125,7 +127,9 @@ class AutomaticAnnotationWrapper {
     /* TODO: verify that file belongs to project && has the necessary
        tagset links?
     */
-      $tokens = $this->db->getAllModerns_simple($fileid, false);
+      $tokens = $this->db->getAllModerns_simple($fileid, true);
+      // ^-- seeing existing annotations is required for some Annotators,
+      //     so we can't really ever set the second parameter to false...
       $annotated = $this->tagger->annotate($tokens);
       $this->updateAnnotation($fileid, $tokens, $annotated);
   }
