@@ -1,7 +1,7 @@
 <?php
 
-/** @file DualRFTaggerAnnotator.php
- * Combination of two RFTaggers.
+/** @file Lemmatizer.php
+ * Perl-based lemmatizer similar to what RFTagger uses.
  *
  * @author Marcel Bollmann
  * @date March 2014
@@ -15,7 +15,7 @@ class Lemmatizer extends AutomaticAnnotator {
     private $lowercase_all = false;
     private $usepos = true;
 
-    // lemmatizer return value if not lemma could be found:
+    // lemmatizer return value if lemma could not be found:
     private $unknown_lemma = "<unknown>";    
 
     public function __construct($prfx, $opts) {
@@ -94,7 +94,7 @@ class Lemmatizer extends AutomaticAnnotator {
                                   $tmpfname));
         exec($cmd, $output, $retval);
         if($retval) {
-            throw new Exception("RFTagger gab den Status-Code {$retval} zurück.".
+            throw new Exception("Lemmatisierer gab den Status-Code {$retval} zurück.".
                                 "\nAufruf war: {$cmd}");
         }
 
@@ -102,7 +102,27 @@ class Lemmatizer extends AutomaticAnnotator {
     }
 
     public function train($tokens) {
-        //$this->saveDictionary();
+        $lines = array();
+        foreach($tokens as $tok) {
+            if(!$tok['verified'] ||
+               !isset($tok['tags']['POS']) || empty($tok['tags']['POS']) ||
+               !isset($tok['tags']['lemma']) || empty($tok['tags']['lemma'])) {
+                continue;
+            }
+            $lines[] = $tok['ascii']."\t".$tok['tags']['POS']."\t".$tok['tags']['lemma'];
+        }
+        $lines = array_unique($lines);
+
+        $handle = fopen($this->options['par'], "w");
+        if(!$handle) {
+            throw new Exception("Konnte Parameterdatei nicht zum Schreiben öffnen:".
+                                $this->options['par']);
+        }
+        foreach($lines as $line) {
+            fwrite($handle, $line);
+            fwrite($handle, "\n");
+        }
+        fclose($handle);
     }
 
 }
