@@ -1641,22 +1641,18 @@ var EditorModel = new Class({
      */
     prepareAnnotationOptions: function() {
 	var aaselect = $('automaticAnnotationForm').getElement('select[name="tagger"]');
-	var trainbox = $('automaticAnnotationForm').getElement('input[name="retrain"]');
 	var onTaggerChange = function(e) {
 	    var id;
+	    var trainbtn = e.target.getParent("div.mBoxContainer").getElement("#trainStartButton");
 	    try {
 		id = e.target.getSelected()[0].get('value'); 
 	    } catch(e) {
-		trainbox.set('disabled', true);
-		trainbox.set('checked', false);
+		trainbtn.set('disabled', true);
 		return;
 	    }
 	    Array.each(file.taggers, function(tagger) {
 		if(tagger.id == id) {
-		    trainbox.set('disabled', !tagger.trainable);
-		    if(!tagger.trainable) {
-			trainbox.set('checked', false);
-		    }
+		    trainbtn.set('disabled', !tagger.trainable);
 		}
 	    });
 	};
@@ -1684,8 +1680,7 @@ var EditorModel = new Class({
 	var ref = this;
 	var mbox;
 	var content = $('automaticAnnotationForm');
-	var performAnnotation = function() {
-	    var retrain = $('automaticAnnotationForm').getElement('input[name="retrain"]').get('checked');
+	var performAnnotation = function(action) {
 	    var taggerID = $('automaticAnnotationForm').getElement('select[name="tagger"]').getSelected()[0].get('value');
 	    gui.showSpinner({message: 'Bitte warten...'});
 	    new Request.JSON({
@@ -1694,9 +1689,14 @@ var EditorModel = new Class({
 		onComplete: function(response) {
 		    gui.hideSpinner();
 		    if(response && response.success) {
-			gui.showNotice('ok', 'Automatische Annotation war erfolgreich.');
-			// clear and reload all lines
-			ref.updateDataArray(0, 0); 
+                        if(action == "train") {
+                            gui.showNotice('ok', 'Neu trainieren war erfolgreich.');
+                        }
+                        else {
+			    gui.showNotice('ok', 'Automatische Annotation war erfolgreich.');
+			    // clear and reload all lines
+			    ref.updateDataArray(0, 0); 
+                        }
 		    } else {
 			gui.showNotice('error', 'Annotation fehlgeschlagen.');
 			gui.showTextDialog('Annotation fehlgeschlagen',
@@ -1718,7 +1718,7 @@ var EditorModel = new Class({
 		    }).open();
 		    gui.hideSpinner();
 		}
-	    }).get({'do': 'performAnnotation', 'retrain': retrain, 'tagger': taggerID});
+	    }).get({'do': 'performAnnotation', 'action': action, 'tagger': taggerID});
 	    mbox.close();
 	}
 
@@ -1727,10 +1727,14 @@ var EditorModel = new Class({
 	    title: 'Automatisch neu annotieren',
 	    content: 'automaticAnnotationForm',
 	    attach: button,
-	    buttons: [ {title: "Starten", addClass: "mform button_green",
+	    buttons: [ {title: "Neu trainieren", addClass: "mform button_left button_yellow",
+                        id: "trainStartButton",
+                        event: function() { this.close();
+                                            performAnnotation("train"); }},
+                       {title: "Annotieren", addClass: "mform button_green",
 			id: "annoStartButton",
 			event: function() { this.close();
-					    performAnnotation(); }},
+					    performAnnotation("anno"); }},
 		       {title: "Abbrechen", addClass: "mform",
 			event: function() { this.close(); }}
 		     ]

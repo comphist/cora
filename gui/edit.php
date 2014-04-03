@@ -148,10 +148,6 @@
    </select>
    </p>
 
-   <p>
-   <label><input type="checkbox" name="retrain" checked="checked" />  Auf vorhandenen Daten neu trainieren</label>
-   </p>
-
    </div>
 
   <div id="editAnnotateSpinner">

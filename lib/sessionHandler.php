@@ -498,9 +498,11 @@ class CoraSessionHandler {
   /** Perform automatic training and/or annotation.
    *
    * @param string $taggerid Database ID of the tagger to be used
-   * @param bool $retrain Whether to perform retraining first
+   * @param string $action   "anno"  => perform annotation
+   *                         "train" => perform training
+   *                         "both"  => perform both (not currently used)
    */
-  public function performAnnotation($taggerid, $retrain) {
+  public function performAnnotation($taggerid, $action) {
     $userid = $_SESSION['user_id'];
     $fid = $_SESSION['currentFileId'];
     $pid = $this->db->getProjectForFile($fid);
@@ -515,10 +517,13 @@ class CoraSessionHandler {
     try {
         $exp = new Exporter($this->db);
         $aa = new AutomaticAnnotationWrapper($this->db, $exp, $taggerid, $pid);
-        if($retrain) {
+        if($action == "train" || $action == "both") {
             $aa->train();
         }
-        $aa->annotate($fid);
+        if($action == "anno"  || $action == "both") {
+            $aa->annotate($fid);
+            $this->db->updateChangedTimestamp($fid,$userid);
+        }
     }
     catch(Exception $e) {
         $this->db->unlockProjectForTagger($pid);
@@ -527,7 +532,6 @@ class CoraSessionHandler {
     }
 
     $this->db->unlockProjectForTagger($pid);
-    $this->db->updateChangedTimestamp($fid,$userid);
     return array("success"=>true);
   }
 
