@@ -139,13 +139,13 @@
 
    <div id="automaticAnnotationForm" class="limitedWidth">
    <p>
-     <b>Achtung!</b>  Dieser Vorgang überschreibt vorhandene Annotationen in allen Zeilen, die <b>nicht</b> mittels des Fortschrittsbalkens grün markiert sind.
+     <b>Achtung!</b>  &quot;Annotieren&quot; überschreibt vorhandene Annotationen in allen Zeilen, die <b>nicht</b> mittels des Fortschrittsbalkens grün markiert sind.
    </p>
 
    <p>
-   <label for="tagger">Tagger: </label>
-   <select name="tagger" size="1">
-   </select>
+   <label for="aa_tagger_select">Tagger: </label>
+   <div id="aa_tagger_select">
+   </div>
    </p>
 
    </div>

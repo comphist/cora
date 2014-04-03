@@ -1640,12 +1640,12 @@ var EditorModel = new Class({
     /* Function: prepareAnnotationOptions
      */
     prepareAnnotationOptions: function() {
-	var aaselect = $('automaticAnnotationForm').getElement('select[name="tagger"]');
+	var aaselect = $('automaticAnnotationForm').getElement('#aa_tagger_select');
 	var onTaggerChange = function(e) {
 	    var id;
 	    var trainbtn = e.target.getParent("div.mBoxContainer").getElement("#trainStartButton");
 	    try {
-		id = e.target.getSelected()[0].get('value'); 
+		id = e.target.get('value');
 	    } catch(e) {
 		trainbtn.set('disabled', true);
 		return;
@@ -1657,14 +1657,29 @@ var EditorModel = new Class({
 	    });
 	};
 	aaselect.empty();
-	Array.each(file.taggers, function(tagger) {
-	    aaselect.adopt(new Element('option',
-				       {'value': tagger.id,
-					'text':  tagger.name}));
-	});
-	aaselect.removeEvents();
-	aaselect.addEvent('change', onTaggerChange);
-	onTaggerChange({'target': aaselect});
+        if(file.taggers.length > 0) {
+	    Array.each(file.taggers, function(tagger) {
+	        aaselect.adopt(new Element('input',
+				           {'value': tagger.id,
+                                            'type':  'radio',
+                                            'name':  'aa_tagger_select',
+                                            'id':    'aats_'+tagger.id}));
+                aaselect.adopt(new Element('label',
+                                           {'for':   'aats_'+tagger.id,
+                                            'text':  ' '+tagger.name}));
+                aaselect.adopt(new Element('br'));
+	    });
+	    aaselect.getElements("input").removeEvents();
+	    aaselect.getElements("input").addEvent('change', onTaggerChange);
+            aaselect.getElements("input")[0].set('checked', true);
+	    onTaggerChange({'target': aaselect.getElements("input")[0]});
+            aaselect.getParent("div.mBoxContainer").getElement("#annoStartButton").set("disabled", false);
+        }
+        else {
+            aaselect.appendText("Keine Tagger verfügbar.");
+            aaselect.getParent("div.mBoxContainer").getElement("#trainStartButton").set("disabled", true);
+            aaselect.getParent("div.mBoxContainer").getElement("#annoStartButton").set("disabled", true);
+        }
     },
 
     /* Function: activateAnnotationDialog
@@ -1681,7 +1696,7 @@ var EditorModel = new Class({
 	var mbox;
 	var content = $('automaticAnnotationForm');
 	var performAnnotation = function(action) {
-	    var taggerID = $('automaticAnnotationForm').getElement('select[name="tagger"]').getSelected()[0].get('value');
+	    var taggerID = $('automaticAnnotationForm').getElement('input[name="aa_tagger_select"]:checked').get('value');
 	    gui.showSpinner({message: 'Bitte warten...'});
 	    new Request.JSON({
 		url: 'request.php',
