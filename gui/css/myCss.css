@@ -1036,3 +1036,8 @@ div#transImportSpinner .proc {
     color: #000;
     text-align: center;
 }
+
+div#aa_tagger_select { 
+    padding: .5em 1em 0 1em;
+    text-size: small;
+}
