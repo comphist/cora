@@ -63,6 +63,7 @@ DROP TABLE IF EXISTS `project`;
 CREATE TABLE `project` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `name` varchar(255) NOT NULL,
+    `cmd_edittoken` varchar(255),
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

@@ -571,7 +571,7 @@ class CoraSessionHandler {
     // check and convert transcription
     $converted = null;
     $status = $this->checkConvertTranscription($textid, $tokenid, $value, $converted);
-    if($status) {
+    if($status!==null) {
       return $status;
     }
 
@@ -620,14 +620,7 @@ class CoraSessionHandler {
     $ch = new CommandHandler($options);
 
     $errors = array();
-    // call the check script
-    $check = $ch->checkToken($value);
-    if(!empty($check)) {
-      array_unshift($check, "Bei der Prüfung der Transkription ist ein Fehler aufgetreten.", "");
-      return array("success" => false, "errors" => $check);
-    }
-    // call the conversion script(s)
-    $converted = $ch->convertToken($value, $errors);
+    $converted = $ch->checkConvertToken($value, $errors);
     if(!empty($errors)) {
       array_unshift($errors, "Bei der Konvertierung des Tokens ist ein Fehler aufgetreten.", "");
       return array("success" => false, "errors" => $errors);

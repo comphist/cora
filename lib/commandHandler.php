@@ -29,15 +29,7 @@ class CommandHandler {
   private $options;
 
   private $check_script = "/usr/bin/ruby /usr/local/bin/convert_check.rb -C";
-  private $conv_script  = "/usr/bin/ruby /usr/local/bin/convert_check.rb -T";
   private $xml_script   = "/usr/bin/python -u /usr/local/bin/convert_coraxml.py -g";
-  private $single_token_flag = "-L";
-  private $conv_opt = array("mod_trans" => "-c orig -t all -p leave -r leave -i original -d leave -s delete -e leave",
-			    "mod_ascii" => "-c simple -t all -p leave -r delete -i leave -d delete -s delete -e delete",
-			    "mod_utf"   => "-c utf -t all -p leave -r delete -i leave -d delete -s delete -e delete",
-			    "dipl_trans" => "-S -c orig -t historical -p leave -r leave -i original -s original -d leave -e leave",
-			    "dipl_utf"   => "-S -c utf -t historical -p delete -r delete -i leave -s leave -d leave -e delete"
-			    );
 
   function __construct($options=array()) {
       $this->options = $options;
@@ -132,61 +124,32 @@ class CommandHandler {
     return $errors;
   }
 
-  /** Call the check script to verify the validity of a transcription.
-   */
-  public function checkToken($token) {
-    $output = array();
-    // check for misplaced newlines - little bit hacky to do this here ...
-    $lines = explode("\n", $token);
-    if(count($lines)>1) {
-      array_pop($lines); // last token can be whatever ...
-      foreach($lines as $line) {
-	if(!Transcription::endsWithSeparator($line)) {
-	  return array("Zeilenumbrüche sind nur erlaubt, wenn ihnen ein Trennzeichen vorangeht.  Transkription war:", $token);
-	}
-      }
+  /** Checks and converts a single token. */
+  public function checkConvertToken($token, &$errors) {
+    if(!array_key_exists('cmd_edittoken', $this->options)) {
+        $errors = array("Kein Konvertierungsskript festgelegt!");
+        return array();
     }
-    // call check script
-    $tmpfname = $this->writeTokenToTmpfile($token);
-    $retval = 0;
-    $command = $this->check_script ." ". $this->single_token_flag ." ". $tmpfname ." 2>&1";
-    exec($command, $output, $retval);
-    if($retval) {
-      array_unshift($output, "Der Befehl gab den Status-Code {$retval} zurück:");
-    }
-    // return
-    unlink($tmpfname);
-    return $output;
-  }
 
-  /** Call the convert script to perform all possible conversions of
-   * an input token.
-   *
-   * @return An array of the converted tokens indexed by mod/dipl and
-   * trans/utf/ascii
-   */
-  public function convertToken($token, &$errors) {
-    // do conversions
     $tmpfname = $this->writeTokenToTmpfile($token);
-    $result = array();
-    foreach($this->conv_opt as $opt => $flags) {
-      $output = array();
-      $retval = 0;
-      $command = $this->conv_script ." ". $this->single_token_flag . " {$flags} {$tmpfname} 2>&1";
-      exec($command, $output, $retval);
-      if($retval) {
-	$errors = $output;
-	array_unshift($errors, "Der Befehl gab den Status-Code {$retval} zurück.");
-	unlink($tmpfname);
-	return $result;
-      }
-      $result[$opt] = $output;
-    }
-    // return
+    $output  = array();
+    $retval  = 0;
+    $command = $this->options['cmd_edittoken']." {$tmpfname} 2>&1";
+    exec($command, $output, $retval);
     unlink($tmpfname);
+    if($retval) {
+        $errors = $output;
+	array_unshift($errors, "Der Befehl gab den Status-Code {$retval} zurück.");
+	return array();
+    }
+    $result = json_decode($output, true);
+    if(is_null($result)) {
+        $errors = $output;
+        array_unshift($errors, "Das Konvertierungsskript lieferte ungültigen Output.");
+        return array();
+    }
     return $result;
   }
-
 
 }
 
