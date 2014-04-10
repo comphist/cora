@@ -23,7 +23,6 @@ require_once( "automaticAnnotation.php" );
 class CoraSessionHandler {
   private $db; /**< A DBInterface object. */
   private $xml; /**< An XMLHandler object. */
-  private $ch; /**< A CommandHandler object. */
   private $exporter; /**< An Exporter object. */
 
   private $timeout = 30; // session timeout in minutes
@@ -33,14 +32,13 @@ class CoraSessionHandler {
    * Initializes a session, constructs a new DBInterface, and sets
    * defaults for various session values if required.
    */
-  function __construct($db, $xml, $exp, $ch) {
+  function __construct($db, $xml, $exp) {
     session_name("PHPSESSID_CORA");
     session_start();
 
     $this->db = $db;
     $this->xml = $xml;
     $this->exporter = $exp;
-    $this->ch = $ch;
 
     $defaults = array( "lang"        => DEFAULT_LANGUAGE,
 		       "loggedIn"    => false,
@@ -240,16 +238,17 @@ class CoraSessionHandler {
   /** Checks file for validity, converts it to XML, then calls
       XMLHandler::import(). */
   public function importTranscriptionFile($transdata, $options) {
+    $ch = new CommandHandler();
     $localname = $transdata['tmp_name'];
     $logfile = fopen($options['logfile'], 'a');
     // convert to utf-8
     fwrite($logfile, "~BEGIN CHECK\n");
-    $errors = $this->ch->checkMimeType($localname, 'text/plain');
+    $errors = $ch->checkMimeType($localname, 'text/plain');
     if(empty($errors)) {
-      $errors = $this->ch->convertToUtf($localname, $options['encoding']);
+      $errors = $ch->convertToUtf($localname, $options['encoding']);
     }
     if(empty($errors)) {
-      $errors = $this->ch->checkFile($localname);
+      $errors = $ch->checkFile($localname);
     }
     if(!empty($errors)) {
       fwrite($logfile, "~ERROR CHECK\n");
@@ -274,7 +273,7 @@ class CoraSessionHandler {
 	$cmdopt = '-t -p /usr/local/share/rftagger/lib/bonn-hits.par';
       }
     }
-    $errors = $this->ch->convertTransToXML($localname, $xmlname, $options['logfile'], $cmdopt);
+    $errors = $ch->convertTransToXML($localname, $xmlname, $options['logfile'], $cmdopt);
     $logfile = fopen($options['logfile'], 'a');
     if(!empty($errors)) {
       fwrite($logfile, "~ERROR XML\n");
@@ -611,15 +610,16 @@ class CoraSessionHandler {
    * @param string $value   Transcription for the token
    */
   private function checkConvertTranscription($tokenid, $value, &$converted) {
+    $ch = new CommandHandler();
     $errors = array();
     // call the check script
-    $check = $this->ch->checkToken($value);
+    $check = $ch->checkToken($value);
     if(!empty($check)) {
       array_unshift($check, "Bei der Prüfung der Transkription ist ein Fehler aufgetreten.", "");
       return array("success" => false, "errors" => $check);
     }
     // call the conversion script(s)
-    $converted = $this->ch->convertToken($value, $errors);
+    $converted = $ch->convertToken($value, $errors);
     if(!empty($errors)) {
       array_unshift($errors, "Bei der Konvertierung des Tokens ist ein Fehler aufgetreten.", "");
       return array("success" => false, "errors" => $errors);
