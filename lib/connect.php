@@ -538,6 +538,14 @@
        return $stmt->fetchAll(PDO::FETCH_COLUMN|PDO::FETCH_GROUP|PDO::FETCH_UNIQUE);
    }
 
+   /** Get options (e.g. associated check script) for a given project. */
+   public function getProjectOptions($projectid) {
+       $qs = "SELECT * FROM project WHERE `id`=?";
+       $stmt = $this->dbo->prepare($qs);
+       $stmt->execute(array($projectid));
+       return $stmt->fetchAll(PDO::FETCH_ASSOC);
+   }
+
    /** Get applicable taggers for a given file.
     *
     * Returns information about taggers where all associated tagsets

@@ -238,7 +238,9 @@ class CoraSessionHandler {
   /** Checks file for validity, converts it to XML, then calls
       XMLHandler::import(). */
   public function importTranscriptionFile($transdata, $options) {
-    $ch = new CommandHandler();
+    $ch_options = $this->db->getProjectOptions($options['project']);
+    $ch = new CommandHandler($ch_options);
+
     $localname = $transdata['tmp_name'];
     $logfile = fopen($options['logfile'], 'a');
     // convert to utf-8
@@ -568,7 +570,7 @@ class CoraSessionHandler {
     }
     // check and convert transcription
     $converted = null;
-    $status = $this->checkConvertTranscription($tokenid, $value, $converted);
+    $status = $this->checkConvertTranscription($textid, $tokenid, $value, $converted);
     if($status) {
       return $status;
     }
@@ -594,7 +596,7 @@ class CoraSessionHandler {
     }
     // check and convert transcription
     $converted = null;
-    $status = $this->checkConvertTranscription($tokenid, $value, $converted);
+    $status = $this->checkConvertTranscription($textid, $tokenid, $value, $converted);
     if($status!==null) {
       return $status;
     }
@@ -606,11 +608,17 @@ class CoraSessionHandler {
 
   /** Check a transcription and return an array with its converted diplomatic and modern tokens.
    *
+   * @param string $textid  ID of the text to which the token belongs
    * @param string $tokenid ID of the token to be edited
    * @param string $value   Transcription for the token
+   * @param array  $converted  The converted transcription
    */
-  private function checkConvertTranscription($tokenid, $value, &$converted) {
-    $ch = new CommandHandler();
+  private function checkConvertTranscription($textid, $tokenid, $value, &$converted) {
+    // instantiate CommandHandler
+    $pid = $this->db->getProjectForFile($textid);
+    $options = $this->db->getProjectOptions($pid);
+    $ch = new CommandHandler($options);
+
     $errors = array();
     // call the check script
     $check = $ch->checkToken($value);

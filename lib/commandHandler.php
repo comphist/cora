@@ -26,6 +26,8 @@ class Transcription {
 
 class CommandHandler {
 
+  private $options;
+
   private $check_script = "/usr/bin/ruby /usr/local/bin/convert_check.rb -C";
   private $conv_script  = "/usr/bin/ruby /usr/local/bin/convert_check.rb -T";
   private $xml_script   = "/usr/bin/python -u /usr/local/bin/convert_coraxml.py -g";
@@ -37,7 +39,8 @@ class CommandHandler {
 			    "dipl_utf"   => "-S -c utf -t historical -p delete -r delete -i leave -s leave -d leave -e delete"
 			    );
 
-  function __construct() {
+  function __construct($options=array()) {
+      $this->options = $options;
   }
 
   /** Create a temporary file containing the given token.
@@ -183,6 +186,7 @@ class CommandHandler {
     unlink($tmpfname);
     return $result;
   }
+
 
 }
 
