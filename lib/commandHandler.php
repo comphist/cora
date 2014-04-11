@@ -8,22 +8,6 @@
  * @date February 2013
  */
 
-class Transcription {
-  public static function endsWithSeparator($line) {
-    return (substr($line, -1)=='=' ||
-	    substr($line, -2)=='=|' ||
-	    substr($line, -3)=='(=)' ||
-	    substr($line, -3)=='<=>' ||
-	    substr($line, -3)=='[=]' ||
-	    substr($line, -4)=='<=>|' ||
-	    substr($line, -4)=='[=]|' ||
-	    substr($line, -5)=='<<=>>' ||
-	    substr($line, -5)=='[[=]]' ||
-	    substr($line, -6)=='<<=>>|' ||
-	    substr($line, -6)=='[[=]]|');
-  }
-}
-
 class CommandHandler {
 
   private $options;
@@ -142,7 +126,7 @@ class CommandHandler {
 	array_unshift($errors, "Der Befehl gab den Status-Code {$retval} zurück.");
 	return array();
     }
-    $result = json_decode($output, true);
+    $result = json_decode($output[0], true);
     if(is_null($result)) {
         $errors = $output;
         array_unshift($errors, "Das Konvertierungsskript lieferte ungültigen Output.");

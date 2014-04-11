@@ -543,7 +543,7 @@
        $qs = "SELECT * FROM project WHERE `id`=?";
        $stmt = $this->dbo->prepare($qs);
        $stmt->execute(array($projectid));
-       return $stmt->fetchAll(PDO::FETCH_ASSOC);
+       return $stmt->fetch(PDO::FETCH_ASSOC);
    }
 
    /** Get applicable taggers for a given file.
@@ -1756,7 +1756,7 @@
 			     ':lineid' => $lineids[$currentline],
 			     ':utf'    => $converted['dipl_utf'][$i],
 			     ':trans'  => $dipltrans);
-       if(Transcription::endsWithSeparator($dipltrans)) {
+       if($converted['dipl_breaks'][$i] == 1) {
 	 $currentline++;
        }
      }
