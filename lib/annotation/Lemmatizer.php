@@ -14,6 +14,7 @@ class Lemmatizer extends AutomaticAnnotator {
     private $dictionary = array();
     private $lowercase_all = false;
     private $usepos = true;
+    private $use_norm = false;
 
     // lemmatizer return value if lemma could not be found:
     private $unknown_lemma = "<unknown>";    
@@ -25,6 +26,9 @@ class Lemmatizer extends AutomaticAnnotator {
         }
         if(array_key_exists("use_pos", $this->options)) {
             $this->usepos = ($this->options["use_pos"] == 1) ? true : false;
+        }
+        if(array_key_exists("use_norm", $this->options)) {
+            $this->use_norm = (bool) $this->options["use_norm"];
         }
         if(array_key_exists("lowercase_all", $this->options)) {
             $this->lowercase_all = (bool) $this->options["lowercase_all"];
@@ -80,6 +84,9 @@ class Lemmatizer extends AutomaticAnnotator {
     }
 
     public function annotate($tokens) {
+        if($this->use_norm) {
+            $tokens = array_map(array($this, 'mapNormToAscii'), $tokens);
+        }
         if($this->lowercase_all) {
             $tokens = array_map(array($this, 'lowercaseAscii'), $tokens);
         }
@@ -102,6 +109,13 @@ class Lemmatizer extends AutomaticAnnotator {
     }
 
     public function train($tokens) {
+        if($this->use_norm) {
+            $tokens = array_map(array($this, 'mapNormToAscii'), $tokens);
+        }
+        if($this->lowercase_all) {
+            $tokens = array_map(array($this, 'lowercaseAscii'), $tokens);
+        }
+
         $lines = array();
         foreach($tokens as $tok) {
             if(!$tok['verified'] ||

@@ -13,6 +13,7 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
     private $tmpfiles = array();
     private $minimum_span_size = 5;
     private $lowercase_all = false;
+    private $use_norm = false;
 
     public function __construct($prfx, $opts) {
         parent::__construct($prfx, $opts);
@@ -24,6 +25,9 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         }
         if(!array_key_exists("flags", $this->options)) {
             $this->options["flags"] = "-c 2 -q";
+        }
+        if(array_key_exists("use_norm", $this->options)) {
+            $this->use_norm = (bool) $this->options["use_norm"];
         }
         if(array_key_exists("lowercase_all", $this->options)) {
             $this->lowercase_all = (bool) $this->options["lowercase_all"];
@@ -135,14 +139,27 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         return array($filtered, $additional);
     }
 
+    private function mapNormToAscii($tok) {
+        if(isset($tok['tags']['norm_broad']) && !empty($tok['tags']['norm_broad'])) {
+            $tok['ascii'] = $tok['tags']['norm_broad'];
+        }
+        else if(isset($tok['tags']['norm']) && !empty($tok['tags']['norm'])) {
+            $tok['ascii'] = $tok['tags']['norm'];
+        }
+        return $tok;
+    }
+
     private function lowercaseAscii($tok) {
-        if(array_key_exists('ascii', $tok)) {
+        if(isset($tok['ascii'])) {
             $tok['ascii'] = mb_strtolower($tok['ascii'], 'UTF-8');
         }
         return $tok;
     }
 
     public function annotate($tokens) {
+        if($this->use_norm) {
+            $tokens = array_map(array($this, 'mapNormToAscii'), $tokens);
+        }
         if($this->lowercase_all) {
             $tokens = array_map(array($this, 'lowercaseAscii'), $tokens);
         }
@@ -168,6 +185,9 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
     }
 
     public function train($tokens) {
+        if($this->use_norm) {
+            $tokens = array_map(array($this, 'mapNormToAscii'), $tokens);
+        }
         if($this->lowercase_all) {
             $tokens = array_map(array($this, 'lowercaseAscii'), $tokens);
         }
