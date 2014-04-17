@@ -97,6 +97,27 @@ window.addEvent('domready', function() {
 	    }
 	);
 
+        var estp = $('editorSettingsTextPreview');
+        var estp_active = estp.getElement('input[value="'+userdata.textPreview+'"]');
+        if(estp_active !== null) {
+            estp_active.set('checked', 'yes');
+        }
+        estp.addEvent(
+            'change:relay(input)',
+            function(event, target) {
+                var value = estp.getElement('input:checked').get('value');
+                userdata.textPreview = value;
+                if (ref.editorModel!=null) {
+                    ref.editorModel.forcePageRedraw();
+                }
+		new Request({url: 'request.php'}).get(
+		    {'do': 'setUserEditorSetting',
+		     'name': 'text_preview',
+		     'value': userdata.textPreview}
+		);
+            }
+        );
+
 	var esia = $('editorSettingsInputAids');
 	esia.getElement('input[name="show_error"]').set('checked', userdata.showInputErrors);
 	esia.addEvent(

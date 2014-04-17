@@ -865,12 +865,14 @@ div#editorSettingsNumberOfLines form {
 }
 
 div#editorSettingsHiddenColumns input,
+div#editorSettingsTextPreview input,
 div#editorSettingsInputAids input {
     margin-left: 0.5em;
     vertical-align: middle;
 }
 
 div#editorSettingsHiddenColumns label,
+div#editorSettingsTextPreview label,
 div#editorSettingsInputAids label {
     margin-left: 5px;
 }

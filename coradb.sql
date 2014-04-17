@@ -33,6 +33,7 @@ CREATE TABLE `users` (
     `columns_order` varchar(255) DEFAULT NULL,
     `columns_hidden` varchar(255) DEFAULT NULL,
     `show_error` boolean NOT NULL DEFAULT 1,
+    `text_preview` varchar(255) DEFAULT "utf",
     `lastactive` timestamp,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -64,6 +65,7 @@ CREATE TABLE `project` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `name` varchar(255) NOT NULL,
     `cmd_edittoken` varchar(255),
+    `cmd_import` varchar(255),
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

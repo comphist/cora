@@ -673,12 +673,14 @@ class CoraSessionHandler {
 		$_SESSION['contextLines'] = (isset($data['lines_context']))? $data['lines_context'] : '5';
 		$_SESSION['editTableDragHistory'] = (isset($data['columns_order']))? $data['columns_order'] : '';
 		$_SESSION['hiddenColumns'] = (isset($data['columns_hidden']))? $data['columns_hidden'] : '';
+		$_SESSION['textPreview'] = (isset($data['text_preview']))? $data['text_preview'] : 'off';
 		$_SESSION['showTooltips'] = 'true';
 		$_SESSION['showInputErrors'] = (isset($data['show_error']))? ($data['show_error']==1 ? 'true' : 'false') : 'true';
 	  } else {
 		$_SESSION['noPageLines'] = '30';
 		$_SESSION['contextLines'] = '5';
 		$_SESSION['editTableDragHistory'] = '';
+		$_SESSION['textPreview'] = 'off';
 		$_SESSION['hiddenColumns'] = '';
 		$_SESSION['showTooltips'] = 'true';
 		$_SESSION['showInputErrors'] = 'true';

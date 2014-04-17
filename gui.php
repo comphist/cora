@@ -47,6 +47,7 @@ function embedJSwithTimestamp($filename) {
 			      contextLines: <?php echo $_SESSION['contextLines']; ?>,
 			      editTableDragHistory: '<?php echo $_SESSION['editTableDragHistory']; ?>',
 			      hiddenColumns: '<?php echo $_SESSION['hiddenColumns']; ?>',
+			      textPreview: '<?php echo $_SESSION['textPreview']; ?>',
 			      admin: "<?php echo $_SESSION['admin']; ?>" ,
 			      currentFileId: "<?php echo $_SESSION['currentFileId']; ?>",
 			      currentName: "<?php echo $_SESSION['currentName']; ?>",

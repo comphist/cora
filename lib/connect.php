@@ -108,7 +108,7 @@
     * @return An array with the database entries from the table 'user_settings' for the given user.
     */
    public function getUserSettings($user){
-     $qs = "SELECT lines_per_page, lines_context, "
+     $qs = "SELECT lines_per_page, lines_context, text_preview, "
        . "         columns_order, columns_hidden, show_error "
        . "    FROM users WHERE name=:name";
      $stmt = $this->dbo->prepare($qs);
@@ -912,7 +912,7 @@
     */
    public function setUserSetting($user,$name,$value) {
      $validnames = array("lines_context", "lines_per_page", "show_error",
-			 "columns_order", "columns_hidden");
+			 "columns_order", "columns_hidden", "text_preview");
      if (in_array($name,$validnames)) {
        $qs = "UPDATE users SET {$name}=:value WHERE name=:user AND `id`!=1";
        $stmt = $this->dbo->prepare($qs);

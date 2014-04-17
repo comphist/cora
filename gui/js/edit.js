@@ -1598,6 +1598,13 @@ var EditorModel = new Class({
 	var maxctxlen = 50;
 	var startlimit = Math.max(0, start - maxctxlen);
 	var endlimit   = Math.min(this.lineCount, end + maxctxlen);
+
+        if(userdata.textPreview == "off") {
+            view.hide();
+            return;
+        }
+        view.show();
+
 	this.requestLines(startlimit, endlimit, false);
 	// find nearest sentence boundaries
 	for (; start>=startlimit; start--) {
@@ -1618,7 +1625,7 @@ var EditorModel = new Class({
 	for (var i=start; i<end; i++) {
 	    line = data[i];
 	    span = new Element('span', {'id': 'htvl_'+line.num,
-					    'text': line.trans});
+					      'text': line[userdata.textPreview]});
 	    if(line.tok_id != currenttok) {
 		view.appendText(" ");
 		currenttok = line.tok_id;
@@ -1628,6 +1635,7 @@ var EditorModel = new Class({
     },
 
     highlightHorizontalView: function(lineid) {
+        if(userdata.textPreview == "off") return;
 	var view = $('horizontalTextView');
 	var span;
 	view.getElements('.highlighted').removeClass('highlighted');

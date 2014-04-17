@@ -43,6 +43,15 @@
 	</p>
 	</div>
 
+	<div id="editorSettingsTextPreview">
+	<h4>Horizontale Textvorschau</h4>
+	<p>
+     <input type="radio" name="es_text_preview" value="off" id="estp-off" /><label for="estp-off">Aus</label>
+     <input type="radio" name="es_text_preview" value="trans" id="estp-trans" /><label for="estp-trans">Token (Trans)</label>
+     <input type="radio" name="es_text_preview" value="utf" id="estp-utf" /><label for="estp-utf">Token (UTF)</label>
+	</p>
+	</div>
+
 	<div id="editorSettingsInputAids">
 	<h4>Editierhilfen</h4>
 	<p>
