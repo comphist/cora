@@ -13,7 +13,7 @@ class Lemmatizer extends AutomaticAnnotator {
     private $tmpfiles = array();
     private $dictionary = array();
     private $lowercase_all = false;
-    private $usepos = true;
+    private $use_pos = true;
     private $use_norm = false;
 
     // lemmatizer return value if lemma could not be found:
@@ -25,7 +25,7 @@ class Lemmatizer extends AutomaticAnnotator {
             $this->options["par"] = $this->prefix . "Lemmatizer.par";
         }
         if(array_key_exists("use_pos", $this->options)) {
-            $this->usepos = ($this->options["use_pos"] == 1) ? true : false;
+            $this->use_pos = ($this->options["use_pos"] == 1) ? true : false;
         }
         if(array_key_exists("use_norm", $this->options)) {
             $this->use_norm = (bool) $this->options["use_norm"];
@@ -53,7 +53,9 @@ class Lemmatizer extends AutomaticAnnotator {
         $handle = fopen($filename, "w");
         foreach($tokens as $tok) {
             fwrite($handle, $tok['ascii']);
-            fwrite($handle, "\t".$tok['tags']['POS']);
+            if($this->use_pos) {
+                fwrite($handle, "\t".$tok['tags']['POS']);
+            }
             fwrite($handle, "\n");
         }
         fclose($handle);
@@ -123,7 +125,12 @@ class Lemmatizer extends AutomaticAnnotator {
                !isset($tok['tags']['lemma']) || empty($tok['tags']['lemma'])) {
                 continue;
             }
-            $lines[] = $tok['ascii']."\t".$tok['tags']['POS']."\t".$tok['tags']['lemma'];
+            $newline = $tok['ascii']."\t";
+            if($this->use_pos) {
+                $newline = $newline . $tok['tags']['POS']."\t";
+            }
+            $newline = $newline . $tok['tags']['lemma'];
+            $lines[] = $newline;
         }
         $lines = array_unique($lines);
 
