@@ -260,18 +260,17 @@ var EditorModel = new Class({
 	    e.stop();
 	    file.closeFile(ref.fileId); // breaks OO...
 	});
+	/* prepare automatic annotation dialog */
 	btn = mr.getElement('li#tagButton');
 	if(btn && btn !== undefined) {
 	    btn.removeEvents();
-	    ref.activateAnnotationDialog(btn);
+	    this.activateAnnotationDialog(btn);
+	    this.prepareAnnotationOptions();
 	}
 
 	mr.show();
 
 	this.initializeColumnVisibility();
-
-	/* prepare automatic annotation dialog */
-	this.prepareAnnotationOptions();
 
 	/* render pages panel and set start page */
 	start_page = Number.from(start_page);
