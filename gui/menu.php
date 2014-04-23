@@ -28,7 +28,7 @@ MENUITEM;
 
 <div id="menuRight" style="display:none;">
     <ul>
-   <?php if($_SESSION['admin']): ?>
+   <?php if($_SESSION['admin'] || $_SESSION['user_id']==44): ?>
       <li id="tagButton" title="Zeigt Optionen für die automatische Annotation" active="false">
          <a><img src="gui/images/proxal/chat-list.ico"> Automatisch annotieren</a>
       </li>
