@@ -1,28 +1,22 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-#import os, sys
+import os
 import subprocess
 import json
 import argparse
 
-VALID_SEPARATORS = ['=',
-                    '=|',
-                    '(=)',
-                    '<=>',
-                    '[=]',
-                    '<=>|',
-                    '[=]|',
-                    '<<=>>',
-                    '[[=]]',
-                    '<<=>>|',
-                    '[[=]]|']
-
-def endsWithSeparator(line):
-    for elem in VALID_SEPARATORS:
-        if line.endswith(elem):
-            return True
-    return False
+DEFAULT_VALID_SEPARATORS = ['=',
+                            '=|',
+                            '(=)',
+                            '<=>',
+                            '[=]',
+                            '<=>|',
+                            '[=]|',
+                            '<<=>>',
+                            '[[=]]',
+                            '<<=>>|',
+                            '[[=]]|']
 
 CHECK_SCRIPT_OPTIONS = {
     "check": ["-C", "-L"],
@@ -36,9 +30,28 @@ CHECK_SCRIPT_OPTIONS = {
 class MainApplication(object):
     def __init__(self, args):
         self.script   = args.bin
+        self.transenc = args.enc
         self.token    = [x.strip() for x in args.infile.readlines()]
         self.filename = str(args.infile.name)
+        self.valid_separators = self.makeValidSeparators()
         args.infile.close()
+
+    def makeValidSeparators(self):
+        if self.transenc:
+            transencfile = open(os.path.dirname(self.script) + '/' + self.transenc + '.json', 'r')
+            encoding = json.load(transencfile)
+            valid_seps = [x+encoding["SEPERATING_CHAR"] for x in encoding["LINE_CONNECTOR_ORIGINAL"]]
+            valid_seps.extend(encoding["LINE_CONNECTOR_EDIT"])
+            valid_seps.extend(encoding["LINE_CONNECTOR_ORIGINAL"])
+            transencfile.close()
+            return valid_seps
+        return DEFAULT_VALID_SEPARATORS
+            
+    def endsWithSeparator(self, line):
+        for elem in self.valid_separators:
+            if line.endswith(elem):
+                return True
+        return False
 
     def throw_error(self, error):
         print(error)
@@ -47,12 +60,12 @@ class MainApplication(object):
     def checkTranscription(self):
         if len(self.token) > 1:
             # all lines except the last one have to end in a separator
-            if not all([endsWithSeparator(line) for line in self.token[:-1]]):
+            if not all([self.endsWithSeparator(line) for line in self.token[:-1]]):
                 self.throw_error("Zeilenumbrüche sind nur erlaubt, wenn ihnen ein Trennzeichen vorangeht.")
         elif len(self.token) == 0 or self.token[0] == "":
             self.throw_error("Transkription darf nicht leer sein.")
 
-        if endsWithSeparator(self.token[-1]):
+        if self.endsWithSeparator(self.token[-1]):
             self.throw_error("Transkription darf nicht mit einem Trennzeichen enden.")
 
         if any([(" " in line) for line in self.token]):
@@ -63,6 +76,8 @@ class MainApplication(object):
     def callCheckScript(self):
         command = ['ruby', self.script]
         command.extend(CHECK_SCRIPT_OPTIONS['check'])
+        if self.transenc:
+            command.extend(['-E', self.transenc])
         command.append(self.filename)
         try:
             output = subprocess.check_output(command)
@@ -80,6 +95,8 @@ class MainApplication(object):
         for conv_type in result:
             command = ['ruby', self.script]
             command.extend(CHECK_SCRIPT_OPTIONS[conv_type])
+            if self.transenc:
+                command.extend(['-E', self.transenc])
             command.append(self.filename)
             try:
                 output = subprocess.check_output(command)
@@ -89,7 +106,7 @@ class MainApplication(object):
 
         result["dipl_breaks"] = []    
         for dipl in result["dipl_trans"]:
-            result["dipl_breaks"].append(1 if endsWithSeparator(dipl) else 0)
+            result["dipl_breaks"].append(1 if self.endsWithSeparator(dipl) else 0)
             
         return result
 
@@ -111,6 +128,9 @@ if __name__ == '__main__':
                         type=str,
                         required=True,
                         help='Path to the ruby check script')
+    parser.add_argument('-E', '--enc',
+                        type=str,
+                        help='Optional transcription encoding file to use (must be in the same directory as the check script)')
 #    parser.add_argument('-e', '--encoding',
 #                        default='utf-8',
 #                        help='Encoding of the input file (default: utf-8)')
