@@ -650,7 +650,7 @@
     *         file
     */
    public function isAllowedToDeleteFile($fileid, $user){
-     $uid = $this->getUserIDFromName($uname);
+     $uid = $this->getUserIDFromName($user);
      $qs  = "SELECT a.fullname FROM text a ";
      $qs .= "WHERE a.id=:tid AND a.creator_id=:uid";
      $stmt = $this->dbo->prepare($qs);
