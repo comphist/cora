@@ -650,7 +650,12 @@
     *         file
     */
    public function isAllowedToDeleteFile($fileid, $user){
-     return $this->isAllowedToOpenFile($fileid, $user);
+     $uid = $this->getUserIDFromName($uname);
+     $qs  = "SELECT a.fullname FROM text a ";
+     $qs .= "WHERE a.id=:tid AND a.creator_id=:uid";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':tid' => $fileid, ':uid' => $uid));
+     return ($stmt->fetch()) ? true : false;
    }
 
    /** Delete a file.
