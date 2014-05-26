@@ -45,6 +45,8 @@
      // LaTeCH-Demo
      27: [2, 3, 10, 11, 13],
      28: [3, 14, 19, 20],
+     // Lerner-Projekt
+     33: [2, 3, 10, 11, 17], // lemma POS folgt noch, dummy POS wird noch ersetzt
      // Default
      'default': [2, 3, 10, 11, 8]
  };
