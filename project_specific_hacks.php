@@ -17,6 +17,7 @@
    var cora_project_default_tagsets = {
      // ReN
      31: [3, 27],
+     34: [3, 27],
      // ReF
      15: [3, 14, 19, 20],
      10: [3, 14, 19, 20],
