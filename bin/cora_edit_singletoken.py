@@ -7,7 +7,8 @@ import argparse
 
 class MainApplication(object):
     def __init__(self, args):
-        self.token    = [x.strip() for x in args.infile.readlines()]
+        self.lines = [x.strip() for x in args.infile.readlines()]
+        self.token = ' '.join(self.lines)
         args.infile.close()
 
     def throw_error(self, error):
@@ -15,19 +16,13 @@ class MainApplication(object):
         exit(1)
 
     def performConversions(self):
-        result = {"mod_trans": [],
-                  "mod_ascii": [],
-                  "mod_utf":   [],
-                  "dipl_trans": [],
-                  "dipl_utf":   []
+        result = {"mod_trans": [self.token],
+                  "mod_ascii": [self.token],
+                  "mod_utf":   [self.token],
+                  "dipl_trans": [self.token],
+                  "dipl_utf":   [self.token],
+                  "dipl_breaks": [0]
                   }
-
-        for elem in self.token:            
-            for conv_type in result:
-                result[conv_type].append(elem)
-
-        result["dipl_breaks"] = [1 for i in range(len(self.token)-1)]
-        result["dipl_breaks"].append(0)
         return result
 
     def run(self):
