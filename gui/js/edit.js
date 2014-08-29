@@ -479,6 +479,7 @@ var EditorModel = new Class({
 
 	if (!postag) {
 	    mselect.empty();
+	    this.updateData(id, 'anno_morph', '');
 	    return;
 	}
 
@@ -496,7 +497,7 @@ var EditorModel = new Class({
 	    line.suggestions.each(function(opt){
 		if(ref.isValidTagCombination(postag, opt.morph)) {
 		    suggestions.grab(new Element('option',{
-			html: opt.morph+" ("+opt.score+")",
+			text: opt.morph+" ("+opt.score+")",
 			value: opt.morph,
 			'class': 'lineSuggestedTag'
 		    }),'top');
@@ -511,7 +512,7 @@ var EditorModel = new Class({
 	mselect.empty();
 	if(isvalid) {
 	    mselect.grab(new Element('option',{
-		html: line.anno_morph,
+		text: line.anno_morph,
 		value: line.anno_morph,
 		selected: 'selected',
 		'class': 'lineSuggestedTag'
@@ -930,7 +931,7 @@ var EditorModel = new Class({
 	    if(lemma_pos != null && lemma_pos != undefined) {
 		lemma_pos.getElements('.lineSuggestedTag').destroy();
 		lemma_pos.grab(new Element('option',{
-		    html: line.anno_lemmaPOS,
+		    text: (line.anno_lemmaPOS == undefined) ? '' : line.anno_lemmaPOS,
 		    value: line.anno_lemmaPOS,
 		    selected: 'selected',
 		    'class': 'lineSuggestedTag'
@@ -944,7 +945,7 @@ var EditorModel = new Class({
 		optgroup = new Element('optgroup', {'label': 'Vorgeschlagene Tags', 'class': 'lineSuggestedTag'});
 		line.suggestions.each(function(opt){
 		    optgroup.grab(new Element('option',{
-			html: opt.POS+" ("+opt.score+")",
+			text: opt.POS+" ("+opt.score+")",
 			value: opt.POS,
 			'class': 'lineSuggestedTag'
 		    }),'top');
@@ -952,26 +953,27 @@ var EditorModel = new Class({
 		posopt.grab(optgroup, 'top');
 	    }
 	    posopt.grab(new Element('option',{
-		html: line.anno_POS,
+		text: (line.anno_POS == undefined) ? '' : line.anno_POS,
 		value: line.anno_POS,
 		selected: 'selected',
 		'class': 'lineSuggestedTag'
 	    }),'top');
-
+            
             // Morph
 	    mselect = tr.getElement('.editTable_Morph select');
 	    mselect.empty();
-	    mselect.grab(new Element('option',{html: line.anno_morph,
-					       value: line.anno_morph,
-					       selected: 'selected',
-					       'class': 'lineSuggestedTag'
-					      }));
+	    mselect.grab(new Element('option',{
+                text: (line.anno_morph == undefined) ? '' : line.anno_morph,
+		value: line.anno_morph,
+		selected: 'selected',
+		'class': 'lineSuggestedTag'
+	    }));
 
 	    if (line.suggestions.length>0) {
 		optgroup = new Element('optgroup', {'label': 'Vorgeschlagene Tags', 'class': 'lineSuggestedTag'});
 		line.suggestions.each(function(opt){
 		    optgroup.grab(new Element('option',{
-			html: opt.morph+" ("+opt.score+")",
+			text: opt.morph+" ("+opt.score+")",
 			value: opt.morph,
 			'class': 'lineSuggestedTag'
 		    }),'top');
