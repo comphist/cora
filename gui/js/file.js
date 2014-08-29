@@ -400,27 +400,33 @@ var file = {
 	// generate HTML code
 	Object.each(ref.tagsets, function(tagset, tclass) {
 	    if(tclass==="morph") return;
-	    var html = "";
+	    var optgroup_tclass = new Element('optgroup',
+                                              {'label': 'Alle Tags'});
 	    Array.each(tagset.tags, function(tag) {
-		html += '<option value="' + tag + '">';
-		html += tag + '</option>';
+                optgroup_tclass.grab(new Element('option',
+                                                 {text: tag, value: tag}));
 		if(tclass==="POS") {
-		    var morph_html = "";
+		    var optgroup_morph = new Element('optgroup',
+                                                     {'label': "Alle Tags für '"
+                                                                +tag+"'"});
+                    // new Elements();
 		    if(ref.tagsets['morph'][tag]) {
 			Array.each(ref.tagsets['morph'][tag]['tags'], function(morph) {
-			    morph_html += '<option value="' + morph + '">';
-			    morph_html += morph + '</option>';
+                            optgroup_morph.grab(new Element('option',
+                                                            {text: morph,
+                                                             value: morph}));
 			});
-			ref.tagsets['morph'][tag]['html'] = morph_html;
 		    }
 		    else {
-			morph_html = '<option value="--">--</option>';
-			ref.tagsets['morph'][tag] = {'tags': ['--'],
-						     'html': morph_html};
+                        optgroup_morph.grab(new Element('option',
+                                                        {text: '--',
+                                                         value: '--'}));
+			ref.tagsets['morph'][tag] = {'tags': ['--']};
 		    }
+		    ref.tagsets['morph'][tag]['elems'] = optgroup_morph;
 		}
 	    });
-	    ref.tagsets[tclass]['html'] = html;
+	    ref.tagsets[tclass]['elems'] = optgroup_tclass;
 	});
     },
     
@@ -527,7 +533,8 @@ var file = {
             url:'request.php',
     		onSuccess: function(status, text) {
 		    if(!status['success']) {
-			// TODO
+			gui.showNotice('error',
+                                       "Fehler beim Laden der Dateiliste.");
 			return;
 		    }
 

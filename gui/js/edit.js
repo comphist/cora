@@ -53,7 +53,7 @@ var EditorModel = new Class({
 	elem = $('line_template');
 	
 	spos = new Element('select');
-	spos.grab(new Element('optgroup', {'html': file.tagsets['POS']['html'], 'label': 'Alle Tags'}));
+	spos.grab(file.tagsets["POS"]["elems"].clone());
 	td = elem.getElement('td.editTable_POS')
 	td.empty();
 	td.adopt(spos);
@@ -65,7 +65,7 @@ var EditorModel = new Class({
 
 	if(file.tagsets['lemmaPOS'] !== undefined) {
 	    slempos = new Element('select');
-	    slempos.grab(new Element('optgroup', {'html': file.tagsets['lemmaPOS']['html'], 'label': 'Alle Tags'}));
+	    slempos.grab(file.tagsets["lemmaPOS"]["elems"].clone());
 	    td = elem.getElement('td.editTable_LemmaPOS');
 	    td.empty();
 	    td.adopt(slempos);
@@ -482,12 +482,13 @@ var EditorModel = new Class({
 	    return;
 	}
 
-	morphopt = new Element('optgroup', {'label': "Alle Tags für '"+postag+"'"});
 	if (file.tagsets["morph"][postag] != undefined) {
-	    morphopt.set('html', file.tagsets["morph"][postag]['html']);
+            morphopt = file.tagsets["morph"][postag]["elems"].clone();
 	}
 	else { // ensure there is always at least the empty selection
-	    morphopt.set('html', '<option value="--">--</option>');
+	    morphopt = new Element('optgroup',
+                                   {'label': "Alle Tags für '"+postag+"'",
+                                    'html': '<option value="--">--</option>'});
 	}
 	line = this.data[id];
 	if (line.suggestions) {
@@ -980,9 +981,7 @@ var EditorModel = new Class({
 
 	    if (line.anno_POS!=null) {
 		if (file.tagsets["morph"][line.anno_POS] != undefined) {
-		    mselect.grab(new Element('optgroup',
-					     {'label': "Alle Tags für '"+line.anno_POS+"'",
-					      html: file.tagsets["morph"][line.anno_POS]['html']}));
+		    mselect.grab(file.tagsets["morph"][line.anno_POS]["elems"].clone());
 		}
 		else {
 		    mselect.grab(new Element('optgroup',
