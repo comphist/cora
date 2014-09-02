@@ -556,13 +556,17 @@ function get_XMLHandler_expected() {
                 'parent_db_id' => null,
                 'parent_xml_id' => 't1',
                 'text' => "Hier grosser Tintenfleck",
-                'type' => 'K'
+                'type' => 'K',
+                'subtok_db_id' => null,
+                'subtok_xml_id' => null
             ),
             array(
                 'parent_db_id' => null,
                 'parent_xml_id' => 't2',
                 'text' => 'Beispielemendation',
-                'type' => 'E'
+                'type' => 'E',
+                'subtok_db_id' => null,
+                'subtok_xml_id' => null
             )
         ),
         "header" => "Testdatei. Freier Text hier. Alles moegliche an Kram steht da drin - alles zwischen +H und @H",

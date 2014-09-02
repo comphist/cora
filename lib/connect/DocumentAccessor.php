@@ -23,6 +23,15 @@ class DocumentAccessor {
 
   protected $warnings = array();
 
+  // The following variables are currently only used by child classes,
+  // and not initialized by default.  Write initializers for them if
+  // we want to access them in other contexts as well.
+  protected $projectid; /**< ID of the associated project */
+  protected $text_sigle = null; /**< Sigle of the text */
+  protected $text_fullname = null; /**< Full name of the text */
+  protected $text_header = null; /**< Header of the text */
+
+  // SQL statements
   private $stmt_isValidModID = null;
   private $stmt_getSelectedAnnotations = null;
   private $stmt_getCoraComment = null;
@@ -53,6 +62,14 @@ class DocumentAccessor {
 
   public function getTagsets() {
     return $this->tagsets;
+  }
+
+  /** Setter function for file ID, so other variables/settings that
+   *  depend on this ID can be recreated if the ID changes.
+   */
+  protected function setFileID($id) {
+      $this->fileid = $id;
+      $this->prepare_isValidModID();
   }
 
   /**********************************************
@@ -146,6 +163,12 @@ class DocumentAccessor {
     $this->tagsets[$tagset['class']]['tags'] = $tags;
   }
 
+  /** Returns a list of tagsets linked to the associated file.
+   */
+  protected function getTagsetLinks() {
+      return $this->dbi->getTagsetsForFile($this->fileid);
+  }
+
   /** Retrieve information about tagsets linked to the associated
    * file.
    *
@@ -153,7 +176,7 @@ class DocumentAccessor {
    * values where appropriate.
    */
   public function retrieveTagsetInformation() {
-    $tslist = $this->dbi->getTagsetsForFile($this->fileid);
+    $tslist = $this->getTagsetLinks();
     foreach($tslist as $ts) { // index by class
       $this->tagsets[$ts['class']] = $ts;
       if($this->isPreloadTagset($ts)) {

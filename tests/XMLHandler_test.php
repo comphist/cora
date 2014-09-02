@@ -28,6 +28,7 @@ class Cora_Tests_DBInterface_Mock {
     public function insertNewDocument($options, $data) {
         $this->document = $data;
         $this->options = $options;
+        return array('success' => true, 'warnings' => array());
     }
     public function getAllLines($fileid) {
         return $this->initial["lines"];

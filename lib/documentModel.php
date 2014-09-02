@@ -82,15 +82,18 @@ class CoraDocument {
    * @param string $xml_id XML ID of the token to which comment is attached
    * @param string $text Comment as string
    * @param string $type Comment type as a single letter (e.g. K, E)
-   * @param string $subtok_id Modern ID of the token to which comment is attached
+   * @param string $subtok_id Modern DB ID of the token to which comment is attached
+   * @param string $subtok_xml_id Modern ID of the token to which comment is attached
    */
-  public function addComment($tok_id, $xml_id, $text, $type, $subtok_id=NULL) {
+  public function addComment($tok_id, $xml_id, $text, $type,
+                             $subtok_id=NULL, $subtok_xml_id=NULL) {
     $comment = array();
     $comment['parent_db_id']  = $tok_id;
     $comment['parent_xml_id'] = $xml_id;
     $comment['text']   = $text;
     $comment['type']   = $type;
     $comment['subtok_db_id']  = $subtok_id;
+    $comment['subtok_xml_id'] = $subtok_xml_id;
     $this->comments[] = $comment;
     return $this;
   }
@@ -204,10 +207,18 @@ class CoraDocument {
    */
   public function fillModernIDs($first_id) {
     $id = intval($first_id);
+    $xmltodb = array();
     foreach($this->moderns as &$mod) {
       $mod['db_id'] = $id++;
+      $xmltodb[$mod['xml_id']] = $mod['db_id'];
     }
     unset($mod);
+    // comments sometimes refer to moderns as well
+    foreach($this->comments as &$comment) {
+      if(!is_null($comment['subtok_xml_id']))
+        $comment['subtok_db_id'] = $xmltodb[$comment['subtok_xml_id']];
+    }
+    unset($comment);
     return $this;
   }
 

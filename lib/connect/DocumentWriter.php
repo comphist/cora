@@ -26,6 +26,7 @@ class DocumentWriter extends DocumentAccessor {
   private $stmt_deleteFlag = null;
   private $stmt_insertComm = null;
   private $stmt_deleteComm = null;
+  private $stmt_insertShift = null;
 
   /** Construct a new DocumentWriter.
    *
@@ -43,14 +44,14 @@ class DocumentWriter extends DocumentAccessor {
 
     $this->flagtypes = $this->dbi->getErrorTypes();
     $this->retrieveTagsetInformation();
-    $this->prepareAllStatements();
+    $this->prepareWriterStatements();
   }
 
   /**********************************************
    ********* SQL Statement Preparations *********
    **********************************************/
 
-  private function prepareAllStatements() {
+  private function prepareWriterStatements() {
     $stmt = "DELETE FROM tag WHERE `id`=:id";
     $this->stmt_deleteTag  = $this->dbo->prepare($stmt);
     $stmt = "DELETE FROM tag_suggestion WHERE `id`=:id";
@@ -61,10 +62,8 @@ class DocumentWriter extends DocumentAccessor {
       . "    VALUES (:value, :needrev, :tagset)";
     $this->stmt_insertTag  = $this->dbo->prepare($stmt);
     $stmt = "INSERT INTO tag_suggestion "
-      . "      (`id`, `selected`, `source`, `tag_id`, `mod_id`) VALUES "
-      . "      (:id,  :selected,  :source,  :tagid,   :modid) "
-      . "    ON DUPLICATE KEY UPDATE `selected`=VALUES(selected), "
-      . "                            `tag_id`=VALUES(tag_id)";
+      . "           (`selected`, `source`, `tag_id`, `mod_id`, `score`) "
+      . "    VALUES (:selected,  :source,  :tagid,   :modid,   :score)";
     $this->stmt_insertTS   = $this->dbo->prepare($stmt);
     $stmt = "UPDATE tag SET `value`=:value WHERE `id`=:id";
     $this->stmt_updateTag  = $this->dbo->prepare($stmt);
@@ -75,11 +74,14 @@ class DocumentWriter extends DocumentAccessor {
     $this->stmt_deleteFlag = $this->dbo->prepare($stmt);
     $stmt = "INSERT INTO comment"
       . "           (`id`, `tok_id`, `value`, `comment_type`, `subtok_id`)"
-      . "    VALUES (:id,  :tokid,   :value,  'C',            :subtokid)"
+      . "    VALUES (:id,  :tokid,   :value,  :ctype,         :subtokid)"
       . "    ON DUPLICATE KEY UPDATE `value`=VALUES(value)";
     $this->stmt_insertComm = $this->dbo->prepare($stmt);
     $stmt = "DELETE FROM comment WHERE `id`=:id";
     $this->stmt_deleteComm = $this->dbo->prepare($stmt);
+    $stmt = "INSERT INTO shifttags (`tok_from`, `tok_to`, `tag_type`) "
+        . "                 VALUES (:tokfrom,   :tokto,   :type)";
+    $this->stmt_insertShift = $this->dbo->prepare($stmt);
   }
 
   /**********************************************/
@@ -142,62 +144,75 @@ class DocumentWriter extends DocumentAccessor {
 
   /** Remove a selected annotation for a given mod.
    */
-  private function removeAnnotation($selected, $annoclass, $openset) {
+  private function removeAnnotation($current, $openset) {
     if($openset) {
-      $this->stmt_deleteTS->execute(array(':id' => $selected['id']));
-      $this->stmt_deleteTag->execute(array(':id' => $selected['tag_id']));
+      $this->stmt_deleteTS->execute(array(':id' => $current['id']));
+      $this->stmt_deleteTag->execute(array(':id' => $current['tag_id']));
     }
     else {
-      if($selected['source'] == "auto") {
-	$this->stmt_deselectTS->execute(array(':id' => $selected['id']));
+      if($current['source'] == "auto") {
+	$this->stmt_deselectTS->execute(array(':id' => $current['id']));
       } else {
-	$this->stmt_deleteTS->execute(array(':id' => $selected['id']));
+	$this->stmt_deleteTS->execute(array(':id' => $current['id']));
       }
     }
   }
 
   /** Update an annotation of an open class tagset.
   */
-  private function updateOpenClassAnnotation($modid, $selected, $annoclass, $value) {
-    if(empty($selected)) {
+  private function updateOpenClassAnnotation($modid, $current, $annoclass, $value,
+                                             $sel=1, $source='user', $score=NULL) {
+    if(empty($current)) {
       $this->stmt_insertTag->execute(array(':value' => $value,
 					   ':tagset' => $this->tagsets[$annoclass]['id'],
 					   ':needrev' => 0));
       $newid = $this->dbo->lastInsertId();
-      $this->stmt_insertTS->execute(array(':id' => NULL,
-					  ':selected' => 1,
-					  ':source' => 'user',
+      $this->stmt_insertTS->execute(array(':score' => $score,
+					  ':selected' => $sel,
+					  ':source' => $source,
 					  ':tagid' => $newid,
 					  ':modid' => $modid));
     }
     else {
-      $this->stmt_updateTag->execute(array(':id' => $selected['tag_id'],
+      $this->stmt_updateTag->execute(array(':id' => $current['tag_id'],
 					   ':value' => $value));
     }
   }
 
   /** Update an annotation of a closed class tagset.
   */
-  private function updateClosedClassAnnotation($modid, $selected, $annoclass, $tagid) {
-    if(!empty($selected)) {
-      if($tagid == $selected['tag_id']) return; // nothing to change
-      $this->removeAnnotation($selected, $annoclass, false);
+  private function updateClosedClassAnnotation($modid, $current, $annoclass, $tagid,
+                                               $sel=1, $source='user', $score=NULL) {
+    if(!empty($current)) {
+      if($tagid == $current['tag_id']) return; // nothing to change
+      $this->removeAnnotation($current, false);
     }
-    $this->stmt_insertTS->execute(array(':id' => NULL,
-					':selected' => 1,
-					':source' => 'user',
+    $this->stmt_insertTS->execute(array(':score' => $score,
+					':selected' => $sel,
+					':source' => $source,
 					':tagid' => $tagid,
 					':modid' => $modid));
+  }
+
+  /** Temporary hack: maps case-sensitive class names. */
+  private function mapAnnoClass($annoclass) {
+      if(strtolower($annoclass) == "pos")
+          return "POS";
+      if(strtolower($annoclass) == "lemmapos")
+          return "lemmaPOS";
+      return $annoclass;
   }
 
   /** Save an annotation for a given mod.
    *
    * @param string $modid A mod ID
-   * @param array $selected Array with currently selected annotation
+   * @param array $current Array with currently selected annotation
    * @param string $annoclass Tagset class for the annotation
    * @param string $value Value of the new annotation
    */
-  protected function saveAnnotation($modid, $selected, $annoclass, $value) {
+  protected function saveAnnotation($modid, $current, $annoclass, $value,
+                                    $selected=1, $source="user", $score=NULL) {
+    $annoclass = $this->mapAnnoClass($annoclass);
     if(!array_key_exists($annoclass, $this->tagsets)) {
       $this->warn("Skipping unknown annotation class '{$annoclass}' for mod {$modid}.");
       return;
@@ -205,12 +220,13 @@ class DocumentWriter extends DocumentAccessor {
 
     $openset = ($this->tagsets[$annoclass]['set_type'] == "open");
     if(empty($value)) {
-      if(!empty($selected)) {
-	$this->removeAnnotation($selected, $annoclass, $openset);
+      if(!empty($current)) {
+	$this->removeAnnotation($current, $openset);
       }
     }
     else if($openset) {
-      $this->updateOpenClassAnnotation($modid, $selected, $annoclass, $value);
+        $this->updateOpenClassAnnotation($modid, $current, $annoclass, $value,
+                                         $selected, $source, $score);
     }
     else {
       if(!array_key_exists($value, $this->tagsets[$annoclass]['tags'])) {
@@ -218,7 +234,8 @@ class DocumentWriter extends DocumentAccessor {
 	return;
       }
       $tagid = $this->tagsets[$annoclass]['tags'][$value];
-      $this->updateClosedClassAnnotation($modid, $selected, $annoclass, $tagid);
+      $this->updateClosedClassAnnotation($modid, $current, $annoclass, $tagid,
+                                         $selected, $source, $score);
     }
   }
 
@@ -266,9 +283,23 @@ class DocumentWriter extends DocumentAccessor {
       $param = array(':id' => $old_comment['comment_id'],
 		     ':tokid' => $old_comment['token_id'],
 		     ':value' => $value,
+                     ':ctype' => 'C',
 		     ':subtokid' => $modid);
       $this->stmt_insertComm->execute($param);
     }
+  }
+
+  /** Save a new shifttag annotation.
+   *
+   * @param string $tokfrom Starting token ID of the shifttag
+   * @param string $tokto   Final token ID of the shifttag
+   * @param string $type    Type letter of the shifttag
+   */
+  protected function saveShifttag($tokfrom, $tokto, $type) {
+    $param = array(':tokfrom' => $tokfrom,
+                   ':tokto' => $tokto,
+                   ':type' => $type);
+    $this->stmt_insertShift->execute($param);
   }
 
   /** Save modified lines to the database.
@@ -285,9 +316,9 @@ class DocumentWriter extends DocumentAccessor {
 	// save annotations
 	if(substr($property, 0, 5) === "anno_") {
 	  $annoclass = substr($property, 5);
-	  $selected  = array_key_exists($annoclass, $annotations) ?
+	  $current  = array_key_exists($annoclass, $annotations) ?
 	    $annotations[$annoclass] : null;
-	  $this->saveAnnotation($id, $selected, $annoclass, $value);
+	  $this->saveAnnotation($id, $current, $annoclass, $value);
 	}
 	// save flags
 	else if(substr($property, 0, 5) === "flag_") {

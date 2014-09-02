@@ -117,7 +117,7 @@ class XMLHandler {
     $document->setShiftTags($shifttags);
   }
 
-  private function processToken(&$node, &$tokcount, &$t, &$d, &$m) {
+  private function processToken(&$document, &$node, &$tokcount, &$t, &$d, &$m) {
     $token = array();
     $thistokid       = (string) $node['id'];
     $token['xml_id'] = (string) $node['id'];
@@ -155,7 +155,11 @@ class XMLHandler {
       foreach($modnode->children() as $annonode) {
 	$annotype = $annonode->getName();
 	if($annotype=='cora-comment') {
-	  $modern['comment'] = (string) $annonode;
+          $document->addComment(null, $modern['parent_xml_id'],
+                                (string) $annonode, 'C',
+                                null, $modern['xml_id']);
+          $modern['comment'] = (string) $annonode; // this line is left for
+                                                   // compatibility reasons
 	}
 	else if($annotype!=='suggestions') {
 	  $annotag  = (string) $annonode['tag'];
@@ -222,7 +226,8 @@ class XMLHandler {
       }
       else if ($reader->name == 'token') {
         ++$tokcount;
-	$lasttokid = $this->processToken($node, $tokcount, $tokens, $dipls, $moderns);
+	$lasttokid = $this->processToken($document, $node, $tokcount,
+                                         $tokens, $dipls, $moderns);
       }
     }
 
@@ -302,13 +307,13 @@ class XMLHandler {
     }
 
     // insert data into database
-    $sqlerror = $this->db->insertNewDocument($options, $data);
-    if($sqlerror){
-      return array("success"=>False, 
-		   "errors"=>array("SQLError: ".$sqlerror));
+    $status = $this->db->insertNewDocument($options, $data);
+    if(!$status['success']){
+        return array("success" => false, 
+                     "errors"  => $status['warnings']);
     }
-
-    return array("success"=>True, "warnings"=>$warnings);
+    return array("success" => True,
+                 "warnings"=> array_merge($warnings, $status['warnings']));
   }
 
   /****** FUNCTIONS RELATED TO DATA EXPORT ******/

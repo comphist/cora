@@ -502,11 +502,9 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
             $this->getConnection()->createQueryTable("inserted_modern",
             "SELECT * FROM modern WHERE tok_id >= 7 AND tok_id <= 9"));
 
-
         $this->assertTablesEqual($expected->getTable("inserted_tag_suggestion"),
             $this->getConnection()->createQueryTable("inserted_tag_suggestion",
             "SELECT * FROM tag_suggestion WHERE mod_id >= 15"));
-
 
         $this->assertTablesEqual($expected->getTable("inserted_tag"),
             $this->getConnection()->createQueryTable("inserted_tag",
@@ -515,8 +513,8 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         $this->assertTablesEqual($expected->getTable("inserted_comment"),
             $this->getConnection()->createQueryTable("inserted_comment",
             "SELECT * FROM comment WHERE tok_id=7"));
-        // XXX apparently insertNewDocument returns false if no error occurred
-        $this->assertFalse($actual);
+
+        $this->assertTrue($actual['success']);
     }
 
     public function testEditToken() {
