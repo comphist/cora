@@ -956,10 +956,13 @@
      $qs .= "FROM   modern ";
      $qs .= "  LEFT JOIN mod2error ON modern.id=mod2error.mod_id ";
      $qs .= "  LEFT JOIN error_types ON mod2error.error_id=error_types.id ";
-     $qs .= "WHERE  modern.id=" . $mid;
+     $qs .= "WHERE  modern.id=:mid";
      $stmt = $this->dbo->prepare($qs);
-     $stmt->execute();
-     return $stmt->fetchAll(PDO::FETCH_COLUMN);
+     $stmt->execute(array(':mid' => $mid));
+     $flags = $stmt->fetchAll(PDO::FETCH_COLUMN);
+     if(count($flags)==1 && is_null($flags[0]))
+       return array();
+     return $flags;
    }
 
    /** Retrieves all layout information for a given document. */

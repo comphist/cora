@@ -22,6 +22,7 @@ class DocumentWriter extends DocumentAccessor {
   private $stmt_insertTS = null;
   private $stmt_deleteTS = null;
   private $stmt_deselectTS = null;
+  private $stmt_checkFlag = null;
   private $stmt_insertFlag = null;
   private $stmt_deleteFlag = null;
   private $stmt_insertComm = null;
@@ -67,6 +68,8 @@ class DocumentWriter extends DocumentAccessor {
     $this->stmt_insertTS   = $this->dbo->prepare($stmt);
     $stmt = "UPDATE tag SET `value`=:value WHERE `id`=:id";
     $this->stmt_updateTag  = $this->dbo->prepare($stmt);
+    $stmt = "SELECT * FROM mod2error WHERE `mod_id`=:modid AND `error_id`=:flagid";
+    $this->stmt_checkFlag = $this->dbo->prepare($stmt);
     $stmt = "INSERT IGNORE INTO mod2error (`mod_id`, `error_id`)"
       . "    VALUES (:modid, :flagid)";
     $this->stmt_insertFlag = $this->dbo->prepare($stmt);
@@ -254,7 +257,9 @@ class DocumentWriter extends DocumentAccessor {
     $param = array(':modid' => $modid,
 		   ':flagid' => $this->flagtypes[$flagtype]);
     if(intval($value) == 1) {
-      $this->stmt_insertFlag->execute($param);
+      $this->stmt_checkFlag->execute($param);
+      if(!$this->stmt_checkFlag->fetch())
+        $this->stmt_insertFlag->execute($param);
     }
     else {
       $this->stmt_deleteFlag->execute($param);

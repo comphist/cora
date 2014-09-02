@@ -135,7 +135,7 @@ class XMLHandler {
     }
     // modern tokens
     foreach($node->mod as $modnode) {
-      $modern = array('tags' => array());
+      $modern = array('tags' => array(), 'flags' => array());
       $modern['xml_id'] = (string) $modnode['id'];
       $modern['trans']  = (string) $modnode['trans'];
       $modern['ascii']  = (string) $modnode['ascii'];
@@ -153,7 +153,8 @@ class XMLHandler {
       }
       // then, parse all selected annotations
       foreach($modnode->children() as $annonode) {
-	$annotype = $annonode->getName();
+        $annotype = $annonode->getName();
+        // CorA-internal comment  
 	if($annotype=='cora-comment') {
           $document->addComment(null, $modern['parent_xml_id'],
                                 (string) $annonode, 'C',
@@ -161,6 +162,11 @@ class XMLHandler {
           $modern['comment'] = (string) $annonode; // this line is left for
                                                    // compatibility reasons
 	}
+        // CorA-internal flag
+        else if($annotype=='cora-flag') {
+            $modern['flags'][] = (string) $annonode['name'];
+        }
+        // annotation
 	else if($annotype!=='suggestions') {
 	  $annotag  = (string) $annonode['tag'];
 	  $found = false;
@@ -484,12 +490,18 @@ class XMLHandler {
                   $suggestions->appendChild($anno);
               }
           }
+          unset($currenttag);
           if($suggestions->hasChildNodes()) {
               $elem->appendChild($suggestions);
           }
 
-          // TODO: what about markings: lemma_verified and general_error?
-
+          // CorA-internal flags
+          foreach($mod['flags'] as &$currentflag) {
+              $flag = $doc->createElement('cora-flag');
+              $flag->setAttribute('name', $currentflag);
+              $elem->appendChild($flag);
+          }
+          unset($currentflag);
           // CorA-internal comment
           if(!empty($mod['comment'])) {
               $com = $doc->createElement('cora-comment');
