@@ -711,6 +711,7 @@ function get_CoraDocument_data() {
                                       'selected' => '0'
                                   )
                               ),
+                              'flags' => array(),
                               'parent_db_id' => '7',
                               'ascii' => '', // XXX
                               'utf' => '', // XXX
@@ -741,6 +742,7 @@ function get_CoraDocument_data() {
                                       'selected' => '0'
                                   )
                               ),
+                              'flags' => array("inflection"),
                               'parent_db_id' => '7',
                               'ascii' => '', // XXX
                               'utf' => '', // XXX
@@ -771,6 +773,7 @@ function get_CoraDocument_data() {
                                       'selected' => '0'
                                   )
                               ),
+                              'flags' => array(),
                               'parent_db_id' => '8',
                               'ascii' => '', // XXX
                               'utf' => '', // XXX
@@ -801,6 +804,7 @@ function get_CoraDocument_data() {
                                       'selected' => '0'
                                   )
                               ),
+                              'flags' => array(),
                               'parent_db_id' => '9',
                               'ascii' => '', // XXX
                               'utf' => '', // XXX
@@ -831,6 +835,7 @@ function get_CoraDocument_data() {
                                       'selected' => '0'
                                   )
                               ),
+                              'flags' => array("general error"),
                               'parent_db_id' => '9',
                               'ascii' => '', // XXX
                               'utf' => '', // XXX
@@ -861,6 +866,7 @@ function get_CoraDocument_data() {
                                       'selected' => '0'
                                   )
                               ),
+                              'flags' => array("general error", "inflection"),
                               'parent_db_id' => '9',
                               'ascii' => '', // XXX
                               'utf' => '', // XXX
@@ -946,7 +952,7 @@ function get_Exporter_data() {
                                                                          "source" => "auto",
                                                                          "type" => "norm")
                                                                    ),
-                                                   "errors" => array()
+                                                   "flags" => array()
                                                    ),
                                              array("parent_tok_db_id" => 702,
                                                    "db_id" => 802,
@@ -977,7 +983,7 @@ function get_Exporter_data() {
                                                                          "source" => "user",
                                                                          "type" => "norm_type")
                                                                    ),
-                                                   "errors" => array()
+                                                   "flags" => array()
                                                    ),
                                              array("parent_tok_db_id" => 703,
                                                    "db_id" => 803,
@@ -1003,7 +1009,7 @@ function get_Exporter_data() {
                                                                          "source" => "auto",
                                                                          "type" => "norm")
                                                                    ),
-                                                   "errors" => array()
+                                                   "flags" => array()
                                                    )
                                                 )
                                        ),
@@ -1022,7 +1028,7 @@ function get_Exporter_data() {
                                                                          "selected" => 1,
                                                                          "type" => "norm")
                                                                    ),
-                                                   "errors" => array()
+                                                   "flags" => array()
                                                    ),
                                              array("parent_tok_db_id" => 722,
                                                    "db_id" => 822,
@@ -1036,7 +1042,7 @@ function get_Exporter_data() {
                                                                          "selected" => 1,
                                                                          "type" => "norm")
                                                                    ),
-                                                   "errors" => array()
+                                                   "flags" => array()
                                                    ),
                                              array("parent_tok_db_id" => 723,
                                                    "db_id" => 823,
@@ -1050,7 +1056,7 @@ function get_Exporter_data() {
                                                                          "selected" => 1,
                                                                          "type" => "norm")
                                                                    ),
-                                                   "errors" => array()
+                                                   "flags" => array()
                                                    ),
                                              array("parent_tok_db_id" => 724,
                                                    "db_id" => 824,
@@ -1061,7 +1067,7 @@ function get_Exporter_data() {
                                                                          "selected" => 1,
                                                                          "type" => "norm")
                                                                    ),
-                                                   "errors" => array()
+                                                   "flags" => array()
                                                    ),
                                              )
                                        ),

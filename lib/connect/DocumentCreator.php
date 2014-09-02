@@ -233,6 +233,11 @@ class DocumentCreator extends DocumentWriter {
                                     $anno['selected'],
                                     $anno['source'], $anno['score']);
           }
+          if(array_key_exists('flags', $mod)) {
+              foreach($mod['flags'] as $flag) {
+                  $this->saveFlag($mod['db_id'], $flag, 1);
+              }
+          }
       }
   }
 

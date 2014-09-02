@@ -456,6 +456,26 @@
             <value></value>
         </row>
     </table>
+    <table name="inserted_mod2error">
+      <column>mod_id</column>
+      <column>error_id</column>
+      <row>
+        <value>16</value>
+        <value>2</value>
+      </row>
+      <row>
+        <value>19</value>
+        <value>1</value>
+      </row>
+      <row>
+        <value>20</value>
+        <value>1</value>
+      </row>
+      <row>
+        <value>20</value>
+        <value>2</value>
+      </row>
+    </table>
     <!--
     <table name="inserted_">
         <column></column>

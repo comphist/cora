@@ -951,7 +951,7 @@
     *
     * @return An array of all selected error annotations
     */
-   protected function getErrorsForModern($mid) {
+   protected function getFlagsForModern($mid) {
      $qs  = "SELECT error_types.name ";
      $qs .= "FROM   modern ";
      $qs .= "  LEFT JOIN mod2error ON modern.id=mod2error.mod_id ";
@@ -1072,7 +1072,7 @@
        // Annotations
        $stmt->execute(array(':mid' => $row['db_id']));
        $row['tags'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
-       $row['errors'] = $this->getErrorsForModern($row['db_id']);
+       $row['flags'] = $this->getFlagsForModern($row['db_id']);
 
        /* TODO: this is temporary until "verified" status is marked
 	  directly with the modern */
@@ -1277,7 +1277,7 @@
        }
 
        // Error annotations
-       $errors = $this->getErrorsForModern($mid);
+       $errors = $this->getFlagsForModern($mid);
        if(in_array('general error', $errors)) {
 	   $line['general_error'] = 1;
        }

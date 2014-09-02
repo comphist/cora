@@ -514,6 +514,10 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
             $this->getConnection()->createQueryTable("inserted_comment",
             "SELECT * FROM comment WHERE tok_id=7"));
 
+        $this->assertTablesEqual($expected->getTable("inserted_mod2error"),
+            $this->getConnection()->createQueryTable("inserted_mod2error",
+            "SELECT * FROM mod2error WHERE mod_id >= 15"));
+
         $this->assertTrue($actual['success']);
     }
 
