@@ -369,6 +369,7 @@ CREATE TABLE `users` (
   `columns_hidden` varchar(255) DEFAULT NULL,
   `show_error` tinyint(1) NOT NULL DEFAULT '1',
   `lastactive` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `text_preview` varchar(255) DEFAULT "utf",
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
@@ -384,9 +385,9 @@ DROP TABLE IF EXISTS `tagger`;
 
 CREATE TABLE `tagger` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
-    `name` varchar(255) NOT NULL,
-    `cmd_train` varchar(255) DEFAULT NULL,
-    `cmd_tag` varchar(255) NOT NULL,
+    `class_name` varchar(255) NOT NULL,
+    `display_name` varchar(255) NOT NULL,
+    `trainable` boolean NOT NULL DEFAULT 0,
     PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -421,6 +422,19 @@ CREATE TABLE `tagger2tagset` (
     CONSTRAINT `tagger2tagset_ibfk_2` FOREIGN KEY (`tagset_id`) REFERENCES `tagset` (`id`) ON DELETE CASCADE
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+--
+-- Table structure for table `tagger_options`
+--
+
+CREATE TABLE `tagger_options` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `tagger_id` int(11) NOT NULL,
+    `opt_key` varchar(255) NOT NULL,
+    `opt_value` varchar(255),
+    PRIMARY KEY (`id`),
+    KEY `tagger_id` (`tagger_id`),
+    CONSTRAINT `tagger_options_ibfk_1` FOREIGN KEY (`tagger_id`) REFERENCES `tagger` (`id`) ON DELETE CASCADE
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

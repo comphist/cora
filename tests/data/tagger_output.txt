@@ -1,4 +1,3 @@
-tok	norm	POS
 vnd	und	KOKOM
 er	er	NA
 gieng	ging	VVFIN

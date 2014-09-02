@@ -28,7 +28,8 @@ function get_DBInterface_expected() {
                             "lines_context" => "5",
                             "columns_order" => null,
                             "columns_hidden" => null,
-                            "show_error" => "1")
+                            "show_error" => "1",
+                            "text_preview" => "utf")
         ),
 	"tagsets" => array(
 			   "ts1" => array("id" => '1',
@@ -50,7 +51,7 @@ function get_DBInterface_expected() {
                           "fullname" => "test-dummy",
                           "project_id" => "1",
                           "created" => "2013-01-22 14:30:30",
-                          "creator_id" => "1",
+                          "creator_id" => "3",
                           "changed" => "0000-00-00 00:00:00",
                           "changer_id" => "3",
                           "currentmod_id" => null
@@ -105,7 +106,7 @@ function get_DBInterface_expected() {
         "texts_extended" => array(
             "t1" => array('project_name' => 'Default-Gruppe',
                           'opened' => 'bollmann',
-                          'creator_name' => 'system',
+                          'creator_name' => 'bollmann',
                           'changer_name' => 'bollmann'),
             "t2" => array('project_name' => 'Default-Gruppe',
                           'opened' => null,
@@ -874,79 +875,32 @@ function get_CoraDocument_data() {
  */
 function get_AutomaticAnnotator_data() {
     $outfile = dirname(__FILE__) . "/tagger_output.txt";
-    return array("all_tokens" => array(array(), // tokens
-                                       array(), // dipls
-                                       array(   // moderns
-                                             array("parent_tok_db_id" => 701,
-                                                   "db_id" => 801,
-                                                   "trans" => "vnd",
+    return array("all_moderns_simple" => array(
+                                             array("id" => 801,
                                                    "ascii" => "vnd",
-                                                   "utf"   => "vnd",
-                                                   "comment" => "",
                                                    "verified" => 0,
-                                                   "tags" => array(
-                                                                   array("tag" => "DARTU",
-                                                                         "score" => 0.1,
-                                                                         "selected" => 1,
-                                                                         "source" => "auto",
-                                                                         "type" => "POS"),
-                                                                   array("tag" => "und",
-                                                                         "score" => 0.1,
-                                                                         "selected" => 1,
-                                                                         "source" => "auto",
-                                                                         "type" => "norm")
-                                                                   ),
-                                                   "errors" => array()
+                                                   "tags" => array("POS" => "DARTU",
+                                                                   "norm" => "und")
                                                    ),
-                                             array("parent_tok_db_id" => 702,
-                                                   "db_id" => 802,
-                                                   "trans" => "er",
+                                             array("id" => 802,
                                                    "ascii" => "er",
-                                                   "utf"   => "er",
-                                                   "comment" => "",
                                                    "verified" => 1,
-                                                   "tags" => array(
-                                                                   array("tag" => "PPER",
-                                                                         "score" => 0.8,
-                                                                         "selected" => 1,
-                                                                         "source" => "auto",
-                                                                         "type" => "POS"),
-                                                                   array("tag" => "er",
-                                                                         "score" => 0.8,
-                                                                         "selected" => 1,
-                                                                         "source" => "auto",
-                                                                         "type" => "norm")
-                                                                   ),
-                                                   "errors" => array()
+                                                   "tags" => array("POS" => "PPER",
+                                                                   "norm" => "er")
                                                    ),
-                                             array("parent_tok_db_id" => 703,
-                                                   "db_id" => 803,
-                                                   "trans" => "gi\ebt",
+                                             array("id" => 803,
                                                    "ascii" => "giebt",
-                                                   "utf"   => "giēbt",
-                                                   "comment" => "",
                                                    "verified" => 0,
-                                                   "tags" => array(
-                                                                   array("tag" => "NE",
-                                                                         "score" => 0.5,
-                                                                         "selected" => 1,
-                                                                         "source" => "auto",
-                                                                         "type" => "POS"),
-                                                                   array("tag" => "giebel",
-                                                                         "score" => 0.8,
-                                                                         "selected" => 1,
-                                                                         "source" => "auto",
-                                                                         "type" => "norm")
-                                                                   ),
-                                                   "errors" => array()
+                                                   "tags" => array("POS" => "NE",
+                                                                   "norm" => "giebel")
                                                    )
-                                                )
-                                       ),
+                                               ),
+                 
                  "taggerlist" => array('1' => array('name' => "Mock-Tagger",
                                                     'trainable' => true,
-                                                    'cmd_train' => "sleep 1",
-                                                    'cmd_tag' => "cat {$outfile}",
-                                                    'tagsets' => array('1', '2'))
+                                                    'class_name' => "RFTagger",
+                                                    'display_name' => "My-Mock-Tagger",
+                                                    "tagsets" => array("1","2"))
                                        ),
                  "tagsetlist" => array("ts1" => array("id" => '1',
                                                       "name" => "ImportTest",
@@ -957,6 +911,8 @@ function get_AutomaticAnnotator_data() {
                                                       "class" => "norm",
                                                       "set_type" => "open")
                                        ),
+                 "tagger_options" => array("annotate" => "cat",
+                                           "par" => $outfile),
                  "expected" => array(array("id" => 801,
                                            "anno_norm" => "und",
                                            "anno_POS" => "KOKOM"),

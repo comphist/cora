@@ -30,8 +30,12 @@ class Cora_Tests_DBInterface_AA_Mock {
         return array();
     }
 
-    public function getAllTokens($fileid) {
-        return $this->test_data["all_tokens"];
+    public function getTaggerOptions($taggerid) {
+        return $this->test_data["tagger_options"];
+    }
+
+    public function getAllModerns_simple($fileid, $do_anno) {
+        return $this->test_data["all_moderns_simple"];
     }
 
     public function performSaveLines($fileid, $lines_to_save) {

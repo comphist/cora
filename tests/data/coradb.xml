@@ -20,6 +20,7 @@
 		<field name="columns_hidden" xsi:nil="true" />
 		<field name="show_error">1</field>
 		<field name="lastactive">2013-01-16 14:22:57</field>
+		<field name="text_preview">utf</field>
 	</row>
 	<row>
 		<field name="id">3</field>
@@ -32,6 +33,7 @@
 		<field name="columns_hidden"></field>
 		<field name="show_error">1</field>
 		<field name="lastactive">2013-02-04 11:29:04</field>
+		<field name="text_preview">utf</field>
 	</row>
 	<row>
 		<field name="id">5</field>
@@ -44,6 +46,7 @@
 		<field name="columns_hidden" xsi:nil="true" />
 		<field name="show_error">1</field>
 		<field name="lastactive">2013-01-22 15:38:32</field>
+		<field name="text_preview">utf</field>
 	</row>
 	</table_data>
 	<table_data name="project">
@@ -59,7 +62,7 @@
 		<field name="fullname">test-dummy</field>
 		<field name="project_id">1</field>
 		<field name="created">2013-01-22 14:30:30</field>
-		<field name="creator_id">1</field>
+		<field name="creator_id">3</field>
 		<field name="changed">0000-00-00 00:00:00</field>
 		<field name="changer_id">3</field>
 		<field name="currentmod_id" xsi:nil="true" />

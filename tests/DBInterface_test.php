@@ -535,7 +535,8 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
                                                    "dipl_utf" => array("testneu"),
                                                    "mod_trans" => array("testneu"),
                                                    "mod_ascii" => array("testneu"),
-                                                   "mod_utf" => array("testneu")), "3"
+                                                   "mod_utf" => array("testneu"),
+                                                   "dipl_breaks" => array("0")), "3"
         );
         $this->assertEquals(array("success" => true,
                                   "oldmodcount" => 1,
