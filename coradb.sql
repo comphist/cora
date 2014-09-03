@@ -333,6 +333,23 @@ CREATE TABLE `text2tagset` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `text2tagset_defaults`
+--
+
+DROP TABLE IF EXISTS `text2tagset_defaults`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `text2tagset_defaults` (
+  `project_id` int(11) NOT NULL,
+  `tagset_id` int(11) NOT NULL,
+  KEY `project_id` (`project_id`),
+  KEY `tagset_id` (`tagset_id`),
+  CONSTRAINT `text2tagset_defaults_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `project` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `text2tagset_defaults_ibfk_2` FOREIGN KEY (`tagset_id`) REFERENCES `tagset` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `token`
 --
 

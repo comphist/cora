@@ -9,6 +9,9 @@ var debugMode = false;
 // ********** CLASS FILE ******************************************
 // ***********************************************************************
 
+cora.projects = null;
+cora.projects_by_id = null;
+
 var file = {
     transImportProgressBar: null,
     tagsets: {},
@@ -86,7 +89,10 @@ var file = {
 	var import_mbox = new mBox.Modal({
 	    title: 'Importieren aus Transkriptionsdatei',
 	    content: 'fileImportTransForm',
-	    attach: 'importNewTransLink'
+	    attach: 'importNewTransLink',
+            onOpen: function() {
+                ref.setTagsetDefaults($(formname));
+            }
 	});
 	// check if a file has been selected
 	$('newFileImportTransForm').getElement('input[type="submit"]').addEvent('click', function(e) {
@@ -99,9 +105,6 @@ var file = {
 	    }
 	});
 
-	// set project default values for tagset association
-	// HACK: requires project_specific_hacks.php
-	this.setTagsetDefaults($(formname));
 	$(formname).getElement('select[name="project"]')
 	    .addEvent('change', function(e) { ref.setTagsetDefaults($(formname)); });
 
@@ -236,7 +239,10 @@ var file = {
 	var import_mbox = new mBox.Modal({
 	    title: 'Importieren aus CorA-XML-Format',
 	    content: 'fileImportForm',
-	    attach: 'importNewXMLLink'
+	    attach: 'importNewXMLLink',
+            onOpen: function() {
+                ref.setTagsetDefaults($(formname));
+            }
 	});
 
 	// check if a file has been selected
@@ -250,9 +256,6 @@ var file = {
 	    }
 	});
 
-	// set project default values for tagset association
-	// HACK: requires project_specific_hacks.php
-	this.setTagsetDefaults($(formname));
 	$(formname).getElement('select[name="project"]')
 	    .addEvent('change', function(e) { ref.setTagsetDefaults($(formname)); });
 	
@@ -314,11 +317,9 @@ var file = {
        Sets default values for tagset associations depending on the
        selected project.
 
-       Project default values are retrieved from the global variable
-       cora_projects_default_tagsets, which should probably be
-       refactored in the future.  The table updated by this function
-       is typically not visible in the GUI except for administrators,
-       but still important for the import process.
+       The table updated by this function is typically not visible in
+       the GUI except for administrators, but still important for the
+       import process.
 
        Parameters:
          form - the form element to update
@@ -327,13 +328,12 @@ var file = {
 	var pid = form.getElement('select[name="project"]')
 	    .getSelected()[0]
 	    .get('value');
-	var tlist = cora_project_default_tagsets[pid];
-	if(tlist == undefined || tlist == null || !tlist) {
-	    tlist = cora_project_default_tagsets['default'];
-	}
+        if(!cora.projects) return;
+        var prj = cora.projects[cora.projects_by_id[pid]];
+	var tlist = ('tagsets' in prj) ? prj.tagsets : [];
 	form.getElement('table.tagset-list')
 	    .getElements('input').each(function(input) {
-		var checked = tlist.contains(input.value.toInt()) ? "yes" : "";
+		var checked = tlist.contains(input.value) ? "yes" : "";
 		input.set('checked', checked);
 	    });
     },
@@ -527,7 +527,6 @@ var file = {
 	if($('noProjectGroups')) {
 	    return;
 	}
-
         var ref = this;
         var files = new Request.JSON({
             url:'request.php',
@@ -537,50 +536,37 @@ var file = {
                                        "Fehler beim Laden der Dateiliste.");
 			return;
 		    }
-
-		    var files_div = $('files').empty();
-		    var filesArray = status['data'];
-
-		    var fileHash = {};
-		    var projectNames = {};
-                    var projectIds = [];
-		    filesArray.each(function(file){
-			var prj = file.project_id;
-			if(fileHash[prj]) {
-			    fileHash[prj].push(file);
-			} else {
-			    fileHash[prj] = [file];
-			}
-			projectNames[prj] = file.project_name;
-		    });
-                    // sort projects alphabetically by name
-                    projectIds = Object.keys(projectNames);
-                    projectIds.sort(function(obj1, obj2) {
-                        return projectNames[obj1].localeCompare(projectNames[obj2]);
+                    cora.projects = status['data'];
+                    cora.projects_by_id = {};
+                    Array.each(cora.projects, function(prj, idx) {
+                        cora.projects_by_id[prj.id] = idx;
                     });
-		    
-		    ref.fileHash = fileHash;
-		    Array.each(projectIds, function(project){
-                        var fileArray = fileHash[project];
-			var project_div = $('fileGroup').clone();
-			var project_table = project_div.getElement('table');
-			project_div.getElement('h4.projectname').empty().appendText(projectNames[project]);
-			fileArray.each(function(file) {
-			    project_table.adopt(ref.renderTableLine(file));
-			});
-			project_div.inject(files_div);
-		    });
-                    gui.addToggleEvents(files_div.getElements('.clappable'));
+                    ref.renderFileTable();
 		}
     	});
-        files.get({'do': 'listFiles'});
+        files.get({'do': 'getProjectsAndFiles'});
         
     },
 
-    renderTableLine: function(file){
+    renderFileTable: function() {
 	/* TODO: isn't it completely unnecessary to completely
 	 * re-create the whole table each time a change occurs?
 	 * couldn't this be done more efficiently? */
+        var ref = this;
+        var files_div = $('files').empty();
+        Array.each(cora.projects, function(project) {
+            var prj_div   = $('fileGroup').clone();
+            var prj_table = prj_div.getElement('table');
+            prj_div.getElement('h4.projectname').empty().appendText(project.name);
+            Array.each(project.files, function(file) {
+                prj_table.adopt(ref.renderTableLine(file));
+            });
+            prj_div.inject(files_div);
+        });
+        gui.addToggleEvents(files_div.getElements('.clappable'));
+    },
+
+    renderTableLine: function(file){
 	var ref = this;
         var opened = file.opened ? 'opened' : '';
 	var displayed_name = '';

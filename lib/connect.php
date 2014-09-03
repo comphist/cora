@@ -17,6 +17,7 @@
  require_once 'connect/DocumentAccessor.php';
  require_once 'connect/DocumentWriter.php';
  require_once 'connect/DocumentCreator.php';
+ require_once 'connect/ProjectAccessor.php';
 
  /** An interface for application-specific database requests.
   *
@@ -727,6 +728,24 @@
      return false;
    }
 
+   /** Get a list of all projects and their associated files and
+    *  settings.
+    */
+   public function getProjectsAndFiles($userid=null) {
+     $pa = new ProjectAccessor($this, $this->dbo);
+     $projects = $pa->getAllProjects($userid);
+     foreach($projects as &$project) {
+         $pid = $project['id'];
+         $project['tagsets'] = $pa->getAssociatedTagsetDefaults($pid);
+         $project['files'] = $pa->getAssociatedFiles($pid, true);
+         if(is_null($userid)) {
+             $project['settings'] = $pa->getSettings($pid);
+             $project['users'] = $pa->getAssociatedUsers($pid);
+         }
+     }
+     return $projects;
+   }
+
    /** Get a list of all files.
     *
     * Retrieves meta information such as filename, created by
@@ -805,9 +824,19 @@
     * @return a two-dimensional @em array with the project id and name
     */
    public function getProjects(){
-     $stmt = $this->dbo->prepare("SELECT * FROM project ORDER BY name");
-     $stmt->execute();
-     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+     $pa = new ProjectAccessor($this, $this->dbo);
+     return $pa->getAllProjects();
+   }
+
+   /** Get a list of all projects accessible by a given user.
+    *
+    * @param string $user username
+    * @return a two-dimensional @em array with the project id and name
+    */
+   public function getProjectsForUser($uname){
+     $pa = new ProjectAccessor($this, $this->dbo);
+     $uid = $this->getUserIDFromName($uname);
+     return $pa->getAllProjects($uid);
    }
 
    /** Get a list of all project user groups.  
@@ -820,20 +849,6 @@
      $qs = "SELECT user2project.project_id, users.name AS username "
        . "    FROM user2project "
        . "    LEFT JOIN users ON user2project.user_id=users.id";
-     $stmt = $this->dbo->prepare($qs);
-     $stmt->execute();
-     return $stmt->fetchAll(PDO::FETCH_ASSOC);
-   }
-
-   /** Get a list of all projects accessible by a given user.
-    *
-    * @param string $user username
-    * @return a two-dimensional @em array with the project id and name
-    */
-   public function getProjectsForUser($uname){
-     $uid = $this->getUserIDFromName($uname);
-     $qs = "SELECT a.* FROM (project a, user2project b) "
-       . "   WHERE (a.id=b.project_id AND b.user_id='{$uid}') ORDER BY `id`";
      $stmt = $this->dbo->prepare($qs);
      $stmt->execute();
      return $stmt->fetchAll(PDO::FETCH_ASSOC);

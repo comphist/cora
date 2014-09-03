@@ -397,6 +397,19 @@ class CoraSessionHandler {
     return true;
   }
 	
+  /** Wraps DBInterface::getProjectsAndFiles() */
+  public function getProjectsAndFiles(){
+    $this->db->releaseOldLocks($this->timeout);
+    $uid  = $_SESSION["admin"] ? null : $_SESSION["user_id"];
+    try {
+        $data = $this->db->getProjectsAndFiles($uid);
+    }
+    catch(Exception $ex) {
+        return array('success' => false, 'errors' => array($ex->getMessage()));
+    }
+    return array('success' => true, 'data' => $data);
+  }
+
   /** Wraps DBInterface::getFiles() */
   public function getFiles(){
     $this->db->releaseOldLocks($this->timeout);

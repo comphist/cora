@@ -38,8 +38,9 @@ function embedJSwithTimestamp($filename) {
 
 		<!-- JavaScript -->
 		<script type="text/javascript">
-			// Makes variables from PHP accessible to JS
-            var default_tab = "<?php echo $menu->getDefaultItem(); ?>";
+                    var cora = {};
+                    // Makes variables from PHP accessible to JS
+                    var default_tab = "<?php echo $menu->getDefaultItem(); ?>";
 			var userdata = {
                         <?php if($_SESSION['loggedIn']): ?>
 			      name: "<?php echo $_SESSION['user']; ?>" , 

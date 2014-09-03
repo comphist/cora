@@ -234,6 +234,9 @@ class RequestHandler {
       case "listFiles":
 	return $this->sh->getFiles();
 
+      case "getProjectsAndFiles":
+	return $this->sh->getProjectsAndFiles();
+
       case "lockFile":
 	return $this->sh->lockFile($get["fileid"]);
     
