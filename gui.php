@@ -86,20 +86,10 @@ function embedJSwithTimestamp($filename) {
   endif;
 ?>
 
-		<?php if($_SESSION['admin']):
-embedJSwithTimestamp("gui/js/admin.js"); ?>
-<script type="text/javascript">
-project_editor.project_users = new Object();
-<?php
-$project_users = $sh->getProjectUsers();
-foreach ($project_users as $pid => $userlist):
-    $arrstr = '"' . implode('","', $userlist) . '"';
+<?php if($_SESSION['admin']):
+        embedJSwithTimestamp("gui/js/admin.js");
+      endif;
 ?>
-project_editor.project_users[<?php echo $pid; ?>] = new Array(<?php echo $arrstr; ?>);
-
-<?php endforeach; ?>
-</script>
-	<?php endif; ?>
 	</head>
 	<body onload="onLoad();" onbeforeunload="return onBeforeUnload();">
 	        <div id="overlay"></div>

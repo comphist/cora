@@ -1,26 +1,17 @@
 /** @file
  * Functions related to the administrator tab.
  *
- * Provides the user editor and tagset editor.
+ * Provides the user, project, and tagset editor.
  *
  * @author Marcel Bollmann
- * @date January 2012
- * 
- * @warning This file is a mess in many parts. The code design was not
- * planned out in advance, but rather adjusted on-the-fly as the
- * author discovered new techniques and learned more about JavaScript
- * and PHP/JS interaction.
- *
- * @todo This is currently not strictly object-oriented, as the global
- * variable tagset_editor is referenced by the classes. Could this be
- * changed to an object property?
+ * @date January 2012 - September 2014
  */
 
 // ***********************************************************************
 // ********** USER MANAGEMENT ********************************************
 // ***********************************************************************
 
-var user_editor = {
+cora.userEditor = {
     initialize: function() {
 	var ceralink = new Element('a', {
 	    "id": 'ceraCUButton',
@@ -32,7 +23,7 @@ var user_editor = {
 	    events: {
 		onOpen: function(currentItem, collection) {
 	    	    $$('button[name="submitCreateUser"]').addEvent(
-			'click', user_editor.createUser, user_editor
+			'click', cora.userEditor.createUser, cora.userEditor
 		    );
 		}
 	    }
@@ -43,13 +34,13 @@ var user_editor = {
 	    'click:relay(td)',
 	    function(event, target) {
 		if(target.hasClass('adminUserAdminStatus')) {
-		    user_editor.toggleStatus(event, 'Admin');
+		    cora.userEditor.toggleStatus(event, 'Admin');
 		}
 		else if(target.hasClass('adminUserNormStatus')) {
-		    user_editor.toggleStatus(event, 'Norm');
+		    cora.userEditor.toggleStatus(event, 'Norm');
 		}
 		else if(target.hasClass('adminUserDelete')) {
-		    user_editor.deleteUser(event);
+		    cora.userEditor.deleteUser(event);
 		}
 	    }
 	);
@@ -64,7 +55,7 @@ var user_editor = {
 			onOpen: function(currentItem, collection) {
 			    $$('input[name="changepw[un]"]').set('value', username);
 			    $$('button[name="submitChangePassword"]').addEvent(
-				'click', user_editor.changePassword, user_editor
+				'click', cora.userEditor.changePassword, cora.userEditor
 			    );
 			}
 		    }
@@ -118,7 +109,7 @@ var user_editor = {
 			 onOpen: function(currentItem, collection) {
 			     $$('input[name="changepw[un]"]').set('value', username);
 			     $$('button[name="submitChangePassword"]').addEvent(
-				 'click', user_editor.changePassword, user_editor
+				 'click', cora.userEditor.changePassword, cora.userEditor
 			     );
 			 }
 		     }
@@ -225,9 +216,12 @@ var user_editor = {
 }
 
 
-var project_editor = {
+cora.projectEditor = {
     initialize: function() {
 	var ref = this;
+        cora.projects.onUpdate(function(status, text) {
+            ref.updateProjectUserInfo();
+        });
 	// adding projects
 	var cp_mbox = new mBox.Modal({
 	    'title': 'Neues Projekt erstellen',
@@ -327,11 +321,10 @@ var project_editor = {
 		    var mbox_content = $('projectUserChangeForm').clone();
 		    var pid = target.get('id').substr(14);
 		    var pn  = target.getParent('tr').getElement('td.adminProjectNameCell').get('html');
-		    if (ref.project_users[pid] != undefined) {
-			ref.project_users[pid].each(function(un, idx) {
-			    mbox_content.getElement("input[value='"+un+"']").set('checked', 'checked');
-			});
-		    }
+                    var prj = cora.projects.get(pid);
+		    prj.users.each(function(user, idx) {
+			mbox_content.getElement("input[value='"+user.name+"']").set('checked', 'checked');
+		    });
 		    mbox_content.getElement("input[name='project_id']").set('value', pid);
 		    var mbox = new mBox.Modal({
 			title: 'Benutzergruppe für Projekt "'+pn+'" bearbeiten',
@@ -345,20 +338,12 @@ var project_editor = {
 			    response = JSON.decode(response);
 			    if(response.success) {
 				mbox.close();
-
-				ref.project_users[pid] = mbox_content.
-				    getElements("input[type='checkbox']:checked").map(
-				    function(checkbox, idx) {
-					return checkbox.get('value');
-				    }
-				);
-				ref.updateProjectUserInfo();
-				
 				new mBox.Notice({
 				    content: 'Benutzergruppe geändert',
 				    type: 'ok',
 				    position: {x: 'right'}
 				});
+				cora.projects.performUpdate();
 			    } else {
 				new mBox.Modal({
 				    'title': 'Änderungen speichern nicht erfolgreich',
@@ -374,17 +359,19 @@ var project_editor = {
     },
 
     updateProjectUserInfo: function() {
-	Object.each(this.project_users, function(ulist, pid) {
-	    var tr = $('project_'+pid);
+	Object.each(cora.projects.getAll(), function(prj) {
+	    var tr = $('project_'+prj.id);
+            var ulist = prj.users.map(function(user) { return user.name; });
 	    if(tr != undefined) {
-		tr.getElement('td.adminProjectUsersCell').empty().appendText(ulist.join());
+		tr.getElement('td.adminProjectUsersCell').empty()
+                    .appendText(ulist.join());
 	    }
 	});
     }
 }
 
 
-var tagset_editor = {
+cora.tagsetEditor = {
     initialize: function() {
 	var ref = this;
 	this.activateImportForm();
@@ -557,9 +544,9 @@ var tagset_editor = {
 // ***********************************************************************
 
 window.addEvent('domready', function() {
-    user_editor.initialize();
-    project_editor.initialize();
-    tagset_editor.initialize();
+    cora.userEditor.initialize();
+    cora.projectEditor.initialize();
+    cora.tagsetEditor.initialize();
 });
 
 

@@ -9,8 +9,80 @@ var debugMode = false;
 // ********** CLASS FILE ******************************************
 // ***********************************************************************
 
-cora.projects = null;
-cora.projects_by_id = null;
+/* Class: cora.projects
+
+   Acts as a wrapper for an array containing all project information,
+   including associated files.
+
+   This class allows simple access to projects via their ID, sends
+   AJAX requests to update the project information, and stores
+   functions that should be called whenever the project list updates.
+*/
+cora.projects = {
+    data: [],
+    byID: {},
+    onUpdateHandlers: [],
+
+    /* Function: get
+
+       Return a project by ID.
+
+       Parameters:
+        pid - ID of the project to be returned
+     */
+    get: function(pid) {
+        var idx = this.byID[pid];
+        if(idx == undefined)
+            return Object();
+        return this.data[idx];
+    },
+
+    /* Function: getAll
+
+       Return an array containing all projects.
+    */
+    getAll: function() {
+        return this.data;
+    },
+
+    /* Function: onUpdate
+
+       Add a callback function to be called whenever the project list
+       is updated.
+
+       Parameters:
+        fn - function to be called
+     */
+    onUpdate: function(fn) {
+        if(typeof(fn) == "function")
+            this.onUpdateHandlers.push(fn);
+        return this;
+    },
+
+    /* Function: performUpdate
+       
+       Perform a server request to update the project data.  Calls any
+       handlers previously registered via onUpdate().
+     */
+    performUpdate: function(){
+        var ref = this;
+        var files = new Request.JSON({
+            url:'request.php',
+    		onSuccess: function(status, text) {
+                    ref.data = status['data'];
+                    ref.byID = {};
+                    Array.each(ref.data, function(prj, idx) {
+                        ref.byID[prj.id] = idx;
+                    });
+                    Array.each(ref.onUpdateHandlers, function(handler) {
+                        handler(status, text);
+                    });
+		}
+    	});
+        files.get({'do': 'getProjectsAndFiles'});
+        return this;
+    }
+};
 
 var file = {
     transImportProgressBar: null,
@@ -19,6 +91,10 @@ var file = {
     taggers: [],
 
     initialize: function(){
+        var ref = this;
+        cora.projects.onUpdate(function(status, text) {
+            ref.renderFileTable();
+        });
         this.activateImportForm();
         this.activateTransImportForm();
     },
@@ -89,11 +165,11 @@ var file = {
 	var import_mbox = new mBox.Modal({
 	    title: 'Importieren aus Transkriptionsdatei',
 	    content: 'fileImportTransForm',
-	    attach: 'importNewTransLink',
-            onOpen: function() {
-                ref.setTagsetDefaults($(formname));
-            }
+	    attach: 'importNewTransLink'
 	});
+        cora.projects.onUpdate(function(status, text) {
+            ref.setTagsetDefaults($(formname));
+        });
 	// check if a file has been selected
 	$('newFileImportTransForm').getElement('input[type="submit"]').addEvent('click', function(e) {
 	    var importfile = $('newFileImportTransForm').getElement('input[name="transFile"]').get('value');
@@ -239,12 +315,11 @@ var file = {
 	var import_mbox = new mBox.Modal({
 	    title: 'Importieren aus CorA-XML-Format',
 	    content: 'fileImportForm',
-	    attach: 'importNewXMLLink',
-            onOpen: function() {
-                ref.setTagsetDefaults($(formname));
-            }
+	    attach: 'importNewXMLLink'
 	});
-
+        cora.projects.onUpdate(function(status, text) {
+            ref.setTagsetDefaults($(formname));
+        });
 	// check if a file has been selected
 	$('newFileImportForm').getElement('input[type="submit"]').addEvent('click', function(e) {
 	    var importfile = $('newFileImportForm').getElement('input[name="xmlFile"]').get('value');
@@ -328,8 +403,7 @@ var file = {
 	var pid = form.getElement('select[name="project"]')
 	    .getSelected()[0]
 	    .get('value');
-        if(!cora.projects) return;
-        var prj = cora.projects[cora.projects_by_id[pid]];
+        var prj = cora.projects.get(pid);
 	var tlist = ('tagsets' in prj) ? prj.tagsets : [];
 	form.getElement('table.tagset-list')
 	    .getElements('input').each(function(input) {
@@ -527,25 +601,7 @@ var file = {
 	if($('noProjectGroups')) {
 	    return;
 	}
-        var ref = this;
-        var files = new Request.JSON({
-            url:'request.php',
-    		onSuccess: function(status, text) {
-		    if(!status['success']) {
-			gui.showNotice('error',
-                                       "Fehler beim Laden der Dateiliste.");
-			return;
-		    }
-                    cora.projects = status['data'];
-                    cora.projects_by_id = {};
-                    Array.each(cora.projects, function(prj, idx) {
-                        cora.projects_by_id[prj.id] = idx;
-                    });
-                    ref.renderFileTable();
-		}
-    	});
-        files.get({'do': 'getProjectsAndFiles'});
-        
+        cora.projects.performUpdate();
     },
 
     renderFileTable: function() {
@@ -554,7 +610,7 @@ var file = {
 	 * couldn't this be done more efficiently? */
         var ref = this;
         var files_div = $('files').empty();
-        Array.each(cora.projects, function(project) {
+        Array.each(cora.projects.getAll(), function(project) {
             var prj_div   = $('fileGroup').clone();
             var prj_table = prj_div.getElement('table');
             prj_div.getElement('h4.projectname').empty().appendText(project.name);
