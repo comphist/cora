@@ -414,17 +414,6 @@ class CoraSessionHandler {
     return array('success' => true, 'data' => $data);
   }
 
-  /** Wraps DBInterface::getFiles() */
-  public function getFiles(){
-    $this->db->releaseOldLocks($this->timeout);
-    if ($_SESSION["admin"]) {
-      $data = $this->db->getFiles();
-    } else {
-      $data = $this->db->getFilesForUser($_SESSION["user"]);
-    }
-    return array('success' => true, 'data' => $data);
-  }
-
   /** Wraps DBInterface::getProjects() */
   public function getProjectList(){
     if ($_SESSION["admin"]) {

@@ -22,6 +22,7 @@ $ulist = array();
    <h3 class="clapp">Benutzerverwaltung</h3>
 
    <div>
+    <img id="adminUsersRefresh" src="gui/images/View-refresh.svg" width="20px" height="20px"/>
    <table id="editUsers">
      <tr>
        <th></th>
@@ -30,26 +31,6 @@ $ulist = array();
        <th>Letzte Aktivität</th>
        <th></th>
      </tr>
-
-     <?php foreach ($ulist as $user): 
-             $un = $user['name'];
-             $la = $user['lastactive'];
-             $uact = $user['active'] == '1';
-             $admin = $user['admin'] == '1';
-     ?>
-     <tr id="User_<?php echo $un; ?>" class="adminUserInfoRow <?php if($uact){echo 'userActive';}; ?>">
-       <td class="adminUserDelete"><img src="gui/images/proxal/delete.ico" /></td>
-       <td class="adminUserNameCell"><?php echo $un; ?></td>
-       <td class="centered adminUserAdminStatus"><img src="gui/images/proxal/check.ico" class="adminUserAdminStatus"
-           <?php if (!$admin): ?>style="display: none;"<?php endif; ?>/>
-       </td>
-       <td class="adminUserLastactiveCell"><?php echo $la; ?></td>
-       <td>
-           <button class="adminUserPasswordButton" type="button">Passwort ändern...</button>
-       </td>
-     </tr>
-     <?php endforeach; ?>
-
    </table>
 
    <p>
@@ -75,28 +56,6 @@ $ulist = array();
        <th>Zugeordnete Benutzer</th>
        <th></th>
      </tr>
-     <?php foreach ($projects as $project): 
-	     $pn = $project['name'];
-             $pid = $project['id'];
-     ?>
-     <tr id="project_<?php echo $pid; ?>" class="adminProjectInfoRow">
-       <td><a id="projectdelete_<?php echo $pid; ?>" class="adminProjectDelete"><img src="gui/images/proxal/delete.ico" /></a></td>
-       <td class="adminProjectNameCell"><?php echo $pn; ?></td>
-       <td class="adminProjectUsersCell">
-       <?php 
-	       if(array_key_exists($pid, $project_users)) {
-		 echo implode(',', $project_users[$pid]);
-	       }
-	       else {
-		 echo "<i>(Keine Benutzer gefunden)</i>";
-	       }
-       ?>
-       </td>
-       <td>
-           <button id="projectbutton_<?php echo $pid; ?>" class="adminProjectUsersButton" type="button">Benutzergruppe bearbeiten...</button>
-       </td>
-     </tr>
-     <?php endforeach; ?>
    </table>
 
    <p><strong>Hinweis:</strong> Administratoren können <i>immer</i> alle Projektgruppen sehen.</p>
@@ -176,7 +135,9 @@ $ulist = array();
 	  </p>
       </div>
 
-     <div id="projectUserChangeForm">
+     <div id="projectEditForm">
+     <p>Momentan nicht funktionsfähig.</p>
+<!--
          <form action="request.php"  method="post">
 	 <div class="userChangeEditTable">
              <?php foreach ($ulist as $user):
@@ -191,6 +152,7 @@ $ulist = array();
            <input type="submit" value="Änderungen bestätigen" />
          </p>
          </form>
+-->
      </div>
 
      <div id="projectCreateForm">
@@ -255,6 +217,17 @@ $ulist = array();
        <td class="adminUserLastactiveCell"></td>
        <td>
            <button class="adminUserPasswordButton" type="button">Passwort ändern...</button>
+       </td>
+     </tr>
+  </table>
+
+  <table>
+     <tr id="templateProjectInfoRow" class="adminProjectInfoRow">
+       <td><a class="adminProjectDelete"><img src="gui/images/proxal/delete.ico" /></a></td>
+       <td class="adminProjectNameCell"></td>
+       <td class="adminProjectUsersCell"></td>
+       <td>
+           <button class="adminProjectEditButton" type="button">Projekt verwalten...</button>
        </td>
      </tr>
   </table>

@@ -234,9 +234,6 @@ class RequestHandler {
 	return $this->sh->changePassword($post["id"],
 					 $post["password"]);
 
-      case "listFiles":
-	return $this->sh->getFiles();
-
       case "getProjectsAndFiles":
 	return $this->sh->getProjectsAndFiles();
 

@@ -3,26 +3,11 @@
  * The document selection page.
  */
 
-$filelist = $sh->getFiles(); 
 $tagsets = $sh->getTagsetList();
 $tagsets_all = $sh->getTagsetList(false, "class");
-// $projects = $sh->getProjectList();   defined in gui.php
-
 ?>
 
 <div id="fileDiv" class="content" style="display: none;">
-
-<?php
-  if(empty($projects)):
-?>
-<div class="panel" id="noProjectGroups">
-   <h3>Keine Projektgruppen verfügbar</h3>
-   <p>Sie gehören zur Zeit keiner Projektgruppe an.</p>
-   <p>Wenden Sie sich an einen Administrator, um zu einer Projektgruppe hinzuzufügt zu werden.</p>
-</div>
-<?php
-    else:
-?>
 
 <div class="panel" id="fileImport">
 	<h3>Datei importieren</h3>
@@ -247,9 +232,14 @@ $tagsets_all = $sh->getTagsetList(false, "class");
 		</table>
   </div>
 
-</div>
+  <div id="noProjectGroups">
+     <h4>Keine Projektgruppen verfügbar!</h4>
+     <p>Sie gehören zur Zeit keiner Projektgruppe an.  Wenden Sie sich an einen Administrator, um zu einer Projektgruppe hinzuzufügt zu werden.</p>
+  </div>
 
-<?php
-  endif;
-?>
+  <div id="noProjectFiles">
+    <p>Dieses Projekt enthält keine Dateien.</p>
+  </div>
+
+</div>
 </div>

@@ -179,6 +179,9 @@ cora.userEditor = {
 	    }
 	});
 
+        $('adminUsersRefresh').addEvent(
+            'click', function() { cora.users.performUpdate(); }
+        );
 	$('editUsers').addEvent(
 	    'click:relay(td)',
 	    function(event, target) {
@@ -330,9 +333,7 @@ cora.userEditor = {
 cora.projectEditor = {
     initialize: function() {
 	var ref = this;
-        cora.projects.onUpdate(function(status, text) {
-            ref.updateProjectUserInfo();
-        });
+        cora.projects.onUpdate(this.refreshProjectTable);
 	// adding projects
 	var cp_mbox = new mBox.Modal({
 	    'title': 'Neues Projekt erstellen',
@@ -351,28 +352,12 @@ cora.projectEditor = {
 			     pid = Number.from(status.pid);
 			 }
 			 if(!pid || pid<1) {
-			     new mBox.Notice({
-				 content: 'Projekt erstellen fehlgeschlagen',
-				 type: 'error',
-				 position: {x: 'right'}
-			     });
+                             gui.showNotice('error', 'Projekt erstellen fehlgeschlagen.');
 			 } else {
-			     pid = String.from(pid);
-			     var new_row = $('editProjects').getElement('tr.adminProjectInfoRow').clone();
-			     new_row.set('id', 'project_'+pid);
-			     new_row.getElement('a.adminProjectDelete').set('id', 'projectdelete_'+pid);
-			     new_row.getElement('td.adminProjectNameCell').empty().appendText(pn);
-			     new_row.getElement('td.adminProjectUsersCell').empty();
-			     new_row.getElement('button.adminProjectUsersButton').set('id', 'projectbutton_'+pid);
-			     $('editProjects').adopt(new_row);
-			     
+                             cora.projects.performUpdate();
 			     $('projectCreateForm').getElement('input').set('value', '');
 			     cp_mbox.close();
-			     new mBox.Notice({
-				 content: 'Projekt erfolgreich angelegt',
-				 type: 'ok',
-				 position: {x: 'right'}
-			     });
+                             gui.showNotice('ok', 'Projekt angelegt.');
 			 }
 		     }
 		    });
@@ -385,29 +370,18 @@ cora.projectEditor = {
 	    'click:relay(a)',
 	    function(event, target) {
 		if(target.hasClass("adminProjectDelete")) {
-		    var pid = target.get('id').substr(14);
+		    var pid = target.getParent('tr').get('id').substr(8);
 		    var pn  = target.getParent('tr').getElement('td.adminProjectNameCell').get('html');
-		    if(file.fileHash == undefined) {
-			file.listFiles();
-		    }
-		    if (file.fileHash[pid] == undefined
-		      || Object.getLength(file.fileHash[pid]) == 0) {
+                    var prj = cora.projects.get(pid);
+		    if (prj.files == undefined || prj.files.length == 0) {
 			var req =  new Request.JSON(
 			    {url:'request.php',
 			     onSuccess: function(data, text) {
 				 if(data.success) {
-				     $('project_'+pid).dispose();
-				     new mBox.Notice({
-					 content: 'Projekt gelöscht',
-					 type: 'ok',
-					 position: {x: 'right'}
-				     });
+                                     gui.showNotice('ok', 'Projekt gelöscht.');
+                                     cora.projects.performUpdate();
 				 } else {
-				     new mBox.Notice({
-					 content: 'Projekt löschen fehlgeschlagen',
-					 type: 'error',
-					 position: {x: 'right'}
-				     });
+                                     gui.showNotice('error', 'Projekt löschen fehlgeschlagen.');
 				 }
 			     }
 			    }
@@ -415,11 +389,8 @@ cora.projectEditor = {
 			req.get({'do': 'deleteProject', 'project_id': pid});
 	   
 		    } else {
-			new mBox.Modal({
-			    'title': 'Projekt löschen: "'+pn+'"',
-			    'content': 'Projekte können nicht gelöscht werden, solange noch mindestens ein Dokument dem Projekt zugeordnet ist.',
-			    'buttons': [ {'title': 'OK'} ]
-			}).open();
+                        gui.showTextDialog('Projekt löschen: "'+pn+'"',
+                                           'Projekte können nicht gelöscht werden, solange noch mindestens ein Dokument dem Projekt zugeordnet ist.');
 		    }
 		}
 	    }
@@ -428,56 +399,65 @@ cora.projectEditor = {
 	$('editProjects').addEvent(
 	    'click:relay(button)',
 	    function(event, target) {
-		if(target.hasClass("adminProjectUsersButton")) {
-		    var mbox_content = $('projectUserChangeForm').clone();
-		    var pid = target.get('id').substr(14);
-		    var pn  = target.getParent('tr').getElement('td.adminProjectNameCell').get('html');
-                    var prj = cora.projects.get(pid);
-		    prj.users.each(function(user, idx) {
-			mbox_content.getElement("input[value='"+user.name+"']").set('checked', 'checked');
-		    });
-		    mbox_content.getElement("input[name='project_id']").set('value', pid);
-		    var mbox = new mBox.Modal({
-			title: 'Benutzergruppe für Projekt "'+pn+'" bearbeiten',
-			content: mbox_content,
-		    });
-		    new mForm.Submit({
-			form: mbox_content.getElement('form'),
-			timer: 0,
-			showLoader: true,
-			onComplete: function(response) {
-			    response = JSON.decode(response);
-			    if(response.success) {
-				mbox.close();
-				new mBox.Notice({
-				    content: 'Benutzergruppe geändert',
-				    type: 'ok',
-				    position: {x: 'right'}
-				});
-				cora.projects.performUpdate();
-			    } else {
-				new mBox.Modal({
-				    'title': 'Änderungen speichern nicht erfolgreich',
-				    content: 'Ein unerwarteter Fehler ist aufgetreten. Bitte kontaktieren Sie einen Administrator.'
-				}).open();
-			    }
-			}
-		    });
-		    mbox.open();
+		if(target.hasClass("adminProjectEditButton")) {
+		    var pid = target.getParent('tr').get('id').substr(8);
+                    ref.showProjectEditDialog(pid);
 		}
 	    }
 	);
     },
 
-    updateProjectUserInfo: function() {
-	Object.each(cora.projects.getAll(), function(prj) {
-	    var tr = $('project_'+prj.id);
+    /* Function: refreshProjectTable
+       
+       Renders the table containing the project data.
+     */
+    refreshProjectTable: function() {
+        var table = $('editProjects');
+        table.getElements('tr.adminProjectInfoRow').dispose();
+        Array.each(cora.projects.getAll(), function(prj) {
             var ulist = prj.users.map(function(user) { return user.name; });
-	    if(tr != undefined) {
-		tr.getElement('td.adminProjectUsersCell').empty()
-                    .appendText(ulist.join());
-	    }
+            var tr = $('templateProjectInfoRow').clone();
+            tr.set('id', 'project_'+prj.id);
+            tr.getElement('td.adminProjectNameCell').set('text', prj.name);
+	    tr.getElement('td.adminProjectUsersCell')
+                .set('text', ulist.join());
+            tr.inject(table);
+        });
+    },
+
+    /* Function: showProjectEditDialog
+
+       Opens the dialog to edit project settings.
+
+       Parameters:
+        pid - ID of the project to be edited
+     */
+    showProjectEditDialog: function(pid) {
+        var mbox;
+        var prj = cora.projects.get(pid);
+	var content = $('projectEditForm').clone();
+
+        if(prj == undefined || prj.id != pid) {
+            gui.showTextDialog('Unbekannter Fehler',
+                               'Die Einstellungen für das Projekt konnten nicht geladen werden.');
+            return;
+        }
+
+        // fill content
+
+	mbox = new mBox.Modal({
+	    title: 'Einstellungen für Projekt "'+prj.name+'"',
+	    content: content,
+	    buttons: [ {title: "OK", addClass: "mform button_green",
+			id: "importCloseButton", 
+			event: function() {
+                            // save settings here
+			    this.close();
+			}},
+                       {title: "Abbrechen", addClass: "mform"}
+                     ]
 	});
+        mbox.open();
     }
 }
 

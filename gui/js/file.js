@@ -45,6 +45,14 @@ cora.projects = {
         return this.data;
     },
 
+    /* Function: isEmpty
+
+       Returns a boolean indicating whether the project list is empty.
+    */
+    isEmpty: function() {
+        return (typeof(this.data) === 'undefined' || this.data.length == 0);
+    },
+
     /* Function: onUpdate
 
        Add a callback function to be called whenever the project list
@@ -155,9 +163,8 @@ var file = {
     // activates the transcription import form -- in big parts a clone
     // of activateImportForm -- could they be combined?
     activateTransImportForm: function() {
-	if($('noProjectGroups')) {
-	    return;
-	}
+        if(cora.projects.isEmpty())
+            return;
 
 	var formname = 'newFileImportTransForm';
         var ref = this;
@@ -305,9 +312,8 @@ var file = {
 
     // activates the XML import form
     activateImportForm: function(){
-	if($('noProjectGroups')) {
-	    return;
-	}
+        if(cora.projects.isEmpty())
+            return;
 
 	var formname = 'newFileImportForm';
         var ref = this;
@@ -598,9 +604,6 @@ var file = {
     },
     
     listFiles: function(){
-	if($('noProjectGroups')) {
-	    return;
-	}
         cora.projects.performUpdate();
     },
 
@@ -610,6 +613,10 @@ var file = {
 	 * couldn't this be done more efficiently? */
         var ref = this;
         var files_div = $('files').empty();
+        if(cora.projects.isEmpty()) {
+            files_div.grab($('noProjectGroups').clone());
+            return;
+        }
         Array.each(cora.projects.getAll(), function(project) {
             var prj_div   = $('fileGroup').clone();
             var prj_table = prj_div.getElement('table');
@@ -617,6 +624,8 @@ var file = {
             Array.each(project.files, function(file) {
                 prj_table.adopt(ref.renderTableLine(file));
             });
+            if(project.files.length == 0)
+                $('noProjectFiles').clone().replaces(prj_table);
             prj_div.inject(files_div);
         });
         gui.addToggleEvents(files_div.getElements('.clappable'));
