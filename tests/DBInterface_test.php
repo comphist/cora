@@ -63,7 +63,7 @@ class Cora_Tests_CoraDocument_Mock {
  * tests for:
  *      getErrorTypes()
  *      getUserData($user, $pw)
- *      changePassword($uname, $password)
+ *      changePassword($uid, $password)
  *      changeProjectUsers($pid, $userlist)
  *      getTextIdForToken($tok_id)
  *  coverage for:
@@ -127,20 +127,20 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
                                  $this->getConnection()->createQueryTable("users",
                                     "SELECT id,name,admin FROM users WHERE name='anselm';"));
 
-        $this->dbi->changePassword("test", "password");
+        $this->dbi->changePassword(5, "password");  // user "test"
         $this->assertEquals("1619d7adc23f4f633f11014d2f22b7d8",
             $this->getConnection()->createQueryTable("users",
             "SELECT password FROM users WHERE name='test'")->getValue(0, 'password' ));
 
-        $this->dbi->deleteUser("anselm");
+        $this->dbi->deleteUser(6);  // user "anselm"
         $this->assertEquals(0, $this->getConnection()->createQueryTable("users",
                                "SELECT id,name,admin FROM users WHERE name='anselm';")->getRowCount());
 
-        $this->dbi->toggleAdminStatus("test");
+        $this->dbi->toggleAdminStatus(5);
         $this->assertEquals(1, $this->getConnection()->createQueryTable("testuser",
                                "SELECT admin FROM users WHERE name='test';")->getValue(0, "admin"));
 
-        $this->dbi->toggleAdminStatus("test");
+        $this->dbi->toggleAdminStatus(5);
         $this->assertEquals(0, $this->getConnection()->createQueryTable("testuser",
                                "SELECT admin FROM users WHERE name='test';")->getValue(0, "admin"));
 

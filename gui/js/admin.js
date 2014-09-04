@@ -11,8 +11,158 @@
 // ********** USER MANAGEMENT ********************************************
 // ***********************************************************************
 
+cora.users = {
+    data: [],
+    byID: {},
+    onUpdateHandlers: [],
+
+    /* Function: getAll
+
+       Return an array containing all users.
+    */
+    getAll: function() {
+        return this.data;
+    },
+
+    /* Function: onUpdate
+
+       Add a callback function to be called whenever the user list is
+       updated.
+
+       Parameters:
+        fn - function to be called
+     */
+    onUpdate: function(fn) {
+        if(typeof(fn) == "function")
+            this.onUpdateHandlers.push(fn);
+        return this;
+    },
+
+    /* Function: createUser
+       
+       Sends a server request to create a new user.
+
+       Parameters:
+        name - Desired username
+        pw   - Desired password
+        fn   - Callback function to invoke after the request
+    */
+    createUser: function(name, pw, fn) {
+        var ref = this;
+	new Request.JSON(
+	    {'url': 'request.php?do=createUser',
+	     'async': false,
+	     'data': {'username': name, 'password': pw},
+	     onSuccess: function(status, text) {
+		 ref.performUpdate();
+                 if(typeof(fn) == "function")
+                     fn(status, text);
+	     }
+	}).post();
+    },
+
+    /* Function: deleteUser
+
+       Sends a server request to delete a user.
+
+       Parameters:
+        id - ID of the user to delete
+        fn - Callback function to invoke after the request
+     */
+    deleteUser: function(id, fn) {
+        var ref = this;
+	new Request.JSON({
+            'url': 'request.php?do=deleteUser',
+	    'async': false,
+	    'data': {'id': id},
+	    onSuccess: function(status, text) {
+                ref.performUpdate();
+                if(typeof(fn) == "function")
+                    fn(status, text);
+	    }
+	}).post();
+    },
+
+    /* Function: toggleAdmin
+
+       Sends a server request to toggle admin status of a user.  Does
+       not trigger functions in onUpdateHandler.
+
+       Parameters:
+        id - ID of the user
+        fn - Callback function to invoke after the request
+     */
+    toggleAdmin: function(id, fn) {
+        var ref = this;
+	new Request.JSON({
+            'url': 'request.php?do=toggleAdmin',
+	    'async': false,
+	    'data': {'id': id},
+	    onSuccess: function(status, text) {
+                if(status['success']) {
+                    var value = ref.data[ref.byID[id]].admin=="1" ? "0" : "1";
+                    ref.data[ref.byID[id]].admin = value;
+                }
+                if(typeof(fn) == "function")
+                    fn(status, text);
+            }
+	}).post();
+    },
+
+    /* Function: changePassword
+
+       Sends a server request to change the password of a user.
+
+       Parameters:
+        id - ID of the user
+        pw - New password
+        fn - Callback function to invoke after the request
+    */
+    changePassword: function(id, pw, fn) {
+	new Request.JSON({
+            'url': 'request.php?do=changePassword',
+	    'async': false,
+	    'data': {'id': id, 'password': pw},
+	    onSuccess: function(status, text) {
+                if(typeof(fn) == "function")
+                    fn(status, text);
+	    }
+	}).post();
+    },
+
+    /* Function: performUpdate
+
+       Perform a server request to update the user data.  Calls any
+       handlers previously registered via onUpdate().
+     */
+    performUpdate: function() {
+        var ref = this;
+        new Request.JSON({
+            url: 'request.php',
+            onSuccess: function(status, text) {
+                if(!status['success']) {
+                    gui.showNotice('error',
+                                   "Konnte Benutzerdaten nicht laden.");
+                    return;
+                }
+                ref.data = status['data'];
+                ref.byID = {};
+                Array.each(ref.data, function(user, idx) {
+                    ref.byID[user.id] = idx;
+                });
+                Array.each(ref.onUpdateHandlers, function(handler) {
+                    handler(status, text);
+                });
+            }
+        }).get({'do': 'getUserList'});
+    }
+}
+
 cora.userEditor = {
     initialize: function() {
+        cora.users.onUpdate(this.refreshUserTable);
+        cora.users.performUpdate();
+
 	var ceralink = new Element('a', {
 	    "id": 'ceraCUButton',
 	    "href": '#ceraCreateUser'
@@ -29,40 +179,17 @@ cora.userEditor = {
 	    }
 	});
 
-
 	$('editUsers').addEvent(
 	    'click:relay(td)',
 	    function(event, target) {
 		if(target.hasClass('adminUserAdminStatus')) {
 		    cora.userEditor.toggleStatus(event, 'Admin');
 		}
-		else if(target.hasClass('adminUserNormStatus')) {
-		    cora.userEditor.toggleStatus(event, 'Norm');
-		}
 		else if(target.hasClass('adminUserDelete')) {
 		    cora.userEditor.deleteUser(event);
 		}
 	    }
 	);
-	$$('button.adminUserPasswordButton').each(
-	    function(button) {
-		var username = button.getParent('tr').get('id').substr(5);
-		var ceralink = new Element('a', {'href':'#ceraChangePassword'}).wraps(button);
-		ceralink.cerabox({
-		    displayTitle: false,
-		    group: false,
-		    events: {
-			onOpen: function(currentItem, collection) {
-			    $$('input[name="changepw[un]"]').set('value', username);
-			    $$('button[name="submitChangePassword"]').addEvent(
-				'click', cora.userEditor.changePassword, cora.userEditor
-			    );
-			}
-		    }
-		});
-	    }
-	);
-	
     },
     createUser: function() {
 	var username  = $$('.cerabox-content input[name="newuser[un]"]')[0].get('value');
@@ -84,100 +211,55 @@ cora.userEditor = {
 	}
 
 	// send request
-	var request = new Request.JSON(
-	    {'url': 'request.php?do=createUser',
-	     'async': false,
-	     'data': 'username='+username+'&password='+password,
-	     onFailure: function(xhr) {
-		 alert("Fehler: Der Server lieferte folgende Fehlermeldung zurück:\n\n" + xhr.responseText);
-	     },
-	     onSuccess: function(data, xml) {
-		 if(!data['success']) {
-		     alert("Fehler: Benutzer konnte nicht hinzugefügt werden!");
-		     return;
-		 }
-		 var row = $$('.adminUserInfoRow')[0].clone();
-		 row.set('id', 'User_'+username);
-		 row.getElement('td.adminUserNameCell').set('text', username);
-		 row.getElement('img.adminUserAdminStatus').hide();
-		 // row.getElement('img.adminUserNormStatus').show('inline');
-		 var pwbutton = row.getElement('button.adminUserPasswordButton');
-		 new Element('a', {'href':'#ceraChangePassword'}).wraps(pwbutton).cerabox({
-		     displayTitle: false,
-		     group: false,
-		     events: {
-			 onOpen: function(currentItem, collection) {
-			     $$('input[name="changepw[un]"]').set('value', username);
-			     $$('button[name="submitChangePassword"]').addEvent(
-				 'click', cora.userEditor.changePassword, cora.userEditor
-			     );
-			 }
-		     }
-		 });
-		 $('editUsers').grab(row);
-		 
-		 CeraBoxWindow.close();
-	     }
-	    }
-	);
-	request.post();
-
+        cora.users.createUser(username, password, function (status, text) {
+	    CeraBoxWindow.close();
+            if(status['success']) {
+                gui.showNotice('ok', 'Benutzer hinzugefügt.');
+            }
+            else {
+	        gui.showNotice('error', 'Benutzer nicht hinzugefügt.');
+            }
+        });
 	return true;
     },
     deleteUser: function(event) {
 	var parentrow = event.target.getParent('tr');
-	var username = parentrow.get('id').substr(5);
-	var dialog = "Soll der Benutzer '" + username + "' wirklich gelöscht werden?";
+	var uid = parentrow.get('id').substr(5);
+        var username = parentrow.getElement('td.adminUserNameCell').get('text');
 
+	var dialog = "Soll der Benutzer '" + username + "' wirklich gelöscht werden?";
 	if (!confirm(dialog))
 	    return;
 
-	var request = new Request.JSON(
-	    {'url': 'request.php?do=deleteUser',
-	     'async': false,
-	     'data': 'username='+username,
-	     onFailure: function(xhr) {
-		 alert("Fehler: Der Server lieferte folgende Fehlermeldung zurück:\n\n" + xhr.responseText);
-	     },
-	     onSuccess: function(data, xml) {
-		 if(!data['success']) {
-		     alert("Fehler: Benutzer konnte nicht gelöscht werden!");
-		     return;
-		 }
-		 parentrow.dispose();
-	     }
-	    }
-	);
-	request.post();	
+        cora.users.deleteUser(uid, function(status, text) {
+            if(status['success']) {
+                gui.showNotice('ok', 'Benutzer gelöscht.');
+            }
+            else {
+                gui.showNotice('error', 'Benutzer nicht gelöscht.');
+            }
+        });
     },
     toggleStatus: function(event, statusname) {
+        if(statusname!='Admin')
+            return;
 	var parentrow = event.target.getParent('tr');
-	var username = parentrow.get('id').substr(5);
-	var request = new Request.JSON(
-	    {'url': 'request.php?do=toggle'+statusname,
-	     'async': false,
-	     'data': 'username='+username,
-	     onFailure: function(xhr) {
-		 alert("Fehler: Der Server lieferte folgende Fehlermeldung zurück:\n\n" + xhr.responseText);
-	     },
-	     onSuccess: function(data, xml) {
-		 if(!data['success']) {
-		     alert("Fehler: Aktion konnte nicht durchgeführt werden!");
-		     return;
-		 }
-		 var arrow = parentrow.getElement('img.adminUser'+statusname+'Status');
-		 if(arrow.isDisplayed()) {
-		     arrow.hide();
-		 } else {
-		     arrow.show('inline');
-		 }
-	     }
+	var uid = parentrow.get('id').substr(5);
+
+        cora.users.toggleAdmin(uid, function(status, text) {
+            if(!status['success']) {
+                gui.showNotice('error', 'Admin-Status nicht geändert.');
+            }
+	    var arrow = parentrow.getElement('img.adminUserAdminStatus');
+	    if(arrow.isDisplayed()) {
+		arrow.hide();
+	    } else {
+		arrow.show('inline');
 	    }
-	);
-	request.post();	
+        });
     },
     changePassword: function() {
-	var username  = $$('.cerabox-content input[name="changepw[un]"]')[0].get('value');
+	var uid       = $$('.cerabox-content input[name="changepw[id]"]')[0].get('value');
 	var password  = $$('.cerabox-content input[name="changepw[pw]"]')[0].get('value');
 	var controlpw = $$('.cerabox-content input[name="changepw[pw2]"]')[0].get('value');
 
@@ -192,29 +274,58 @@ cora.userEditor = {
 	}
 
 	// send request
-	var request = new Request.JSON(
-	    {'url': 'request.php?do=changePassword',
-	     'async': false,
-	     'data': 'username='+username+'&password='+password,
-	     onFailure: function(xhr) {
-		 alert("Fehler: Der Server lieferte folgende Fehlermeldung zurück:\n\n" + xhr.responseText);
-	     },
-	     onSuccess: function(data, xml) {
-		 if(!data['success']) {
-		     alert("Fehler: Passwort konnte nicht geändert werden!");
-		     return;
-		 }
-		 alert("Passwort erfolgreich geändert.");
-		 CeraBoxWindow.close();
-	     }
-	    }
-	);
-	request.post();
-
+        cora.users.changePassword(uid, password, function (status, text) {
+	    CeraBoxWindow.close();
+            if(status['success']) {
+                gui.showNotice('ok', 'Password geändert.');
+            }
+            else {
+                gui.showNotice('error', 'Password nicht geändert.');
+            }
+        });
 	return true;
     },
-}
+    
+    /* Function: refreshUserTable
+       
+       Renders the table containing the user data.
+     */
+    refreshUserTable: function() {
+        var table = $('editUsers');
+        table.getElements('tr.adminUserInfoRow').dispose();
+        Array.each(cora.users.getAll(), function(user) {
+            var tr = $('templateUserInfoRow').clone();
+            tr.set('id', 'User_'+user.id);
+            tr.getElement('td.adminUserNameCell').set('text', user.name);
+            tr.getElement('td.adminUserLastactiveCell').set('text', user.lastactive);
+            if(user.active == "1")
+                tr.addClass('userActive');
+            if(user.admin == "0")
+                tr.getElement('img.adminUserAdminStatus').hide();
+            tr.inject(table);
+        });
 
+        // old legacy code here:
+	$$('button.adminUserPasswordButton').each(
+	    function(button) {
+		var uid = button.getParent('tr').get('id').substr(5);
+		var ceralink = new Element('a', {'href':'#ceraChangePassword'}).wraps(button);
+		ceralink.cerabox({
+		    displayTitle: false,
+		    group: false,
+		    events: {
+			onOpen: function(currentItem, collection) {
+			    $$('input[name="changepw[id]"]').set('value', uid);
+			    $$('button[name="submitChangePassword"]').addEvent(
+				'click', cora.userEditor.changePassword, cora.userEditor
+			    );
+			}
+		    }
+		});
+	    }
+	);
+    },
+}
 
 cora.projectEditor = {
     initialize: function() {

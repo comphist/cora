@@ -216,19 +216,22 @@ class RequestHandler {
 					     $get["q"],
 					     $get["limit"]);
 
+      case "getUserList":
+        return $this->sh->getUserList();
+
       case "createUser":
 	return $this->sh->createUser($post["username"],
 				     $post["password"],
 				     false);
 	
       case "deleteUser":
-	return $this->sh->deleteUser($post["username"]);
+	return $this->sh->deleteUser($post["id"]);
 	
       case "toggleAdmin":
-	return $this->sh->toggleAdminStatus($post["username"]);
+	return $this->sh->toggleAdminStatus($post["id"]);
 
       case "changePassword":
-	return $this->sh->changePassword($post["username"],
+	return $this->sh->changePassword($post["id"],
 					 $post["password"]);
 
       case "listFiles":

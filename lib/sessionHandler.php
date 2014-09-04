@@ -123,8 +123,12 @@ class CoraSessionHandler {
       privileges first. */
   public function getUserList() {
     if ($_SESSION["admin"]) {
-      return $this->db->getUserList($this->timeout);
+        return array('success' => true,
+                     'data' => $this->db->getUserList($this->timeout));
     }
+    return array('success' => false,
+                 'errors' => array("Administrator privileges are required "
+                                   ." for this action."));
   }
 
   /** Wraps DBInterface::updateLastactive(), updating "last active"
@@ -146,10 +150,10 @@ class CoraSessionHandler {
 
   /** Wraps DBInterface::changePassword(), checking for administrator
       privileges first. */
-  public function changePassword( $username, $password ) {
+  public function changePassword($uid, $password) {
     if (!$_SESSION["admin"])
       return array('success' => false);
-    $status = $this->db->changePassword($username, $password);
+    $status = $this->db->changePassword($uid, $password);
     return array('success' => (bool) $status);
   }
 
@@ -157,7 +161,7 @@ class CoraSessionHandler {
       changing their own passwords. */
   public function changeUserPassword( $oldpw, $newpw ) {
     if ($this->db->getUserData($_SESSION["user"], $oldpw)) {
-      $this->db->changePassword($_SESSION["user"], $newpw);
+      $this->db->changePassword($_SESSION["user_id"], $newpw);
       return array("success"=>true);
     }
     return array("success"=>false, "errcode"=>"oldpwmm");
@@ -173,19 +177,19 @@ class CoraSessionHandler {
 
   /** Wraps DBInterface::deleteUser(), checking for administrator
       privileges first. */
-  public function deleteUser( $username ) {
+  public function deleteUser($uid) {
     if (!$_SESSION["admin"])
-      return array('success' => false);
-    $status = $this->db->deleteUser($username);
+        return array('success' => false);
+    $status = $this->db->deleteUser($uid);
     return array('success' => (bool) $status);
   }
 
   /** Wraps DBInterface::toggleAdminStatus(), checking for
       administrator privileges first. */
-  public function toggleAdminStatus( $username ) {
+  public function toggleAdminStatus($uid) {
     if (!$_SESSION["admin"])
       return array('success' => false);
-    $status = $this->db->toggleAdminStatus($username);
+    $status = $this->db->toggleAdminStatus($uid);
     return array('success' => (bool) $status);
   }
 

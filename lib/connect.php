@@ -257,17 +257,16 @@
 
    /** Change the password for a user.
     *
-    * @param string $username The username for which the password
-    * should be changed.
+    * @param string $uid ID of the user
     * @param string $password The new password
     *
-    * @return The result of the corresponding @c mysql_query() command.
+    * @return 1 if successful, 0 otherwise
     */
-   public function changePassword($username, $password) {
+   public function changePassword($uid, $password) {
      $hashpw = $this->hashPassword($password);
-     $qs = "UPDATE users SET password=:pw WHERE name=:name";
+     $qs = "UPDATE users SET password=:pw WHERE `id`=:uid";
      $stmt = $this->dbo->prepare($qs);
-     $stmt->bindValue(':name', $username, PDO::PARAM_STR);
+     $stmt->bindValue(':uid', $uid, PDO::PARAM_INT);
      $stmt->bindValue(':pw', $hashpw, PDO::PARAM_STR);
      $stmt->execute();
      return $stmt->rowCount();
@@ -310,39 +309,41 @@
 
    /** Drop a user record from the database.
     *
-    * @param string $username The username to be deleted
+    * @param string $uid ID of the user to be deleted
     *
-    * @return The result of the corresponding @c mysql_query() command.
+    * @return 1 if successful, 0 otherwise
     */
-   public function deleteUser($username) {
-     $qs = "DELETE FROM users WHERE name=:name AND `id`!=1";
+   public function deleteUser($uid) {
+     if($uid == 1 || $uid == "1")
+       return 0;
+     $qs = "DELETE FROM users WHERE `id`=:uid";
      $stmt = $this->dbo->prepare($qs);
-     $stmt->bindValue(':name', $username, PDO::PARAM_STR);
+     $stmt->bindValue(':uid', $uid, PDO::PARAM_INT);
      $stmt->execute();
      return $stmt->rowCount();
    }
 
    /** Toggle administrator status of a user.
     *
-    * @param string $username The username for which the administrator
+    * @param string $uid ID of the user for which the administrator
     * status should be changed
     *
-    * @return The result of the corresponding @c mysql_query() command.
+    * @return 1 if successful, 0 otherwise
     */
-   public function toggleAdminStatus($username) {
-     return $this->toggleUserStatus($username, 'admin');
+   public function toggleAdminStatus($uid) {
+     return $this->toggleUserStatus($uid, 'admin');
    }
 
    /** Helper function for @c toggleAdminStatus(). */
-   public function toggleUserStatus($username, $statusname) {
-     $qs = "SELECT {$statusname} FROM users WHERE name=:name";
+   public function toggleUserStatus($uid, $statusname) {
+     $qs = "SELECT {$statusname} FROM users WHERE `id`=:uid";
      $stmt = $this->dbo->prepare($qs);
-     $stmt->execute(array(':name' => $username));
+     $stmt->execute(array(':uid' => $uid));
      $oldstat = $stmt->fetch(PDO::FETCH_COLUMN);
      $newstat = ($oldstat == 1) ? 0 : 1;
-     $qs = "UPDATE users SET {$statusname}={$newstat} WHERE name=:name";
+     $qs = "UPDATE users SET {$statusname}={$newstat} WHERE `id`=:uid";
      $stmt = $this->dbo->prepare($qs);
-     $stmt->execute(array(':name' => $username));
+     $stmt->execute(array(':uid' => $uid));
      return $stmt->rowCount();
    }
 

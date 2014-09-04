@@ -7,7 +7,7 @@
  if ($_SESSION["admin"]):
 
 $tlist = $sh->getTagsetList();
-$ulist = $sh->getUserList();
+$ulist = array();
 // $projects = $sh->getProjectList();   defined in gui.php
 // $project_users = $sh->getProjectUsers();   defined in gui.php
 
@@ -30,6 +30,7 @@ $ulist = $sh->getUserList();
        <th>Letzte Aktivität</th>
        <th></th>
      </tr>
+
      <?php foreach ($ulist as $user): 
              $un = $user['name'];
              $la = $user['lastactive'];
@@ -48,6 +49,7 @@ $ulist = $sh->getUserList();
        </td>
      </tr>
      <?php endforeach; ?>
+
    </table>
 
    <p>
@@ -156,7 +158,7 @@ $ulist = $sh->getUserList();
 	<table>
 	  <tr style="display: none;">
 	    <th>Benutzername:</th>
-	    <td><input type="text" name="changepw[un]" value="" /></td>
+	    <td><input type="text" name="changepw[id]" value="" /></td>
 	  </tr>
 	  <tr>
 	    <th>Neues Passwort:</th>
@@ -244,6 +246,18 @@ $ulist = $sh->getUserList();
     <p><textarea id="aTBtextarea" cols="80" rows="10" readonly="readonly"></textarea></p>
   </div>
 
+  <table>
+     <tr id="templateUserInfoRow" class="adminUserInfoRow">
+       <td class="adminUserDelete"><img src="gui/images/proxal/delete.ico" /></td>
+       <td class="adminUserNameCell"></td>
+       <td class="centered adminUserAdminStatus"><img src="gui/images/proxal/check.ico" class="adminUserAdminStatus"/>
+       </td>
+       <td class="adminUserLastactiveCell"></td>
+       <td>
+           <button class="adminUserPasswordButton" type="button">Passwort ändern...</button>
+       </td>
+     </tr>
+  </table>
 
 </div>
 
