@@ -2,9 +2,6 @@
 /** @file file.php
  * The document selection page.
  */
-
-$tagsets = $sh->getTagsetList();
-$tagsets_all = $sh->getTagsetList(false, "class");
 ?>
 
 <div id="fileDiv" class="content" style="display: none;">

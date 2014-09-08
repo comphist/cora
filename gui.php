@@ -24,6 +24,10 @@ function embedJSwithTimestamp($filename) {
 		<meta name="keywords" content="<?php echo KEYWORDS; ?>" />
 		<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
 
+<?php if($_SESSION['admin']):
+        embedCSSwithTimestamp("gui/css/MultiSelect.css");
+      endif;
+?>
 <?php
   if(file_exists(dirname(__FILE__) . "/gui/css/master.min.css")) {
     embedCSSwithTimestamp("gui/css/master.min.css");
@@ -56,6 +60,10 @@ function embedJSwithTimestamp($filename) {
 			      showInputErrors: <?php echo $_SESSION['showInputErrors']; ?>
 			<?php endif; ?>
 			};
+<?php
+    $tagsets = $sh->getTagsetList();
+    $tagsets_all = $sh->getTagsetList(false, "class");
+?>
 		</script>
   <?php include( "project_specific_hacks.php" ); ?>
 
@@ -87,6 +95,7 @@ function embedJSwithTimestamp($filename) {
 ?>
 
 <?php if($_SESSION['admin']):
+        embedJSwithTimestamp("gui/js/MultiSelect.js");
         embedJSwithTimestamp("gui/js/admin.js");
       endif;
 ?>

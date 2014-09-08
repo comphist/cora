@@ -135,8 +135,19 @@ $ulist = array();
 	  </p>
       </div>
 
-     <div id="projectEditForm">
-     <p>Momentan nicht funktionsfähig.</p>
+     <div id="projectEditForm" class="projectEditForm">
+     <p>
+       <label for="projectCmdEditToken">Befehl zum Editieren von Tokens: </label><br />
+       <input type="text" name="projectCmdEditToken" placeholder="(nicht definiert)" size="60" class="mform" />
+       <br />
+       <label for="projectCmdImport">Befehl zum Importieren von Texten: </label><br />
+       <input type="text" name="projectCmdImport" placeholder="(nicht definiert)" size="60" class="mform" />
+     </p>
+
+     <p><label>Zugeordnete Benutzer:</label><br />
+     <div class="userSelectPlaceholder"></div></p>
+     <p><label>Zugeordnete Tagsets:</label><br />
+     <div class="tagsetSelectPlaceholder"></div></p>
 <!--
          <form action="request.php"  method="post">
 	 <div class="userChangeEditTable">

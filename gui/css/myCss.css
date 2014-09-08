@@ -221,14 +221,6 @@ label.editStep {
 	background-repeat:no-repeat;
 	background-image:url(../images/chk_on.png)
 }
-/* TODO: Image missing! */
-.unselected{
-	background-image:url(../images/rdo_off.png)
-}
-/* TODO: Image missing! */
-.selected{
-	background-image:url(../images/rdo_on.png)
-}
 
 /* HEADER */
 
@@ -1042,4 +1034,13 @@ div#transImportSpinner .proc {
 div#aa_tagger_select { 
     padding: .5em 1em 0 1em;
     text-size: small;
+}
+
+div.projectEditForm p { 
+    padding-left: 0;
+    padding-right: 0;
+}
+
+div.projectEditForm p > label { 
+    font-weight: bold;
 }

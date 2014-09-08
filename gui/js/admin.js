@@ -130,6 +130,36 @@ cora.users = {
 	}).post();
     },
 
+    /* Function: makeMultiSelectBox
+
+       Creates and returns a dropdown box using MultiSelect.js with
+       all available users as entries.
+
+       Parameters:
+        users - Array of user IDs that should be pre-selected
+     */
+    makeMultiSelectBox: function(users) {
+        var multiselect = new Element('div',
+                                      {'class': 'MultiSelect',
+                                       'id':    'LinkUsers_MS'});
+        Array.each(this.data, function(user, idx) {
+            var entry = new Element('input',
+                                    {'type': 'checkbox',
+                                     'id':   'linkusers_'+user.id,
+                                     'name': 'linkusers[]',
+                                     'value': user.id});
+            var label = new Element('label',
+                                    {'for':  'linkusers_'+user.id,
+                                     'text': user.name});
+            if(users.some(function(el){ return el.id == user.id; }))
+                entry.set('checked', 'checked');
+            multiselect.grab(entry).grab(label);
+        });
+        new MultiSelect(multiselect,
+                       {monitorText: ' Benutzer ausgewählt'});
+        return multiselect;
+    },
+
     /* Function: performUpdate
 
        Perform a server request to update the user data.  Calls any
@@ -425,6 +455,53 @@ cora.projectEditor = {
         });
     },
 
+    /* Function: makeTagsetSelector
+       
+       Creates a div containing the tagset selections.  This is
+       temporary until the tagset handling is refactored on the
+       client-side.
+
+       Parameters:
+        tagsets - Array of tagset IDs to be pre-selected
+     */
+    makeTagsetSelector: function(tagsets) {
+        var div = $('tagsetAssociationTable').clone();
+        Array.each(tagsets, function(tid) {
+            var input = div.getElement('input[value="'+tid+'"]');
+            if (input instanceof Element)
+                input.set('checked', 'checked');
+        });
+        return div;
+    },
+
+    /* Function: makeProjectEditContent
+
+       Creates a div containing the form to edit project settings,
+       already filled with information for a given project.
+
+       Should only be called internally from showProjectEditDialog.
+
+       Parameters:
+        prj - Project to take the settings from
+     */
+    makeProjectEditContent: function(prj) {
+	var content = $('projectEditForm').clone();
+        if(prj.settings.cmd_edittoken) {
+            content.getElement('input[name="projectCmdEditToken"]')
+                   .set('value', prj.settings.cmd_edittoken);
+        }
+        if(prj.settings.cmd_import) {
+            content.getElement('input[name="projectCmdImport"]')
+                   .set('value', prj.settings.cmd_import);
+        }
+        cora.users.makeMultiSelectBox(prj.users)
+            .replaces(content.getElement('.userSelectPlaceholder'));
+        this.makeTagsetSelector(prj.tagsets)
+            .replaces(content.getElement('.tagsetSelectPlaceholder'));
+
+        return content;
+    },
+
     /* Function: showProjectEditDialog
 
        Opens the dialog to edit project settings.
@@ -433,9 +510,8 @@ cora.projectEditor = {
         pid - ID of the project to be edited
      */
     showProjectEditDialog: function(pid) {
-        var mbox;
+        var content, mbox;
         var prj = cora.projects.get(pid);
-	var content = $('projectEditForm').clone();
 
         if(prj == undefined || prj.id != pid) {
             gui.showTextDialog('Unbekannter Fehler',
@@ -443,14 +519,16 @@ cora.projectEditor = {
             return;
         }
 
-        // fill content
-
+        content = this.makeProjectEditContent(prj);
 	mbox = new mBox.Modal({
 	    title: 'Einstellungen für Projekt "'+prj.name+'"',
 	    content: content,
+            closeOnBodyClick: false,
 	    buttons: [ {title: "OK", addClass: "mform button_green",
 			id: "importCloseButton", 
 			event: function() {
+                            gui.showNotice('error',
+                                           "Speichern noch nicht implementiert.");
                             // save settings here
 			    this.close();
 			}},
