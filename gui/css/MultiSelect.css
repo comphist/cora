@@ -1,0 +1,63 @@
+.MultiSelect {
+	width: 100%;
+	font-size: small;
+	font-family: Helvetica, sans-serif;
+	display: block;
+	position: relative;
+}
+.MultiSelect .monitor {
+	cursor: pointer;
+	background: url("../images/multiselect/monitor-left.png") top left no-repeat;
+	width: 99%;
+	line-height: 18px;
+	padding: 0 0 0 4px;
+	margin: 0;
+	overflow: hidden;
+}
+.MultiSelect .monitor div {
+	background: url("../images/multiselect/monitor-right.png") top right no-repeat;
+	padding: 0 18px 0 0;
+}
+.MultiSelect .monitor div div {
+	background: url("../images/multiselect/monitor-center.png") top left repeat-x;
+	padding: 1px 0 0 0;
+	margin: 0;
+}
+.MultiSelect .monitor.active { background: url("../images/multiselect/monitor-left-active.png") top left no-repeat; }
+.MultiSelect .monitor.active div { background: url("../images/multiselect/monitor-right-active.png") top right no-repeat; }
+.MultiSelect .monitor.active div div { background: url("../images/multiselect/monitor-center-active.png") top right repeat-x; }
+
+.MultiSelect ul {
+	position: absolute;
+	z-index: 1000;
+	top: 18px;
+	left: 0;
+	margin: 0;
+	padding: 0;
+	width: 99%;
+	max-height: 230px;
+	overflow: hidden;
+	list-style: none;
+	background-color: #FFF;
+	border-top: 1px solid #ccc;
+	border-left: 3px solid #ccc;
+	border-right: 1px solid #000;
+	border-bottom: 1px solid #000;
+	_height: 230px; /* IE */
+}
+.MultiSelect ul li {
+	padding: 1px 3px;
+}
+.MultiSelect ul li.hover,
+.MultiSelect ul li.selected.hover {
+	background-color: #6DBAF0;
+	color: white;
+}
+.MultiSelect ul li.selected {
+	background-color: #3875D7;
+	color: white;
+}
+.MultiSelect ul li input {
+	vertical-align: middle;
+	margin-right: 3px;
+}
