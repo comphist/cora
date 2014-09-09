@@ -92,6 +92,53 @@ cora.projects = {
     }
 };
 
+/* Class: cora.tagsets
+
+   Acts as a wrapper for an array containing all tagset information.
+*/
+cora.tagsets = {
+    data: [],
+    byID: {},
+
+    /* Function: get
+
+       Return a tagset by ID.
+
+       Parameters:
+        pid - ID of the tagset to be returned
+     */
+    get: function(pid) {
+        var idx = this.byID[pid];
+        if(idx == undefined)
+            return Object();
+        return this.data[idx];
+    },
+
+    /* Function: getAll
+
+       Return an array containing all projects.
+    */
+    getAll: function() {
+        return this.data;
+    },
+
+    /* Function: performUpdate
+       
+       Analogous to cora.projects.performUpdate(), this function is
+       supposed to update the tagset information.  Currently doesn't
+       perform a server request, but reads the data from another
+       PHP-generated variable.  (HACK)
+     */
+    performUpdate: function(){
+        this.data = PHP_tagsets;
+        this.byID = {};
+        Array.each(this.data, function(prj, idx) {
+            this.byID[prj.id] = idx;
+        }.bind(this));
+        return this;
+    }
+};
+
 var file = {
     transImportProgressBar: null,
     tagsets: {},
@@ -782,6 +829,7 @@ var file = {
 // ***********************************************************************
 
 window.addEvent('domready', function() {
+    cora.tagsets.performUpdate();
     file.initialize();    
 
     $$('div.fileViewRefresh img').addEvent('click',function(e){ e.stop(); file.listFiles() });

@@ -60,10 +60,17 @@ function embedJSwithTimestamp($filename) {
 			      showInputErrors: <?php echo $_SESSION['showInputErrors']; ?>
 			<?php endif; ?>
 			};
+  var PHP_tagsets = [
 <?php
     $tagsets = $sh->getTagsetList();
     $tagsets_all = $sh->getTagsetList(false, "class");
+    foreach($tagsets_all as $set):
+        $set['id'] = $set['shortname'];
+        echo json_encode($set);
+        echo ", ";        
+    endforeach;
 ?>
+                     ];
 		</script>
   <?php include( "project_specific_hacks.php" ); ?>
 

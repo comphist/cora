@@ -1036,6 +1036,10 @@ div#aa_tagger_select {
     text-size: small;
 }
 
+div.projectEditForm { 
+    max-width: 35em;
+}
+
 div.projectEditForm p { 
     padding-left: 0;
     padding-right: 0;
@@ -1043,4 +1047,8 @@ div.projectEditForm p {
 
 div.projectEditForm p > label { 
     font-weight: bold;
+}
+
+div.projectEditForm input[type="text"] { 
+    overflow: scroll;
 }

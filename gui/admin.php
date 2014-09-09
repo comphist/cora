@@ -139,15 +139,32 @@ $ulist = array();
      <p>
        <label for="projectCmdEditToken">Befehl zum Editieren von Tokens: </label><br />
        <input type="text" name="projectCmdEditToken" placeholder="(nicht definiert)" size="60" class="mform" />
-       <br />
+     </p>
+<!-- <p>
+     Dieser Befehl wird beim Editieren von Tokens aufgerufen, um sie zu validieren und die verschiedenen Tokenisierungs- und Darstellungsebenen zu erzeugen.
+     </p>
+-->
+
+     <p>
        <label for="projectCmdImport">Befehl zum Importieren von Texten: </label><br />
        <input type="text" name="projectCmdImport" placeholder="(nicht definiert)" size="60" class="mform" />
+    </p>
+<!-- <p>
+    Dieser Befehl wird benutzt, um Textdateien für den Import in CorA-XML-Dateien zu konvertieren.
+     </p>
+-->
+
+     <p><label>Zugeordnete Benutzer:</label></p>
+     <div class="userSelectPlaceholder"></div>
+     <p>
+     Nur Administratoren oder dem Projekt zugeordnete Benutzer können dieses Projekt und die darin enthaltenen Dateien sehen und bearbeiten.
      </p>
 
-     <p><label>Zugeordnete Benutzer:</label><br />
-     <div class="userSelectPlaceholder"></div></p>
-     <p><label>Zugeordnete Tagsets:</label><br />
-     <div class="tagsetSelectPlaceholder"></div></p>
+     <p><label>Zugeordnete Tagsets:</label></p>
+     <div class="tagsetSelectPlaceholder"></div>
+     <p>
+     Neue Texte, die in dieses Projekt importiert werden, werden standardmäßig mit den hier zugeordneten Tagsets verknüpft.  Änderungen hier haben <strong>keine</strong> Auswirkungen auf bereits in der Datenbank vorhandene Texte!
+     </p>
 <!--
          <form action="request.php"  method="post">
 	 <div class="userChangeEditTable">

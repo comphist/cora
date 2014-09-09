@@ -360,6 +360,46 @@ cora.userEditor = {
     },
 }
 
+
+// ***********************************************************************
+// ********** Additional function for tagset management ******************
+// ***********************************************************************
+
+/* Function: makeMultiSelectBox
+
+   Creates and returns a dropdown box using MultiSelect.js with all
+   available tagsets as entries.
+
+   Parameters:
+    tagsets - Array of tagset IDs that should be pre-selected
+*/
+cora.tagsets.makeMultiSelectBox = function(tagsets) {
+    var multiselect = new Element('div',
+                                  {'class': 'MultiSelect',
+                                   'id':    'LinkTagsets_MS'});
+    Array.each(this.data, function(tagset, idx) {
+        var entry = new Element('input',
+                                {'type': 'checkbox',
+                                 'id':   'linkprjtagsets_'+tagset.id,
+                                 'name': 'linkprjtagsets[]',
+                                 'value': tagset.id});
+        var textr = "["+tagset['class']+"] "+tagset.longname+" (id: "+tagset.id+")";
+        var label = new Element('label',
+                                {'for':  'linkprjtagsets_'+tagset.id,
+                                 'text': textr});
+        if(tagsets.some(function(el){ return el == tagset.id; }))
+            entry.set('checked', 'checked');
+        multiselect.grab(entry).grab(label);
+    });
+    new MultiSelect(multiselect,
+                    {monitorText: ' Tagset(s) ausgewählt'});
+    return multiselect;
+};
+
+// ***********************************************************************
+// ********** PROJECT MANAGEMENT *****************************************
+// ***********************************************************************
+
 cora.projectEditor = {
     initialize: function() {
 	var ref = this;
@@ -455,25 +495,6 @@ cora.projectEditor = {
         });
     },
 
-    /* Function: makeTagsetSelector
-       
-       Creates a div containing the tagset selections.  This is
-       temporary until the tagset handling is refactored on the
-       client-side.
-
-       Parameters:
-        tagsets - Array of tagset IDs to be pre-selected
-     */
-    makeTagsetSelector: function(tagsets) {
-        var div = $('tagsetAssociationTable').clone();
-        Array.each(tagsets, function(tid) {
-            var input = div.getElement('input[value="'+tid+'"]');
-            if (input instanceof Element)
-                input.set('checked', 'checked');
-        });
-        return div;
-    },
-
     /* Function: makeProjectEditContent
 
        Creates a div containing the form to edit project settings,
@@ -496,7 +517,7 @@ cora.projectEditor = {
         }
         cora.users.makeMultiSelectBox(prj.users)
             .replaces(content.getElement('.userSelectPlaceholder'));
-        this.makeTagsetSelector(prj.tagsets)
+        cora.tagsets.makeMultiSelectBox(prj.tagsets)
             .replaces(content.getElement('.tagsetSelectPlaceholder'));
 
         return content;
