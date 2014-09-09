@@ -165,22 +165,6 @@ $ulist = array();
      <p>
      Neue Texte, die in dieses Projekt importiert werden, werden standardmäßig mit den hier zugeordneten Tagsets verknüpft.  Änderungen hier haben <strong>keine</strong> Auswirkungen auf bereits in der Datenbank vorhandene Texte!
      </p>
-<!--
-         <form action="request.php"  method="post">
-	 <div class="userChangeEditTable">
-             <?php foreach ($ulist as $user):
-             $un = $user['name'];
-?>
-             <span><input type="checkbox" name="allowedUsers[]" value="<?php echo $un; ?>" /> <label for="allowedUsers[]"><?php echo $un; ?></label></span>
-	     <?php endforeach; ?>
-	 </div>							    
-	 <p style="text-align:right;">
-	   <input type="hidden" name="project_id" value="" />
-	   <input type="hidden" name="action" value="changeProjectUsers" />
-           <input type="submit" value="Änderungen bestätigen" />
-         </p>
-         </form>
--->
      </div>
 
      <div id="projectCreateForm">

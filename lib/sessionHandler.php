@@ -167,14 +167,6 @@ class CoraSessionHandler {
     return array("success"=>false, "errcode"=>"oldpwmm");
   }
 
-  /** Wraps DBInterface::changeProjectUsers(), checking for
-      administrator privileges first. */
-  public function changeProjectUsers( $pid, $userlist ) { 
-    if ($_SESSION["admin"]) {
-      return $this->db->changeProjectUsers($pid, $userlist);
-    }
-  }
-
   /** Wraps DBInterface::deleteUser(), checking for administrator
       privileges first. */
   public function deleteUser($uid) {
@@ -457,6 +449,17 @@ class CoraSessionHandler {
       return array("success" => $this->db->deleteProject($name));
     }
     return array("success" => false);
+  }
+
+  /** Wraps DBInterface::saveProjectSettings(), checking for
+      administrator privileges first */
+  public function saveProjectSettings($data) {
+    if (!$_SESSION["admin"])
+      return array("success" => false, "errors" => ["Permission denied."]);
+    if(!array_key_exists('id', $data))
+      return array("success" => false, "errors" => ["No project ID given."]);
+
+    return $this->db->saveProjectSettings($data['id'], $data);
   }
 
   /** Wraps DBInterface::getLines(), calculating start line and limit first */

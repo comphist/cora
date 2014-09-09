@@ -534,6 +534,7 @@ cora.projectEditor = {
      */
     showProjectEditDialog: function(pid) {
         var content, mbox;
+        var ref = this;
         var prj = cora.projects.get(pid);
 
         if(prj == undefined || prj.id != pid) {
@@ -550,15 +551,68 @@ cora.projectEditor = {
 	    buttons: [ {title: "OK", addClass: "mform button_green",
 			id: "importCloseButton", 
 			event: function() {
-                            gui.showNotice('error',
-                                           "Speichern noch nicht implementiert.");
-                            // save settings here
-			    this.close();
+                            var cb = function (status, text) {
+                                if(status && status['success']) {
+                                    gui.showNotice('ok',
+                                                   "Einstellungen gespeichert.");
+                                    cora.projects.performUpdate();
+                                    this.close();
+                                }
+                                else {
+                                    gui.showNotice('error',
+                                                   "Speichern der Einstellungen fehlgeschlagen.");
+                                }
+                            }.bind(this);
+                            ref.saveProjectSettings(pid, this.content, cb);
 			}},
                        {title: "Abbrechen", addClass: "mform"}
                      ]
 	});
         mbox.open();
+    },
+
+    /* Function: saveProjectSettings
+
+       Sends a server request to save settings for a project.
+       
+       Parameters:
+        pid - ID of the project
+        div - Content <div> containing the settings
+        fn  - Callback function after the request
+     */
+    saveProjectSettings: function(pid, div, fn) {
+        // extract data
+        var data = {'id': pid,
+                    'users': [],
+                    'tagsets': []
+                   };
+        data.cmd_edittoken = div.getElement('input[name="projectCmdEditToken"]')
+                                .get('value');
+        data.cmd_import    = div.getElement('input[name="projectCmdImport"]')
+                                .get('value');
+        div.getElements('input[name="linkusers[]"]').each(function(el) {
+            if(el.get('checked'))
+                data.users.push(el.get('value'));
+        });
+        div.getElements('input[name="linkprjtagsets[]"]').each(function(el) {
+            if(el.get('checked'))
+                data.tagsets.push(el.get('value'));
+        });
+        if(data.users.length == 0)
+            data.users = "";
+        if(data.tagsets.length == 0)
+            data.tagsets = "";
+
+        // send request
+	new Request.JSON(
+	    {'url': 'request.php?do=saveProjectSettings',
+	     'async': false,
+	     'data': data,
+	     onSuccess: function(status, text) {
+                 if(typeof(fn) == "function")
+                     fn(status, text);
+	     }
+	}).post();
     }
 }
 

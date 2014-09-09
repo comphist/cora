@@ -275,9 +275,9 @@
    /** Change project<->user associations.
     *
     * @param string $pid the project ID of the project to change
-    * @param array $userlist an array of user names
+    * @param array $userlist an array of user IDs
     *
-    * @return The result of the corresponding @c mysql_query() command
+    * @return A status array
     */
    public function changeProjectUsers($pid, $userlist) {
      try {
@@ -293,17 +293,15 @@
 	 $stmt = $this->dbo->prepare($qs);
 	 $stmt->bindValue(':pid', $pid, PDO::PARAM_INT);
 	 $stmt->bindParam(':uid', $uid, PDO::PARAM_INT);
-	 foreach ($userlist as $uname) {
-	   $uid = $this->getUserIDFromName($uname);
+	 foreach ($userlist as $uid) {
 	   $stmt->execute();
 	 }
        }
        $this->dbo->commit();
-       return array('success' => true);
      }
      catch(PDOException $ex) {
        $this->dbo->rollBack();
-       return array('success' => false, 'message' => $ex->getMessage());
+       throw $ex;
      }
    }
 
@@ -745,6 +743,27 @@
          }
      }
      return $projects;
+   }
+
+   /** Save project settings, such as default tagsets, linked users,
+    *  and external commands.
+    */
+   public function saveProjectSettings($pid, $data) {
+       $pa = new ProjectAccessor($this, $this->dbo);
+       try {
+           if(array_key_exists('users', $data))
+               $this->changeProjectUsers($pid, $data['users']);
+           if(array_key_exists('tagsets', $data))
+               $pa->setAssociatedTagsetDefaults($pid, $data['tagsets']);
+           $pa->setSettings($pid, $data['cmd_edittoken'], $data['cmd_import']);
+       }
+       catch(Exception $ex) {
+           return array('success' => false,
+                        'errors'  => ["An exception occured.",
+                                      $ex->getMessage()]
+                        );
+       }
+       return array('success' => true);
    }
 
    /** Get a list of all files.

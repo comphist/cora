@@ -146,10 +146,6 @@ class RequestHandler {
 	return $this->sh->changeUserPassword($post["oldpw"],
 					     $post["newpw"]);
 
-      case "changeProjectUsers":
-	return $this->sh->changeProjectUsers($post["project_id"],
-					     $post["allowedUsers"]);
-
       case "importTagsetTxt":
 	$errmsg = $this->checkFileUpload($_FILES['txtFile']);
 	if($errmsg) {
@@ -236,6 +232,9 @@ class RequestHandler {
 
       case "getProjectsAndFiles":
 	return $this->sh->getProjectsAndFiles();
+
+      case "saveProjectSettings":
+        return $this->sh->saveProjectSettings($post);
 
       case "lockFile":
 	return $this->sh->lockFile($get["fileid"]);

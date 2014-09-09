@@ -17,7 +17,10 @@ class ProjectAccessor {
   // SQL statements that are potentially used multiple times
   private $stmt_getUsers = null;
   private $stmt_getDefaults = null;
+  private $stmt_setDefaults = null;
+  private $stmt_deleteDefaults = null;
   private $stmt_getSettings = null;
+  private $stmt_setSettings = null;
   private $stmt_getFiles = null;
   private $stmt_getFilesFull = null;
 
@@ -43,9 +46,18 @@ class ProjectAccessor {
       $query = "SELECT `tagset_id` FROM `text2tagset_defaults` "
           . "    WHERE text2tagset_defaults.project_id=:pid";
       $this->stmt_getDefaults = $this->dbo->prepare($query);
+      $query = "INSERT INTO `text2tagset_defaults` "
+          . "   (`project_id`, `tagset_id`) VALUES (:pid, :tid)";
+      $this->stmt_setDefaults = $this->dbo->prepare($query);
+      $query = "DELETE FROM `text2tagset_defaults` WHERE `project_id`=:pid";
+      $this->stmt_deleteDefaults = $this->dbo->prepare($query);
       $query = "SELECT `cmd_edittoken`, `cmd_import` FROM `project` "
           . "    WHERE `id`=:pid";
       $this->stmt_getSettings = $this->dbo->prepare($query);
+      $query = "UPDATE `project` SET `cmd_edittoken`=:cmdedit, "
+          . "                        `cmd_import`=:cmdimport   "
+          . "    WHERE `id`=:pid";
+      $this->stmt_setSettings = $this->dbo->prepare($query);
       $query = "SELECT `id`, `sigle`, `fullname` FROM `text`"
           . "    WHERE `project_id`=:pid";
       $this->stmt_getFiles = $this->dbo->prepare($query);
@@ -108,6 +120,28 @@ class ProjectAccessor {
       return $this->stmt_getDefaults->fetchAll(PDO::FETCH_COLUMN);
   }
 
+  /** Save new default tagset links for a given project.
+   *
+   * @param string $pid The project ID
+   * @param array $tslist Array of tagset IDs
+   */
+  public function setAssociatedTagsetDefaults($pid, $tslist) {
+      try {
+          $this->dbo->beginTransaction();
+          $this->stmt_deleteDefaults->execute(array(':pid' => $pid));
+          $this->stmt_setDefaults->bindValue(':pid', $pid, PDO::PARAM_INT);
+          $this->stmt_setDefaults->bindParam(':tid', $tid, PDO::PARAM_INT);
+          foreach ($tslist as $tid) {
+              $this->stmt_setDefaults->execute();
+          }
+          $this->dbo->commit();
+      }
+      catch(PDOException $ex) {
+          $this->dbo->rollBack();
+          throw $ex;
+      }
+  }
+
   /** Fetch a list of files associated with a given project.
    *
    * @param string $pid The project ID
@@ -134,4 +168,16 @@ class ProjectAccessor {
       return $this->stmt_getSettings->fetch(PDO::FETCH_ASSOC);
   }
 
+  /** Set project-specific settings.
+   *
+   * @param string $pid The project ID
+   * @param string $cmdedit Command when editing tokens
+   * @param string $cmdimport Command when importing texts
+   */
+  public function setSettings($pid, $cmdedit, $cmdimport) {
+      $data = array(':pid' => $pid,
+                    ':cmdedit' => $cmdedit,
+                    ':cmdimport' => $cmdimport);
+      $this->stmt_setSettings->execute($data);
+  }
 }

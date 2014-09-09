@@ -333,7 +333,7 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         // deleting a project that has users attached should fail
         // but that test is further down in the FK aware class
 
-        $users = array("test");
+        $users = array("5");
         $this->dbi->changeProjectUsers("1", $users);
         $this->assertEquals("1",
             $this->getConnection()->createQueryTable("projectusers",
