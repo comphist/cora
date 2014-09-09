@@ -424,10 +424,12 @@ cora.projectEditor = {
 			 if(!pid || pid<1) {
                              gui.showNotice('error', 'Projekt erstellen fehlgeschlagen.');
 			 } else {
-                             cora.projects.performUpdate();
 			     $('projectCreateForm').getElement('input').set('value', '');
 			     cp_mbox.close();
                              gui.showNotice('ok', 'Projekt angelegt.');
+                             cora.projects.performUpdate(function() {
+                                 ref.showProjectEditDialog(pid);
+                             });
 			 }
 		     }
 		    });

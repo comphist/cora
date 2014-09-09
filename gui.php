@@ -62,19 +62,22 @@ function embedJSwithTimestamp($filename) {
 			};
   var PHP_tagsets = [
 <?php
+if($_SESSION['loggedIn']) {
     $tagsets = $sh->getTagsetList();
     $tagsets_all = $sh->getTagsetList(false, "class");
-    foreach($tagsets_all as $set):
+    foreach($tagsets_all as $set) {
         $set['id'] = $set['shortname'];
         echo json_encode($set);
         echo ", ";        
-    endforeach;
+    }
+}
 ?>
                      ];
 		</script>
-  <?php include( "project_specific_hacks.php" ); ?>
-
 <?php
+if($_SESSION['loggedIn']) {
+    include( "project_specific_hacks.php" );
+
     embedJSwithTimestamp("gui/js/cerabox/cerabox.min.js");
     embedJSwithTimestamp("gui/js/mbox/mBox.Core.js");
     embedJSwithTimestamp("gui/js/mbox/mBox.Modal.js");
@@ -86,28 +89,28 @@ function embedJSwithTimestamp($filename) {
     embedJSwithTimestamp("gui/js/mbox/mForm.Element.js");
     embedJSwithTimestamp("gui/js/mbox/mForm.Element.Select.js");
 
-  if(file_exists(dirname(__FILE__) . "/gui/js/master.min.js")):
-    embedJSwithTimestamp("gui/js/master.min.js");
-  else:
-    embedJSwithTimestamp("gui/js/baseBox.js");
-    embedJSwithTimestamp("gui/js/ProgressBar.js");
-    embedJSwithTimestamp("gui/js/dragtable_hack.js");
-    embedJSwithTimestamp("gui/js/iFrameFormRequest.js");
-    embedJSwithTimestamp("gui/js/Meio.Autocomplete.js");
-    embedJSwithTimestamp("gui/js/gui.js");
-    embedJSwithTimestamp("gui/js/file.js");
-    embedJSwithTimestamp("gui/js/edit.js");
-    embedJSwithTimestamp("gui/js/settings.js");
-  endif;
-?>
+    if(file_exists(dirname(__FILE__) . "/gui/js/master.min.js")) {
+        embedJSwithTimestamp("gui/js/master.min.js");
+    } else {
+        embedJSwithTimestamp("gui/js/baseBox.js");
+        embedJSwithTimestamp("gui/js/ProgressBar.js");
+        embedJSwithTimestamp("gui/js/dragtable_hack.js");
+        embedJSwithTimestamp("gui/js/iFrameFormRequest.js");
+        embedJSwithTimestamp("gui/js/Meio.Autocomplete.js");
+        embedJSwithTimestamp("gui/js/gui.js");
+        embedJSwithTimestamp("gui/js/file.js");
+        embedJSwithTimestamp("gui/js/edit.js");
+        embedJSwithTimestamp("gui/js/settings.js");
+    }
+}
 
-<?php if($_SESSION['admin']):
+if($_SESSION['admin']) {
         embedJSwithTimestamp("gui/js/MultiSelect.js");
         embedJSwithTimestamp("gui/js/admin.js");
-      endif;
+}
 ?>
 	</head>
-	<body onload="onLoad();" onbeforeunload="return onBeforeUnload();">
+	<body <?php if($_SESSION['loggedIn']): ?>onload="onLoad();" onbeforeunload="return onBeforeUnload();"<?php endif; ?>>
 	        <div id="overlay"></div>
 	        <div id="spin-overlay"></div>
 

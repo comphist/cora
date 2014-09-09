@@ -151,6 +151,22 @@ var gui = {
 	});
     },
 
+    /* Function: disableScrolling
+
+       Disable scrolling for the page.
+    */
+    disableScrolling: function() {
+        document.getElement('body').setStyle('overflow', 'hidden');
+    },
+
+    /* Function: enableScrolling
+
+       Enable scrolling for the page.
+    */
+    enableScrolling: function() {
+        document.getElement('body').setStyle('overflow', 'visible');
+    },
+
     /* Function: showSpinner
 
        Displays a "loading" spinner.
@@ -163,6 +179,7 @@ var gui = {
 	var options = options || {};
 	var spinmsg = options.message || null;
 
+        this.disableScrolling();
 	$('overlay').show();
 	$('spin-overlay').show();
 	this.activeSpinner = new Spinner($('spin-overlay'),
@@ -180,6 +197,7 @@ var gui = {
 	    $('overlay').hide();
 	    $('spin-overlay').hide();
 	}
+        this.enableScrolling();
     },
 
     /* Function: showTextDialog

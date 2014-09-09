@@ -71,8 +71,11 @@ cora.projects = {
        
        Perform a server request to update the project data.  Calls any
        handlers previously registered via onUpdate().
+
+       Parameters:
+        fn - function to be called after successful request
      */
-    performUpdate: function(){
+    performUpdate: function(fn){
         var ref = this;
         var files = new Request.JSON({
             url:'request.php',
@@ -85,6 +88,8 @@ cora.projects = {
                     Array.each(ref.onUpdateHandlers, function(handler) {
                         handler(status, text);
                     });
+                    if(typeof(fn) == "function")
+                        fn(status, text);
 		}
     	});
         files.get({'do': 'getProjectsAndFiles'});
