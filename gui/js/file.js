@@ -215,8 +215,8 @@ var file = {
     // activates the transcription import form -- in big parts a clone
     // of activateImportForm -- could they be combined?
     activateTransImportForm: function() {
-        if(cora.projects.isEmpty())
-            return;
+        //if(cora.projects.isEmpty())
+        //    return;
 
 	var formname = 'newFileImportTransForm';
         var ref = this;
@@ -364,8 +364,8 @@ var file = {
 
     // activates the XML import form
     activateImportForm: function(){
-        if(cora.projects.isEmpty())
-            return;
+        //if(cora.projects.isEmpty())
+        //    return;
 
 	var formname = 'newFileImportForm';
         var ref = this;
