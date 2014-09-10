@@ -50,12 +50,19 @@ $ulist = array();
 
    <div>
    <table id="editProjects">
+     <thead>
      <tr>
        <th></th>
        <th>Projektname</th>
        <th>Zugeordnete Benutzer</th>
+       <th>Zugeordnete Tagset-Typen</th>
+       <th>Edit-Skript?</th>
+       <th>Import-Skript?</th>
        <th></th>
      </tr>
+     </thead>
+     <tbody>
+     </tbody>
    </table>
 
    <p><strong>Hinweis:</strong> Administratoren können <i>immer</i> alle Projektgruppen sehen.</p>
@@ -238,6 +245,9 @@ $ulist = array();
        <td><a class="adminProjectDelete"><img src="gui/images/proxal/delete.ico" /></a></td>
        <td class="adminProjectNameCell"></td>
        <td class="adminProjectUsersCell"></td>
+       <td class="adminProjectTagsetsCell"></td>
+       <td class="centered adminProjectCmdEdittoken"><img src="gui/images/proxal/check.ico"/></td>
+       <td class="centered adminProjectCmdImport"><img src="gui/images/proxal/check.ico" /></td>
        <td>
            <button class="adminProjectEditButton" type="button">Projekt verwalten...</button>
        </td>

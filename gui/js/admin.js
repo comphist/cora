@@ -484,15 +484,26 @@ cora.projectEditor = {
        Renders the table containing the project data.
      */
     refreshProjectTable: function() {
-        var table = $('editProjects');
+        var table = $('editProjects').getElement('tbody');
         table.getElements('tr.adminProjectInfoRow').dispose();
         Array.each(cora.projects.getAll(), function(prj) {
             var ulist = prj.users.map(function(user) { return user.name; });
+            var tlist = cora.tagsets.get(prj.tagsets).map(function(ts) {
+                                                          return ts['class'];
+            }).sort();
             var tr = $('templateProjectInfoRow').clone();
             tr.set('id', 'project_'+prj.id);
             tr.getElement('td.adminProjectNameCell').set('text', prj.name);
 	    tr.getElement('td.adminProjectUsersCell')
-                .set('text', ulist.join());
+                .set('text', ulist.join(', '));
+	    tr.getElement('td.adminProjectTagsetsCell')
+                .set('text', tlist.join(', '));
+            if(!prj.settings.cmd_edittoken
+               || prj.settings.cmd_edittoken.length === 0)
+                tr.getElement('td.adminProjectCmdEdittoken img').hide();
+            if(!prj.settings.cmd_import
+               || prj.settings.cmd_import.length === 0)
+                tr.getElement('td.adminProjectCmdImport img').hide();
             tr.inject(table);
         });
     },

@@ -110,13 +110,24 @@ cora.tagsets = {
        Return a tagset by ID.
 
        Parameters:
-        pid - ID of the tagset to be returned
+        pid - ID(s) of the tagset(s) to be returned
      */
     get: function(pid) {
-        var idx = this.byID[pid];
-        if(idx == undefined)
-            return Object();
-        return this.data[idx];
+        if(pid instanceof Array) {
+            var data = [];
+            pid.each(function(p) {
+                var idx = this.byID[p];
+                if(idx != undefined)
+                    data.push(this.data[idx]);
+            }.bind(this));
+            return data;
+        }
+        else {
+            var idx = this.byID[pid];
+            if(idx == undefined)
+                return Object();
+            return this.data[idx];
+        }
     },
 
     /* Function: getAll

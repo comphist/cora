@@ -570,6 +570,13 @@ table#editProjects td, table#editUsers td {
     padding: 0.2em;
 }
 
+table#editProjects td.adminProjectUsersCell,
+table#editProjects td.adminProjectTagsetsCell {
+    max-width: 25em;
+    word-wrap: break-word;
+    text-align: left;
+}
+
 tr.adminUserInfoRow.userActive .adminUserNameCell,
 tr.adminUserInfoRow.userActive .adminUserLastactiveCell {
     font-weight: bold;
