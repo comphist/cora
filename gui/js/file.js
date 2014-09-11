@@ -1,12 +1,12 @@
 
 // ***********************************************************************
-// ********** GLOBALE VARIABLEN ******************************************
+// ********** Global Variables *******************************************
 // ***********************************************************************
 
 var debugMode = false;
 
 // ***********************************************************************
-// ********** CLASS FILE ******************************************
+// ********** Projects and Files *****************************************
 // ***********************************************************************
 
 /* Class: cora.projects
@@ -19,9 +19,11 @@ var debugMode = false;
    functions that should be called whenever the project list updates.
 */
 cora.projects = {
+    initialized: false,
     data: [],
     byID: {},
     onUpdateHandlers: [],
+    onInitHandlers: [],
 
     /* Function: get
 
@@ -67,6 +69,24 @@ cora.projects = {
         return this;
     },
 
+    /* Function: onInit
+
+       Add a callback function to be called after the project list has
+       been first initialized (or immediately if it already has).
+
+       Parameters:
+        fn - function to be called
+     */
+    onInit: function(fn) {
+        if(typeof(fn) == "function") {
+            if(this.initialized)
+                fn();
+            else
+                this.onInitHandlers.push(fn);
+        }
+        return this;
+    },
+
     /* Function: performUpdate
        
        Perform a server request to update the project data.  Calls any
@@ -85,6 +105,12 @@ cora.projects = {
                     Array.each(ref.data, function(prj, idx) {
                         ref.byID[prj.id] = idx;
                     });
+                    if(!ref.initialized) {
+                        ref.initialized = true;
+                        Array.each(ref.onInitHandlers, function(handler) {
+                            handler();
+                        });
+                    }
                     Array.each(ref.onUpdateHandlers, function(handler) {
                         handler(status, text);
                     });
@@ -97,13 +123,19 @@ cora.projects = {
     }
 };
 
+// ***********************************************************************
+// ********** Tagset Information *****************************************
+// ***********************************************************************
+
 /* Class: cora.tagsets
 
    Acts as a wrapper for an array containing all tagset information.
 */
 cora.tagsets = {
+    initialized: false,
     data: [],
     byID: {},
+    onInitHandlers: [],
 
     /* Function: get
 
@@ -138,6 +170,24 @@ cora.tagsets = {
         return this.data;
     },
 
+    /* Function: onInit
+
+       Add a callback function to be called after the project list has
+       been first initialized (or immediately if it already has).
+
+       Parameters:
+        fn - function to be called
+     */
+    onInit: function(fn) {
+        if(typeof(fn) == "function") {
+            if(this.initialized)
+                fn();
+            else
+                this.onInitHandlers.push(fn);
+        }
+        return this;
+    },
+
     /* Function: performUpdate
        
        Analogous to cora.projects.performUpdate(), this function is
@@ -151,110 +201,149 @@ cora.tagsets = {
         Array.each(this.data, function(prj, idx) {
             this.byID[prj.id] = idx;
         }.bind(this));
+        if(!this.initialized) {
+            this.initialized = true;
+            Array.each(this.onInitHandlers, function(handler) {
+                handler();
+            });
+        }
         return this;
     }
 };
 
-var file = {
+// ***********************************************************************
+// ********** Importing files ********************************************
+// ***********************************************************************
+
+/* Class: fileImporter
+
+   Handles file importing: manages the dialogs, sends server requests,
+   and shows import progress when importing from text files.
+ */
+cora.fileImporter = {
     transImportProgressBar: null,
-    tagsets: {},
-    tagsetlist: [],
-    taggers: [],
+    transImportProgressDialog: null,
+    waitForInitializedObjects: 2,
 
-    initialize: function(){
+    /* Function: initialize
+
+       Initializes the file importer: sets up the import dialogs.
+     */
+    initialize: function() {
+        this._activateImportFormXML();
+        this._activateImportFormTrans();
+        cora.projects.onInit(this._objInitialized.bind(this));
+        cora.tagsets.onInit(this._objInitialized.bind(this));
+    },
+
+    /* Function: _objInitialized
+
+       Called when an object that we're waiting for is initialized;
+       decreases the wait counter and enables the import buttons if
+       applicable.
+     */
+    _objInitialized: function() {
+        this.waitForInitializedObjects--;
+        if(!this.waitForInitializedObjects) {
+            $('importNewXMLLink').set('disabled', false);
+            $('importNewTransLink').set('disabled', false);
+        }
+    },
+
+    /* Function: _activateImportFormXML
+
+       Activates the form for importing CorA XML files.  Needs to be
+       called only once when initializing.
+     */
+    _activateImportFormXML: function() {
         var ref = this;
-        cora.projects.onUpdate(function(status, text) {
-            ref.renderFileTable();
+        var importform = $('newFileImportForm');
+        var mbox = new mBox.Modal({
+            title: "Importieren aus CorA-XML-Format",
+            content: 'fileImportForm',
+            attach: 'importNewXMLLink'
         });
-        this.activateImportForm();
-        this.activateTransImportForm();
+        this._prepareImportFormEvents(importform, 'xmlFile');
+
+        new iFrameFormRequest(importform, {
+            onRequest: function() {
+                mbox.close();
+                gui.showSpinner({message: 'Importiere Daten...'});
+            },
+            onComplete: function(response) {
+                var success = ref.showImportResponseDialog(response);
+                if(success) {
+                    ref.resetImportForm(importform);
+                    cora.projects.performUpdate();
+                }
+                gui.hideSpinner();
+            },
+            onFailure: function() {
+                gui.showNotice('error', "Import aus unbekannten Gründen fehlgeschlagen!");
+                gui.hideSpinner();
+            }
+        });
     },
 
-    resetImportProgress: function() {
-	$('tIS_upload').getElement('td.proc').set('class', 'proc proc-running');
-	$('tIS_check').getElement('td.proc').set('class', 'proc');
-	$('tIS_convert').getElement('td.proc').set('class', 'proc');
-	$('tIS_tag').getElement('td.proc').set('class', 'proc');
-	$('tIS_import').getElement('td.proc').set('class', 'proc');
-	this.transImportProgressBar.set(0);
-    },
+    /* Function: _activateImportFormTrans
 
-    updateImportProgress: function(process) {
-	var done = "running";
-	var get_css_code = function(status_code) {
-	    if(status_code == "begun") {
-		return "proc-running";
-	    } else if(status_code == "success") {
-		return "proc-success";
-	    } else {
-		return "proc-error";
-	    }
-	}
-	if(process.status_CHECK != null) {
-	    var c = get_css_code(process.status_CHECK);
-	    $('tIS_check').getElement('td.proc').set('class', 'proc').addClass(c);
-	}
-	if(process.status_XML != null) {
-	    var c = get_css_code(process.status_XML);
-	    $('tIS_convert').getElement('td.proc').set('class', 'proc').addClass(c);
-	}
-	if(process.status_TAG != null) {
-	    var c = get_css_code(process.status_TAG);
-	    $('tIS_tag').getElement('td.proc').set('class', 'proc').addClass(c);
-	}
-	if(process.status_IMPORT != null) {
-	    var c = get_css_code(process.status_IMPORT);
-	    $('tIS_import').getElement('td.proc').set('class', 'proc').addClass(c);
-	}
-	if(process.progress != null) {
-	    this.transImportProgressBar.set(process.progress * 100.0);
-	}
-	if(process.in_progress != null && !process.in_progress) {
-	    if(process.progress != null && process.progress == 1.0) {
-		done = "success";
-	    } else {
-		done = "error";
-		if(process.output != null) {
-		    message = "Beim Importieren sind Fehler aufgetreten.";
-		    gui.showTextDialog("Fehler beim Importieren", message, process.output);
-		}
-	    }
-	}
-	return done;
-    },
-
-    // activates the transcription import form -- in big parts a clone
-    // of activateImportForm -- could they be combined?
-    activateTransImportForm: function() {
-        //if(cora.projects.isEmpty())
-        //    return;
-
-	var formname = 'newFileImportTransForm';
+       Activates the form for importing transcription files.  Needs to
+       be called only once when initializing.
+    */
+    _activateImportFormTrans: function() {
         var ref = this;
-	var import_progress;
-	var import_mbox = new mBox.Modal({
-	    title: 'Importieren aus Transkriptionsdatei',
-	    content: 'fileImportTransForm',
-	    attach: 'importNewTransLink'
-	});
-        cora.projects.onUpdate(function(status, text) {
-            ref.setTagsetDefaults($(formname));
+        var importform = $('newFileImportTransForm');
+        var mbox = new mBox.Modal({
+            title: "Importieren aus Textdatei",
+            content: 'fileImportTransForm',
+            attach: 'importNewTransLink'
         });
-	// check if a file has been selected
-	$('newFileImportTransForm').getElement('input[type="submit"]').addEvent('click', function(e) {
-	    var importfile = $('newFileImportTransForm').getElement('input[name="transFile"]').get('value');
-	    if(importfile==null || importfile=="") {
-		$$('#newFileImportTransForm p.error_text').show();
-		e.stop();
-	    } else {
-		$$('#newFileImportTransForm p.error_text').hide();
-	    }
-	});
+        this._prepareImportFormEvents(importform, 'transFile');
+        this._activateImportElementsTrans();
 
-	$(formname).getElement('select[name="project"]')
-	    .addEvent('change', function(e) { ref.setTagsetDefaults($(formname)); });
+        new iFrameFormRequest(importform, {
+            onRequest: function() {
+                mbox.close();
+                gui.showSpinner();
+                ref.transImportProgressDialog.open();
+            },
+            onComplete: function(response) {
+                ref.transImportProgressBar.set(1);
+                var success = ref.showImportResponseDialog(response, true);
+                if(success) {
+                    ref.startImportProgressTimer(function(status) {
+                        gui.hideSpinner();
+		        if(status.done == "success") {
+                            ref.resetImportForm(importform);
+                            cora.projects.performUpdate();
+			    gui.showNotice('ok', "Datei erfolgreich importiert.");
+		        } else {
+                            gui.showTextDialog("Importieren fehlgeschlagen",
+                                               status.message, status.output);
+			    gui.showNotice('error', "Importieren fehlgeschlagen.");
+		        }
+                    });
+                }
+                else {
+                    ref.transImportProgressDialog.close();
+                    gui.hideSpinner();
+                }
+            },
+            onFailure: function() {
+                gui.showNotice('error', "Import aus unbekannten Gründen fehlgeschlagen!");
+                gui.hideSpinner();
+            }
+        });
+    },
 
-	this.transImportProgressBar = new ProgressBar({
+    /* Function: _activateImportElementsTrans
+
+       Sets up progress bar and dialog window for import from
+       transcription file.
+     */
+    _activateImportElementsTrans: function() {
+        var ref = this;
+        this.transImportProgressBar = new ProgressBar({
 	    container: $('tIS_progress'),
 	    startPercentage: 0,
 	    speed: 500,
@@ -262,200 +351,228 @@ var file = {
 	    percentageID: 'tISPB_perc1',
 	    displayID: 'tISPB_disp1',
 	    displayText: true	    
-	});
-
-        var iFrame = new iFrameFormRequest(formname,{
-            onFailure: function(xhr) {
-		// never fires?
-       		alert("Speichern nicht erfolgreich: Der Server lieferte folgende Fehlermeldung zurück:\n\n" +
-       		      xhr.responseText);
-		gui.hideSpinner();
-       	    },
-	    onRequest: function(){
-		import_mbox.close();
-		gui.showSpinner();
-		ref.resetImportProgress();
-		import_progress = new mBox.Modal({
-		    title: "Importiere Daten...",
-		    content: $('transImportSpinner'),
-		    closeOnBodyClick: false,
-		    closeOnEsc: false,
-		    closeInTitle: false,
-		    buttons: [ {title: "OK", addClass: "mform button_green tIS_cb",
-			        id: "importCloseButton", 
-			        event: function() {
-				    this.close();
-				}} ],
-		    onCloseComplete: function() {
-			// reset progress bar here so the animation isn't noticeable
-			ref.transImportProgressBar.set(0);
-		    }
-		});
-		$$('.tIS_cb').set('disabled', true);
-		import_progress.open();
-	    },
-	    onComplete: function(response){
-		var title="", message="", textarea="";
-		try {
-		    response = JSON.decode(response);
-		} catch(err) {
-		    title = "Datei-Import fehlgeschlagen";
-		    message = "Der Server lieferte eine ungültige Antwort zurück.";
-		    textarea += "Fehler beim Interpretieren der Server-Antwort:\n\t" + err.message;
-		    textarea += "\n\nDie Server-Antwort lautete:\n" + response;
-		}
-		
-		ref.transImportProgressBar.set(1);
-		if(message!="") {}
-		else if(response==null || typeof response.success == "undefined"){
-		    title = "Datei-Import fehlgeschlagen";
-		    message = "Beim Hinzufügen der Datei ist ein unbekannter Fehler aufgetreten.";
-		}
-		else if(!response.success){
-		    title = "Datei-Import fehlgeschlagen";
-		    message = "Beim Hinzufügen der Datei sind Fehler aufgetreten:";
-		    for(var i=0;i<response.errors.length;i++){
-			textarea += response.errors[i] + "\n";
-		    }
-		} 
-		else {
-		    $('tIS_upload').getElement('td.proc').set('class', 'proc proc-success');
-		    $('tIS_check').getElement('td.proc').set('class', 'proc proc-running');
-		    // set up periodical poll
-		    var import_update = new Request({
-			method: 'get',
-			url: 'request.php?do=getImportStatus',
-			initialDelay: 1000,
-			delay: 1000,
-			limit: 5000,
-			onComplete: function(response) {
-			    var done = false;
-			    try {
-				done = ref.updateImportProgress(JSON.decode(response));
-			    }
-			    catch(err) { }
-			    if(done != "running") {
-				import_update.stopTimer();
-				$$('.tIS_cb').set('disabled', false);
-				gui.hideSpinner();
-				if(done == "success") {
-				    form.reset($(formname));
-				    $(formname).getElements('.error_text').hide();
-				    ref.setTagsetDefaults($(formname));
-				    ref.listFiles();
-				    gui.showNotice('ok', "Datei erfolgreich importiert.");
-				} else {
-				    gui.showNotice('error', "Importieren fehlgeschlagen.");
-				}
-			    }
-			}
-		    });
-		    import_update.startTimer();
-		    return;
-		}
-
-//		    title = "Datei-Import erfolgreich";
-//		    message = "Die Datei wurde erfolgreich hinzugefügt.";
-//		    if((typeof response.warnings !== "undefined") && response.warnings.length>0) {
-//			message += " Das System lieferte ";
-//			message += response.warnings.length>1 ? response.warnings.length + " Warnungen" : "eine Warnung";
-//			message += " zurück:";
-//
-//			for(var i=0;i<response.warnings.length;i++){
-//			    textarea += response.warnings[i] + "\n";
-//			}
-//		    }
-
-		gui.showTextDialog(title, message, textarea);
-		import_progress.close();
-		gui.hideSpinner();
-            }
-	});
+        });
+        this.transImportProgressDialog = new mBox.Modal({
+	    title: "Importiere Daten...",
+	    content: $('transImportSpinner'),
+	    closeOnBodyClick: false,
+	    closeOnEsc: false,
+	    closeInTitle: false,
+	    buttons: [ {title: "OK", addClass: "mform button_green tIS_cb",
+			id: "importCloseButton", 
+			event: function() {
+			    this.close();
+			}} ],
+	    onCloseComplete: function() {
+                ref.resetImportProgress();
+	    }
+        });
+        this.resetImportProgress();
     },
 
-    // activates the XML import form
-    activateImportForm: function(){
-        //if(cora.projects.isEmpty())
-        //    return;
+    /* Function: _prepareImportFormEvents
+       
+       Sets up events for the import form.  Called internally by
+       activateImportForm.
 
-	var formname = 'newFileImportForm';
+       Parameters:
+        myform - The form element to set events for
+        fin    - Name of the file selector element in the form
+     */
+    _prepareImportFormEvents: function(myform, fin) {
+        cora.projects.onUpdate(function() {
+            this.setTagsetDefaults(myform);
+        }.bind(this));
+        myform.getElement('select[name="project"]')
+              .addEvent('change', function(e) {
+                  this.setTagsetDefaults(myform);
+              }.bind(this));
+
+        myform.getElement('input[type="submit"]')
+              .addEvent('click', function(e) {
+                  var file = myform.getElement('input[name="'+fin+'"]')
+                      .get('value');
+                  if(!file || file.length === 0) {
+                      myform.getElements('p.error_text').show();
+                      e.stop();
+                  }
+                  else {
+                      myform.getElements('p.error_text').hide();
+                  }
+              });
+    },
+
+    /* Function: showImportResponseDialog
+
+       Parses the server response after an import request and displays
+       an informational dialog to the user.
+
+       Parameters:
+        re_json - The server response as a JSON string
+        error_only - If true, only show a dialog on error,
+                     and just return true otherwise
+       
+       Returns:
+        True if the server response indicates a successful import,
+        false otherwise
+     */
+    showImportResponseDialog: function(re_json, error_only) {
+        var title="", message="", textarea="", re;
+        var success=false;
+        try {
+            re = JSON.decode(re_json);
+        }
+        catch (err) {
+            title = "Fehlerhafte Server-Antwort";
+            message = "Der Server lieferte eine ungültige Antwort zurück. "
+                    + "Das Importieren der Datei war möglicherweise nicht erfolgreich.";
+            textarea = "Fehler beim Interpretieren der Server-Antwort:\n\t"
+                     + err.message + "\n\nDer Server antwortete:\n" + re_json;
+        }
+        if(message != "") {}
+        else if(!re || typeof re.success == "undefined") {
+            title = "Datei-Import fehlgeschlagen";
+            message = "Beim Hinzufügen der Datei ist ein unbekannter Fehler aufgetreten.";
+        }
+        else if(!re.success) {
+            title = "Datei-Import fehlgeschlagen";
+            message = "Beim Hinzufügen der Datei "
+                    + ((re.errors.length>1) ? ("sind " + re.errors.length) : "ist ein")
+                    + " Fehler aufgetreten:";
+            textarea = re.errors.join("\n");
+        }
+        else if(error_only) {
+            return true;
+        }
+        else {
+            title = "Datei-Import erfolgreich";
+            message = "Die Datei wurde erfolgreich hinzufügt.";
+            if(re.warnings instanceof Array && re.warnings.length>0) {
+                message += " Das System lieferte "
+                         + ((re.warnings.length>1) ?
+                            (re.warnings.length + " Warnungen") : "eine Warnung")
+                         + " zurück:";
+                textarea = re.warnings.join("\n");
+            }
+            success = true;
+        }
+        gui.showTextDialog(title, message, textarea);
+        return success;
+    },
+
+    /* Function: startImportProgressTimer
+
+       Sets up and starts a request for import status updates in
+       regular intervals.
+
+       Parameters:
+        fn - Callback function to invoke when the import has finished
+     */
+    startImportProgressTimer: function(fn) {
         var ref = this;
-
-	var import_mbox = new mBox.Modal({
-	    title: 'Importieren aus CorA-XML-Format',
-	    content: 'fileImportForm',
-	    attach: 'importNewXMLLink'
-	});
-        cora.projects.onUpdate(function(status, text) {
-            ref.setTagsetDefaults($(formname));
-        });
-	// check if a file has been selected
-	$('newFileImportForm').getElement('input[type="submit"]').addEvent('click', function(e) {
-	    var importfile = $('newFileImportForm').getElement('input[name="xmlFile"]').get('value');
-	    if(importfile==null || importfile=="") {
-		$$('#newFileImportForm p.error_text').show();
-		e.stop();
-	    } else {
-		$$('#newFileImportForm p.error_text').hide();
+	$('tIS_upload').getElement('td.proc').set('class', 'proc proc-success');
+	$('tIS_check').getElement('td.proc').set('class', 'proc proc-running');
+	var import_update = new Request({
+	    method: 'get',
+	    url: 'request.php?do=getImportStatus',
+	    initialDelay: 1000,
+	    delay: 1000,
+	    limit: 5000,
+	    onComplete: function(response) {
+		var status = ref.updateImportProgress(response);
+		if(status.done != "running") {
+		    import_update.stopTimer();
+		    $$('.tIS_cb').set('disabled', false);
+                    if(typeof(fn) == "function")
+                        fn(status);
+		}
 	    }
 	});
-
-	$(formname).getElement('select[name="project"]')
-	    .addEvent('change', function(e) { ref.setTagsetDefaults($(formname)); });
-	
-        var iFrame = new iFrameFormRequest(formname,{
-            onFailure: function(xhr) {
-		// never fires?
-       		alert("Speichern nicht erfolgreich: Der Server lieferte folgende Fehlermeldung zurück:\n\n" +
-       		      xhr.responseText);
-       	    },
-	    onRequest: function(){
-		import_mbox.close();
-		gui.showSpinner({message: 'Importiere Daten...'});
-	    },
-	    onComplete: function(response){
-		var title="", message="", textarea="";
-		response = JSON.decode(response);
-		
-		if(response==null || typeof response.success == "undefined"){
-		    title = "Datei-Import fehlgeschlagen";
-		    message = "Beim Hinzufügen der Datei ist ein unbekannter Fehler aufgetreten.";
-		}
-		else if(!response.success){
-		    title = "Datei-Import fehlgeschlagen";
-		    message  = "Beim Hinzufügen der Datei ";
-		    message += response.errors.length>1 ? "sind " + response.errors.length : "ist ein";
-		    message += " Fehler aufgetreten:";
-
-		    for(var i=0;i<response.errors.length;i++){
-			textarea += response.errors[i] + "\n";
-		    }
-		} 
-		else { 
-		    title = "Datei-Import erfolgreich";
-		    message = "Die Datei wurde erfolgreich hinzugefügt.";
-		    if((typeof response.warnings !== "undefined") && response.warnings.length>0) {
-			message += " Das System lieferte ";
-			message += response.warnings.length>1 ? response.warnings.length + " Warnungen" : "eine Warnung";
-			message += " zurück:";
-
-			for(var i=0;i<response.warnings.length;i++){
-			    textarea += response.warnings[i] + "\n";
-			}
-		    }
-
-		    form.reset($(formname));
-		    $(formname).getElements('.error_text').hide();
-		    ref.setTagsetDefaults($(formname));
-		    ref.listFiles();
-                }
-
-		gui.showTextDialog(title, message, textarea);
-		gui.hideSpinner();
-            }
-	});
+        import_update.startTimer();
     },
     
+    /* Function: updateImportProgress
+
+       Updates the import progress dialog with status information from
+       the server.
+
+       Parameters:
+        re_json - The server response as a JSON string
+       
+       Returns:
+        A status object {done: ..., message: ..., output: ...}
+     */
+    updateImportProgress: function(re_json) {
+        var process;
+	var status = {'done': 'running'};
+	var get_css_code = function(status_code) {
+	    if(status_code == "begun")        { return "proc-running"; }
+	    else if(status_code == "success") { return "proc-success"; }
+            else                              { return "proc-error";   }
+	}
+        var update_status = function(status_code, elem) {
+            if(status_code != null)
+                elem.getElement('td.proc').set('class', 'proc')
+                    .addClass(get_css_code(status_code));
+        }
+
+        try {
+            process = JSON.decode(re_json);
+        }
+        catch (err) {
+            status.done    = 'error';
+            status.message = "Der Server lieferte eine ungültige Antwort zurück.";
+            status.output  = "Fehler beim Interpretieren der Server-Antwort:\n\t"
+                             + err.message + "\n\nDer Server antwortete:\n" + re_json;
+            return status;
+        }
+        update_status(process.status_CHECK,  $('tIS_check'));
+        update_status(process.status_XML,    $('tIS_convert'));
+        update_status(process.status_TAG,    $('tIS_tag'));
+        update_status(process.status_IMPORT, $('tIS_import'));
+	if(process.progress != null) {
+	    this.transImportProgressBar.set(process.progress * 100.0);
+	}
+	if(process.in_progress != null && !process.in_progress) {
+	    if(process.progress != null && process.progress == 1.0) {
+		status.done = 'success';
+	    } else {
+		status.done = 'error';
+		if(process.output != null) {
+		    status.message = "Beim Importieren sind Fehler aufgetreten.";
+                    status.output  = process.output;
+		}
+	    }
+	}
+	return status;
+    },
+
+    /* Function: resetImportProgress
+
+       Resets the import progress dialog.
+     */
+    resetImportProgress: function() {
+	$('tIS_upload').getElement('td.proc').set('class', 'proc proc-running');
+	$('tIS_check').getElement('td.proc').set('class', 'proc');
+	$('tIS_convert').getElement('td.proc').set('class', 'proc');
+	$('tIS_tag').getElement('td.proc').set('class', 'proc');
+	$('tIS_import').getElement('td.proc').set('class', 'proc');
+	$$('.tIS_cb').set('disabled', true);
+	this.transImportProgressBar.set(0);
+    },
+
+    /* Function: resetImportForm
+       
+       Resets an import form.
+
+       Parameters:
+        myform - Name of the form to reset
+    */
+    resetImportForm: function(myform) {
+        form.reset(myform);
+        myform.getElements('.error_text').hide();
+    },
+
     /* Function: setTagsetDefaults
 
        Sets default values for tagset associations depending on the
@@ -466,25 +583,33 @@ var file = {
        import process.
 
        Parameters:
-         form - the form element to update
+         myform - the form element to update
      */
-    setTagsetDefaults: function(form) {
-	var pid = form.getElement('select[name="project"]')
+    setTagsetDefaults: function(myform) {
+	var pid = myform.getElement('select[name="project"]')
 	    .getSelected()[0]
 	    .get('value');
         var prj = cora.projects.get(pid);
 	var tlist = ('tagsets' in prj) ? prj.tagsets : [];
-	form.getElement('table.tagset-list')
-	    .getElements('input').each(function(input) {
-		var checked = tlist.contains(input.value) ? "yes" : "";
-		input.set('checked', checked);
-	    });
+	myform.getElement('table.tagset-list')
+              .getElements('input').each(function(input) {
+	          var checked = tlist.contains(input.value) ? "yes" : "";
+		  input.set('checked', checked);
+	      });
     },
-    
-    copyTagset: function(){
-        
+};
+
+var file = {
+    tagsets: {},
+    tagsetlist: [],
+    taggers: [],
+
+    initialize: function(){
+        cora.projects.onUpdate(function(status, text) {
+            this.renderFileTable();
+        }.bind(this));
     },
-    
+
     /* Function: preprocessTagset
 
        Parses tagset data and builds HTML code for drop-down boxes.
@@ -846,6 +971,7 @@ var file = {
 
 window.addEvent('domready', function() {
     cora.tagsets.performUpdate();
+    cora.fileImporter.initialize();
     file.initialize();    
 
     $$('div.fileViewRefresh img').addEvent('click',function(e){ e.stop(); file.listFiles() });

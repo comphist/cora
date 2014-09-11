@@ -570,6 +570,12 @@ table#editProjects td, table#editUsers td {
     padding: 0.2em;
 }
 
+table#editProjects td.adminProjectNameCell {
+    max-width: 18em;
+    word-wrap: break-word;
+    text-align: left;
+}
+
 table#editProjects td.adminProjectUsersCell,
 table#editProjects td.adminProjectTagsetsCell {
     max-width: 25em;

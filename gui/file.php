@@ -8,8 +8,8 @@
 
 <div class="panel" id="fileImport">
 	<h3>Datei importieren</h3>
-  <p><button class="mform" id="importNewTransLink">Neues Dokument aus Transkriptionsdatei importieren...</button>
-     <button class="mform" id="importNewXMLLink">Neues Dokument aus XML-Datei importieren...</button>
+  <p><button class="mform" id="importNewTransLink" disabled="disabled">Neues Dokument aus Transkriptionsdatei importieren...</button>
+     <button class="mform" id="importNewXMLLink" disabled="disabled">Neues Dokument aus XML-Datei importieren...</button>
 </p>
 </div>
 
