@@ -290,6 +290,34 @@ class RequestHandler {
     return array("errors" => array("Unknown request."));
   }
 
+  /** Closes the connection to the client without exiting.
+   *
+   * Sends a JSON response to the client and closes the connection
+   * immediately afterwards, so that we can continue performing
+   * time-consuming operations in the background.
+   *
+   * @param object $response Object that will be returned to the
+   *                         user in JSON-encoded form
+   */
+  private function releaseConnection($response) {
+    // see:
+    // <http://stackoverflow.com/questions/138374/close-a-connection-early>
+    // <http://php.net/manual/en/features.connection-handling.php#93441>
+    session_write_close();
+    set_time_limit(1800);
+    ob_end_clean();
+    header("Connection: close\r\n");
+    header("Content-Encoding: none\r\n");
+    ignore_user_abort(true);
+    ob_start();
+    echo json_encode($response);
+    $response_size = ob_get_length();
+    header("Content-Length: " . $response_size);
+    ob_end_flush();
+    flush();
+    ob_end_clean();
+  }
+
   /** Imports a transcription file into the database.
    *
    * Due to the time-consuming nature of the import process, the
@@ -307,23 +335,7 @@ class RequestHandler {
       return array("errors"=>array("Fehler beim Upload: ".$errmsg));
     }
 
-    // we perform a lengthy operation, so release the session
-    session_write_close();
-    
-    // send a JSON message indicating successful file upload,
-    // then close the connection and proceed with the import
-    // in background
-    $response = json_encode(array("success"=>true));
-    ignore_user_abort(true);
-    set_time_limit(1800);
-    ob_end_clean();
-    header("Connection: close");
-    ob_start();
-    echo $response;
-    $response_size = ob_get_length();
-    header("Content-Length: " . $response_size);
-    ob_end_flush();
-    flush();
+    $this->releaseConnection(array("success" => true));
 
     // from here on, the client connection should be closed
     $data = $_FILES['transFile'];
