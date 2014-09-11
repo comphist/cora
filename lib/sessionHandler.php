@@ -245,33 +245,18 @@ class CoraSessionHandler {
     if(empty($errors)) {
       $errors = $ch->convertToUtf($localname, $options['encoding']);
     }
-    if(empty($errors)) {
-      $errors = $ch->checkFile($localname);
-    }
     if(!empty($errors)) {
       fwrite($logfile, "~ERROR CHECK\n");
+      fwrite($logfile, "Datei ist keine Textdatei und/oder falsches Encoding angegeben.\n\n");
       fwrite($logfile, implode("\n", $errors) . "\n\n");
-      fwrite($logfile, "(HINWEIS: Transkriptionsdateien müssen immer als .txt-Datei im Bonner Transkriptionsformat hochgeladen werden.)\n");
       fclose($logfile);
       return false;
     }
-    fwrite($logfile, "~SUCCESS CHECK\n");
     $options['trans_file'] = file_get_contents($localname);
-    // run through XML conversion (& tagging)
-    $xmlname = null;
-    fwrite($logfile, "~BEGIN XMLCALL\n");
+    // import script call
     fclose($logfile);
-    // HACK: project-specific hacks hidden here!
-    $cmdopt = null;
-    foreach($options['tagsets'] as $tsid) {
-      if($tsid=='8') {
-	$cmdopt = '-t -p /usr/local/share/rftagger/lib/bonn.par';
-      }
-      else if ($tsid=='20') {
-	$cmdopt = '-t -p /usr/local/share/rftagger/lib/bonn-hits.par';
-      }
-    }
-    $errors = $ch->convertTransToXML($localname, $xmlname, $options['logfile'], $cmdopt);
+    $xmlname = null;
+    $errors = $ch->callImport($localname, $xmlname, $options['logfile']);
     $logfile = fopen($options['logfile'], 'a');
     if(!empty($errors)) {
       fwrite($logfile, "~ERROR XML\n");
@@ -285,7 +270,6 @@ class CoraSessionHandler {
       fclose($logfile);
       return false;
     }
-    fwrite($logfile, "~SUCCESS XMLCALL\n");
     // perform import
     fwrite($logfile, "~BEGIN IMPORT\n");
     $xmldata = array("tmp_name" => $xmlname, "name" => $transdata['name']);
