@@ -320,7 +320,8 @@ function get_XMLHandler_expected() {
                     'trans' => '$ol',
                     'ascii' => 'sol',
                     'utf' => 'ſol',
-                    'parent_xml_id' => 't1'
+                    'parent_xml_id' => 't1',
+                    'flags' => array()
                 ),
                 array(
                     'tags' => array(
@@ -371,7 +372,8 @@ function get_XMLHandler_expected() {
                     'trans' => 'tu',
                     'ascii' => 'tu',
                     'utf' => 'tu',
-                    'parent_xml_id' => 't1'
+                    'parent_xml_id' => 't1',
+                    'flags' => array()
                 ),
                 array(
                     'tags' => array(
@@ -401,7 +403,8 @@ function get_XMLHandler_expected() {
                     'trans' => 'ge#e$$en',
                     'ascii' => 'geessen',
                     'utf' => 'geeſſen',
-                    'parent_xml_id' => 't2'
+                    'parent_xml_id' => 't2',
+                    'flags' => array()
                 ),
                 array(
                     'tags' => array(
@@ -431,7 +434,8 @@ function get_XMLHandler_expected() {
                     'trans' => 'Anshelm',
                     'ascii' => 'Anshelm',
                     'utf' => 'Anshelm',
-                    'parent_xml_id' => 't3'
+                    'parent_xml_id' => 't3',
+                    'flags' => array()
                 ),
                 array(
                     'tags' => array(array(
@@ -445,7 +449,8 @@ function get_XMLHandler_expected() {
                     'trans' => '/',
                     'ascii' => '/',
                     'utf' => '/',
-                    'parent_xml_id' => 't3'
+                    'parent_xml_id' => 't3',
+                    'flags' => array()
                 ),
                 array(
                     'tags' => array(array(
@@ -459,7 +464,8 @@ function get_XMLHandler_expected() {
                     'trans' => '(.)',
                     'ascii' => '',
                     'utf' => '',
-                    'parent_xml_id' => 't3'
+                    'parent_xml_id' => 't3',
+                    'flags' => array()
                 ),
         ),
         "tokens" => array(
