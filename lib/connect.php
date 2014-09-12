@@ -541,10 +541,8 @@
 
    /** Get options (e.g. associated check script) for a given project. */
    public function getProjectOptions($projectid) {
-       $qs = "SELECT * FROM project WHERE `id`=?";
-       $stmt = $this->dbo->prepare($qs);
-       $stmt->execute(array($projectid));
-       return $stmt->fetch(PDO::FETCH_ASSOC);
+     $pa = new ProjectAccessor($this, $this->dbo);
+     return $pa->getSettings($projectid);
    }
 
    /** Get applicable taggers for a given file.
@@ -740,6 +738,9 @@
          if(is_null($userid)) {
              $project['settings'] = $pa->getSettings($pid);
              $project['users'] = $pa->getAssociatedUsers($pid);
+         }
+         else {
+             $project['settings'] = array_map('boolval', $pa->getSettings($pid));
          }
      }
      return $projects;

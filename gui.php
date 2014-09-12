@@ -24,11 +24,9 @@ function embedJSwithTimestamp($filename) {
 		<meta name="keywords" content="<?php echo KEYWORDS; ?>" />
 		<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
 
-<?php if($_SESSION['admin']):
-        embedCSSwithTimestamp("gui/css/MultiSelect.css");
-      endif;
-?>
 <?php
+  embedCSSwithTimestamp("gui/css/MultiSelect.css");
+
   if(file_exists(dirname(__FILE__) . "/gui/css/master.min.css")) {
     embedCSSwithTimestamp("gui/css/master.min.css");
   } else {
@@ -88,6 +86,7 @@ if($_SESSION['loggedIn']) {
     embedJSwithTimestamp("gui/js/mbox/mForm.Submit.js");
     embedJSwithTimestamp("gui/js/mbox/mForm.Element.js");
     embedJSwithTimestamp("gui/js/mbox/mForm.Element.Select.js");
+    embedJSwithTimestamp("gui/js/MultiSelect.js");
 
     if(file_exists(dirname(__FILE__) . "/gui/js/master.min.js")) {
         embedJSwithTimestamp("gui/js/master.min.js");
@@ -105,7 +104,6 @@ if($_SESSION['loggedIn']) {
 }
 
 if($_SESSION['admin']) {
-        embedJSwithTimestamp("gui/js/MultiSelect.js");
         embedJSwithTimestamp("gui/js/admin.js");
 }
 ?>

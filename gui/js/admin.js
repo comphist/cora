@@ -137,19 +137,21 @@ cora.users = {
 
        Parameters:
         users - Array of user IDs that should be pre-selected
+        name  - Name of the input array
+        id    - ID of the selector div
      */
-    makeMultiSelectBox: function(users) {
+    makeMultiSelectBox: function(users, name, id) {
         var multiselect = new Element('div',
                                       {'class': 'MultiSelect',
-                                       'id':    'LinkUsers_MS'});
+                                       'id':    id});
         Array.each(this.data, function(user, idx) {
             var entry = new Element('input',
                                     {'type': 'checkbox',
-                                     'id':   'linkusers_'+user.id,
-                                     'name': 'linkusers[]',
+                                     'id':   name+'_'+user.id,
+                                     'name': name+'[]',
                                      'value': user.id});
             var label = new Element('label',
-                                    {'for':  'linkusers_'+user.id,
+                                    {'for':  name+'_'+user.id,
                                      'text': user.name});
             if(users.some(function(el){ return el.id == user.id; }))
                 entry.set('checked', 'checked');
@@ -360,42 +362,6 @@ cora.userEditor = {
     },
 }
 
-
-// ***********************************************************************
-// ********** Additional function for tagset management ******************
-// ***********************************************************************
-
-/* Function: makeMultiSelectBox
-
-   Creates and returns a dropdown box using MultiSelect.js with all
-   available tagsets as entries.
-
-   Parameters:
-    tagsets - Array of tagset IDs that should be pre-selected
-*/
-cora.tagsets.makeMultiSelectBox = function(tagsets) {
-    var multiselect = new Element('div',
-                                  {'class': 'MultiSelect',
-                                   'id':    'LinkTagsets_MS'});
-    Array.each(this.data, function(tagset, idx) {
-        var entry = new Element('input',
-                                {'type': 'checkbox',
-                                 'id':   'linkprjtagsets_'+tagset.id,
-                                 'name': 'linkprjtagsets[]',
-                                 'value': tagset.id});
-        var textr = "["+tagset['class']+"] "+tagset.longname+" (id: "+tagset.id+")";
-        var label = new Element('label',
-                                {'for':  'linkprjtagsets_'+tagset.id,
-                                 'text': textr});
-        if(tagsets.some(function(el){ return el == tagset.id; }))
-            entry.set('checked', 'checked');
-        multiselect.grab(entry).grab(label);
-    });
-    new MultiSelect(multiselect,
-                    {monitorText: ' Tagset(s) ausgewählt'});
-    return multiselect;
-};
-
 // ***********************************************************************
 // ********** PROJECT MANAGEMENT *****************************************
 // ***********************************************************************
@@ -528,9 +494,9 @@ cora.projectEditor = {
             content.getElement('input[name="projectCmdImport"]')
                    .set('value', prj.settings.cmd_import);
         }
-        cora.users.makeMultiSelectBox(prj.users)
+        cora.users.makeMultiSelectBox(prj.users, 'linkusers', 'LinkUsers_MS')
             .replaces(content.getElement('.userSelectPlaceholder'));
-        cora.tagsets.makeMultiSelectBox(prj.tagsets)
+        cora.tagsets.makeMultiSelectBox(prj.tagsets, 'linkprjtagsets', 'LinkTagsets_MS')
             .replaces(content.getElement('.tagsetSelectPlaceholder'));
 
         return content;

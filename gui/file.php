@@ -82,61 +82,36 @@
   <p></p>
   </div>
 
-  <div id="fileImportForm" class="limitedWidth">
+  <div id="fileImportXMLForm" class="limitedWidth">
 	<form action="request.php" id="newFileImportForm" method="post" accept-charset="utf-8" enctype="multipart/form-data">
   <p class="error_text">Bitte wählen Sie eine Datei zum Importieren aus!</p>
 
 		<p>
-		<label for="xmlFile">Datei: </label>
+		<label for="xmlFile" class="ra">Datei: </label>
 		<input type="file" name="xmlFile" data-required="" />
 		</p>
 
 		<p>
-		<label for="project">Projekt: </label>
-		<select name="project" size="1">
-			<?php foreach($projects as $set):?>
-			<option value="<?php echo $set['id'];?>"><?php echo "{$set['name']}";?></option>
-			<?php endforeach;?>
-		</select>
+		<label for="project" class="ra">Projekt: </label>
+		<select name="project" size="1"></select>
 		</p>
 
   <p>Die folgenden Felder müssen nicht ausgefüllt werden, falls die entsprechenden Informationen bereits in der XML-Datei enthalten sind.</p>
 
 		<p>
-		<label for="xmlName">Name: </label>
+		<label for="xmlName" class="ra">Name: </label>
 		<input type="text" name="xmlName" placeholder="(Dokumentname)" size="30" />
 		</p>
 
 		<p>
-		<label for="sigle">Sigle: </label>
+		<label for="sigle" class="ra">Sigle: </label>
 		<input type="text" name="sigle" placeholder="(Sigle &ndash; optional)" size="30" />
 		</p>
 
-  <div <?php if(!$_SESSION['admin']) {echo 'style="display:none;"';} ?>>
-<!--		<p>
-		<label for="tagset">POS-Tagset: </label>
-		<select name="tagset" size="1">
-			<?php foreach($tagsets as $set):?>
-			<option value="<?php echo $set['shortname'];?>"><?php echo $set['longname'];?></option>
-			<?php endforeach;?>
-		</select>
-		</p>
--->
-		<p style="padding-top: 15px;">Tagset-Verknüpfungen:
-                <table class="tagset-list">
-		   <tr><th></th><th class="numeric">ID</th><th>Name</th><th>Class</th><th>Set</th></tr>
-                   <?php foreach($tagsets_all as $set): ?>
-		   <tr>
-                      <td class="check"><input type="checkbox" name="linktagsets[]" value="<?php echo $set['shortname']; ?>" /></td>
-                      <td class="numeric"><?php echo $set['shortname']; ?></td>
-                      <td><?php echo $set['longname']; ?></td>
-                      <td><?php echo $set['class']; ?></td>
-                      <td><?php echo $set['set_type']; ?></td>
-                   </tr>
-                   <?php endforeach; ?>
-		</table>
-		</p>
-  </div>		     
+                <div class="fileImportTagsetLinks" <?php if(!$_SESSION['admin']) {echo 'style="display:none;"';} ?>>
+		<p style="padding-top: 15px;">Tagset-Verknüpfungen:</p>
+                <div class="import_LinkTagsets_MS"></div>
+                </div>
 
 		<p><input type="hidden" name="action" value="importXMLFile" /></p>
 		<p style="text-align:right;">
@@ -150,12 +125,12 @@
   <p class="error_text">Bitte wählen Sie eine Datei zum Importieren aus!</p>
 
 		<p>
-		<label for="transFile">Datei: </label>
+		<label for="transFile" class="ra">Datei: </label>
 		<input type="file" name="transFile" data-required="" />
 		</p>
 
 		<p>
-		<label for="fileEnc">Encoding: </label>
+		<label for="fileEnc" class="ra">Encoding: </label>
 		<select name="fileEnc" size="1">
                    <option value="utf-8">UTF-8 (Unicode)</option>
                    <option value="iso-8859-1">ISO-8859-1 (Latin 1)</option>
@@ -164,49 +139,25 @@
 		</p>
 
 		<p>
-		<label for="project">Projekt: </label>
-		<select name="project" size="1">
-			<?php foreach($projects as $set):?>
-			<option value="<?php echo $set['id'];?>"><?php echo "{$set['name']}";?></option>
-			<?php endforeach;?>
-		</select>
+		<label for="project" class="ra">Projekt: </label>
+		<select name="project" size="1"></select>
 		</p>
 
 		<p>
-		<label for="transName">Name: </label>
+		<label for="transName" class="ra">Name: </label>
 		<input type="text" name="transName" placeholder="(Dokumentname)" size="30" data-required="" />
 		</p>
 
 		<p>
-		<label for="sigle">Sigle: </label>
+		<label for="sigle" class="ra">Sigle: </label>
 		<input type="text" name="sigle" placeholder="(Sigle &ndash; optional)" size="30" />
 		</p>
 
-  <div <?php if(!$_SESSION['admin']) {echo 'style="display:none;"';} ?>>
-<!--		<p>
-		<label for="tagset">POS-Tagset: </label>
-		<select name="tagset" size="1">
-			<?php foreach($tagsets as $set):?>
-			<option value="<?php echo $set['shortname'];?>"><?php echo $set['longname'];?></option>
-			<?php endforeach;?>
-		</select>
-		</p>
--->
-		<p style="padding-top: 15px;">Tagset-Verknüpfungen:
-                <table class="tagset-list">
-		   <tr><th></th><th class="numeric">ID</th><th>Name</th><th>Class</th><th>Set</th></tr>
-                   <?php foreach($tagsets_all as $set): ?>
-		   <tr>
-                      <td class="check"><input type="checkbox" name="linktagsets[]" value="<?php echo $set['shortname']; ?>" /></td>
-                      <td class="numeric"><?php echo $set['shortname']; ?></td>
-                      <td><?php echo $set['longname']; ?></td>
-                      <td><?php echo $set['class']; ?></td>
-                      <td><?php echo $set['set_type']; ?></td>
-                   </tr>
-                   <?php endforeach; ?>
-		</table>
-		</p>
-  </div>		     
+                <div class="fileImportTagsetLinks" <?php if(!$_SESSION['admin']) {echo 'style="display:none;"';} ?>>
+		<p style="padding-top: 15px;">Tagset-Verknüpfungen:</p>
+                <div class="import_LinkTagsets_MS"></div>
+                </div>
+
 		<p><input type="hidden" name="action" value="importTransFile" /></p>
 		<p style="text-align:right;">
                   <input type="submit" value="Importieren &rarr;" />

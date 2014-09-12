@@ -882,8 +882,8 @@ div#editorSettingsInputAids label {
     margin-left: 5px;
 }
 
-form#newFileImportForm label,
-form#newFileImportTransForm label {
+form#newFileImportForm label.ra,
+form#newFileImportTransForm label.ra {
     display: inline-block;
     width: 4.5em;
     text-align: right;

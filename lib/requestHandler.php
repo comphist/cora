@@ -315,7 +315,6 @@ class RequestHandler {
     header("Content-Length: " . $response_size);
     ob_end_flush();
     flush();
-    ob_end_clean();
   }
 
   /** Imports a transcription file into the database.

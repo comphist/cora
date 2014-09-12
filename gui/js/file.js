@@ -188,6 +188,39 @@ cora.tagsets = {
         return this;
     },
 
+    /* Function: makeMultiSelectBox
+       
+       Creates and returns a dropdown box using MultiSelect.js with all
+       available tagsets as entries.
+       
+       Parameters:
+        tagsets - Array of tagset IDs that should be pre-selected
+        name    - Name of the input array
+        ID      - ID of the selector div
+    */
+    makeMultiSelectBox: function(tagsets, name, id) {
+        var multiselect = new Element('div',
+                                      {'class': 'MultiSelect',
+                                       'id':    id});
+        Array.each(this.data, function(tagset, idx) {
+            var entry = new Element('input',
+                                    {'type': 'checkbox',
+                                     'id':   name+'_'+tagset.id,
+                                     'name': name+'[]',
+                                     'value': tagset.id});
+            var textr = "["+tagset['class']+"] "+tagset.longname+" (id: "+tagset.id+")";
+            var label = new Element('label',
+                                    {'for':  name+'_'+tagset.id,
+                                     'text': textr});
+            if(tagsets.some(function(el){ return el == tagset.id; }))
+                entry.set('checked', 'checked');
+            multiselect.grab(entry).grab(label);
+        });
+        new MultiSelect(multiselect,
+                        {monitorText: ' Tagset(s) ausgewählt'});
+        return multiselect;
+    },
+
     /* Function: performUpdate
        
        Analogous to cora.projects.performUpdate(), this function is
@@ -260,7 +293,7 @@ cora.fileImporter = {
         var importform = $('newFileImportForm');
         var mbox = new mBox.Modal({
             title: "Importieren aus CorA-XML-Format",
-            content: 'fileImportForm',
+            content: 'fileImportXMLForm',
             attach: 'importNewXMLLink'
         });
         this._prepareImportFormEvents(importform, 'xmlFile');
@@ -381,11 +414,16 @@ cora.fileImporter = {
      */
     _prepareImportFormEvents: function(myform, fin) {
         cora.projects.onUpdate(function() {
-            this.setTagsetDefaults(myform);
+            this.updateProjectList(myform);
+            this.updateTagsetList(myform);
         }.bind(this));
+        cora.tagsets.onInit(function() {
+            this.updateTagsetList(myform);
+        }.bind(this));
+
         myform.getElement('select[name="project"]')
               .addEvent('change', function(e) {
-                  this.setTagsetDefaults(myform);
+                  this.updateTagsetList(myform);
               }.bind(this));
 
         myform.getElement('input[type="submit"]')
@@ -573,10 +611,33 @@ cora.fileImporter = {
         myform.getElements('.error_text').hide();
     },
 
-    /* Function: setTagsetDefaults
+    /* Function: updateProjectList
 
-       Sets default values for tagset associations depending on the
-       selected project.
+       Rebuilds the project dropdown box.
+
+       Parameters:
+        myform - the form element to update
+     */
+    updateProjectList: function(myform) {
+        var value  = -1;
+        var select = myform.getElement('select[name="project"]');
+        if(select.getSelected().length>0)
+            value  = select.getSelected()[0].get('value');
+        select.empty();
+        Array.each(cora.projects.getAll(), function(prj) {
+            var option = new Element('option',
+                                     {'value': prj.id,
+                                      'text':  prj.name});
+            select.grab(option);
+            if(value == prj.id)
+                option.set('selected', true);
+        });
+    },
+
+    /* Function: updateTagsetList
+
+       Rebuilds the tagset list and sets default values for tagset
+       associations depending on the selected project.
 
        The table updated by this function is typically not visible in
        the GUI except for administrators, but still important for the
@@ -585,17 +646,16 @@ cora.fileImporter = {
        Parameters:
          myform - the form element to update
      */
-    setTagsetDefaults: function(myform) {
-	var pid = myform.getElement('select[name="project"]')
-	    .getSelected()[0]
-	    .get('value');
+    updateTagsetList: function(myform) {
+        var selected = myform.getElement('select[name="project"]')
+                             .getSelected();
+        if(selected.length == 0) return;
+	var pid = selected[0].get('value');
         var prj = cora.projects.get(pid);
 	var tlist = ('tagsets' in prj) ? prj.tagsets : [];
-	myform.getElement('table.tagset-list')
-              .getElements('input').each(function(input) {
-	          var checked = tlist.contains(input.value) ? "yes" : "";
-		  input.set('checked', checked);
-	      });
+        var olddiv = myform.getElement('.fileImportTagsetLinks div');
+        cora.tagsets.makeMultiSelectBox(tlist, 'linktagsets', '')
+            .replaces(olddiv);
     },
 };
 
