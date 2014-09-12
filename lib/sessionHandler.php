@@ -690,7 +690,7 @@ class CoraSessionHandler {
     $data = $this->db->getUserData($user, $pw);
     if ($data) {  // login successful
       $_SESSION["loggedIn"] = true;
-      $_SESSION["user"] = $user;
+      $_SESSION["user"] = $data['name'];
       $_SESSION["user_id"] = $data['id'];
       $_SESSION["failedLogin"] = false;
       $_SESSION["admin"] = ($data['admin'] == 1);
