@@ -985,6 +985,47 @@ var file = {
     	).post();
     },
 
+    /* Function: performChangeTagsetAssoc
+
+       Performs a server request to change tagset associations for a
+       single file.  Will only succeed if user is admin.
+
+       Parameters:
+         fileid - ID of the file
+         div    - Content div with the currently selected tagsets
+     */
+    performChangeTagsetAssoc: function(fileid, div) {
+        var tagsets = div.getElements('input[name="linktagsets[]"]')
+                         .filter(function(elem) { return elem.get('checked'); })
+                         .get('value');
+        new Request.JSON(
+    	    {'url': 'request.php',
+    	     'async': false,
+    	     onFailure: function(xhr) {
+                 gui.showNotice('error',
+                                "Serverfehler beim Ändern der Tagset-Verknüpfungen.");
+    	     },
+    	     onSuccess: function(status, x) {
+                 if(status.success) {
+                     gui.showNotice('ok',
+                                    "Tagset-Verknüpfungen geändert.");
+                 }
+                 else {
+                     gui.showNotice('error',
+                                    "Tagset-Verknüpfungen nicht geändert.");
+                     if(status.errors && status.errors.length>0) {
+                         gui.showTextDialog("Ändern fehlgeschlagen",
+                                            "Tagset-Verknüpfungen konnten nicht "
+                                            +"geändert werden.",
+                                            status.errors);
+                     }
+                 }
+    	     }
+    	    }
+    	).get({'do': 'changeTagsetsForFile',
+               'file_id': fileid, 'linktagsets': tagsets});
+    },
+
     /* Function: editTagsetAssoc
 
        Shows a dialog with the associated tagsets for a file.
@@ -994,19 +1035,23 @@ var file = {
 	 fullname - Name of the file
      */
     editTagsetAssoc: function(fileid, fullname) {
+        var ref = this;
 	var contentdiv = $('tagsetAssociationTable');
 	var spinner = new Spinner(contentdiv);
 	var content = new mBox.Modal({
 	    title: "Tagset-Verknüpfungen für '"+fullname+"'",
 	    content: contentdiv,
-	    buttons: [ {title: "OK", addClass: "mform button_green",
-			id: "editTagsetAssocOK",
+	    buttons: [ {title: "Ändern", addClass: "mform button_red",
+			id: "editTagsetAssocPerform",
 			event: function() {
-			    this.close();
-			}}
+                            ref.performChangeTagsetAssoc(fileid, contentdiv);
+                            this.close();
+                        }},
+                       {title: "Schließen", addClass: "mform",
+			id: "editTagsetAssocOK",
+			event: function() { this.close(); }}                       
 		     ]
 	});
-
 	content.open();
 	spinner.show();
 
@@ -1014,14 +1059,16 @@ var file = {
     	    {'url': 'request.php',
     	     'async': false,
     	     onFailure: function(xhr) {
-    		 alert("Fehler: Der Server lieferte folgende Fehlermeldung zurück:\n\n" + xhr.responseText);
+                 gui.showNotice('error',
+                                "Serverfehler beim Laden der Tagset-Verknüpfungen.");
 		 spinner.destroy();
 		 content.close();
     	     },
     	     onSuccess: function(tlist, x) {
 		 // show tagset associations
 		 if(!tlist['success']) {
-		     alert("Fehler: Konnte Tagset-Verknüpfungen nicht laden.");
+                     gui.showNotice('error',
+                                    "Fehler beim Laden der Tagset-Verknüpfungen.");
 		     spinner.destroy();
 		     content.close();
 		 }

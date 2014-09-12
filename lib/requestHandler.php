@@ -204,6 +204,10 @@ class RequestHandler {
       case "getTagsetsForFile":
 	return $this->sh->getTagsetsForFile($get["file_id"]);
 
+      case "changeTagsetsForFile":
+        return $this->sh->changeTagsetsForFile($get["file_id"],
+                                               $get["linktagsets"]);
+
       case "fetchTagsetsForFile":
 	return $this->sh->fetchTagsetsForFile($get["file_id"]);
 

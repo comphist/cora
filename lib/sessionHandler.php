@@ -106,6 +106,50 @@ class CoraSessionHandler {
     return array('success' => true, 'data' => $tlist);
   }
 
+  /** Changes tagset associations for a file. */
+  public function changeTagsetsForFile($fileid, $tagset_ids){
+      if(!$_SESSION["admin"]) {
+          return array('success' => false,
+                       'errors' => array("Administrator privileges are "
+                                         ." required for this action."));
+      }
+      // find out what changed
+      $oldlinks = $this->db->getTagsetsForFile($fileid);
+      $to_be_deleted = array();
+      foreach($oldlinks as $tagset) {
+          if(($key = array_search($tagset['id'], $tagset_ids)) !== false)
+              unset($tagset_ids[$key]);  // delete IDs that needn't be changed
+          else
+              $to_be_deleted[] = $tagset['id'];
+      }
+      $to_be_added = $tagset_ids;  // all remaining IDs must be new
+
+      // perform changes
+      if(!empty($to_be_deleted)) {
+          // security check
+          foreach($to_be_deleted as $tagset) {
+              if($num = $this->db->doAnnotationsExist($fileid, $tagset))
+                  return array('success' => false,
+                               'errors'  => array("Für das Tagset mit der ID "
+                                                  ."{$tagset} gibt es derzeit noch "
+                                                  ."{$num} eingetragene Annotationen."
+                                                  ." Verknüpfungen für Tagsets, mit "
+                                                  ."denen noch Annotationen verbunden"
+                                                  ." sind, können aus Sicherheitsgründen"
+                                                  ." über dieses Interface nicht"
+                                                  ." aufgehoben werden."));
+          }
+
+          if(!$this->db->deleteTagsetsForFile($fileid, $to_be_deleted))
+              return array('success' => false,
+                           'errors'  => array("Konnte bestehende Tagset-"
+                                              ."Verknüpfungen nicht aufheben. "));
+      }
+      if(!empty($to_be_added))
+          $this->db->addTagsetsForFile($fileid, $to_be_added);
+      return array('success' => true);
+  }
+
   /** Wraps DBInterface::fetchTagsetsForFile(). */
   public function fetchTagsetsForFile($fileid) {
     $data = $this->db->fetchTagsetsForFile($fileid);

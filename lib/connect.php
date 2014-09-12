@@ -490,6 +490,21 @@
      return $stmt->fetchAll(PDO::FETCH_ASSOC);
    }
 
+   /** Check whether annotations exist for a given file and tagset.
+    */
+   public function doAnnotationsExist($fileid, $tagsetid) {
+       $qs = "SELECT COUNT(*) FROM tag_suggestion"
+           ."   LEFT JOIN modern ON modern.id=tag_suggestion.mod_id"
+           ."   LEFT JOIN token  ON token.id=modern.tok_id"
+           ."   LEFT JOIN tag    ON tag.id=tag_suggestion.tag_id"
+           ."       WHERE token.text_id=:textid"
+           ."         AND tag.tagset_id=:tagsetid";
+       $stmt = $this->dbo->prepare($qs);
+       $stmt->execute(array(':textid' => $fileid,
+                            ':tagsetid' => $tagsetid));
+       return $stmt->fetchColumn();
+   }
+
    /** Get tagsets associated with a file.
     *
     * Retrieves a list of tagsets with their respective class for the
@@ -503,6 +518,40 @@
      $stmt = $this->dbo->prepare($qs);
      $stmt->execute(array(':tid' => $fileid));
      return $stmt->fetchAll(PDO::FETCH_ASSOC);
+   }
+
+   /** Add new tagset associations to a file.
+    */
+   public function addTagsetsForFile($fileid, $tagset_ids) {
+     $qs = "INSERT INTO `text2tagset` (`text_id`, `tagset_id`)"
+         . "     VALUES (:textid, :tagsetid)";
+     $stmt = $this->dbo->prepare($qs);
+     foreach($tagset_ids as $tsid) {
+         $stmt->execute(array(':textid' => $fileid,
+                              ':tagsetid' => $tsid));
+     }
+     return $stmt->rowCount();
+   }
+
+   /** Delete tagset associations for a file.
+    */
+   public function deleteTagsetsForFile($fileid, $tagset_ids) {
+     $this->dbo->beginTransaction();
+     try {
+         $qs = "DELETE FROM `text2tagset`"
+             . "      WHERE `text_id`=:textid AND `tagset_id`=:tagsetid";
+         $stmt = $this->dbo->prepare($qs);
+         foreach($tagset_ids as $tsid) {
+             $stmt->execute(array(':textid' => $fileid,
+                                  ':tagsetid' => $tsid));
+         }
+     }
+     catch (PDOException $ex) {
+         $this->dbo->rollBack();
+         return false;
+     }
+     $this->dbo->commit();
+     return true;
    }
 
    /** Get a list of all taggers with their associated tagset links.
