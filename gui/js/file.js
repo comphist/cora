@@ -410,12 +410,14 @@ cora.fileImporter = {
 
        Parameters:
         myform - The form element to set events for
-        fin    - Name of the file selector element in the form
+        trans  - Where we're preparing for the transcription import form
      */
-    _prepareImportFormEvents: function(myform, fin) {
+    _prepareImportFormEvents: function(myform, trans) {
         cora.projects.onUpdate(function() {
             this.updateProjectList(myform);
             this.updateTagsetList(myform);
+            if(trans)
+                this.checkForCmdImport(myform);
         }.bind(this));
         cora.tagsets.onInit(function() {
             this.updateTagsetList(myform);
@@ -424,14 +426,17 @@ cora.fileImporter = {
         myform.getElement('select[name="project"]')
               .addEvent('change', function(e) {
                   this.updateTagsetList(myform);
+                  if(trans)
+                      this.checkForCmdImport(myform);
               }.bind(this));
 
         myform.getElement('input[type="submit"]')
               .addEvent('click', function(e) {
+                  var fin  = trans ? 'transFile' : 'xmlFile';
                   var file = myform.getElement('input[name="'+fin+'"]')
                       .get('value');
                   if(!file || file.length === 0) {
-                      myform.getElements('p.error_text').show();
+                      myform.getElements('p.error_text_import').show();
                       e.stop();
                   }
                   else {
@@ -609,6 +614,7 @@ cora.fileImporter = {
     resetImportForm: function(myform) {
         form.reset(myform);
         myform.getElements('.error_text').hide();
+        myform.getElement('input[type="submit"]').set('disabled', false);
     },
 
     /* Function: updateProjectList
@@ -656,6 +662,30 @@ cora.fileImporter = {
         var olddiv = myform.getElement('.fileImportTagsetLinks div');
         cora.tagsets.makeMultiSelectBox(tlist, 'linktagsets', '')
             .replaces(olddiv);
+    },
+
+    /* Function: checkForCmdImport
+
+       Checks whether selected project has an import command set, and
+       disables the import (with a warning text) if it hasn't.
+
+       Parameters:
+         myform - the form element to update
+     */
+    checkForCmdImport: function(myform) {
+        var selected = myform.getElement('select[name="project"]')
+                             .getSelected();
+        if(selected.length == 0) return;
+	var pid = selected[0].get('value');
+        var prj = cora.projects.get(pid);
+        if (!prj.settings || !prj.settings.cmd_import) {
+            myform.getElement('input[type="submit"]').set('disabled', 'disabled');
+            myform.getElements('p.error_text_cmdimport').show();
+        }
+        else {
+            myform.getElement('input[type="submit"]').set('disabled', false);
+            myform.getElements('p.error_text_cmdimport').hide();
+        }
     },
 };
 

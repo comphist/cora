@@ -84,7 +84,7 @@
 
   <div id="fileImportXMLForm" class="limitedWidth">
 	<form action="request.php" id="newFileImportForm" method="post" accept-charset="utf-8" enctype="multipart/form-data">
-  <p class="error_text">Bitte wählen Sie eine Datei zum Importieren aus!</p>
+  <p class="error_text error_text_import">Bitte wählen Sie eine Datei zum Importieren aus!</p>
 
 		<p>
 		<label for="xmlFile" class="ra">Datei: </label>
@@ -122,7 +122,7 @@
 
   <div id="fileImportTransForm" class="limitedWidth">
 	<form action="request.php" id="newFileImportTransForm" method="post" accept-charset="utf-8" enctype="multipart/form-data">
-  <p class="error_text">Bitte wählen Sie eine Datei zum Importieren aus!</p>
+  <p class="error_text error_text_import">Bitte wählen Sie eine Datei zum Importieren aus!</p>
 
 		<p>
 		<label for="transFile" class="ra">Datei: </label>
@@ -142,6 +142,8 @@
 		<label for="project" class="ra">Projekt: </label>
 		<select name="project" size="1"></select>
 		</p>
+
+                <p class="error_text error_text_cmdimport">Für das gewählte Projekt ist kein Importskript festgelegt.  Ohne Importskript können neue Dokumente nur als CorA-XML-Datei importiert werden.</p>
 
 		<p>
 		<label for="transName" class="ra">Name: </label>
