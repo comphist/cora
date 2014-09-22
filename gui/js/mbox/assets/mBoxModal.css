@@ -145,7 +145,25 @@
 	font-size:16px;
 	padding:30px 30px 30px 75px;
 	background:url('images/mBox-Sprites.png') #fff 20px -1078px no-repeat;
+        max-width:40em;
 }
 .mBox.Modal.Confirm .mBoxButtonContainer {
+	text-align:center;
+}
+
+/*** modal: info dialog ***/
+
+.mBox.Modal.InfoDialog .mBoxContent { 
+	color:#555555;
+	font-size:16px;
+	padding:30px 30px 30px 75px;
+	background:url('images/mBox-Sprites.png') #fff 20px -778px no-repeat;
+        max-width:31em;
+}
+.mBox.Modal.InfoDialog .mBoxButtonContainer {
+	text-align:center;
+}
+
+.mBox.Modal.TextDialog .mBoxButtonContainer {
 	text-align:center;
 }

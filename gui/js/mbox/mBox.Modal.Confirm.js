@@ -61,37 +61,7 @@ mBox.Modal.Confirm = new Class({
 	
 	// submit the confirm and close box
 	confirm: function() {
-		eval(this.options.confirmAction);
+		this.options.confirmAction();
 		this.close();
 	}
 });
-
-// add confirm-events to all elements with attribute 'data-confirm'
-mBox.addConfirmEvents = function() {
-	$$('*[data-confirm]').each(function(el) {
-		if(!el.retrieve('hasConfirm')) {
-			var attr = el.getAttribute('data-confirm').split('|'),
-				action = el.getAttribute('data-confirm-action') || (el.get('href') ? 'window.location.href = "' + el.get('href') + '";' : 'function() {}');
-			
-			el.addEvent('click', function(ev) {
-				ev.preventDefault();
-				if(confirm_box) {
-					confirm_box.close(true);
-				}
-				var confirm_box = new mBox.Modal.Confirm({
-					content: attr[0],
-					confirmAction: action,
-					onOpen: function() {
-						if(!this.footerContainer) { return;
-							this.setFooter(null);
-						}
-						this.footerContainer.getElement('.mBoxConfirmButtonSubmit').set('html', '<label>' + (attr[1] || this.defaultSubmitButton) + '</label>');
-						this.footerContainer.getElement('.mBoxConfirmButtonCancel').set('html', '<label>' + (attr[2] || this.defaultCancelButton) + '</label>');
-					}
-				}).open();
-			});
-			el.store('hasConfirm', true);
-		}
-	});
-}
-window.addEvent('domready', function() { mBox.addConfirmEvents(); });

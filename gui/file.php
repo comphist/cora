@@ -43,25 +43,24 @@
    
   <div class="panel clappable" id="fileGroup">
     <h4 class="projectname clapp">Projektname</h4>
-        <div>
-		<table class="fileList">
-			<tr class="fileTableHeadLine">
-				<th></th>
-				<th>Dateiname</th>
-<!--				<th class="tagStatusPOS">POS</th>
-				<th class="tagStatusMorph">Morph</th>
-				<th class="tagStatusNorm">Norm.</th>
--->
-				<th colspan="2">zuletzt bearbeitet am/von</th>
-				<th colspan="2">erstellt am/von</th>
-				<th></th>
-				<th></th>
-				<th></th>
-		    </tr>
-
-		<!-- this table is filled by file.listFiles() @ file.js -->
-		</table>
-        </div>
+      <div>
+        <table class="fileList">
+        <thead>
+          <tr class="fileTableHeadLine">
+            <th></th>
+            <th>Dateiname</th>
+            <th colspan="2">zuletzt bearbeitet am/von</th>
+            <th colspan="2">erstellt am/von</th>
+            <th></th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- this table is filled by file.listFiles() @ file.js -->
+        </tbody>
+        </table>
+      </div>
   </div>
 
   <div id="fileExportPopup">
@@ -187,9 +186,19 @@
      <p>Sie gehören zur Zeit keiner Projektgruppe an.  Wenden Sie sich an einen Administrator, um zu einer Projektgruppe hinzuzufügt zu werden.</p>
   </div>
 
+  <table>
+    <tr id="noProjectFiles">
+     <td></td>
+     <td>Dieses Projekt enthält keine Dateien.</td>
+     <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+    </tr>
+  </table>
+
+<!--
   <div id="noProjectFiles">
     <p>Dieses Projekt enthält keine Dateien.</p>
   </div>
+-->
 
 </div>
 </div>

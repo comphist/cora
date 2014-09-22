@@ -14,16 +14,17 @@ var debugMode = false;
    Acts as a wrapper for an array containing all project information,
    including associated files.
 
-   This class allows simple access to projects via their ID, sends
+   This object allows simple access to projects via their ID, sends
    AJAX requests to update the project information, and stores
    functions that should be called whenever the project list updates.
 */
 cora.projects = {
     initialized: false,
     data: [],
-    byID: {},
-    onUpdateHandlers: [],
-    onInitHandlers: [],
+    byID: {},              // maps project ID to array index
+    byFileID: {},          // maps file ID to tuple (project idx, files idx)
+    onUpdateHandlers: [],  // list of callback functions when data updates
+    onInitHandlers: [],    // list of callback functions after initialization
 
     /* Function: get
 
@@ -45,6 +46,20 @@ cora.projects = {
     */
     getAll: function() {
         return this.data;
+    },
+
+    /* Function: getFile
+
+       Return a file by ID.
+
+       Parameters:
+        fid - ID of the file to be returned
+     */
+    getFile: function(fid) {
+        var tuple = this.byFileID[fid];
+        if(tuple == undefined)
+            return Object();
+        return this.data[tuple[0]].files[tuple[1]];
     },
 
     /* Function: isEmpty
@@ -102,8 +117,12 @@ cora.projects = {
     		onSuccess: function(status, text) {
                     ref.data = status['data'];
                     ref.byID = {};
+                    ref.byFileID = {};
                     Array.each(ref.data, function(prj, idx) {
                         ref.byID[prj.id] = idx;
+                        Array.each(prj.files, function(file, idy) {
+                            ref.byFileID[file.id] = [idx, idy];
+                        });
                     });
                     if(!ref.initialized) {
                         ref.initialized = true;
@@ -120,7 +139,15 @@ cora.projects = {
     	});
         files.get({'do': 'getProjectsAndFiles'});
         return this;
-    }
+    },
+};
+
+/* Class: cora.files
+
+   Provides aliases for file-specific functions in cora.projects.
+*/
+cora.files = {
+    get: cora.projects.getFile.bind(cora.projects),
 };
 
 // ***********************************************************************
@@ -695,11 +722,35 @@ var file = {
     tagsets: {},
     tagsetlist: [],
     taggers: [],
+    files_div: null,
 
     initialize: function(){
         cora.projects.onUpdate(function(status, text) {
             this.renderFileTable();
         }.bind(this));
+
+        this.files_div = $('files');
+        this.files_div.addEvent(
+            'click:relay(a)',
+            function(event, target) {
+                var parent = target.getParent('tr');
+                if(typeof(parent) == "undefined")
+                    return;
+                var this_id = parent.get('id').substr(5);
+                event.stop();
+                if(target.hasClass("filenameOpenLink")) {
+                    this.openFile(this_id);
+                } else if(target.hasClass("deleteFileLink")) {
+                    this.deleteFile(this_id);
+                } else if(target.hasClass("exportFileLink")) {
+                    this.exportFile(this_id);
+                } else if(target.hasClass("editTagsetAssocLink")) {
+                    this.editTagsetAssoc(this_id);
+                } else if(target.hasClass("closeFileLink")) {
+                    this.closeFile(this_id);
+                }
+            }.bind(this)
+        );
     },
 
     /* Function: preprocessTagset
@@ -836,9 +887,10 @@ var file = {
         		}
         	    }).get({'do': 'openFile', 'fileid': fileid});
     		} else {
-    		    var msg = "Das Dokument wird bereits bearbeitet von Benutzer '" + data.lock.locked_by + "' seit " +
-    			data.lock.locked_since + ".";
-    		    alert(msg);
+                    gui.showInfoDialog(
+                            "Das Dokument wird zur Zeit bearbeitet von Benutzer '"
+                            + data.lock.locked_by + "' seit "
+                            + data.lock.locked_since + ".");
     		}
     	    }
     	});
@@ -871,15 +923,15 @@ var file = {
 		}).get({'do': 'unlockFile', 'fileid': fileid});
 	    }
 	} else {
-	    var doit = confirm("Sie sind dabei, eine Datei zu schließen, die aktuell nicht von Ihnen bearbeitet wird. Falls jemand anderes diese Datei zur Zeit bearbeitet, könnten Datenverluste auftreten.");
-	    if (doit) {
+            var forceClose = function () {
 		new Request({
 		    url:"request.php",
 		    onSuccess: function(data){
 			ref.listFiles();
 		    }
 		}).get({'do': 'unlockFile', 'fileid': fileid, 'force': true});
-	    }
+            };
+            gui.confirm("Sie sind dabei, eine Datei zu schließen, die aktuell nicht von Ihnen bearbeitet wird. Falls jemand anderes diese Datei zur Zeit bearbeitet, könnten Datenverluste auftreten. Trotzdem schließen?", forceClose);
 	}
     },
     
@@ -887,104 +939,138 @@ var file = {
         cora.projects.performUpdate();
     },
 
+    /* Function: renderFileTable
+
+       (Re-)renders the file & project listing table.
+     */
     renderFileTable: function() {
-	/* TODO: isn't it completely unnecessary to completely
-	 * re-create the whole table each time a change occurs?
-	 * couldn't this be done more efficiently? */
         var ref = this;
-        var files_div = $('files').empty();
+        var files_div = this.files_div;
         if(cora.projects.isEmpty()) {
-            files_div.grab($('noProjectGroups').clone());
+            files_div.empty().grab($('noProjectGroups').clone());
             return;
         }
+        var last_div = null;
         Array.each(cora.projects.getAll(), function(project) {
-            var prj_div   = $('fileGroup').clone();
-            var prj_table = prj_div.getElement('table');
-            prj_div.getElement('h4.projectname').empty().appendText(project.name);
-            Array.each(project.files, function(file) {
-                prj_table.adopt(ref.renderTableLine(file));
-            });
-            if(project.files.length == 0)
-                $('noProjectFiles').clone().replaces(prj_table);
-            prj_div.inject(files_div);
+            var prj_div, prj_table;
+            var div_id = 'proj_'+project.id;
+            prj_div = files_div.getElementById(div_id);
+            if(prj_div === null) {  // create project div if necessary
+                prj_div = $('fileGroup').clone();
+                prj_div.set('id', div_id);
+                prj_div.getElement('h4.projectname')
+                    .empty().appendText(project.name);
+                if(last_div !== null)
+                    prj_div.inject(last_div, 'after');
+                else
+                    prj_div.inject(files_div);
+                gui.addToggleEvents(prj_div);
+            }
+            prj_table = prj_div.getElement('tbody').empty();
+            if(project.files.length == 0) {  // no files?
+                prj_table.adopt($('noProjectFiles').clone());
+            }
+            else {  // rebuild list of files from scratch
+                Array.each(project.files, function(file) {
+                    prj_table.adopt(ref.renderTableLine(file));
+                });
+            }
+            last_div = prj_div;
         });
-        gui.addToggleEvents(files_div.getElements('.clappable'));
     },
 
+    /* Function: renderTableLine
+
+       Renders a line of the file listing table.
+
+       Parameters:
+        file - Object representing the file to be rendered
+
+       Returns:
+        A <tr> Element for the file listing table.
+     */
     renderTableLine: function(file){
 	var ref = this;
-        var opened = file.opened ? 'opened' : '';
-	var displayed_name = '';
-	if(file.sigle!=null && file.sigle!=''){
-	    displayed_name = '[' + file.sigle + '] ';
-	}
-	displayed_name += file.fullname;
-        var tr = new Element('tr',{id: 'file_'+file.id, 'class': opened});
+        var displayed_name, td;
+        var tr = new Element('tr', {'id': 'file_'+file.id});
+        if(file.opened)
+            tr.addClass('opened');
+        // delete icon (if applicable)
+        td = new Element('td');
         if((file.creator_name == userdata.name) || userdata.admin){
-            var delTD = new Element('td',{ html: '<img src="gui/images/proxal/delete.ico" />', 'class': 'deleteFile' });
-            delTD.addEvent('click', function(){ ref.deleteFile(file.id,file.fullname); } );
-            tr.adopt(delTD);
-        } else {
-	    tr.adopt(new Element('td'));
-	}
-        var chkImg = '<img src="gui/images/chk_on.png" />';
-        tr.adopt(new Element('td',{'class': 'filename'}).adopt(new Element('a',{ html: displayed_name }).addEvent('click',function(){ ref.openFile(file.id); })));
-//        tr.adopt(new Element('td',{ 'class': 'tagStatusPOS', html: (file.POS_tagged == 1) ? chkImg : '--' }));
-//        tr.adopt(new Element('td',{ 'class': 'tagStatusMorph', html: (file.morph_tagged == 1) ? chkImg : '--' }));
-
-	/* the following lines have been uncommented as the field is
-	 * not currently used */
-        tr.adopt(new Element('td',{ html: file.changed }));
-        tr.adopt(new Element('td',{ html: file.changer_name }));                    
-        tr.adopt(new Element('td',{ html: file.created }));
-        tr.adopt(new Element('td',{ html: file.creator_name }));
-        tr.adopt(new Element('td',{'class':'exportFile'}).adopt(
-	    new Element('a',{ html: 'Exportieren...', 'class': 'exportFileLink' })
-		.addEvent('click', function(){ ref.exportFile(file.id); } )));
+            td.addClass('deleteFile');
+            td.adopt(new Element('a', {'class': 'deleteFileLink'})
+                     .adopt(new Element('img', {'src': "gui/images/proxal/delete.ico"})));
+        }
+        tr.adopt(td);
+        // filename
+        if(file.sigle)
+            displayed_name = '[' + file.sigle + '] ' + file.fullname;
+        else
+            displayed_name = file.fullname;
+        tr.adopt(new Element('td', {'class': 'filename'})
+                 .adopt(new Element('a', { text: displayed_name,
+                                           'class': 'filenameOpenLink' })));
+        // changer & creator info
+        tr.adopt(new Element('td',{ text: file.changed }));
+        tr.adopt(new Element('td',{ text: file.changer_name }));                    
+        tr.adopt(new Element('td',{ text: file.created }));
+        tr.adopt(new Element('td',{ text: file.creator_name }));
+        // export button
+        tr.adopt(new Element('td',{'class':'exportFile'})
+                 .adopt(new Element('a',{ text: 'Exportieren...',
+                                          'class': 'exportFileLink' })));
+        // tagset links
+        td = new Element('td');
         if(userdata.admin){
-            tr.adopt(new Element('td',{'class':'editTagsetAssoc'}).adopt(
-		new Element('a',{ html: 'Tagsets...', 'class': 'editTagsetAssocLink' })
-		    .addEvent('click', function(){ ref.editTagsetAssoc(file.id,file.fullname); } )));
-        } else { tr.adopt(new Element('td')); }
-        if((file.opened == userdata.name ) || (opened && userdata.admin)){
-            tr.adopt(new Element('td',{'class':'closeFile'}).adopt(
-		new Element('a',{ html: 'Schließen', 'class': 'closeFileLink' })
-		    .addEvent('click', function(){ ref.closeFile(file.id); } )));
-        } else { tr.adopt(new Element('td')); }
+            td.addClass('editTagsetAssoc');
+            td.adopt(new Element('a',{ text: 'Tagsets...',
+                                       'class': 'editTagsetAssocLink' }));
+        }
+        tr.adopt(td);
+        // close button
+        td = new Element('td');
+        if((file.opened == userdata.name ) || (file.opened && userdata.admin)){
+            td.addClass('closeFile');
+            td.adopt(new Element('a',{ text: 'Schließen',
+                                       'class': 'closeFileLink' }));
+        }
+        tr.adopt(td);
+        // done!
         return tr;
     },
     
-    deleteFile: function(fileid,filename){
-        var ref = this;
+    /* Function: deleteFile
 
-        var dialog = "Soll das Dokument '" + filename + "' wirklich gelöscht werden? Dieser Schritt kann nicht rückgängig gemacht werden!";
-        if(!confirm(dialog))
-            return;
-        
-        var req = new Request.JSON(
-    	    {'url': 'request.php?do=deleteFile',
-    	     'async': false,
-    	     'data': 'file_id='+fileid,
-    	     onFailure: function(xhr) {
-    		 alert("Fehler: Der Server lieferte folgende Fehlermeldung zurück:\n\n" + xhr.responseText);
-    	     },
-    	     onSuccess: function(status, blubb) {
-		 if(!status || !status.success) {
+       Asks for confirmation to delete a file and, if confirmed, sends
+       a server request for deletion.
+
+       Parameters:
+         fileid - ID of the file to be deleted
+     */
+    deleteFile: function(fileid) {
+        var performDelete = function() {
+            new Request.JSON(
+    	        {'url': 'request.php?do=deleteFile',
+    	         'async': false,
+    	         'data': 'file_id='+fileid,
+    	         onFailure: function(xhr) {
 		     gui.showNotice('error', "Konnte Datei nicht löschen.");
-		     if(status.error_msg) {
-    			 alert("Fehler: Der Server lieferte folgende Fehlermeldung zurück:\n\n" + status.error_msg);
-		     }
-		     else {
-    			 alert("Ein unbekannter Fehler ist aufgetreten.");
-		     }
-		 }
-		 else {
-		     gui.showNotice('ok', "Datei gelöscht.");
-		 }
-    		 ref.listFiles();
-    	     }
-    	    }
-    	).post();
+    	         },
+    	         onSuccess: function(status, blubb) {
+		     if(!status || !status.success)
+		         gui.showNotice('error', "Konnte Datei nicht löschen.");
+		     else
+		         gui.showNotice('ok', "Datei gelöscht.");
+                     cora.projects.performUpdate();
+    	         }
+    	        }
+    	    ).post();
+        };
+
+        var filename = cora.files.get(fileid).fullname;
+        var message = "Soll das Dokument '" + filename + "' wirklich gelöscht werden? Dieser Schritt kann nicht rückgängig gemacht werden!";
+        gui.confirm(message, performDelete, true);
     },
 
     /* Function: performChangeTagsetAssoc
@@ -1034,10 +1120,10 @@ var file = {
 
        Parameters:
          fileid - ID of the file
-	 fullname - Name of the file
      */
-    editTagsetAssoc: function(fileid, fullname) {
+    editTagsetAssoc: function(fileid) {
         var ref = this;
+        var fullname = cora.files.get(fileid).fullname;
 	var contentdiv = $('tagsetAssociationTable');
 	var spinner = new Spinner(contentdiv);
 	var content = new mBox.Modal({

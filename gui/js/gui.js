@@ -25,6 +25,9 @@ var gui = {
        automatically hides all contents of .starthidden containers.
     */
     addToggleEvents: function(objects) {
+        if(typeof(objects.each) != "function")
+            objects = new Array(objects);
+
 	objects.each(function (clappable) {
             var clapper, content;
 	    
@@ -140,8 +143,8 @@ var gui = {
        Displays a floating notice, e.g., to indicate success.
 
        Parameters:
-        ntype - Type of the notice ('ok' or 'error')
-        message - String to appear in the notice
+         ntype - Type of the notice ('ok' or 'error')
+         message - String to appear in the notice
     */
     showNotice: function(ntype, message) {
 	new mBox.Notice({
@@ -149,6 +152,32 @@ var gui = {
 	    position: {x: 'right'},
 	    content: message
 	});
+    },
+
+    /* Function: confirm
+
+       Presents a confirmation dialog with yes/no buttons to the user.
+
+       Parameters:
+         message - String to appear in the dialog
+         action - Callback function on confirmation
+         danger - If true, 'yes' button is displayed in red instead of green
+     */
+    confirm: function(message, action, danger) {
+        new mBox.Modal.Confirm({
+            content: message,
+            confirmAction: action,
+            onOpen: function() {
+                this.footerContainer.getElement('.mBoxConfirmButtonSubmit')
+                    .addClass('mform')
+                    .removeClass('button_green')
+                    .addClass((danger ? 'button_red' : 'button_green'))
+                    .set('html', '<label>Ja, bestätigen</label>');
+                this.footerContainer.getElement('.mBoxConfirmButtonCancel')
+                    .addClass('mform')
+                    .set('html', '<label>Nein, abbrechen</label>');
+            }
+        }).open();
     },
 
     /* Function: disableScrolling
@@ -200,6 +229,23 @@ var gui = {
         this.enableScrolling();
     },
 
+    /* Function: showInfoDialog
+
+       Displays a modal dialog containing an informational message.
+
+       Parameters:
+         message - Message to display
+         title - (optional) Title of the dialog window
+     */
+    showInfoDialog: function(message, title) {
+	new mBox.Modal({
+	    title: title,
+	    content: message,
+            addClass: {wrapper: 'InfoDialog'},
+	    buttons: [ {title: "Schließen", addClass: "mform button_green"} ]
+	}).open();
+    },
+
     /* Function: showTextDialog
 
        Displays a modal dialog that optionally includes a textarea for
@@ -235,9 +281,10 @@ var gui = {
 	new mBox.Modal({
 	    title: title,
 	    content: content,
+            addClass: {wrapper: 'TextDialog'},
 	    closeOnBodyClick: false,
 	    closeOnEsc: false,
-	    buttons: [ {title: "OK", addClass: "mform button_green"} ]
+	    buttons: [ {title: "Schließen", addClass: "mform button_green"} ]
 	}).open();
     },
 
