@@ -294,9 +294,10 @@ cora.fileImporter = {
         var mbox = new mBox.Modal({
             title: "Importieren aus CorA-XML-Format",
             content: 'fileImportXMLForm',
-            attach: 'importNewXMLLink'
+            attach: 'importNewXMLLink',
+            closeOnBodyClick: false,
         });
-        this._prepareImportFormEvents(importform, 'xmlFile');
+        this._prepareImportFormEvents(importform, 'xmlFile', false);
 
         new iFrameFormRequest(importform, {
             onRequest: function() {
@@ -329,9 +330,10 @@ cora.fileImporter = {
         var mbox = new mBox.Modal({
             title: "Importieren aus Textdatei",
             content: 'fileImportTransForm',
-            attach: 'importNewTransLink'
+            attach: 'importNewTransLink',
+            closeOnBodyClick: false,
         });
-        this._prepareImportFormEvents(importform, 'transFile');
+        this._prepareImportFormEvents(importform, 'transFile', true);
         this._activateImportElementsTrans();
 
         new iFrameFormRequest(importform, {
@@ -410,9 +412,10 @@ cora.fileImporter = {
 
        Parameters:
         myform - The form element to set events for
-        trans  - Where we're preparing for the transcription import form
+        fin    - Name of the file selector element
+        trans  - Whether we're preparing for the transcription import form
      */
-    _prepareImportFormEvents: function(myform, trans) {
+    _prepareImportFormEvents: function(myform, fin, trans) {
         cora.projects.onUpdate(function() {
             this.updateProjectList(myform);
             this.updateTagsetList(myform);
@@ -432,7 +435,6 @@ cora.fileImporter = {
 
         myform.getElement('input[type="submit"]')
               .addEvent('click', function(e) {
-                  var fin  = trans ? 'transFile' : 'xmlFile';
                   var file = myform.getElement('input[name="'+fin+'"]')
                       .get('value');
                   if(!file || file.length === 0) {
