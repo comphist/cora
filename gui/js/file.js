@@ -841,11 +841,20 @@ var file = {
 	});
     },
     
-    openFile: function(fileid) {
+    /* Function: openFile
+
+       Opens a file.
+
+       Parameters:
+         fileid - ID of the file to open
+         force - (optional) If true, skips any confirmation dialogs
+     */
+    openFile: function(fileid, force) {
         var ref = this;
 	var emf = (edit.editorModel!=null && edit.editorModel.fileId!=null);
 
-	if (emf && !edit.editorModel.confirmClose()) {
+	if (emf && !force) {
+            edit.editorModel.confirmClose(function() { ref.openFile(fileid, true); });
 	    return false;
 	}
         
@@ -897,31 +906,39 @@ var file = {
         lock.get({'do': 'lockFile', 'fileid': fileid});
     },
     
-    closeFile: function(fileid){        
+    /* Function: closeFile
+
+       Closes a file.
+
+       Parameters:
+         fileid - ID of the file to close
+     */
+    closeFile: function(fileid){
         var ref = this;
 	var emf = (edit.editorModel!=null && edit.editorModel.fileId==fileid);
 
 	if (emf) {
-	    if (edit.editorModel.confirmClose()) {
-		$('overlay').show();
-		new Request.JSON({
+            var doClose = function() {
+	        $('overlay').show();
+	        new Request.JSON({
 		    url: "request.php",
 		    onSuccess: function(data) {
-			if (!data.success) {
+		        if (!data.success) {
 			    console.log("Error closing file?");
-			}
-			ref.listFiles();
-			edit.editorModel = null;
-			default_tab = 'file';
-			gui.changeTab(default_tab);
-			$('menuRight').hide();
-			$('editTable').hide();
-			$('editTabButton').hide();
-			$('currentfile').set('text','');
-			$('overlay').hide();
+		        }
+		        ref.listFiles();
+		        edit.editorModel = null;
+		        default_tab = 'file';
+		        gui.changeTab(default_tab);
+		        $('menuRight').hide();
+		        $('editTable').hide();
+		        $('editTabButton').hide();
+		        $('currentfile').set('text','');
+		        $('overlay').hide();
 		    }
-		}).get({'do': 'unlockFile', 'fileid': fileid});
-	    }
+	        }).get({'do': 'unlockFile', 'fileid': fileid});
+            };
+            edit.editorModel.confirmClose(doClose);
 	} else {
             var forceClose = function () {
 		new Request({

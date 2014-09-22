@@ -233,15 +233,15 @@ cora.userEditor = {
 
 	// perform checks
 	if (username === '') {
-	    alert("Fehler: 'Benutzername' darf nicht leer sein.");
+	    gui.showNotice('error', "Benutzername darf nicht leer sein.");
 	    return false;
 	}
 	if (password === '') {
-	    alert("Fehler: 'Passwort' darf nicht leer sein.");
+	    gui.showNotice('error', "Passwort darf nicht leer sein.");
 	    return false;
 	}
 	if (password != controlpw) {
-	    alert("Fehler: Passwörter stimmen nicht überein.");
+	    gui.showNotice('error', "Passwörter stimmen nicht überein.");
 	    return false;
 	}
 
@@ -261,19 +261,18 @@ cora.userEditor = {
 	var parentrow = event.target.getParent('tr');
 	var uid = parentrow.get('id').substr(5);
         var username = parentrow.getElement('td.adminUserNameCell').get('text');
-
-	var dialog = "Soll der Benutzer '" + username + "' wirklich gelöscht werden?";
-	if (!confirm(dialog))
-	    return;
-
-        cora.users.deleteUser(uid, function(status, text) {
-            if(status['success']) {
-                gui.showNotice('ok', 'Benutzer gelöscht.');
-            }
-            else {
-                gui.showNotice('error', 'Benutzer nicht gelöscht.');
-            }
-        });
+        var performDelete = function() {
+            cora.users.deleteUser(uid, function(status, text) {
+                if(status['success']) {
+                    gui.showNotice('ok', 'Benutzer gelöscht.');
+                }
+                else {
+                    gui.showNotice('error', 'Benutzer nicht gelöscht.');
+                }
+            });
+        };
+        gui.confirm("Benutzer '" + username + "' wirklich löschen?",
+                    performDelete, true);
     },
     toggleStatus: function(event, statusname) {
         if(statusname!='Admin')
@@ -300,11 +299,11 @@ cora.userEditor = {
 
 	// perform checks
 	if (password === '') {
-	    alert("Fehler: 'Passwort' darf nicht leer sein.");
+	    gui.showNotice('error', "Passwort darf nicht leer sein.");
 	    return false;
 	}
 	if (password != controlpw) {
-	    alert("Fehler: Passwörter stimmen nicht überein.");
+	    gui.showNotice('error', "Passwörter stimmen nicht überein.");
 	    return false;
 	}
 
@@ -689,8 +688,9 @@ cora.tagsetEditor = {
         var iFrame = new iFrameFormRequest(formname, {
             onFailure: function(xhr) {
 		// never fires?
-       		alert("Import nicht erfolgreich: Der Server lieferte folgende Fehlermeldung zurück:\n\n" +
-       		      xhr.responseText);
+       		gui.showTextDialog("Import nicht erfolgreich",
+                                   "Der Server lieferte folgende Fehlermeldung zurück:",
+       		                   xhr.responseText);
        	    },
 	    onRequest: function(){
 		import_mbox.close();

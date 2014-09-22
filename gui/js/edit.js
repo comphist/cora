@@ -829,7 +829,8 @@ var EditorModel = new Class({
 	    this.requestLines(start, end, false);
 	}
 	catch(e) {
-	    alert(e.message);
+            gui.showNotice('error', "Problem beim Laden des Dokuments.");
+	    gui.showInfoDialog(e.message);
 	    return false;
 	}
 
@@ -1099,7 +1100,7 @@ var EditorModel = new Class({
 	if(this.tries++>20) { // prevent endless recursion
 	    throw {
 		'name': 'FailureToLoadLines',
-		'message': "Ein Fehler ist aufgetreten: Zeilen "+start+" bis "+(end-1)+" können nicht geladen werden."
+		'message': "Ein Fehler ist aufgetreten: Zeilen "+start+" bis "+(end-1)+" können nicht geladen werden.  Überprüfen Sie ggf. Ihre Internetverbindung."
 	    };
 	    return false;
 	}
@@ -1202,14 +1203,17 @@ var EditorModel = new Class({
 
        Note that the actual closing of the file is not implemented
        in this class, but in file.js.
+
+       Parameters:
+         fn - Callback function if closing is confirmed
     */
-    confirmClose: function() {
+    confirmClose: function(fn) {
 	var chl = this.changedLines.length;
 	if (chl>0) {
 	    var zeile = (chl>1) ? "Zeilen" : "Zeile";
-	    return confirm("Warnung: Im geöffneten Dokument gibt es noch ungespeicherte Änderungen in "+chl+" "+zeile+", die verloren gehen, wenn Sie fortfahren.");
+            gui.confirm("Warnung: Im geöffneten Dokument gibt es noch ungespeicherte Änderungen in "+chl+" "+zeile+", die verloren gehen, wenn Sie fortfahren.  Wirklich fortfahren?", fn);
 	} else {
-	    return true;
+            fn();
 	}
     },
 
@@ -1322,7 +1326,7 @@ var EditorModel = new Class({
 		return false;
 	    }
 	    if(!new_token) {
-		alert("Transkription darf nicht leer sein!");
+		gui.showNotice('error', "Transkription darf nicht leer sein!");
 		return false;
 	    }
 	    if(new_token.indexOf("=")>-1) {
@@ -1441,11 +1445,11 @@ var EditorModel = new Class({
 	var performAdd = function(mbox) {
 	    var new_token = $('addTokenBox').get('value').trim();
 	    if(!new_token) {
-		alert("Transkription darf nicht leer sein!");
+		gui.showNotice('error', "Transkription darf nicht leer sein!");
 		return false;
 	    }
 	    if(new_token.indexOf(" ") !== -1) {
-		alert("Transkription darf keine Leerzeichen enthalten!");
+		gui.showNotice('error', "Transkription darf keine Leerzeichen enthalten!");
 		return false;
 	    }
 
