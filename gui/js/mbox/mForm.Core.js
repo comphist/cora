@@ -111,7 +111,7 @@ var mForm = new Class({
 	
 	// add control + s event to textareas and textfields
 	setSubmitFormEvents: function(elements) {
-		this.getElements(elements, $$('textarea, input[type=text], input[type=password], input[type=date], input[type=datetime], input[type=datetime-local], input[type=email], input[type=month], input[type=number], input[type=search], input[type=tel], input[type=time], input[type=url], input[type=week]')).each(function(el) {
+	/* this.getElements(elements, $$('textarea, input[type=text], input[type=password], input[type=date], input[type=datetime], input[type=datetime-local], input[type=email], input[type=month], input[type=number], input[type=search], input[type=tel], input[type=time], input[type=url], input[type=week]')).each(function(el) {
 			el.addEvent('keydown', function(ev) {
 				if (el.getParent('form') && (
 					(this.options.submitFormOnControlS && (ev.key == 's' && (ev.control || (Browser.Platform.mac && ev.meta)))) ||
@@ -126,6 +126,7 @@ var mForm = new Class({
 				}
 			}.bind(this));
 		}.bind(this));
+        */
 	},
 	
 	// add cross-browser placeholders to input elements
