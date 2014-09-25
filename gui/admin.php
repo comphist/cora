@@ -8,8 +8,6 @@
 
 $tlist = $sh->getTagsetList();
 $ulist = array();
-// $projects = $sh->getProjectList();   defined in gui.php
-// $project_users = $sh->getProjectUsers();   defined in gui.php
 
  ?>
 
