@@ -82,12 +82,15 @@
           }
 
           if($_SESSION['admin']) {
-              embedJS("gui/js/admin.js", true);
+              if(file_exists(dirname(__FILE__) . "/gui/js/admin.min.js"))
+                  embedJS("gui/js/admin.min.js", true);
+              else
+                  embedJS("gui/js/admin.js", true);
           }
       }
     ?>
   </head>
-
+  <?php flush(); ?>
   <body <?php if($_SESSION['loggedIn']): ?>onload="onLoad();" onbeforeunload="return onBeforeUnload();"<?php endif; ?>>
     <div id="overlay"></div>
     <div id="spin-overlay"></div>
