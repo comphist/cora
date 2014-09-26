@@ -16,6 +16,20 @@ cora.users = {
     byID: {},
     onUpdateHandlers: [],
 
+    /* Function: get
+
+       Return a user by ID.
+
+       Parameters:
+        uid - ID of the user to be returned
+     */
+    get: function(uid) {
+        var idx = this.byID[uid];
+        if(idx == undefined)
+            return Object();
+        return this.data[idx];
+    },
+
     /* Function: getAll
 
        Return an array containing all users.
@@ -195,22 +209,9 @@ cora.userEditor = {
         cora.users.onUpdate(this.refreshUserTable);
         cora.users.performUpdate();
 
-	var ceralink = new Element('a', {
-	    "id": 'ceraCUButton',
-	    "href": '#ceraCreateUser'
-	}).wraps('createUser');
-	ceralink.cerabox({
-	    displayTitle: false,
-	    group: false,
-	    events: {
-		onOpen: function(currentItem, collection) {
-	    	    $$('button[name="submitCreateUser"]').addEvent(
-			'click', cora.userEditor.createUser, cora.userEditor
-		    );
-		}
-	    }
-	});
-
+        $('createUser').addEvent(
+            'click', function() { this.createUser(); }.bind(this)
+        );
         $('adminUsersRefresh').addEvent(
             'click', function() { cora.users.performUpdate(); }
         );
@@ -218,45 +219,84 @@ cora.userEditor = {
 	    'click:relay(td)',
 	    function(event, target) {
 		if(target.hasClass('adminUserAdminStatus')) {
-		    cora.userEditor.toggleStatus(event, 'Admin');
+		    this.toggleStatus(event, 'Admin');
 		}
 		else if(target.hasClass('adminUserDelete')) {
-		    cora.userEditor.deleteUser(event);
+		    this.deleteUser(event);
 		}
-	    }
+	    }.bind(this)
 	);
+        $('editUsers').addEvent(
+            'click:relay(button.adminUserPasswordButton)',
+            function(event, button) {
+                var uid = button.getParent('tr').get('id').substr(5);
+                this.changePassword(uid);
+            }.bind(this)
+        );
     },
+
+    /* Function: createUser
+
+       Displays a dialog to create a new user entry.
+    */
     createUser: function() {
-	var username  = $$('.cerabox-content input[name="newuser[un]"]')[0].get('value');
-	var password  = $$('.cerabox-content input[name="newuser[pw]"]')[0].get('value');
-	var controlpw = $$('.cerabox-content input[name="newuser[pw2]"]')[0].get('value');
-
-	// perform checks
-	if (username === '') {
-	    gui.showNotice('error', "Benutzername darf nicht leer sein.");
-	    return false;
-	}
-	if (password === '') {
-	    gui.showNotice('error', "Passwort darf nicht leer sein.");
-	    return false;
-	}
-	if (password != controlpw) {
-	    gui.showNotice('error', "Passwörter stimmen nicht überein.");
-	    return false;
-	}
-
-	// send request
-        cora.users.createUser(username, password, function (status, text) {
-	    CeraBoxWindow.close();
-            if(status['success']) {
-                gui.showNotice('ok', 'Benutzer hinzugefügt.');
+        var performChecks = function(cdiv) {
+            var un, pw1, pw2;
+            un  = cdiv.getElements('input[name="newuser"]')[0].get('value');
+            pw1 = cdiv.getElements('input[name="newpw"]')[0].get('value');
+            pw2 = cdiv.getElements('input[name="newpw2"]')[0].get('value');
+            if(!un) {
+	        gui.showNotice('error', "Benutzername darf nicht leer sein.");
+                return false;
             }
-            else {
-	        gui.showNotice('error', 'Benutzer nicht hinzugefügt.');
+            if(!pw1) {
+                gui.showNotice('error', "Passwort darf nicht leer sein.");
+                return false;
             }
-        });
-	return true;
+	    if (pw1 !== pw2) {
+	        gui.showNotice('error', "Passwörter stimmen nicht überein.");
+	        return false;
+	    }
+            return [un, pw1];
+        };
+        var performRequest = function(data) {
+            var username = data[0];
+            var password = data[1];
+            cora.users.createUser(username, password, function (status, text) {
+                if(status['success']) {
+                    gui.showNotice('ok', 'Benutzer hinzugefügt.');
+                }
+                else {
+	            gui.showNotice('error', 'Benutzer nicht hinzugefügt.');
+                }
+            });
+        };
+        new mBox.Modal({
+            title: "Neuen Benutzer hinzufügen",
+            content: $('templateCreateUser'),
+            buttons: [ {title: "Abbrechen", addClass: "mform"},
+                       {title: "Hinzufügen", addClass: "mform button_green",
+                        event: function() {
+                            var data = performChecks(this.content);
+                            if(data) {
+                                this.close();
+                                performRequest(data);
+                            }
+                        }
+                       }
+                     ],
+            onInit: function() {
+                this.content.getElements('input[name="newuser"]').set('value', '');
+                this.content.getElements('input[name="newpw"]').set('value', '');
+                this.content.getElements('input[name="newpw2"]').set('value', '');
+            }
+        }).open();
     },
+
+    /* Function: deleteUser
+
+       Asks for confirmation to delete a user and requests the delete.
+    */
     deleteUser: function(event) {
 	var parentrow = event.target.getParent('tr');
 	var uid = parentrow.get('id').substr(5);
@@ -274,6 +314,11 @@ cora.userEditor = {
         gui.confirm("Benutzer '" + username + "' wirklich löschen?",
                     performDelete, true);
     },
+
+    /* Function: toggleStatus
+
+       Toggles a status for a user.  (Right now, only admin status exists.)
+    */
     toggleStatus: function(event, statusname) {
         if(statusname!='Admin')
             return;
@@ -292,32 +337,52 @@ cora.userEditor = {
 	    }
         });
     },
-    changePassword: function() {
-	var uid       = $$('.cerabox-content input[name="changepw[id]"]')[0].get('value');
-	var password  = $$('.cerabox-content input[name="changepw[pw]"]')[0].get('value');
-	var controlpw = $$('.cerabox-content input[name="changepw[pw2]"]')[0].get('value');
 
-	// perform checks
-	if (password === '') {
-	    gui.showNotice('error', "Passwort darf nicht leer sein.");
-	    return false;
-	}
-	if (password != controlpw) {
-	    gui.showNotice('error', "Passwörter stimmen nicht überein.");
-	    return false;
-	}
+    /* Function: changePassword
 
-	// send request
-        cora.users.changePassword(uid, password, function (status, text) {
-	    CeraBoxWindow.close();
-            if(status['success']) {
-                gui.showNotice('ok', 'Password geändert.');
+       Displays a dialog to change the password for a user.
+       
+       Parameters:
+         uid - ID of the user
+    */
+    changePassword: function(uid) {
+        var performChecks = function(cdiv) {
+            var pw1, pw2;
+            pw1 = cdiv.getElements('input[name="newchpw"]')[0].get('value');
+            pw2 = cdiv.getElements('input[name="newchpw2"]')[0].get('value');
+            if(!pw1) {
+                gui.showNotice('error', "Passwort darf nicht leer sein.");
+                return false;
             }
-            else {
-                gui.showNotice('error', 'Password nicht geändert.');
-            }
-        });
-	return true;
+	    if (pw1 !== pw2) {
+	        gui.showNotice('error', "Passwörter stimmen nicht überein.");
+	        return false;
+	    }
+            return pw1;
+        };
+        var performRequest = function(uid, password) {
+            cora.users.changePassword(uid, password, function (status, text) {
+                if(status['success'])
+                    gui.showNotice('ok', 'Password geändert.');
+                else
+                    gui.showNotice('error', 'Password nicht geändert.');
+            });
+        };
+        new mBox.Modal({
+            title: "Passwort ändern",
+            content: $('templateChangePassword'),
+            buttons: [ {title: "Abbrechen", addClass: "mform"},
+                       {title: "Hinzufügen", addClass: "mform button_green",
+                        event: function() {
+                            var pw = performChecks(this.content);
+                            if(pw) {
+                                this.close();
+                                performRequest(uid, pw);
+                            }
+                        }
+                       }
+                     ]
+        }).open();
     },
     
     /* Function: refreshUserTable
@@ -338,26 +403,6 @@ cora.userEditor = {
                 tr.getElement('img.adminUserAdminStatus').hide();
             tr.inject(table);
         });
-
-        // old legacy code here:
-	$$('button.adminUserPasswordButton').each(
-	    function(button) {
-		var uid = button.getParent('tr').get('id').substr(5);
-		var ceralink = new Element('a', {'href':'#ceraChangePassword'}).wraps(button);
-		ceralink.cerabox({
-		    displayTitle: false,
-		    group: false,
-		    events: {
-			onOpen: function(currentItem, collection) {
-			    $$('input[name="changepw[id]"]').set('value', uid);
-			    $$('button[name="submitChangePassword"]').addEvent(
-				'click', cora.userEditor.changePassword, cora.userEditor
-			    );
-			}
-		    }
-		});
-	    }
-	);
     }
 }
 

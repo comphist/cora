@@ -13,8 +13,6 @@
 
     <?php
     /**************** Cascading Style Sheets ****************/
-      embedCSS("gui/css/MultiSelect.css", "all", true);
-
       $master_css = file_exists(dirname(__FILE__)."/gui/css/master.min.css")
                     ? "gui/css/master.min.css"
                     : "gui/css/master.css";
@@ -53,21 +51,25 @@
 
       if($_SESSION['loggedIn']) {
           include("project_specific_hacks.php");
-          embedJS("gui/js/cerabox/cerabox.min.js", true);
-          embedJS("gui/js/mbox/mBox.Core.js", true);
-          embedJS("gui/js/mbox/mBox.Modal.js", true);
-          embedJS("gui/js/mbox/mBox.Notice.js", true);
-          embedJS("gui/js/mbox/mBox.Modal.Confirm.js", true);
-          embedJS("gui/js/mbox/mBox.Tooltip.js", true);
-          embedJS("gui/js/mbox/mForm.Core.js", true);
-          embedJS("gui/js/mbox/mForm.Submit.js", true);
-          embedJS("gui/js/mbox/mForm.Element.js", true);
-          embedJS("gui/js/mbox/mForm.Element.Select.js", true);
-          embedJS("gui/js/MultiSelect.js", true);
+
+          if(file_exists(dirname(__FILE__) . "/gui/js/mbox.min.js")) {
+              embedJS("gui/js/mbox.min.js", true);
+          } else {
+              embedJS("gui/js/mbox/mBox.Core.js", true);
+              embedJS("gui/js/mbox/mBox.Modal.js", true);
+              embedJS("gui/js/mbox/mBox.Notice.js", true);
+              embedJS("gui/js/mbox/mBox.Modal.Confirm.js", true);
+              embedJS("gui/js/mbox/mBox.Tooltip.js", true);
+              embedJS("gui/js/mbox/mForm.Core.js", true);
+              embedJS("gui/js/mbox/mForm.Submit.js", true);
+              embedJS("gui/js/mbox/mForm.Element.js", true);
+              embedJS("gui/js/mbox/mForm.Element.Select.js", true);
+          }
           
           if(file_exists(dirname(__FILE__) . "/gui/js/master.min.js")) {
               embedJS("gui/js/master.min.js", true);
           } else {
+              embedJS("gui/js/MultiSelect.js", true);
               embedJS("gui/js/baseBox.js", true);
               embedJS("gui/js/ProgressBar.js", true);
               embedJS("gui/js/dragtable_hack.js", true);
