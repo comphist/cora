@@ -52,23 +52,25 @@ function embedJS($filename, $withtimestamp=false) {
 
 function embedSessionVars($svars) {
     echo "var userdata = { ";
-    echo 'name: "'.$_SESSION['user'].'", ';
+    $userdata = array('name: "'.$_SESSION['user'].'"');
     foreach($svars as $key => $quoted) {
         if($quoted)
-            echo $key.': "'.$_SESSION[$key].'", ';
+            $userdata[] = $key.': "'.$_SESSION[$key].'"';
         else
-            echo $key.': '.$_SESSION[$key].', ';
+            $userdata[] = $key.': '.$_SESSION[$key];
     }
+    echo join(", ", $userdata);
     echo " };\n";
 }
 
 function embedTagsets($tagsets_all) {
     echo "var PHP_tagsets = [ ";
+    $php_tagsets = array();
     foreach($tagsets_all as $set) {
         $set['id'] = $set['shortname'];
-        echo json_encode($set);
-        echo ", ";        
+        $php_tagsets[] = json_encode($set);
     }
+    echo join(", ", $php_tagsets);
     echo " ];\n";
 }
 

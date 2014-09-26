@@ -80,7 +80,7 @@
           }
 
           if($_SESSION['admin']) {
-              embedJS("gui/js/admin.js");
+              embedJS("gui/js/admin.js", true);
           }
       }
     ?>

@@ -286,10 +286,8 @@ var gui = {
 	    closeOnEsc: false,
 	    buttons: [ {title: "Schließen", addClass: "mform button_green"} ]
 	}).open();
-    },
-
+    }
 }
-
 
 /** Perform initialization. Adds JavaScript events to interactive
  * navigation elements, e.g.\ clappable div containers, and selects

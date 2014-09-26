@@ -628,7 +628,7 @@ var EditorModel = new Class({
 			$('pageSelector').set('value', 1);
 			ref.displayPage(1);
 		    }
-		},
+		}
 	    }));
 
             elem.adopt(new Element('a',{
@@ -638,7 +638,7 @@ var EditorModel = new Class({
 			e.stop();
 			ref.displayPreviousPage();
 		    }
-		},
+		}
 	    }));
 	});
 	
@@ -668,7 +668,7 @@ var EditorModel = new Class({
 			e.stop();
 			ref.displayNextPage();
 		    }
-		},
+		}
 	    }));
 
 	    elem.adopt(new Element('a',{
@@ -679,14 +679,14 @@ var EditorModel = new Class({
 			$('pageSelector').set('value', ref.maxPage);
 			ref.displayPage(ref.maxPage);
 		    }
-		},
+		}
 	    }));
 	});
 
 	// Jump to line
 	// Whoa, this is a mess ...
 	jumpto = new Element('a',{
-	    href: 'javascript:;', text: 'Springe zu Zeile...',
+	    href: 'javascript:;', text: 'Springe zu Zeile...'
 	});
 	jumptoFunc = function(mbox) {
 	    var line_no = Number.from($('jumpToBox').value);
@@ -1102,7 +1102,6 @@ var EditorModel = new Class({
 		'name': 'FailureToLoadLines',
 		'message': "Ein Fehler ist aufgetreten: Zeilen "+start+" bis "+(end-1)+" können nicht geladen werden.  Überprüfen Sie ggf. Ihre Internetverbindung."
 	    };
-	    return false;
 	}
 
 	new Request.JSON({
@@ -1115,7 +1114,6 @@ var EditorModel = new Class({
 			'name': 'EmptyRequest',
 			'message': "Ein Fehler ist aufgetreten: Server-Anfrage für benötigte Zeilen "+start+" bis "+(end-1)+" lieferte kein Ergebnis zurück."
 		    };
-		    return;
 		}
 		Object.each(lineArray, function(ln) {
 		    if (this.data[ln.num] == undefined) {
@@ -1566,7 +1564,7 @@ var EditorModel = new Class({
 					  }
 					  return item;
 				      }
-				  },
+				  }
 			      }).addEvent('select', function(e,v,text,index) { 
 				  var parent = e.field.node.getParent("tr");
 				  var this_id = parent.get("id").substr(5);
@@ -1776,7 +1774,7 @@ var edit = {
     initialize: function(){
 	$('editTabButton').hide();
         this.lastEditLine = 0;
-    },
+    }
 }
 
 window.addEvent('domready',function(){

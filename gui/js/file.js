@@ -139,7 +139,7 @@ cora.projects = {
     	});
         files.get({'do': 'getProjectsAndFiles'});
         return this;
-    },
+    }
 };
 
 /* Class: cora.files
@@ -147,7 +147,7 @@ cora.projects = {
    Provides aliases for file-specific functions in cora.projects.
 */
 cora.files = {
-    get: cora.projects.getFile.bind(cora.projects),
+    get: cora.projects.getFile.bind(cora.projects)
 };
 
 // ***********************************************************************
@@ -322,7 +322,7 @@ cora.fileImporter = {
             title: "Importieren aus CorA-XML-Format",
             content: 'fileImportXMLForm',
             attach: 'importNewXMLLink',
-            closeOnBodyClick: false,
+            closeOnBodyClick: false
         });
         this._prepareImportFormEvents(importform, 'xmlFile', false);
 
@@ -358,7 +358,7 @@ cora.fileImporter = {
             title: "Importieren aus Textdatei",
             content: 'fileImportTransForm',
             attach: 'importNewTransLink',
-            closeOnBodyClick: false,
+            closeOnBodyClick: false
         });
         this._prepareImportFormEvents(importform, 'transFile', true);
         this._activateImportElementsTrans();
@@ -715,7 +715,7 @@ cora.fileImporter = {
             myform.getElement('input[type="submit"]').set('disabled', false);
             myform.getElements('p.error_text_cmdimport').hide();
         }
-    },
+    }
 };
 
 var file = {
