@@ -286,6 +286,30 @@ var gui = {
 	    closeOnEsc: false,
 	    buttons: [ {title: "Schließen", addClass: "mform button_green"} ]
 	}).open();
+    },
+
+    /* Function: formatDateString
+
+       Takes a date string or Date object and re-formats it for
+       display within the GUI.
+
+       Parameters:
+         date - A date in string format, or as a Date object
+     */
+    formatDateString: function(date) {
+        var format_string = '';
+        var date_strings = ['Heute', 'Gestern', 'Vorgestern'];
+        var now = Date.now();
+        if(!(date instanceof Date))
+            date = new Date(date);
+        if(!date.isValid())
+            return "";
+        if(date.diff(now) > 2)
+            format_string += "%d.%m.%Y";
+        else
+            format_string += date_strings[date.diff(now)];
+        format_string += ", %H:%M";
+        return date.format(format_string);
     }
 }
 

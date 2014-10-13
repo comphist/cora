@@ -934,7 +934,8 @@ var file = {
                     gui.showInfoDialog(
                             "Das Dokument wird zur Zeit bearbeitet von Benutzer '"
                             + data.lock.locked_by + "' seit "
-                            + data.lock.locked_since + ".");
+                            + gui.formatDateString(data.lock.locked_since).toLowerCase()
+                            + ".");
     		}
     	    }
     	});
@@ -1066,9 +1067,9 @@ var file = {
                  .adopt(new Element('a', { text: cora.files.getDisplayName(file),
                                            'class': 'filenameOpenLink' })));
         // changer & creator info
-        tr.adopt(new Element('td',{ text: file.changed }));
-        tr.adopt(new Element('td',{ text: file.changer_name }));                    
-        tr.adopt(new Element('td',{ text: file.created }));
+        tr.adopt(new Element('td',{ text: gui.formatDateString(file.changed) }));
+        tr.adopt(new Element('td',{ text: file.changer_name }));
+        tr.adopt(new Element('td',{ text: gui.formatDateString(file.created) }));
         tr.adopt(new Element('td',{ text: file.creator_name }));
         // export button
         tr.adopt(new Element('td',{'class':'exportFile'})

@@ -396,7 +396,8 @@ cora.userEditor = {
             var tr = $('templateUserInfoRow').clone();
             tr.set('id', 'User_'+user.id);
             tr.getElement('td.adminUserNameCell').set('text', user.name);
-            tr.getElement('td.adminUserLastactiveCell').set('text', user.lastactive);
+            tr.getElement('td.adminUserLastactiveCell')
+                .set('text', gui.formatDateString(user.lastactive));
             if(user.opened_text) {
                 var opened_text = cora.files.get(user.opened_text);
                 if(opened_text) {
