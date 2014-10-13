@@ -44,6 +44,9 @@
           <thead>
             <tr class="fileTableHeadLine">
               <th></th>
+              <?php if($_SESSION["admin"]): ?>
+              <th>ID</th>
+              <?php endif; ?>
               <th>Dateiname</th>
               <th colspan="2">zuletzt bearbeitet am/von</th>
               <th colspan="2">erstellt am/von</th>

@@ -977,6 +977,10 @@ var file = {
                 prj_div.set('id', div_id);
                 prj_div.getElement('h4.projectname')
                     .empty().appendText(project.name);
+                if(userdata.admin) {
+                    prj_div.getElement('h4.projectname')
+                    .appendText(' (id: '+project.id+')');
+                }
                 if(last_div !== null)
                     prj_div.inject(last_div, 'after');
                 else
@@ -1021,6 +1025,8 @@ var file = {
         }
         tr.adopt(td);
         // filename
+        if(userdata.admin)
+            tr.adopt(new Element('td', { text: file.id }));  // ID column
         if(file.sigle)
             displayed_name = '[' + file.sigle + '] ' + file.fullname;
         else
