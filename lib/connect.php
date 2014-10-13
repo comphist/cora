@@ -628,7 +628,7 @@
     *
     * @return an @em array with at least the file meta data. If exists, the user's last edited row is also transmitted.
     */
-   public function openFile($fileid, $user=0){
+   public function openFile($fileid, $user="system"){
      $locked = $this->lockFile($fileid, $user);
      if(!$locked['success']) {
        return array('success' => false);
