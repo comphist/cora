@@ -420,22 +420,18 @@
     *
     * Deletes the lock entry for the current user from the file lock table.
     *
-    * @todo move SESSION data out of this function
-    *
     * @param string $fileid file id
     * @param string $user username (defaults to current session user)
     *
     * @return @em array result of the mysql query
     */		
    public function unlockFile($fileid,$uname="",$force=false) {
-     if(empty($uname)) {
-       $userid = $_SESSION['user_id'];
-     } else {
-       $userid = $this->getUserIDFromName($uname);
-     }
      $qs = "DELETE FROM locks WHERE text_id=:tid";
      if (!$force) {
-       $qs .= " AND user_id={$userid}";
+         if($uname == "")
+             return 0;
+         $userid = $this->getUserIDFromName($uname);
+         $qs .= " AND user_id={$userid}";
      }
      $stmt = $this->dbo->prepare($qs);
      $stmt->execute(array(':tid' => $fileid));
@@ -628,14 +624,12 @@
     *
     * Retrieves metadata and users progress data for the given file.
     *
-    * @todo move SESSION data out of this function
-    *
     * @param string $fileid file id
     *
     * @return an @em array with at least the file meta data. If exists, the user's last edited row is also transmitted.
     */
-   public function openFile($fileid){
-     $locked = $this->lockFile($fileid, $_SESSION["user"]);
+   public function openFile($fileid, $user=0){
+     $locked = $this->lockFile($fileid, $user);
      if(!$locked['success']) {
        return array('success' => false);
      }

@@ -237,10 +237,8 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
             $this->getConnection()->createQueryTable("testlock",
             "SELECT * FROM locks WHERE text_id=4;")->getRowCount());
 
-        // fake login as test
-        $_SESSION["user_id"] = "5";
         // this should succeed
-        $lock_result = $this->dbi->unlockFile("4");
+        $lock_result = $this->dbi->unlockFile("4", "test");
         $this->assertEquals("0",
             $this->getConnection()->createQueryTable("testlock",
             "SELECT * FROM locks WHERE text_id=4;")->getRowCount());
@@ -262,7 +260,7 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
 
 								 ))),
                   "success" => true),
-            $this->dbi->openFile("3")
+            $this->dbi->openFile("3", "bollmann")
         );
 
         $_SESSION["user"] = "test";

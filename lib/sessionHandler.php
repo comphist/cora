@@ -394,7 +394,7 @@ class CoraSessionHandler {
       return array('success' => false);
     }
 
-    $lock = $this->db->openFile($fileid);
+    $lock = $this->db->openFile($fileid, $_SESSION['user']);
     if($lock['success']){
       $_SESSION['currentFileId'] = $lock['data']['id'];
       $_SESSION['currentName'] = $lock['data']['fullname'];
@@ -731,7 +731,7 @@ class CoraSessionHandler {
   public function logout() {
     $this->updateLastactive();
     if(isset($_SESSION["currentFileId"]) && !empty($_SESSION["currentFileId"])) {
-      $this->unlockFile($_SESSION["currentFileId"]);
+        $this->unlockFile($_SESSION["currentFileId"], $_SESSION["user"]);
     }
     session_destroy();
     // setcookie();
