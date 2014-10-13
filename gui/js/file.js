@@ -62,6 +62,20 @@ cora.projects = {
         return this.data[tuple[0]].files[tuple[1]];
     },
 
+    /* Function: getProjectForFile
+
+       Return the project which contains a given file.
+
+       Parameters:
+        fid - ID of the file
+    */
+    getProjectForFile: function(fid) {
+        var tuple = this.byFileID[fid];
+        if(tuple == undefined)
+            return null;
+        return this.data[tuple[0]];
+    },
+
     /* Function: isEmpty
 
        Returns a boolean indicating whether the project list is empty.
@@ -147,7 +161,28 @@ cora.projects = {
    Provides aliases for file-specific functions in cora.projects.
 */
 cora.files = {
-    get: cora.projects.getFile.bind(cora.projects)
+    get: cora.projects.getFile.bind(cora.projects),
+    getProject: cora.projects.getProjectForFile.bind(cora.projects),
+
+    /* Function: getDisplayName
+
+       Returns the name of a file as it should be displayed on the
+       interface.
+
+       Parameters:
+        file - A file object, e.g. as returned by cora.files.get,
+               or a file ID
+    */
+    getDisplayName: function(file) {
+        if(!file.id) {
+            file = this.get(file);
+            if(!file.id)
+                return null;
+        }
+        if(file.sigle)
+            return '[' + file.sigle + '] ' + file.fullname;
+        return file.fullname;
+    }
 };
 
 // ***********************************************************************
@@ -1012,7 +1047,7 @@ var file = {
      */
     renderTableLine: function(file){
 	var ref = this;
-        var displayed_name, td;
+        var td;
         var tr = new Element('tr', {'id': 'file_'+file.id});
         if(file.opened)
             tr.addClass('opened');
@@ -1027,12 +1062,8 @@ var file = {
         // filename
         if(userdata.admin)
             tr.adopt(new Element('td', { text: file.id }));  // ID column
-        if(file.sigle)
-            displayed_name = '[' + file.sigle + '] ' + file.fullname;
-        else
-            displayed_name = file.fullname;
         tr.adopt(new Element('td', {'class': 'filename'})
-                 .adopt(new Element('a', { text: displayed_name,
+                 .adopt(new Element('a', { text: cora.files.getDisplayName(file),
                                            'class': 'filenameOpenLink' })));
         // changer & creator info
         tr.adopt(new Element('td',{ text: file.changed }));

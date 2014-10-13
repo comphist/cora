@@ -108,9 +108,9 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
                             $result);
 
         $this->assertEquals(array(array_merge($this->expected["users"]["bollmann"],
-					      array("active" => '0')),
+					      array("active" => '0', "opened_text" => '3')),
 				  array_merge($this->expected["users"]["test"],
-					      array("active" => '0'))),
+					      array("active" => '0', "opened_text" => null))),
 			    $this->dbi->getUserList(30));
     }
 

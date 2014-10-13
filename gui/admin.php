@@ -27,6 +27,7 @@ $ulist = array();
        <th>Benutzername</th>
        <th>Admin?</th>
        <th>Letzte Aktivität</th>
+       <th>Geöffnete Datei</th>
        <th></th>
      </tr>
    </table>
@@ -205,6 +206,7 @@ $ulist = array();
         <td class="centered adminUserAdminStatus"><img src="gui/images/proxal/check.ico" class="adminUserAdminStatus"/>
         </td>
         <td class="adminUserLastactiveCell"></td>
+        <td class="adminUserActivityCell"></td>
         <td>
           <button class="adminUserPasswordButton" type="button">Passwort ändern...</button>
         </td>

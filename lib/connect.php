@@ -125,12 +125,15 @@
     * information about their admin status.
     */
    public function getUserList($to) {
-     $qs = "SELECT `id`, name, admin, lastactive,"
+     $qs = "SELECT users.id, users.name, users.admin, users.lastactive,"
        ."          CASE WHEN lastactive BETWEEN DATE_SUB(NOW(), INTERVAL {$to} MINUTE)"
        ."                                   AND NOW()"
-       ."               THEN 1 ELSE 0 END AS active"
+       ."               THEN 1 ELSE 0 END AS active, "
+       ."          text.id AS opened_text "
        ."     FROM users "
-       ."    WHERE `id`!=1"
+       ."LEFT JOIN locks ON locks.user_id=users.id "
+       ."LEFT JOIN text  ON text.id=locks.text_id "
+       ."    WHERE users.id!=1"
        ."    ORDER BY name";
      $stmt = $this->dbo->query($qs);
      $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
