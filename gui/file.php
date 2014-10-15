@@ -14,12 +14,12 @@
       </p>
     </div>
     -->
-    <div class="file-toolbar">
-      <span class="file-toolbar-entry" id="fileViewRefresh" title="Aktualisieren"><span class="oi" data-glyph="reload" aria-hidden="true"></span></span>
-      <span class="file-toolbar-entry" id="fileViewCollapseAll" title="Alle Projektgruppen zuklappen"><span class="oi" data-glyph="collapse-up" aria-hidden="true"></span></span>
-      <span class="file-toolbar-entry" id="fileViewExpandAll" title="Alle Projektgruppen aufklappen"><span class="oi" data-glyph="collapse-down" aria-hidden="true"></span></span>
-      <span class="file-toolbar-entry start-disabled" id="importNewTransLink"><span class="oi" data-glyph="data-transfer-upload" aria-hidden="true"></span> Import aus Textdatei</span>
-      <span class="file-toolbar-entry start-disabled" id="importNewXMLLink"><span class="oi" data-glyph="data-transfer-upload" aria-hidden="true"></span> Import aus XML-Datei</span>
+    <div class="btn-toolbar">
+      <span class="btn-toolbar-entry" id="fileViewRefresh" title="Aktualisieren"><span class="oi" data-glyph="reload" aria-hidden="true"></span></span>
+      <span class="btn-toolbar-entry" id="fileViewCollapseAll" title="Alle Projektgruppen zuklappen"><span class="oi" data-glyph="collapse-up" aria-hidden="true"></span></span>
+      <span class="btn-toolbar-entry" id="fileViewExpandAll" title="Alle Projektgruppen aufklappen"><span class="oi" data-glyph="collapse-down" aria-hidden="true"></span></span>
+      <span class="btn-toolbar-entry start-disabled" id="importNewTransLink"><span class="oi" data-glyph="data-transfer-upload" aria-hidden="true"></span> Import aus Textdatei</span>
+      <span class="btn-toolbar-entry start-disabled" id="importNewXMLLink"><span class="oi" data-glyph="data-transfer-upload" aria-hidden="true"></span> Import aus XML-Datei</span>
     </div>
 
     <div id="files"></div>
@@ -69,10 +69,10 @@
         <td class="ftr-created-by"></td>
         <td class="ftr-id start-hidden admin-only"></td>
         <td class="ftr-options">
-          <a class="deleteFileLink start-hidden"><span class="oi" data-glyph="delete" title="Datei löschen" aria-hidden="true"></span></a>
-          <a class="exportFileLink"><span class="oi" data-glyph="data-transfer-download" title="Datei exportieren" aria-hidden="true"></span> Exportieren...</a>
-          <a class="editTagsetAssocLink start-hidden admin-only"><span class="oi" data-glyph="link-intact" title="Tagset-Verknüpfungen bearbeiten" aria-hidden="true"></span> Tagsets...</a>
-          <a class="closeFileLink start-hidden"><span class="oi" data-glyph="x" title="Datei schließen" aria-hidden="true"></span> Schließen</a>
+          <a class="deleteFileLink deletion-link start-hidden"><span class="oi oi-shadow oi-adjust" data-glyph="delete" title="Datei löschen" aria-hidden="true"></span></a>
+          <a class="exportFileLink"><span class="oi oi-shadow oi-adjust" data-glyph="data-transfer-download" title="Datei exportieren" aria-hidden="true"></span> Exportieren...</a>
+          <a class="editTagsetAssocLink start-hidden admin-only"><span class="oi oi-shadow oi-adjust" data-glyph="link-intact" title="Tagset-Verknüpfungen bearbeiten" aria-hidden="true"></span> Tagsets...</a>
+          <a class="closeFileLink start-hidden"><span class="oi oi-shadow" data-glyph="x" title="Datei schließen" aria-hidden="true"></span> Schließen</a>
         </td>
       </tr>
     </table>

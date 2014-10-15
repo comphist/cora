@@ -2,6 +2,27 @@
     display: none;
 }
 
+span.oi-shadow { 
+    text-shadow: 1px 1px 4px rgba(150, 150, 150, 1);
+}
+
+span.oi-green {
+    color: green;
+}
+
+span.oi-adjust { 
+    position: relative;
+    top: 2px;
+}
+
+a.deletion-link { 
+    color: rgb(224, 0, 0);
+}
+
+a.deletion-link:hover { 
+    color: rgb(255, 64, 64);
+}
+
 /*format */
 span.tabFollowed {
 	display: inline-block;
@@ -622,13 +643,13 @@ div.clappable.clapp-hidden span.clapp-status-hidden {
 
 /* File-toolbar */
 
-div.file-toolbar { 
+div.btn-toolbar { 
     padding: 0 0 16px 0;
     margin-top: 8px;
 }
 
 /* inspired by mBox buttons ... */
-span.file-toolbar-entry { 
+span.btn-toolbar-entry { 
     padding: 6px 6px 4px 6px;
     margin: 0 4px;
     font-size: 12px;
@@ -653,12 +674,12 @@ span.file-toolbar-entry {
     vertical-align: middle;
 }
 
-span.file-toolbar-entry span { 
+span.btn-toolbar-entry span { 
     font-size: 14px;
     vertical-align: middle;
 }
 
-span.file-toolbar-entry:active { 
+span.btn-toolbar-entry:active { 
     border:1px solid #a0a0a0;
     border-bottom:1px solid #cacaca;
     background:#e5e5e5;
@@ -667,14 +688,14 @@ span.file-toolbar-entry:active {
     box-shadow:inset 0 1px 2px rgba(0, 0, 0, 0.26) !important;
 }
 
-span.file-toolbar-entry:hover { 
+span.btn-toolbar-entry:hover { 
     border:1px solid #b5b5b5;
     -webkit-box-shadow:inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 1px 1px rgba(0, 0, 0, 0.07);
     -moz-box-shadow:inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 1px 1px rgba(0, 0, 0, 0.07);
     box-shadow:inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 1px 1px rgba(0, 0, 0, 0.07);
 }
 
-span.file-toolbar-entry.start-disabled { 
+span.btn-toolbar-entry.start-disabled { 
     pointer-events: none !important;
     cursor:default !important;
     border:1px solid #d9d9d9 !important;
@@ -754,27 +775,9 @@ table.fileList .ftr-options a {
     margin-right: 8px;
 }
 
-table.fileList .ftr-options span { 
-    position: relative;
-    top: 2px;
-    text-shadow: 1px 1px 4px rgba(150, 150, 150, 1);
-}
-
-table.fileList a.deleteFileLink { 
-    color: rgb(224, 0, 0);
-}
-
 table.fileList a.deleteFileLink.start-hidden { 
     display: inline;
     visibility: hidden;
-}
-
-table.fileList a.deleteFileLink:hover { 
-    color: rgb(255, 64, 64);
-}
-
-table.fileList a.closeFileLink span { 
-    top: 0;
 }
 
 tr.opened {
@@ -909,6 +912,7 @@ div.editTableLemmaChecked {
 
 div.editTableLemmaLink {
     display: inline;
+    cursor: pointer;
 }
 
 div.editTableLemmaLink img {
@@ -1090,7 +1094,7 @@ div.limitedWidth p {
 
 /* Dropdown Menu */
 
-img.editTableDropdownIcon {
+.editTableDropdownIcon {
     cursor: pointer;
 }
 

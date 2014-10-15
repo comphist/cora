@@ -59,7 +59,7 @@
           <div class="editTableLemma editTableCheckbox"></div>
           <input type="text" value="" />
           <div class="editTableLemmaLink">
-            <img src="gui/images/proxal/chat-event.ico" />
+             <span class="oi oi-shadow" data-glyph="external-link" title="Externen Link öffnen" aria-hidden="true"></span>
           </div>
         </td>
         <td class="editTable_LemmaPOS"></td>
@@ -68,7 +68,7 @@
         </td>
         <td class="editTable_dropdown">
           <div class="editTableDropdown">
-            <img class="editTableDropdownIcon" src="gui/images/proxal/arrow-down.ico"/>
+             <span class="oi oi-shadow oi-green editTableDropdownIcon" data-glyph="caret-bottom" title="Dropdown-Menü öffnen" aria-hidden="true"></span>
           </div>
           <div class="editTableDropdownMenu">
             <ul>

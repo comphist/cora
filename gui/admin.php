@@ -20,25 +20,21 @@ $ulist = array();
    <h3 class="clapp">Benutzerverwaltung</h3>
 
    <div>
-    <img id="adminUsersRefresh" src="gui/images/View-refresh.svg" width="20px" height="20px"/>
-   <table id="editUsers">
-     <tr>
-       <th></th>
-       <th>Benutzername</th>
-       <th>Admin?</th>
-       <th>Letzte Aktivität</th>
-       <th>Geöffnete Datei</th>
-       <th></th>
-     </tr>
-   </table>
+     <div class="btn-toolbar">
+       <span class="btn-toolbar-entry" id="adminUsersRefresh" title="Aktualisieren"><span class="oi" data-glyph="reload" aria-hidden="true"></span></span>
+       <span class="btn-toolbar-entry" id="createUser"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> Benutzer hinzufügen...</span>
+     </div>
 
-   <p>
-   <button id="createUser" type="button" class="mform">
-       <img src="gui/images/proxal/plus.ico" />
-       Neuen Benutzer hinzufügen...
-   </button>
-   </p>
-   
+     <table id="editUsers">
+       <tr>
+         <th>Benutzername</th>
+         <th>Admin?</th>
+         <th>Letzte Aktivität</th>
+         <th>Geöffnete Datei</th>
+         <th></th>
+         <th></th>
+       </tr>
+     </table>
    </div>
 </div>
 
@@ -51,12 +47,12 @@ $ulist = array();
    <table id="editProjects">
      <thead>
      <tr>
-       <th></th>
        <th>Projektname</th>
        <th>Zugeordnete Benutzer</th>
        <th>Zugeordnete Tagset-Typen</th>
        <th>Edit-Skript?</th>
        <th>Import-Skript?</th>
+       <th></th>
        <th></th>
      </tr>
      </thead>
@@ -68,7 +64,7 @@ $ulist = array();
 
    <p>
    <button id="createProject" type="button" class="mform">
-       <img src="gui/images/proxal/plus.ico" />
+       <span class="oi oi-adjust oi-green" data-glyph="plus" aria-hidden="true"></span>
        Neues Projekt hinzufügen...
    </button>
    </p>
@@ -89,7 +85,7 @@ $ulist = array();
        (POS-)Tagsets anzeigen
    </button>
    <button id="importTagset" type="button" class="mform">
-       <img src="gui/images/proxal/plus.ico" />
+       <span class="oi oi-adjust oi-green" data-glyph="plus" aria-hidden="true"></span>
        Neues (POS-)Tagset importieren...
    </button>
    </p>
@@ -201,29 +197,29 @@ $ulist = array();
  
     <table>
       <tr id="templateUserInfoRow" class="adminUserInfoRow">
-        <td class="adminUserDelete"><img src="gui/images/proxal/delete.ico" /></td>
         <td class="adminUserNameCell"></td>
-        <td class="centered adminUserAdminStatus"><img src="gui/images/proxal/check.ico" class="adminUserAdminStatus"/>
+        <td class="centered adminUserAdminStatusTD"><span class="oi oi-shadow oi-green adminUserAdminStatus" data-glyph="check" title="Admin-Status ändern" aria-hidden="true"></span>
         </td>
         <td class="adminUserLastactiveCell"></td>
         <td class="adminUserActivityCell"></td>
         <td>
-          <button class="adminUserPasswordButton" type="button">Passwort ändern...</button>
+          <a class="adminUserPasswordButton">Passwort ändern...</a>
         </td>
+        <td class="adminUserDelete"><a class="deletion-link"><span class="oi oi-shadow" data-glyph="delete" title="Benutzer löschen" aria-hidden="true"></span></a></td>
       </tr>
     </table>
 
     <table>
       <tr id="templateProjectInfoRow" class="adminProjectInfoRow">
-        <td><a class="adminProjectDelete"><img src="gui/images/proxal/delete.ico" /></a></td>
         <td class="adminProjectNameCell"></td>
         <td class="adminProjectUsersCell"></td>
         <td class="adminProjectTagsetsCell"></td>
-        <td class="centered adminProjectCmdEdittoken"><img src="gui/images/proxal/check.ico"/></td>
-        <td class="centered adminProjectCmdImport"><img src="gui/images/proxal/check.ico" /></td>
+        <td class="centered adminProjectCmdEdittoken"><span class="oi oi-shadow oi-green" data-glyph="check" title="Edit-Skript zugeordnet" aria-hidden="true"></span></td>
+        <td class="centered adminProjectCmdImport"><span class="oi oi-shadow oi-green" data-glyph="check" title="Import-Skript zugeordnet" aria-hidden="true"></span></td>
         <td>
-          <button class="adminProjectEditButton" type="button">Projekt verwalten...</button>
+          <a class="adminProjectEditButton"><span class="oi oi-shadow" data-glyph="cog" aria-hidden="true"></span> Projekt verwalten...</a>
         </td>
+        <td><a class="adminProjectDelete deletion-link"><span class="oi oi-shadow" data-glyph="delete" title="Projekt löschen" aria-hidden="true"></span></a></td>
       </tr>
     </table>
   </div>

@@ -218,7 +218,7 @@ cora.userEditor = {
 	$('editUsers').addEvent(
 	    'click:relay(td)',
 	    function(event, target) {
-		if(target.hasClass('adminUserAdminStatus')) {
+		if(target.hasClass('adminUserAdminStatusTD')) {
 		    this.toggleStatus(event, 'Admin');
 		}
 		else if(target.hasClass('adminUserDelete')) {
@@ -227,8 +227,9 @@ cora.userEditor = {
 	    }.bind(this)
 	);
         $('editUsers').addEvent(
-            'click:relay(button.adminUserPasswordButton)',
+            'click:relay(a.adminUserPasswordButton)',
             function(event, button) {
+                event.stop();
                 var uid = button.getParent('tr').get('id').substr(5);
                 this.changePassword(uid);
             }.bind(this)
@@ -329,7 +330,7 @@ cora.userEditor = {
             if(!status['success']) {
                 gui.showNotice('error', 'Admin-Status nicht geändert.');
             }
-	    var arrow = parentrow.getElement('img.adminUserAdminStatus');
+	    var arrow = parentrow.getElement('.adminUserAdminStatus');
 	    if(arrow.isDisplayed()) {
 		arrow.hide();
 	    } else {
@@ -409,7 +410,7 @@ cora.userEditor = {
             if(user.active == "1")
                 tr.addClass('userActive');
             if(user.admin == "0")
-                tr.getElement('img.adminUserAdminStatus').hide();
+                tr.getElement('.adminUserAdminStatus').hide();
             tr.inject(table);
         });
     }
@@ -488,9 +489,10 @@ cora.projectEditor = {
 	);
 	// editing project groups
 	$('editProjects').addEvent(
-	    'click:relay(button)',
+	    'click:relay(a)',
 	    function(event, target) {
 		if(target.hasClass("adminProjectEditButton")) {
+                    event.stop();
 		    var pid = target.getParent('tr').get('id').substr(8);
                     ref.showProjectEditDialog(pid);
 		}
@@ -519,10 +521,10 @@ cora.projectEditor = {
                 .set('text', tlist.join(', '));
             if(!prj.settings.cmd_edittoken
                || prj.settings.cmd_edittoken.length === 0)
-                tr.getElement('td.adminProjectCmdEdittoken img').hide();
+                tr.getElement('td.adminProjectCmdEdittoken span').hide();
             if(!prj.settings.cmd_import
                || prj.settings.cmd_import.length === 0)
-                tr.getElement('td.adminProjectCmdImport img').hide();
+                tr.getElement('td.adminProjectCmdImport span').hide();
             tr.inject(table);
         });
     },
