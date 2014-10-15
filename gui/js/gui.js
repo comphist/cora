@@ -9,6 +9,7 @@ var gui = {
     activeSpinner: null,
     keepaliveRequest: null,
     editKeyboard: null,
+    serverNotices: {},
 
     initialize: function() {
 	this.addKeyboardShortcuts();
@@ -89,15 +90,29 @@ var gui = {
     */
     activateKeepalive: function() {
 	if(userdata.name != undefined) {
-	    this.keepaliveRequest = new Request({
+	    this.keepaliveRequest = new Request.JSON({
 		url: 'request.php?do=keepalive',
 		method: 'get',
 		initialDelay: 60000,
-		delay: 300000,
-		limit: 300000
+		delay: 60000,
+		limit: 60000,
+                onSuccess: function(status, text) {
+                    if (status && status.notice) {
+                        this.processServerNotice(status.notice);
+                    }
+                }.bind(this)
 	    });
 	    this.keepaliveRequest.startTimer();
 	}
+    },
+
+    /* Function: processServerNotice
+     */
+    processServerNotice: function(text) {
+        if (this.serverNotices[text])
+            return;  // already processed
+        this.showNotice('notice', text, true);
+        this.serverNotices[text] = true;
     },
 
     /* Function: changeTab
@@ -145,12 +160,14 @@ var gui = {
        Parameters:
          ntype - Type of the notice ('ok' or 'error')
          message - String to appear in the notice
+         keepopen - If true, notice stays open (defaults to false)
     */
-    showNotice: function(ntype, message) {
+    showNotice: function(ntype, message, keepopen) {
 	new mBox.Notice({
 	    type: ntype,
 	    position: {x: 'right'},
-	    content: message
+	    content: message,
+            neverClose: (keepopen || false)
 	});
     },
 

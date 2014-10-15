@@ -4,6 +4,7 @@
 .mBox.Notice {
 	font-size:16px;
 	line-height:normal;
+        max-width:35em;
 }
 .mBox.Notice .mBoxContainer {
 	color:#fff;

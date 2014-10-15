@@ -41,7 +41,8 @@ mBox.Notice = new Class({
 		moveDuration: 500,			// duration of the move-tween
 		
 		delayClose: 4000,			// duration the notice will be visible
-		
+		neverClose: false,
+
 		fade: true,
 		
 		fadeDuration: {
@@ -78,7 +79,7 @@ mBox.Notice = new Class({
 				
 				this.wrapper.setStyles({
 					height: 0,
-					width: wrapper_dimensions.totalWidth,
+					width: wrapper_dimensions.totalWidth + 1,
 					overflowY: 'hidden'
 				});
 				
@@ -109,7 +110,8 @@ mBox.Notice = new Class({
 		
 		// close notice automatically
 		options.onSystemOpenComplete = function() {
-			this.close();
+			if(!this.options.neverClose)
+				this.close();
 		};
 		
 		// destroy notice when close is complete
