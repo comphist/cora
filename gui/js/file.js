@@ -340,8 +340,8 @@ cora.fileImporter = {
     _objInitialized: function() {
         this.waitForInitializedObjects--;
         if(!this.waitForInitializedObjects) {
-            $('importNewXMLLink').set('disabled', false);
-            $('importNewTransLink').set('disabled', false);
+            $('importNewXMLLink').removeClass('start-disabled');
+            $('importNewTransLink').removeClass('start-disabled');
         }
     },
 
@@ -1011,11 +1011,12 @@ var file = {
             if(prj_div === null) {  // create project div if necessary
                 prj_div = $('fileGroup').clone();
                 prj_div.set('id', div_id);
-                prj_div.getElement('h4.projectname')
+                prj_div.getElement('.projectname')
                     .empty().appendText(project.name);
                 if(userdata.admin) {
-                    prj_div.getElement('h4.projectname')
-                    .appendText(' (id: '+project.id+')');
+                    prj_div.getElement('.projectname')
+                        .appendText(' (id: '+project.id+')');
+                    prj_div.getElements('.admin-only').removeClass('start-hidden');
                 }
                 if(last_div !== null)
                     prj_div.inject(last_div, 'after');
@@ -1049,48 +1050,31 @@ var file = {
     renderTableLine: function(file){
 	var ref = this;
         var td;
-        var tr = new Element('tr', {'id': 'file_'+file.id});
+        var tr = $('fileTableRow').clone();
+        tr.set('id', 'file_'+file.id);
         if(file.opened)
             tr.addClass('opened');
         // delete icon (if applicable)
-        td = new Element('td');
-        if((file.creator_name == userdata.name) || userdata.admin){
-            td.addClass('deleteFile');
-            td.adopt(new Element('a', {'class': 'deleteFileLink'})
-                     .adopt(new Element('img', {'src': "gui/images/proxal/delete.ico"})));
+        if(userdata.admin || (file.creator_name == userdata.name)){
+            tr.getElement('a.deleteFileLink').removeClass('start-hidden');
         }
-        tr.adopt(td);
         // filename
-        if(userdata.admin)
-            tr.adopt(new Element('td', { text: file.id }));  // ID column
-        tr.adopt(new Element('td', {'class': 'filename'})
-                 .adopt(new Element('a', { text: cora.files.getDisplayName(file),
-                                           'class': 'filenameOpenLink' })));
+        tr.getElement('td.ftr-id').set('text', file.id);
+        tr.getElement('td.ftr-filename a').set('text', cora.files.getDisplayName(file));
         // changer & creator info
-        tr.adopt(new Element('td',{ text: gui.formatDateString(file.changed) }));
-        tr.adopt(new Element('td',{ text: file.changer_name }));
-        tr.adopt(new Element('td',{ text: gui.formatDateString(file.created) }));
-        tr.adopt(new Element('td',{ text: file.creator_name }));
-        // export button
-        tr.adopt(new Element('td',{'class':'exportFile'})
-                 .adopt(new Element('a',{ text: 'Exportieren...',
-                                          'class': 'exportFileLink' })));
-        // tagset links
-        td = new Element('td');
-        if(userdata.admin){
-            td.addClass('editTagsetAssoc');
-            td.adopt(new Element('a',{ text: 'Tagsets...',
-                                       'class': 'editTagsetAssocLink' }));
-        }
-        tr.adopt(td);
+        tr.getElement('td.ftr-changed-at')
+            .set('text', gui.formatDateString(file.changed));
+        tr.getElement('td.ftr-changed-by').set('text', file.changer_name);
+        tr.getElement('td.ftr-created-at')
+            .set('text', gui.formatDateString(file.created));
+        tr.getElement('td.ftr-created-by').set('text', file.creator_name);
         // close button
-        td = new Element('td');
-        if((file.opened == userdata.name ) || (file.opened && userdata.admin)){
-            td.addClass('closeFile');
-            td.adopt(new Element('a',{ text: 'Schließen',
-                                       'class': 'closeFileLink' }));
+        if(file.opened && (userdata.admin || (file.opened == userdata.name))) {
+            tr.getElement('a.closeFileLink').removeClass('start-hidden');
         }
-        tr.adopt(td);
+        // admin stuff
+        if(userdata.admin)
+            tr.getElements('.admin-only').removeClass('start-hidden');
         // done!
         return tr;
     },
@@ -1254,8 +1238,23 @@ window.addEvent('domready', function() {
     cora.fileImporter.initialize();
     file.initialize();    
 
-    $$('div.fileViewRefresh img').addEvent('click',function(e){ e.stop(); file.listFiles() });
-    $$('div.fileViewRefresh a.collapseAll').addEvent('click',function(e){ e.stop(); $$('div#files .clappable div').hide(); });
+    $('fileViewRefresh').addEvent('click',function(e){ e.stop(); file.listFiles() });
+    $('fileViewCollapseAll').addEvent('click',
+        function(e){
+            e.stop();
+            $$('div#files .clappable').each(function (clappable) {
+                clappable.addClass('clapp-hidden');
+		clappable.getElement('div').hide();
+            });
+        });
+    $('fileViewExpandAll').addEvent('click',
+        function(e){
+            e.stop();
+            $$('div#files .clappable').each(function (clappable) {
+                clappable.removeClass('clapp-hidden');
+		clappable.getElement('div').show();
+            });
+        });
 
     file.listFiles();
     if(userdata.currentFileId)

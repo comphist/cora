@@ -17,6 +17,7 @@
                     ? "gui/css/master.min.css"
                     : "gui/css/master.css";
       embedCSS($master_css, "all", true);
+      embedCSS("gui/css/open-iconic.min.css", "all", true);
       embedCSS("gui/css/print.css", "print", false);  // do we even need this anymore?
 
     /********************** JavaScript **********************/

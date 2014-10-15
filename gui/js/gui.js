@@ -38,11 +38,13 @@ var gui = {
             if (clapper !== null) {
                 clapper.removeEvents();
 		clapper.addEvent('click', function () {
+                    clappable.toggleClass('clapp-hidden');
                     content.toggle();
 		});
             }
             // hide content by default, if necessary
             if (clappable.hasClass('starthidden')) {
+                clappable.addClass('clapp-hidden');
 		content.hide();
             }
 	});

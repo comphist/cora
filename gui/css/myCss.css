@@ -1,3 +1,7 @@
+.start-hidden { 
+    display: none;
+}
+
 /*format */
 span.tabFollowed {
 	display: inline-block;
@@ -285,7 +289,7 @@ p.clappable span {
 }
 
 .clapp:hover {
-	color: #A0BBE0;
+	color: #86B3F7;
 }
 
 #progress th {
@@ -597,8 +601,113 @@ tr.adminUserInfoRow.userActive .adminUserLastactiveCell {
 .centered {
     text-align: center;
 }
- 
+
+/* Clapp icons */
+span.clapp-status-hidden, span.clapp-status-open {
+    color: #777;
+    font-size: 80%;
+}
+
+span.clapp-status-hidden { 
+    display: none;
+}
+
+div.clappable.clapp-hidden span.clapp-status-open { 
+    display: none;
+}
+
+div.clappable.clapp-hidden span.clapp-status-hidden { 
+    display: inline;
+}
+
+/* File-toolbar */
+
+div.file-toolbar { 
+    padding: 0 0 16px 0;
+    margin-top: 8px;
+}
+
+/* inspired by mBox buttons ... */
+span.file-toolbar-entry { 
+    padding: 6px 6px 4px 6px;
+    margin: 0 4px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-bottom: 1px solid #c0c0c0;
+    border-radius: 4px;
+    color:#707070;
+    text-shadow:0 1px 1px #fff;
+    -webkit-box-shadow:inset 0 1px 1px rgba(255, 255, 255, 0.25);
+    -moz-box-shadow:inset 0 1px 1px rgba(255, 255, 255, 0.25);
+    box-shadow:inset 0 1px 1px rgba(255, 255, 255, 0.25);
+    background-color:#ececec;
+    background-image:-webkit-linear-gradient(top,#fbfbfb,#e4e4e4);
+    background-image:-moz-linear-gradient(top,#fbfbfb,#e4e4e4);
+    background-image:-ms-linear-gradient(top,#fbfbfb,#e4e4e4);
+    background-image:-o-linear-gradient(top,#fbfbfb,#e4e4e4);
+    background-image:linear-gradient(top,#fbfbfb,#e4e4e4);
+    filter:progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=#fbfbfb,EndColorStr=#e4e4e4);
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+span.file-toolbar-entry span { 
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+span.file-toolbar-entry:active { 
+    border:1px solid #a0a0a0;
+    border-bottom:1px solid #cacaca;
+    background:#e5e5e5;
+    -webkit-box-shadow:inset 0 1px 2px rgba(0, 0, 0, 0.26) !important;
+    -moz-box-shadow:inset 0 1px 2px rgba(0, 0, 0, 0.26) !important;
+    box-shadow:inset 0 1px 2px rgba(0, 0, 0, 0.26) !important;
+}
+
+span.file-toolbar-entry:hover { 
+    border:1px solid #b5b5b5;
+    -webkit-box-shadow:inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 1px 1px rgba(0, 0, 0, 0.07);
+    -moz-box-shadow:inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 1px 1px rgba(0, 0, 0, 0.07);
+    box-shadow:inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 1px 1px rgba(0, 0, 0, 0.07);
+}
+
+span.file-toolbar-entry.start-disabled { 
+    pointer-events: none !important;
+    cursor:default !important;
+    border:1px solid #d9d9d9 !important;
+    color:#cacaca !important;
+    text-shadow:0 1px 1px #fdfdfd !important;
+    -webkit-box-shadow:none !important;
+    -moz-box-shadow:none !important;
+    box-shadow:none !important;
+    background-color:#ececec !important;
+    background-image:-webkit-linear-gradient(top,#f9f9f9,#e4e4e4) !important;
+    background-image:-moz-linear-gradient(top,#f9f9f9,#e4e4e4) !important;
+    background-image:-ms-linear-gradient(top,#f9f9f9,#e4e4e4) !important;
+    background-image:-o-linear-gradient(top,#f9f9f9,#e4e4e4) !important;
+    background-image:linear-gradient(top,#f9f9f9,#e4e4e4) !important;
+    filter:progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=#f9f9f9,EndColorStr=#e4e4e4) !important;
+}
+
 /* File-table */
+div.filegroup.clappable { 
+    padding: 0;
+}
+
+div.filegroup h4 { 
+    color: #565656;
+    font-size: medium;
+    font-weight: bold;
+    padding: 10px 0 0 0;
+}
+
+span.projectname {
+    text-decoration: underline;
+}
+
 table.fileList {
     font-size: 1.5em;
     border-collapse: collapse;
@@ -615,29 +724,83 @@ table.fileList th {
     border-bottom: 1px solid #999;
 }
 
-h4.projectname {
-    font-size: medium;
-    font-weight: normal;
-    font-style: italic;
-    text-decoration: underline;
-    padding-bottom: 4px;
+table.fileList tbody tr:nth-child(odd) {
+    background: #e7e7e7;
+    border-bottom: 1px solid #999;
 }
 
-th.tagStatusPOS, th.tagStatusMorph, th.tagStatusNorm,
-td.tagStatusPOS, td.tagStatusMorph, td.tagStatusNorm {
-    min-width: 3em;
+table.fileList .ftr-filename { 
+    width: 20em;
+}
+
+table.fileList th.ftr-changed,
+table.fileList th.ftr-created { 
     text-align: center;
 }
 
-td.deleteFile img {
-    cursor: pointer;
+table.fileList .ftr-changed-at,
+table.fileList .ftr-created-at { 
+    width: 8.4em;
+    text-align: right;
+}
+
+table.fileList .ftr-changed-by,
+table.fileList .ftr-created-by { 
+    width: 6em;
+    text-align: right;
+}
+
+table.fileList .ftr-options a { 
+    margin-right: 8px;
+}
+
+table.fileList .ftr-options span { 
+    position: relative;
+    top: 2px;
+    text-shadow: 1px 1px 4px rgba(150, 150, 150, 1);
+}
+
+table.fileList a.deleteFileLink { 
+    color: rgb(224, 0, 0);
+}
+
+table.fileList a.deleteFileLink.start-hidden { 
+    display: inline;
+    visibility: hidden;
+}
+
+table.fileList a.deleteFileLink:hover { 
+    color: rgb(255, 64, 64);
+}
+
+table.fileList a.closeFileLink span { 
+    top: 0;
 }
 
 tr.opened {
-    opacity: 0.5;
+/*    background: #ddd; */
 }
  
- 
+tr.opened a.filenameOpenLink,
+tr.opened a.deleteFileLink,
+tr.opened a.exportFileLink,
+tr.opened a.editTagsetAssocLink,
+tr.opened .ftr-changed-at, tr.opened .ftr-changed-by,
+tr.opened .ftr-created-at, tr.opened .ftr-created-by,
+tr.opened .ftr-id { 
+    color: #999;
+}
+
+tr.opened a.filenameOpenLink:hover {
+    color: #b0b0b0;
+}
+
+tr.opened a.deleteFileLink,
+tr.opened a.exportFileLink,
+tr.opened a.editTagsetAssocLink { 
+    pointer-events: none;
+}
+
 /* Edit-Table */
 table#editTable{
     border-spacing: 0px;
@@ -814,15 +977,10 @@ div#horizontalTextView span.highlighted {
     font-style: normal;
 
 }
-.fileViewRefresh h3 {
-    display: inline;
-    margin-right: 20px;
-/*    padding-bottom: 20px;*/
-}
 
-.fileViewRefresh {
+img#fileViewRefresh { 
+    cursor: pointer;
     vertical-align: middle;
-    margin-bottom: 20px;
 }
 
 .pagePanel{

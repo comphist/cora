@@ -5,18 +5,21 @@
 ?>
 
 <div id="fileDiv" class="content" style="display: none;">
-  <div class="panel" id="fileImport">
-    <h3>Datei importieren</h3>
-    <p><button class="mform" id="importNewTransLink" disabled="disabled">Neues Dokument aus Transkriptionsdatei importieren...</button>
-       <button class="mform" id="importNewXMLLink" disabled="disabled">Neues Dokument aus XML-Datei importieren...</button>
-    </p>
-  </div>
-
   <div class="panel">
-    <div class="fileViewRefresh">	
-      <h3>Datei öffnen</h3>
-      <img src="gui/images/View-refresh.svg" width="20px" height="20px"/>
-      <p><a class="collapseAll" href="#">[Alle Projektgruppen zuklappen]</a></p>
+    <!--
+    <div>
+      <p>
+         <button class="mform" id="importNewTransLink" disabled="disabled">Neues Dokument aus Transkriptionsdatei importieren...</button>
+         <button class="mform" id="importNewXMLLink" disabled="disabled">Neues Dokument aus XML-Datei importieren...</button>
+      </p>
+    </div>
+    -->
+    <div class="file-toolbar">
+      <span class="file-toolbar-entry" id="fileViewRefresh" title="Aktualisieren"><span class="oi" data-glyph="reload" aria-hidden="true"></span></span>
+      <span class="file-toolbar-entry" id="fileViewCollapseAll" title="Alle Projektgruppen zuklappen"><span class="oi" data-glyph="collapse-up" aria-hidden="true"></span></span>
+      <span class="file-toolbar-entry" id="fileViewExpandAll" title="Alle Projektgruppen aufklappen"><span class="oi" data-glyph="collapse-down" aria-hidden="true"></span></span>
+      <span class="file-toolbar-entry start-disabled" id="importNewTransLink"><span class="oi" data-glyph="data-transfer-upload" aria-hidden="true"></span> Import aus Textdatei</span>
+      <span class="file-toolbar-entry start-disabled" id="importNewXMLLink"><span class="oi" data-glyph="data-transfer-upload" aria-hidden="true"></span> Import aus XML-Datei</span>
     </div>
 
     <div id="files"></div>
@@ -37,22 +40,18 @@
       </div>
     </div>
    
-    <div class="panel clappable" id="fileGroup">
-      <h4 class="projectname clapp">Projektname</h4>
+    <div class="filegroup clappable" id="fileGroup">
+      <h4 class="clapp">
+        <span class="oi clapp-status-open" data-glyph="caret-bottom" title="Zuklappen" aria-hidden="true"></span><span class="oi clapp-status-hidden" data-glyph="caret-right" title="Aufklappen" aria-hidden="true"></span> <span class="projectname">Projektname</span></h4>
         <div>
           <table class="fileList">
           <thead>
             <tr class="fileTableHeadLine">
-              <th></th>
-              <?php if($_SESSION["admin"]): ?>
-              <th>ID</th>
-              <?php endif; ?>
-              <th>Dateiname</th>
-              <th colspan="2">zuletzt bearbeitet am/von</th>
-              <th colspan="2">erstellt am/von</th>
-              <th></th>
-              <th></th>
-              <th></th>
+              <th class="ftr-filename">Dateiname</th>
+              <th colspan="2" class="ftr-changed">Letzte Änderung am/von</th>
+              <th colspan="2" class="ftr-created start-hidden">Erstellt am/von</th>
+              <th class="ftr-id start-hidden admin-only">ID</th>
+              <th class="ftr-options"></th>
             </tr>
           </thead>
           <tbody>
@@ -60,6 +59,23 @@
         </table>
       </div>
     </div>
+
+    <table>
+      <tr id="fileTableRow">
+        <td class="ftr-filename filename"><a class="filenameOpenLink"></a></td>
+        <td class="ftr-changed-at"></td>
+        <td class="ftr-changed-by"></td>
+        <td class="ftr-created-at start-hidden"></td>
+        <td class="ftr-created-by start-hidden"></td>
+        <td class="ftr-id start-hidden admin-only"></td>
+        <td class="ftr-options">
+          <a class="deleteFileLink start-hidden"><span class="oi" data-glyph="delete" title="Datei löschen" aria-hidden="true"></span></a>
+          <a class="exportFileLink"><span class="oi" data-glyph="data-transfer-download" title="Datei exportieren" aria-hidden="true"></span> Exportieren...</a>
+          <a class="editTagsetAssocLink start-hidden admin-only"><span class="oi" data-glyph="link-intact" title="Tagset-Verknüpfungen bearbeiten" aria-hidden="true"></span> Tagsets...</a>
+          <a class="closeFileLink start-hidden"><span class="oi" data-glyph="x" title="Datei schließen" aria-hidden="true"></span> Schließen</a>
+        </td>
+      </tr>
+    </table>
 
     <div id="fileExportPopup">
       <p>In welchem Format möchten Sie die Datei exportieren?</p>
@@ -175,9 +191,7 @@
 
     <table>
       <tr id="noProjectFiles">
-        <td></td>
-        <td>Dieses Projekt enthält keine Dateien.</td>
-        <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+        <td colspan="7">Dieses Projekt enthält keine Dateien.</td>
       </tr>
     </table>
   </div>
