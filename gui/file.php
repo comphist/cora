@@ -49,7 +49,7 @@
             <tr class="fileTableHeadLine">
               <th class="ftr-filename">Dateiname</th>
               <th colspan="2" class="ftr-changed">Letzte Änderung am/von</th>
-              <th colspan="2" class="ftr-created start-hidden">Erstellt am/von</th>
+              <th colspan="2" class="ftr-created">Erstellt am/von</th>
               <th class="ftr-id start-hidden admin-only">ID</th>
               <th class="ftr-options"></th>
             </tr>
@@ -65,8 +65,8 @@
         <td class="ftr-filename filename"><a class="filenameOpenLink"></a></td>
         <td class="ftr-changed-at"></td>
         <td class="ftr-changed-by"></td>
-        <td class="ftr-created-at start-hidden"></td>
-        <td class="ftr-created-by start-hidden"></td>
+        <td class="ftr-created-at"></td>
+        <td class="ftr-created-by"></td>
         <td class="ftr-id start-hidden admin-only"></td>
         <td class="ftr-options">
           <a class="deleteFileLink start-hidden"><span class="oi" data-glyph="delete" title="Datei löschen" aria-hidden="true"></span></a>

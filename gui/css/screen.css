@@ -124,7 +124,6 @@ ol {
 
 #main {
 	margin: auto;
-	max-width: 99%;
 	min-width: 40em;
 	width: auto !important;
 	padding-top: 8.3em;
@@ -233,10 +232,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2b548c', end
 }
 
 .content {
-	height : auto !important;
-	height : 1%;
-	overflow : hidden;
-	padding : 2em 0 0 0;
+    height: auto !important;
+    height: 1%;
+    overflow: hidden;
+    padding: 8px 0 0 0;
 }
 /* conflicts with the editor layout
 .content div {
