@@ -1198,20 +1198,31 @@ div#transImportSpinner td {
     font-size: 1.2em;
     padding-left: 4px;
 }
+div#transImportSpinner .oi-proc-success { 
+    color: #00bd0d;
+    position: relative;
+    left: -3px;
+    top: 2px;
+    display: none;
+}
+div#transImportSpinner .oi-proc-error { 
+    color: #f00;
+    position: relative;
+    left: -3px;
+    display: none;
+}
 div#transImportSpinner .proc-running {
-	background: url(../images/spinner.gif) no-repeat;
+    background: url(../images/spinner.gif) no-repeat;
 }
-div#transImportSpinner .proc-error {
-	background: url(../images/proxal/warn-user.ico) no-repeat;
-}
-div#transImportSpinner .proc-success {
-	background: url(../images/proxal/check.ico) no-repeat;
+div#transImportSpinner .proc-error .oi-proc-error,
+div#transImportSpinner .proc-success .oi-proc-success {
+    display: inline !important;
 }
 div#transImportSpinner .proc {
-        background-size: 16px 16px;
-	width: 16px;
-	height: 16px;
-	margin: 0 auto;
+    background-size: 16px 16px;
+    width: 16px;
+    height: 16px;
+    margin: 0 auto;
 }
 
 #tIS_progress {
