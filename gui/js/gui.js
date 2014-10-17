@@ -50,7 +50,6 @@ var gui = {
             }
 	});
     },
-
     /* Function: _addKeyboardShortcuts
 
        Sets up keyboard shortcuts used within the application.
@@ -81,7 +80,6 @@ var gui = {
 		} */
 	    }
 	});
-	
     },
 
     /* Function: _activateKeepalive
@@ -96,12 +94,13 @@ var gui = {
 	    this.keepaliveRequest = new Request.JSON({
 		url: 'request.php?do=keepalive',
 		method: 'get',
-		initialDelay: 60000,
+		initialDelay: 1000,
 		delay: 60000,
 		limit: 60000,
                 onSuccess: function(status, text) {
-                    if (status && status.notice) {
-                        this.processServerNotice(status.notice);
+                    if (status && status.notices) {
+                        Array.each(status.notices,
+                                   this.processServerNotice.bind(this));
                     }
                 }.bind(this)
 	    });
@@ -111,18 +110,19 @@ var gui = {
 
     /* Function: processServerNotice
 
-       Checks whether a server notice has been show before, and 
+       Checks whether a server notice has been shown before, and 
        displays a notice if appropriate.  Notices shown this way
        don't close automatically.
 
        Parameters:
-         text - Notice text
+         text - Notice as {id: 0, text: "", type: ""}
      */
-    processServerNotice: function(text) {
-        if (this.serverNotices[text])
+    processServerNotice: function(notice) {
+        if (this.serverNotices[notice.id])
             return;  // already processed
-        this.showNotice('notice', text, true);
-        this.serverNotices[text] = true;
+        if (notice.type == 'alert')
+            this.showNotice('notice', notice.text, true);
+        this.serverNotices[notice.id] = true;
     },
 
     /* Function: changeTab
@@ -176,7 +176,7 @@ var gui = {
 	new mBox.Notice({
 	    type: ntype,
 	    position: {x: 'right'},
-	    content: message,
+	    content: new Element('span', {text: message}),
             neverClose: (keepopen || false)
 	});
     },
@@ -320,6 +320,7 @@ var gui = {
        Registers date parsers for our custom date formats.
      */
     _defineDateParsers: function() {
+        Date.defineParser("%Y-%m-%d %H:%M:%S");
         Date.defineParser("%d.%m.%Y, %H:%M");
         Date.defineParser({
             re: /([hH]eute|[gG]estern|[vV]orgestern), (\d\d):(\d\d)/,
