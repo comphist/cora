@@ -15,6 +15,7 @@ var gui = {
 	this.addKeyboardShortcuts();
 	this.addToggleEvents($$('.clappable'));
 	this.activateKeepalive();
+        Date.defineParser("%d.%m.%Y, %H:%M");
     },
 
     /* Function: addToggleEvents

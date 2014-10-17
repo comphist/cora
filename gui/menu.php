@@ -28,11 +28,11 @@ MENUITEM;
   <ul>
     <?php if($_SESSION['admin']): ?>
     <li id="tagButton" title="Zeigt Optionen für die automatische Annotation" active="false">
-      <a><img src="gui/images/proxal/chat-list.ico"> Automatisch annotieren</a>
+      <a><span class="oi oi-adjust" data-glyph="excerpt" aria-hidden="true"></span> Automatisch annotieren</a>
     </li>
     <?php endif; ?>
     <li id="saveButton" title="Speichert die aktuelle Datei" active="false">
-      <a><img src="gui/images/proxal/file.ico"> Datei speichern</a>
+      <a><span class="oi oi-adjust" data-glyph="file" aria-hidden="true"></span> Datei speichern</a>
     </li>
     <li id="closeButton" title="Schließt die aktuelle Datei" active="false">
       <a>Datei schließen</a>

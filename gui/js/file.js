@@ -1005,7 +1005,7 @@ var file = {
         }
         var last_div = null;
         Array.each(cora.projects.getAll(), function(project) {
-            var prj_div, prj_table;
+            var prj_div, prj_table, html_table;
             var div_id = 'proj_'+project.id;
             prj_div = files_div.getElementById(div_id);
             if(prj_div === null) {  // create project div if necessary
@@ -1023,6 +1023,12 @@ var file = {
                 else
                     prj_div.inject(files_div);
                 gui.addToggleEvents(prj_div);
+                html_table = new HtmlTable(prj_div.getElement('table'),
+                                           {sortable: true,
+                                            parsers: ['string', 'string',
+                                                      'date',   'string',
+                                                      'date',   'string']});
+                prj_div.store('HtmlTable', html_table);
             }
             prj_table = prj_div.getElement('tbody').empty();
             if(project.files.length == 0) {  // no files?
@@ -1032,6 +1038,7 @@ var file = {
                 Array.each(project.files, function(file) {
                     prj_table.adopt(ref.renderTableLine(file));
                 });
+                prj_div.retrieve('HtmlTable').reSort();
             }
             last_div = prj_div;
         });
@@ -1060,7 +1067,8 @@ var file = {
         }
         // filename
         tr.getElement('td.ftr-id').set('text', file.id);
-        tr.getElement('td.ftr-filename a').set('text', cora.files.getDisplayName(file));
+        tr.getElement('td.ftr-sigle a').set('text', '['+file.sigle+']');
+        tr.getElement('td.ftr-filename a').set('text', file.fullname);
         // changer & creator info
         tr.getElement('td.ftr-changed-at')
             .set('text', gui.formatDateString(file.changed));

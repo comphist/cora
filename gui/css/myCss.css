@@ -421,26 +421,15 @@ div.notFocusedLines {
 
 /*Header*/
 #controls {
-	position: absolute;
-	top: 5px;
-	right: 5px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
 }
 
 #controls a img {
-	margin: 2px;
-	border: none !important;
+    margin: 2px;
+    border: none !important;
 }
-
-
-a.unlock {
-	color: red;
-}
-
-#newMsgAlert {
-	margin-right: 30px;
-	border: 1px solid #999;
-}
-
 
 /*INDEX */
 
@@ -608,8 +597,13 @@ table#editProjects td.adminProjectTagsetsCell {
     text-align: left;
 }
 
-tr.adminUserInfoRow .adminUserDelete { 
-    cursor: pointer;                                       
+tr.adminUserInfoRow .adminUserDelete,
+tr.adminUserInfoRow .adminUserAdminStatusTD { 
+    cursor: pointer;                  
+}
+
+tr.adminUserInfoRow .adminUserLastactiveCell { 
+    text-align: right;
 }
 
 tr.adminUserInfoRow.userActive .adminUserNameCell,
@@ -617,7 +611,6 @@ tr.adminUserInfoRow.userActive .adminUserLastactiveCell {
     font-weight: bold;
     color: orangered;
 }
-
 
 .centered {
     text-align: center;
@@ -736,22 +729,73 @@ table.fileList {
 }
 
 table.fileList td {
-    padding: 5px 10px;
+    padding: 5px 6px;
     border-bottom: 1px solid #999;
 }
 
 table.fileList th {
-    padding: 5px 10px;
+    padding: 5px 6px;
     border-bottom: 1px solid #999;
 }
 
+/* largely a copy-paste from open-iconic.css, 
+   so we can use the <span> element that is inserted
+   automatically by MooTools' HtmlTable.
+*/
+table.fileList th.table-th-sort .table-th-sort-span:before,
+table.fileList th.table-th-sort-rev .table-th-sort-span:before { 
+  font-family: 'Icons';
+  display: inline-block;
+  speak: none;
+  line-height: 1;
+  vertical-align: baseline;
+  font-weight: normal;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #999;
+  font-size: 70%;
+  padding-right: 0.5em;
+}
+
+table.fileList th.table-th-sort .table-th-sort-span:before { 
+  content: '\e0bf';
+}
+
+table.fileList th.table-th-sort-rev .table-th-sort-span:before { 
+  content: '\e0c0';
+}
+
+table.fileList th.table-th-sort .table-th-sort-span:empty:before { 
+  width: 1em;
+  text-align: center;
+  box-sizing: content-box;
+}
+
+table.fileList.table-sortable th:not(.table-th-nosort) {
+    cursor: pointer;
+}
+
+table.fileList th div {
+    margin-top: 0;
+    padding-left: 0;                        
+}
+
+table.fileList tbody tr.table-tr-odd,
 table.fileList tbody tr:nth-child(odd) {
     background: #e7e7e7;
     border-bottom: 1px solid #999;
 }
 
+table.fileList .ftr-sigle { 
+    width: 3.5em;
+    text-align: right;
+    padding-right: 0;
+}
+
 table.fileList .ftr-filename { 
-    width: 20em;
+    width: 17em;
+    padding-left: 0.5em;
 }
 
 table.fileList th.ftr-changed,
@@ -761,7 +805,7 @@ table.fileList th.ftr-created {
 
 table.fileList .ftr-changed-at,
 table.fileList .ftr-created-at { 
-    width: 8.4em;
+    width: 9em;
     text-align: right;
 }
 
@@ -769,6 +813,10 @@ table.fileList .ftr-changed-by,
 table.fileList .ftr-created-by { 
     width: 6em;
     text-align: right;
+}
+
+table.fileList .ftr-id { 
+    width: 2.5em;
 }
 
 table.fileList .ftr-options a { 

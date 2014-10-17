@@ -47,11 +47,17 @@
           <table class="fileList">
           <thead>
             <tr class="fileTableHeadLine">
+              <th class="ftr-sigle">Sigle</th>
               <th class="ftr-filename">Dateiname</th>
-              <th colspan="2" class="ftr-changed">Letzte Änderung am/von</th>
+<!--              <th colspan="2" class="ftr-changed">Letzte Änderung am/von</th>
               <th colspan="2" class="ftr-created">Erstellt am/von</th>
+-->
+              <th class="ftr-changed-at">Letzte Änderung</th>
+              <th class="ftr-changed-by">...von</th>
+              <th class="ftr-created-at">Erstellt</th>
+              <th class="ftr-created-by">...von</th>
               <th class="ftr-id start-hidden admin-only">ID</th>
-              <th class="ftr-options"></th>
+              <th class="ftr-options table-th-nosort"></th>
             </tr>
           </thead>
           <tbody>
@@ -62,6 +68,7 @@
 
     <table>
       <tr id="fileTableRow">
+        <td class="ftr-sigle"><a class="filenameOpenLink"></a></td>
         <td class="ftr-filename filename"><a class="filenameOpenLink"></a></td>
         <td class="ftr-changed-at"></td>
         <td class="ftr-changed-by"></td>
