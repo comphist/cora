@@ -350,8 +350,8 @@ var gui = {
         var date_strings = ['Heute', 'Gestern', 'Vorgestern'];
         var now = Date.now();
         if(!(date instanceof Date))
-            date = new Date(date);
-        if(!date.isValid())
+            date = Date.parse(date);
+        if(!date.isValid() || date.get('year') < 1980)
             return "";
         if(date.diff(now) > 2)
             format_string += "%d.%m.%Y";
