@@ -706,6 +706,50 @@ span.btn-toolbar-entry.start-disabled {
     filter:progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=#f9f9f9,EndColorStr=#e4e4e4) !important;
 }
 
+/* Sortable tables */
+/* largely a copy-paste from open-iconic.css, 
+   so we can use the <span> element that is inserted
+   automatically by MooTools' HtmlTable.
+*/
+.table-sortable th.table-th-sort .table-th-sort-span:before,
+.table-sortable th.table-th-sort-rev .table-th-sort-span:before { 
+  font-family: 'Icons';
+  display: inline-block;
+  speak: none;
+  line-height: 1;
+  vertical-align: baseline;
+  font-weight: normal;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #999;
+  font-size: 70%;
+  padding-right: 0.5em;
+}
+
+.table-sortable th.table-th-sort .table-th-sort-span:before { 
+  content: '\e0bf';
+}
+
+.table-sortable th.table-th-sort-rev .table-th-sort-span:before { 
+  content: '\e0c0';
+}
+
+.table-sortable th.table-th-sort .table-th-sort-span:empty:before { 
+  width: 1em;
+  text-align: center;
+  box-sizing: content-box;
+}
+
+.table-sortable th:not(.table-th-nosort) {
+    cursor: pointer;
+}
+
+.table-sortable th div {
+    margin-top: 0;
+    padding-left: 0;                        
+}
+
 /* File-table */
 div.filegroup.clappable { 
     padding: 0;
@@ -736,49 +780,6 @@ table.fileList td {
 table.fileList th {
     padding: 5px 6px;
     border-bottom: 1px solid #999;
-}
-
-/* largely a copy-paste from open-iconic.css, 
-   so we can use the <span> element that is inserted
-   automatically by MooTools' HtmlTable.
-*/
-table.fileList th.table-th-sort .table-th-sort-span:before,
-table.fileList th.table-th-sort-rev .table-th-sort-span:before { 
-  font-family: 'Icons';
-  display: inline-block;
-  speak: none;
-  line-height: 1;
-  vertical-align: baseline;
-  font-weight: normal;
-  font-style: normal;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #999;
-  font-size: 70%;
-  padding-right: 0.5em;
-}
-
-table.fileList th.table-th-sort .table-th-sort-span:before { 
-  content: '\e0bf';
-}
-
-table.fileList th.table-th-sort-rev .table-th-sort-span:before { 
-  content: '\e0c0';
-}
-
-table.fileList th.table-th-sort .table-th-sort-span:empty:before { 
-  width: 1em;
-  text-align: center;
-  box-sizing: content-box;
-}
-
-table.fileList.table-sortable th:not(.table-th-nosort) {
-    cursor: pointer;
-}
-
-table.fileList th div {
-    margin-top: 0;
-    padding-left: 0;                        
 }
 
 table.fileList tbody tr.table-tr-odd,

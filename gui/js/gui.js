@@ -12,10 +12,10 @@ var gui = {
     serverNotices: {},
 
     initialize: function() {
-	this.addKeyboardShortcuts();
+	this._addKeyboardShortcuts();
 	this.addToggleEvents($$('.clappable'));
-	this.activateKeepalive();
-        Date.defineParser("%d.%m.%Y, %H:%M");
+	this._activateKeepalive();
+        this._defineDateParsers();
     },
 
     /* Function: addToggleEvents
@@ -51,11 +51,11 @@ var gui = {
 	});
     },
 
-    /* Function: addKeyboardShortcuts
+    /* Function: _addKeyboardShortcuts
 
        Sets up keyboard shortcuts used within the application.
      */
-    addKeyboardShortcuts: function() {
+    _addKeyboardShortcuts: function() {
 	this.editKeyboard = new Keyboard({
 	    active: true,
 	    events: {
@@ -84,14 +84,14 @@ var gui = {
 	
     },
 
-    /* Function: activateKeepalive
+    /* Function: _activateKeepalive
 
        Sets up a periodical server request with the sole purpose of
        keeping the connection alive, i.e., telling the server that the
        user is still active (and has not, e.g., closed the browser
        window without logging out).
     */
-    activateKeepalive: function() {
+    _activateKeepalive: function() {
 	if(userdata.name != undefined) {
 	    this.keepaliveRequest = new Request.JSON({
 		url: 'request.php?do=keepalive',
@@ -110,6 +110,13 @@ var gui = {
     },
 
     /* Function: processServerNotice
+
+       Checks whether a server notice has been show before, and 
+       displays a notice if appropriate.  Notices shown this way
+       don't close automatically.
+
+       Parameters:
+         text - Notice text
      */
     processServerNotice: function(text) {
         if (this.serverNotices[text])
@@ -306,6 +313,27 @@ var gui = {
 	    closeOnEsc: false,
 	    buttons: [ {title: "Schließen", addClass: "mform button_green"} ]
 	}).open();
+    },
+
+    /* Function: _defineDateParsers
+
+       Registers date parsers for our custom date formats.
+     */
+    _defineDateParsers: function() {
+        Date.defineParser("%d.%m.%Y, %H:%M");
+        Date.defineParser({
+            re: /([hH]eute|[gG]estern|[vV]orgestern), (\d\d):(\d\d)/,
+            handler: function (bits) {
+                var date = new Date();
+                if(bits[1].toUpperCase() === "GESTERN")
+                    date.decrement('day', 1);
+                else if(bits[1].toUpperCase() === "VORGESTERN")
+                    date.decrement('day', 2);
+                date.set('hours', bits[2]);
+                date.set('minutes', bits[3]);
+                return date;
+            }
+        });
     },
 
     /* Function: formatDateString

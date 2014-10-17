@@ -26,14 +26,17 @@ $ulist = array();
      </div>
 
      <table id="editUsers">
-       <tr>
-         <th>Benutzername</th>
-         <th>Admin?</th>
-         <th>Letzte Aktivität</th>
-         <th>Geöffnete Datei</th>
-         <th></th>
-         <th></th>
-       </tr>
+       <thead>
+         <tr>
+           <th>Benutzername</th>
+           <th>Admin?</th>
+           <th>Letzte Aktivität</th>
+           <th>Geöffnete Datei</th>
+           <th class="table-th-nosort"></th>
+           <th class="table-th-nosort"></th>
+         </tr>
+       </thead>
+       <tbody></tbody>
      </table>
    </div>
 </div>
@@ -52,8 +55,8 @@ $ulist = array();
        <th>Zugeordnete Tagset-Typen</th>
        <th>Edit-Skript?</th>
        <th>Import-Skript?</th>
-       <th></th>
-       <th></th>
+       <th class="table-th-nosort"></th>
+       <th class="table-th-nosort"></th>
      </tr>
      </thead>
      <tbody>
@@ -198,7 +201,7 @@ $ulist = array();
     <table>
       <tr id="templateUserInfoRow" class="adminUserInfoRow">
         <td class="adminUserNameCell"></td>
-        <td class="centered adminUserAdminStatusTD"><span class="oi oi-shadow oi-green adminUserAdminStatus" data-glyph="check" title="Admin-Status ändern" aria-hidden="true"></span>
+        <td class="centered adminUserAdminStatusTD" title="Admin"><span class="oi oi-shadow oi-green adminUserAdminStatus" data-glyph="check" aria-hidden="true"></span>
         </td>
         <td class="adminUserLastactiveCell"></td>
         <td class="adminUserActivityCell"></td>
@@ -214,8 +217,8 @@ $ulist = array();
         <td class="adminProjectNameCell"></td>
         <td class="adminProjectUsersCell"></td>
         <td class="adminProjectTagsetsCell"></td>
-        <td class="centered adminProjectCmdEdittoken"><span class="oi oi-shadow oi-green" data-glyph="check" title="Edit-Skript zugeordnet" aria-hidden="true"></span></td>
-        <td class="centered adminProjectCmdImport"><span class="oi oi-shadow oi-green" data-glyph="check" title="Import-Skript zugeordnet" aria-hidden="true"></span></td>
+        <td class="centered adminProjectCmdEdittoken" title="Edit-Skript zugeordnet"><span class="oi oi-shadow oi-green" data-glyph="check" aria-hidden="true"></span></td>
+        <td class="centered adminProjectCmdImport" title="Import-Skript zugeordnet"><span class="oi oi-shadow oi-green" data-glyph="check" aria-hidden="true"></span></td>
         <td>
           <a class="adminProjectEditButton"><span class="oi oi-shadow" data-glyph="cog" aria-hidden="true"></span> Projekt verwalten...</a>
         </td>

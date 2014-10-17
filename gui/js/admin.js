@@ -234,6 +234,11 @@ cora.userEditor = {
                 this.changePassword(uid);
             }.bind(this)
         );
+        $('editUsers').store('HtmlTable',
+                             new HtmlTable($('editUsers'),
+                                           {sortable: true,
+                                            parsers: ['string', 'title',
+                                                      'date',   'string']}));
     },
 
     /* Function: createUser
@@ -323,18 +328,21 @@ cora.userEditor = {
     toggleStatus: function(event, statusname) {
         if(statusname!='Admin')
             return;
-	var parentrow = event.target.getParent('tr');
-	var uid = parentrow.get('id').substr(5);
+	var tr = event.target.getParent('tr');
+        var td = tr.getElement('td.adminUserAdminStatusTD');
+	var uid = tr.get('id').substr(5);
 
         cora.users.toggleAdmin(uid, function(status, text) {
             if(!status['success']) {
                 gui.showNotice('error', 'Admin-Status nicht geändert.');
             }
-	    var arrow = parentrow.getElement('.adminUserAdminStatus');
+	    var arrow = td.getElement('.adminUserAdminStatus');
 	    if(arrow.isDisplayed()) {
 		arrow.hide();
+                td.set('title', 'Kein Admin');
 	    } else {
 		arrow.show('inline');
+                td.set('title', 'Admin');
 	    }
         });
     },
@@ -391,8 +399,8 @@ cora.userEditor = {
        Renders the table containing the user data.
      */
     refreshUserTable: function() {
-        var table = $('editUsers');
-        table.getElements('tr.adminUserInfoRow').dispose();
+        var table = $('editUsers').getElement('tbody');
+        table.empty();
         Array.each(cora.users.getAll(), function(user) {
             var tr = $('templateUserInfoRow').clone();
             tr.set('id', 'User_'+user.id);
@@ -409,10 +417,13 @@ cora.userEditor = {
             }
             if(user.active == "1")
                 tr.addClass('userActive');
-            if(user.admin == "0")
+            if(user.admin == "0") {
                 tr.getElement('.adminUserAdminStatus').hide();
+                tr.getElement('.adminUserAdminStatusTD').set('title', 'Kein Admin');
+            }
             tr.inject(table);
         });
+        $('editUsers').retrieve('HtmlTable').reSort();
     }
 }
 
@@ -498,6 +509,13 @@ cora.projectEditor = {
 		}
 	    }
 	);
+
+        $('editProjects').store('HtmlTable',
+                                new HtmlTable($('editProjects'),
+                                              {sortable: true,
+                                               parsers: ['string', 'string',
+                                                         'string',
+                                                         'title',  'title']}));
     },
 
     /* Function: refreshProjectTable
@@ -520,11 +538,17 @@ cora.projectEditor = {
 	    tr.getElement('td.adminProjectTagsetsCell')
                 .set('text', tlist.join(', '));
             if(!prj.settings.cmd_edittoken
-               || prj.settings.cmd_edittoken.length === 0)
+               || prj.settings.cmd_edittoken.length === 0) {
                 tr.getElement('td.adminProjectCmdEdittoken span').hide();
+                tr.getElement('td.adminProjectCmdEdittoken')
+                    .set('title', 'Kein Edit-Skript zugeordnet');
+            }
             if(!prj.settings.cmd_import
-               || prj.settings.cmd_import.length === 0)
+               || prj.settings.cmd_import.length === 0) {
                 tr.getElement('td.adminProjectCmdImport span').hide();
+                tr.getElement('td.adminProjectCmdImport')
+                    .set('title', 'Kein Import-Skript zugeordnet');
+            }
             tr.inject(table);
         });
     },
