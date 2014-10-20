@@ -1,3 +1,4 @@
+
 /** @file
  * GUI-related functions
  *
@@ -337,6 +338,28 @@ var gui = {
         });
     },
 
+    /* Function: parseSQLDate
+
+       Parses a date string in SQL format and returns a Date object.
+     */
+    parseSQLDate: function(datestring) {
+        var d = new Date();
+        var match = datestring.match(/(\d\d\d\d)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)/);
+        if(match) {
+            d.set({
+                'year': match[1],
+                'mo':   match[2],
+                'date': match[3],
+                'hr':   match[4],
+                'min':  match[5],
+                'sec':  match[6],
+                'ms':   0
+            });
+            return d;
+        }
+        return datestring;
+    },
+
     /* Function: formatDateString
 
        Takes a date string or Date object and re-formats it for
@@ -349,8 +372,11 @@ var gui = {
         var format_string = '';
         var date_strings = ['Heute', 'Gestern', 'Vorgestern'];
         var now = Date.now();
-        if(!(date instanceof Date))
-            date = Date.parse(date);
+        if(!(date instanceof Date)) {
+            date = this.parseSQLDate(date);
+            if(!(date instanceof Date))
+                date = Date.parse(date);
+        }
         if(!date.isValid() || date.get('year') < 1980)
             return "";
         if(date.diff(now) > 2)
@@ -367,6 +393,7 @@ var gui = {
  * the default tab.
  */
 function onLoad() {
+    Locale.use("de-DE");
     gui.initialize();
 
     // default item defined in content.php, variable set in gui.php
