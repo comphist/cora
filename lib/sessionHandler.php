@@ -675,6 +675,52 @@ class CoraSessionHandler {
     return $this->timeout;
   }
 
+  /** Handle a keepalive request, checking for any new server notices.
+   */
+  public function keepalive() {
+    $notices = $this->db->checkForNotices();
+    if(!empty($notices))
+        return array("success" => true, "notices" => $notices);
+    return array("success" => true);
+  }
+
+  /** Creates a new server notice.
+   */
+  public function createNotice($notice) {
+    if ($_SESSION["admin"]) {
+        $status = $this->db->addNotice($notice['type'],
+                                       $notice['text'],
+                                       $notice['expires']);
+        return array('success' => (bool) $status);
+    }
+    return array('success' => false,
+                 'errors' => array("Administrator privileges are required "
+                                   ." for this action."));
+  }
+
+  /** Deletes a server notice.
+   */
+  public function deleteNotice($notice_id) {
+    if ($_SESSION["admin"]) {
+        $status = $this->db->deleteNotice($notice_id);
+        return array('success' => (bool) $status);
+    }
+    return array('success' => false,
+                 'errors' => array("Administrator privileges are required "
+                                   ." for this action."));
+  }
+
+  /** Fetches all server notices, checking for admin privileges first.
+   */
+  public function getAllNotices() {
+    if ($_SESSION["admin"]) {
+        $notices = $this->db->getAllNotices();
+        return array('success' => true, 'notices' => $notices);
+    }
+    return array('success' => false,
+                 'errors' => array("Administrator privileges are required "
+                                   ." for this action."));
+  }
 
   /** Perform user login.
    *
@@ -686,7 +732,6 @@ class CoraSessionHandler {
    * @param string $pw   The corresponding password
    */
   public function login($user, $pw) {	
-	
     $data = $this->db->getUserData($user, $pw);
     if ($data) {  // login successful
       $_SESSION["loggedIn"] = true;

@@ -2199,6 +2199,59 @@
     return $suggestions;
   }
 
+  /** Check for current notices.
+   *
+   * Returns an array of all notices which have not yet expired, and
+   * deletes those that have.
+   *
+   * @return An array of notices
+   */
+  public function checkForNotices() {
+      $stmt = $this->dbo->prepare("SELECT `id`, `text`, `type` FROM notices "
+                                  ."WHERE `expires` >= NOW()");
+      $stmt->execute();
+      $notices = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $this->dbo->exec("DELETE FROM notices WHERE `expires` < NOW()");
+      return $notices;
+  }
+
+  /** Get all notices.
+   *
+   * Returns an array of all notices including expiry date.
+   *
+   * @return An array of notices
+   */
+  public function getAllNotices() {
+      $stmt = $this->dbo->prepare("SELECT `id`, `text`, `type`, `expires` FROM notices");
+      $stmt->execute();
+      return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  /** Add a notice.
+   *
+   * @param string $type Type of the notice
+   * @param string $text Notice text
+   * @param string $expires Expiry date of the notice
+   *
+   * @return 1 if successful, 0 otherwise
+   */
+  public function addNotice($type, $text, $expires) {
+      $stmt = $this->dbo->prepare("INSERT INTO `notices` "
+                                  ."(`type`, `text`, `expires`) "
+                                  ."VALUES (:type, :text, :expires)");
+      $stmt->execute(array(':type' => $type,
+                           ':text' => $text,
+                           ':expires' => $expires));
+      return $stmt->rowCount();
+  }
+
+  /** Delete a notice.
+   */
+  public function deleteNotice($id) {
+      $stmt = $this->dbo->prepare("DELETE FROM notices WHERE `id`=?");
+      $stmt->execute(array($id));
+      return $stmt->rowCount();
+  }
 
 }
 

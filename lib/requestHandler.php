@@ -189,7 +189,7 @@ class RequestHandler {
     if(array_key_exists("do", $get)) {
       switch($get["do"]) {
       case "keepalive":
-	return array('success' => true);
+        return $this->sh->keepalive();
 	
       case "getLinesById":
 	$data = $this->sh->getLinesById($get['start_id'], $get['end_id']);
@@ -286,6 +286,15 @@ class RequestHandler {
       case "performAnnotation":
 	return $this->sh->performAnnotation($get['tagger'], $get['action']);
 	
+      case "createNotice":
+	return $this->sh->createNotice($post);
+
+      case "deleteNotice":
+	return $this->sh->deleteNotice($get['id']);
+
+      case "getAllNotices":
+	return $this->sh->getAllNotices();
+
       default:
 	return array("errors" => array("Unknown GET request."));
       }
