@@ -428,6 +428,155 @@ cora.userEditor = {
 }
 
 // ***********************************************************************
+// ********** SERVER NOTICES *********************************************
+// ***********************************************************************
+cora.noticeEditor = {
+    notices: [],
+
+    initialize: function() {
+        $('createNotice').addEvent(
+            'click', function() { this.showCreateNoticeDialog(); }.bind(this)
+        );
+	$('editNotices').addEvent(
+	    'click:relay(td)',
+	    function(event, target) {
+		if(target.hasClass('adminNoticeDelete')) {
+		    this.deleteNotice(event);
+		}
+	    }.bind(this)
+	);
+        this.performUpdate();
+    },
+
+    /* Function: performUpdate
+
+       Sends a server request to get a list of all server notices.
+     */
+    performUpdate: function() {
+        new Request.JSON({
+            url: 'request.php',
+            onSuccess: function(status, text) {
+                if(!status['success']) {
+                    gui.showNotice('error',
+                                   "Konnte Benachrichtigungen nicht laden.");
+                    return;
+                }
+                this.notices = status['notices'];
+                this.refreshNoticeTable();
+            }.bind(this)
+        }).get({'do': 'getAllNotices'});
+    },
+
+    /* Function: refreshNoticeTable
+
+       Recreates the table listing all server notices.
+     */
+    refreshNoticeTable: function() {
+        var table = $('editNotices').getElement('tbody');
+        table.empty();
+        Array.each(this.notices, function(notice) {
+            var tr = $('templateNoticeInfoRow').clone();
+            tr.getElement('td.adminNoticeIDCell').set('text', notice.id);
+            tr.getElement('td.adminNoticeTextCell').set('text', notice.text);
+            tr.getElement('td.adminNoticeTypeCell').set('text', notice.type);
+            tr.getElement('td.adminNoticeExpiresCell')
+                .set('text', gui.formatDateString(notice.expires));
+            tr.inject(table);
+        });
+    },
+
+    /* Function: createNotice
+
+       Sends a server request to create a new notice.
+
+       Parameters:
+         type - Type of the notice (alert|info)
+         text - Notice text
+         expires - Expiry date of the notice
+         fn - Callback function to invoke after the server request
+     */
+    createNotice: function(type, text, expires, fn) {
+        var ref = this;
+	new Request.JSON({
+	    'url': 'request.php?do=createNotice',
+	    'async': false,
+	    'data': {'type': type, 'text': text, 'expires': expires},
+	    onSuccess: function(status, text) {
+		ref.performUpdate();
+                if(typeof(fn) == "function")
+                    fn(status, text);
+	    }
+	}).post();
+    },
+
+    /* Function: deleteNotice
+
+       Sends a server request to delete a given notice.
+     */
+    deleteNotice: function(event) {
+	var parentrow = event.target.getParent('tr');
+	var nid = parentrow.getElement('td.adminNoticeIDCell').get('text');
+        new Request.JSON({
+            'url': 'request.php',
+            'async': false,
+	    onSuccess: function(status, text) {
+		this.performUpdate();
+                if(status['success']) {
+                    gui.showNotice('ok', 'Benachrichtigung gelöscht.');
+                }
+                else {
+                    gui.showNotice('error', 'Benachrichtigung nicht gelöscht.');
+                }
+	    }.bind(this)
+	}).get({'do': 'deleteNotice', 'id': nid});
+    },
+
+    /* Function: showCreateNoticeDialog
+
+       Displays a dialog to create a new server notice.
+     */
+    showCreateNoticeDialog: function() {
+        var performRequest = function(content) {
+            var type, text, expires;
+            type = content.getElement('select').getSelected()[0].get('value');
+            text = content.getElement('textarea').get('value');
+            expires = content.getElement('input').get('value');
+            this.createNotice(type, text, expires, function (status) {
+                if(status['success']) {
+                    gui.showNotice('ok', 'Benachrichtigung hinzugefügt.');
+                }
+                else {
+                    gui.showNotice('error', 'Benachrichtigung nicht hinzugefügt.');
+                }
+            });
+        }.bind(this);
+        new mBox.Modal({
+            title: "Neue Server-Benachrichtigung erstellen",
+            content: $('templateCreateNotice'),
+            buttons: [ {title: "Abbrechen", addClass: "mform"},
+                       {title: "Erstellen", addClass: "mform button_green",
+                        event: function() {
+                            performRequest(this.content);
+                            this.close();
+                        }
+                       }
+                     ],
+            onInit: function() {
+                this.content.getElements('textarea').set('value', '');
+                new DatePicker(this.content.getElement('input[name=noticeexpires]'),
+                               {timePicker: true,
+                                format: 'd.m.Y, H:i',
+                                inputOutputFormat: 'Y-m-d H:i:s',  // for MySQL
+                                minDate: 'now'
+                               });
+            },
+            closeOnBodyClick: false,
+            closeOnEsc: false
+        }).open();
+    },
+}
+
+// ***********************************************************************
 // ********** PROJECT MANAGEMENT *****************************************
 // ***********************************************************************
 
@@ -847,6 +996,7 @@ cora.tagsetEditor = {
 // ***********************************************************************
 
 window.addEvent('domready', function() {
+    cora.noticeEditor.initialize();
     cora.userEditor.initialize();
     cora.projectEditor.initialize();
     cora.tagsetEditor.initialize();

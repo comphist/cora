@@ -18,6 +18,8 @@
                     : "gui/css/master.css";
       embedCSS($master_css, "all", true);
       embedCSS("gui/css/open-iconic.min.css", "all", true);
+      if($_SESSION['admin'])
+          embedCSS("gui/css/datepicker.css", "all", true);
       embedCSS("gui/css/print.css", "print", false);  // do we even need this anymore?
 
     /********************** JavaScript **********************/
@@ -85,8 +87,10 @@
           if($_SESSION['admin']) {
               if(file_exists(dirname(__FILE__) . "/gui/js/admin.min.js"))
                   embedJS("gui/js/admin.min.js", true);
-              else
+              else {
+                  embedJS("gui/js/datepicker.js", true);
                   embedJS("gui/js/admin.js", true);
+              }
           }
       }
     ?>

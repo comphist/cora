@@ -19,6 +19,6 @@ java -jar $CLOSURE_COMPILER --js_output_file=mbox.min.js mbox/mBox.Core.js mbox/
 
 java -jar $CLOSURE_COMPILER --js_output_file=master.min.js baseBox.js ProgressBar.js dragtable_hack.js iFrameFormRequest.js Meio.Autocomplete.js gui.js file.js edit.js settings.js MultiSelect.js 2>/dev/null
 
-java -jar $CLOSURE_COMPILER --js_output_file=admin.min.js admin.js 2>/dev/null
+java -jar $CLOSURE_COMPILER --js_output_file=admin.min.js datepicker.js admin.js 2>/dev/null
 
 echo "Done!"

@@ -1090,6 +1090,11 @@ form label.ra
     padding-right: 5px;
 }
 
+form label.vt
+{
+    vertical-align: top;
+}
+
 form#newFileImportForm label.ra,
 form#newFileImportTransForm label.ra
 {  width: 4.5em; }

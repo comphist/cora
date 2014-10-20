@@ -13,7 +13,29 @@ $ulist = array();
 
 <div id="adminDiv" class="content" style="display: none;">
 
-<!-- <h2>Admin</h2> -->
+<!-- SERVER NOTICES -->
+<div class="panel clappable" id="serverNotices">
+   <h3 class="clapp">Server-Benachrichtigungen</h3>
+
+   <div>
+     <div class="btn-toolbar">
+       <span class="btn-toolbar-entry" id="createNotice"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> Neue Benachrichtigung...</span>
+     </div>
+
+     <table id="editNotices">
+       <thead>
+         <tr>
+           <th>ID</th>
+           <th>Nachricht</th>
+           <th>Typ</th>
+           <th>Expires</th>
+           <th></th>
+         </tr>
+       </thead>
+       <tbody></tbody>
+     </table>
+   </div>
+</div>
 
 <!-- USER MANAGEMENT -->
 <div class="panel clappable" id="users">
@@ -97,6 +119,26 @@ $ulist = array();
 </div>
 
   <div class="templateHolder" style="display: none;">
+    <div id="templateCreateNotice">
+      <form>
+      <p>
+        <label for="noticetype" class="ra">Typ: </label>
+        <select name="noticetype" size="1">
+          <option value="alert">Alert</option>
+          <option value="info">Info</option>
+        </select>
+      </p>
+      <p>
+        <label for="noticeexpires" class="ra">Expires: </label>
+        <input type="text" name="noticeexpires" value="" data-required="" />
+      </p>
+      <p>
+        <label for="noticetext" class="ra vt">Nachricht: </label>
+        <textarea cols="30" rows="3" name="noticetext" value="" data-required=""></textarea>
+      </p>
+      </form>
+    </div>
+
     <div id="templateCreateUser">
       <form>
       <p>
@@ -223,6 +265,16 @@ $ulist = array();
           <a class="adminProjectEditButton"><span class="oi oi-shadow" data-glyph="cog" aria-hidden="true"></span> Projekt verwalten...</a>
         </td>
         <td><a class="adminProjectDelete deletion-link"><span class="oi oi-shadow" data-glyph="delete" title="Projekt löschen" aria-hidden="true"></span></a></td>
+      </tr>
+    </table>
+
+    <table>
+      <tr id="templateNoticeInfoRow" class="adminNoticeInfoRow">
+        <td class="adminNoticeIDCell"></td>
+        <td class="adminNoticeTextCell"></td>
+        <td class="adminNoticeTypeCell"></td>
+        <td class="adminNoticeExpiresCell"></td>
+        <td class="adminNoticeDelete"><a class="deletion-link"><span class="oi oi-shadow" data-glyph="delete" title="Benachrichtigung löschen" aria-hidden="true"></span></a></td>
       </tr>
     </table>
   </div>
