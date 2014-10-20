@@ -548,10 +548,6 @@ div#spin-overlay {
     display: none;
 }
 
-.panel {
-    font: 100% sans-serif;
-}
-
 a {
     cursor: pointer;
 }
@@ -573,19 +569,8 @@ div.clappable div {
     padding-left: 0.75em;
 }
 
-table#editProjects th, table#editUsers th {
-    background: none repeat scroll 0 0 #D1D1D1;
-    padding: 0.5em;
-}
-
-table#editProjects td, table#editUsers td {
-    background: none repeat scroll 0 0 #EFEFEF;
-    font-size: 140%;
-    padding: 0.2em;
-}
-
 table#editProjects td.adminProjectNameCell {
-    max-width: 18em;
+    max-width: 12em;
     word-wrap: break-word;
     text-align: left;
 }
@@ -593,6 +578,12 @@ table#editProjects td.adminProjectNameCell {
 table#editProjects td.adminProjectUsersCell,
 table#editProjects td.adminProjectTagsetsCell {
     max-width: 25em;
+    word-wrap: break-word;
+    text-align: left;
+}
+
+table#editNotices td.adminNoticeTextCell { 
+    max-width: 35em;
     word-wrap: break-word;
     text-align: left;
 }
@@ -616,10 +607,22 @@ tr.adminUserInfoRow.userActive .adminUserLastactiveCell {
     text-align: center;
 }
 
-/* Clapp icons */
+/* Modern-style clappables (with icons) */
+.clappable.clapp-modern { 
+    padding: 0;
+}
+
+.clappable.clapp-modern h4 { 
+    color: #565656;
+    font-size: medium;
+    font-weight: bold;
+    padding: 10px 0 0 0;
+}
+
 span.clapp-status-hidden, span.clapp-status-open {
     color: #777;
     font-size: 80%;
+    padding-right: 0.5em;
 }
 
 span.clapp-status-hidden { 
@@ -632,6 +635,29 @@ div.clappable.clapp-hidden span.clapp-status-open {
 
 div.clappable.clapp-hidden span.clapp-status-hidden { 
     display: inline;
+}
+
+/* Modern-style tables */
+
+table.table-modern {
+    font-size: 1.5em;
+    border-collapse: collapse;
+    margin: 10px;
+}
+
+table.table-modern td {
+    padding: .4em .4em;
+    border-bottom: 1px solid #999;
+}
+
+table.table-modern th {
+    padding: .4em .4em;
+    border-bottom: 1px solid #999;
+}
+
+table.table-modern tbody tr:nth-child(odd) {
+    background: #e7e7e7;
+    border-bottom: 1px solid #999;
 }
 
 /* File-toolbar */
@@ -751,44 +777,12 @@ span.btn-toolbar-entry.start-disabled {
 }
 
 /* File-table */
-div.filegroup.clappable { 
-    padding: 0;
-}
-
-div.filegroup h4 { 
-    color: #565656;
-    font-size: medium;
-    font-weight: bold;
-    padding: 10px 0 0 0;
-}
-
 span.projectname {
     text-decoration: underline;
 }
 
-table.fileList {
-    font-size: 1.5em;
-    border-collapse: collapse;
-    margin: 10px;
-}
-
-table.fileList td {
-    padding: 5px 6px;
-    border-bottom: 1px solid #999;
-}
-
-table.fileList th {
-    padding: 5px 6px;
-    border-bottom: 1px solid #999;
-}
-
-table.fileList tbody tr:nth-child(odd) {
-    background: #e7e7e7;
-    border-bottom: 1px solid #999;
-}
-
 table.fileList .ftr-sigle { 
-    width: 3.5em;
+    width: 3.6em;
     text-align: right;
     padding-right: 0;
 }
@@ -1158,6 +1152,7 @@ div.editTableDropdownMenu {
     padding: 5px;
     margin: 0 0 0 ;
     border: 1px solid #777777;
+    z-index: 2000;
 }
 
 div.editTableDropdownMenu ul {

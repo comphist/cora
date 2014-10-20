@@ -6,8 +6,11 @@
 ?>
 
 <div id="settingsDiv" class="content" style="display: none;">
-  <div class="panel clappable">
-    <h3 class="clapp">Editor-Einstellungen</h3>
+  <div class="panel">
+    <div class="btn-toolbar">
+      <span class="btn-toolbar-entry" id="changePasswordLink">Passwort ändern...</span>
+    </div>
+
     <div>
       <div id="editorSettingsNumberOfLines">
         <h4>Zeilenanzahl</h4>
@@ -55,45 +58,38 @@
           <input type="checkbox" name="show_error" value="show_error" checked="yes" id="esia-showerror" /><label for="esia-showerror">Fehlerhafte Tags hervorheben</label>
         </p>
       </div>
-    </div>
-  </div>	
 
-  <div class="panel clappable">
-    <h3 class="clapp">Allgemeine Einstellungen</h3>
-    <div>
-      <div id="generalSettings">
+      <div id="generalSettings" style="display: none;">
+        <h4>Allgemeine Einstellungen</h4>
         <p style="display: none;">
           <input type="checkbox" name="showTooltips" value="showTooltips" checked="yes" /> Tooltips anzeigen
         </p>
-        <p>
-          <button class="mform" id="changePasswordLink">Passwort ändern...</button>
-        </p>
       </div>
     </div>
-  </div>	
 
-  <div class="templateHolder">
-    <div id="changePasswordFormDiv">
-      <form action="request.php" id="changePasswordForm" method="post">
-        <p>
-          <label for="oldpw">Altes Passwort: </label>
-          <input name="oldpw" type="password" size="30" data-required="" />
-        </p>
-        <p>
-          <label for="newpw">Neues Passwort: </label>
-          <input name="newpw" type="password" size="30" data-required="" />
-        </p>
-        <p>
-          <label for="newpw2">Neues Passwort (wdh.): </label>
-          <input name="newpw2" type="password" size="30" data-required="" />
-        </p>
-        <p id="changePasswordErrorNew" class="error_text">Die beiden Passwörter stimmen nicht überein!</p>
-        <p id="changePasswordErrorOld" class="error_text">Altes Passwort ist nicht korrekt!</p>
-        <p><input type="hidden" name="action" value="changeUserPassword" /></p>
-        <p style="text-align:right;">
-          <input type="submit" value="Passwort ändern" />
-        </p>
-      </form>
+    <div class="templateHolder">
+      <div id="changePasswordFormDiv">
+        <form action="request.php" id="changePasswordForm" method="post">
+           <p>
+            <label for="oldpw">Altes Passwort: </label>
+            <input name="oldpw" type="password" size="30" data-required="" />
+          </p>
+          <p>
+            <label for="newpw">Neues Passwort: </label>
+            <input name="newpw" type="password" size="30" data-required="" />
+          </p>
+          <p>
+            <label for="newpw2">Neues Passwort (wdh.): </label>
+            <input name="newpw2" type="password" size="30" data-required="" />
+          </p>
+          <p id="changePasswordErrorNew" class="error_text">Die beiden Passwörter stimmen nicht überein!</p>
+          <p id="changePasswordErrorOld" class="error_text">Altes Passwort ist nicht korrekt!</p>
+          <p><input type="hidden" name="action" value="changeUserPassword" /></p>
+          <p style="text-align:right;">
+            <input type="submit" value="Passwort ändern" />
+          </p>
+        </form>
+      </div>
     </div>
   </div>
 </div>

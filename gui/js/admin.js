@@ -209,7 +209,7 @@ cora.userEditor = {
         cora.users.onUpdate(this.refreshUserTable);
         cora.users.performUpdate();
 
-        $('createUser').addEvent(
+        $('adminCreateUser').addEvent(
             'click', function() { this.createUser(); }.bind(this)
         );
         $('adminUsersRefresh').addEvent(
@@ -335,6 +335,7 @@ cora.userEditor = {
         cora.users.toggleAdmin(uid, function(status, text) {
             if(!status['success']) {
                 gui.showNotice('error', 'Admin-Status nicht geändert.');
+                return;
             }
 	    var arrow = td.getElement('.adminUserAdminStatus');
 	    if(arrow.isDisplayed()) {
@@ -434,7 +435,7 @@ cora.noticeEditor = {
     notices: [],
 
     initialize: function() {
-        $('createNotice').addEvent(
+        $('adminCreateNotice').addEvent(
             'click', function() { this.showCreateNoticeDialog(); }.bind(this)
         );
 	$('editNotices').addEvent(
@@ -571,7 +572,7 @@ cora.noticeEditor = {
                                });
             },
             closeOnBodyClick: false,
-            closeOnEsc: false
+            closeOnEsc: true
         }).open();
     },
 }
@@ -588,7 +589,7 @@ cora.projectEditor = {
 	var cp_mbox = new mBox.Modal({
 	    'title': 'Neues Projekt erstellen',
 	    'content': 'projectCreateForm',
-	    'attach': 'createProject'
+	    'attach': 'adminCreateProject'
 	});
 	$('projectCreateForm').getElement("button[name='submitCreateProject']").addEvent(
 	    'click',
@@ -834,14 +835,16 @@ cora.tagsetEditor = {
 	var import_mbox = new mBox.Modal({
 	    title: 'Tagset-Browser',
 	    content: 'adminTagsetBrowser',
-	    attach: 'viewTagset'
+	    attach: 'adminViewTagset',
+            closeOnBodyClick: false
 	});
 
 	$('aTBview').addEvent('click', function(e) {
 	    var tagset     = $('aTBtagset').getSelected().get('value')[0];
 	    var tagsetname = $('aTBtagset').getSelected().get('html');
 	    var textarea   = $('aTBtextarea');
-	    textarea.empty();
+	    var spinner    = new Spinner(textarea).show(true);
+            textarea.empty();
 	    // fetch tag list and perform a quick and dirty analysis:
 	    var request = new Request.JSON(
 		{url:'request.php',
@@ -878,6 +881,7 @@ cora.tagsetEditor = {
 			 output = "Fehler beim Laden des Tagsets.";
 		     }
 		     textarea.empty().appendText(output);
+                     spinner.hide();
 		 }
 		}
 	    );
@@ -891,7 +895,7 @@ cora.tagsetEditor = {
 	var import_mbox = new mBox.Modal({
 	    title: 'Tagset aus Textdatei importieren',
 	    content: 'tagsetImportForm',
-	    attach: 'importTagset'
+	    attach: 'adminImportTagset'
 	});
 
 	// note: these checks would be redundant if the iFrame method
@@ -997,9 +1001,27 @@ cora.tagsetEditor = {
 
 window.addEvent('domready', function() {
     cora.noticeEditor.initialize();
-    cora.userEditor.initialize();
+    cora.projects.onInit(cora.userEditor.initialize.bind(cora.userEditor));
     cora.projectEditor.initialize();
     cora.tagsetEditor.initialize();
+
+    $('adminViewCollapseAll').addEvent('click',
+        function(e){
+            e.stop();
+            $$('div#adminDiv .clappable').each(function (clappable) {
+                clappable.addClass('clapp-hidden');
+		clappable.getElement('div').hide();
+            });
+        });
+    $('adminViewExpandAll').addEvent('click',
+        function(e){
+            e.stop();
+            $$('div#adminDiv .clappable').each(function (clappable) {
+                clappable.removeClass('clapp-hidden');
+		clappable.getElement('div').show();
+            });
+        });
+
 });
 
 

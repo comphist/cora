@@ -6,14 +6,6 @@
 
 <div id="fileDiv" class="content" style="display: none;">
   <div class="panel">
-    <!--
-    <div>
-      <p>
-         <button class="mform" id="importNewTransLink" disabled="disabled">Neues Dokument aus Transkriptionsdatei importieren...</button>
-         <button class="mform" id="importNewXMLLink" disabled="disabled">Neues Dokument aus XML-Datei importieren...</button>
-      </p>
-    </div>
-    -->
     <div class="btn-toolbar">
       <span class="btn-toolbar-entry" id="fileViewRefresh" title="Aktualisieren"><span class="oi" data-glyph="reload" aria-hidden="true"></span></span>
       <span class="btn-toolbar-entry" id="fileViewCollapseAll" title="Alle Projektgruppen zuklappen"><span class="oi" data-glyph="collapse-up" aria-hidden="true"></span></span>
@@ -55,11 +47,10 @@
       </div>
     </div>
    
-    <div class="filegroup clappable" id="fileGroup">
-      <h4 class="clapp">
-        <span class="oi clapp-status-open" data-glyph="caret-bottom" title="Zuklappen" aria-hidden="true"></span><span class="oi clapp-status-hidden" data-glyph="caret-right" title="Aufklappen" aria-hidden="true"></span> <span class="projectname">Projektname</span></h4>
+    <div class="filegroup clappable clapp-modern" id="fileGroup">
+      <h4 class="clapp"><span class="projectname">Projektname</span></h4>
         <div>
-          <table class="fileList">
+          <table class="fileList table-modern">
           <thead>
             <tr class="fileTableHeadLine">
               <th class="ftr-sigle">Sigle</th>

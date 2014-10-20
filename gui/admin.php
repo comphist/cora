@@ -12,112 +12,91 @@ $ulist = array();
  ?>
 
 <div id="adminDiv" class="content" style="display: none;">
+  <div class="panel">
+    <div class="btn-toolbar">
+      <span class="btn-toolbar-entry" id="adminUsersRefresh" title="Aktualisieren"><span class="oi" data-glyph="reload" aria-hidden="true"></span></span>
+      <span class="btn-toolbar-entry" id="adminViewCollapseAll" title="Alle Kategorien zuklappen"><span class="oi" data-glyph="collapse-up" aria-hidden="true"></span></span>
+      <span class="btn-toolbar-entry" id="adminViewExpandAll" title="Alle Kategorien aufklappen"><span class="oi" data-glyph="collapse-down" aria-hidden="true"></span></span>
+      <span class="btn-toolbar-entry" id="adminCreateUser"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> Neuer Benutzer</span>
+      <span class="btn-toolbar-entry" id="adminCreateProject"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> Neues Projekt</span>
+      <span class="btn-toolbar-entry" id="adminCreateNotice"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> Neue Benachrichtigung</span>
+      <span class="btn-toolbar-entry" id="adminViewTagset">Tagset-Browser</span>
+      <span class="btn-toolbar-entry" id="adminImportTagset"><span class="oi" data-glyph="data-transfer-upload" aria-hidden="true"></span> Tagset importieren</span>
+    </div>
 
-<!-- SERVER NOTICES -->
-<div class="panel clappable" id="serverNotices">
-   <h3 class="clapp">Server-Benachrichtigungen</h3>
+    <!-- USER MANAGEMENT -->
+    <div class="clappable clapp-modern" id="users">
+      <h4 class="clapp">Benutzerverwaltung</h4>
+      <div>
+        <table id="editUsers" class="table-modern">
+          <thead>
+            <tr>
+              <th>Benutzername</th>
+              <th>Admin?</th>
+              <th>Letzte Aktivität</th>
+              <th>Geöffnete Datei</th>
+              <th class="table-th-nosort"></th>
+              <th class="table-th-nosort"></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
 
-   <div>
-     <div class="btn-toolbar">
-       <span class="btn-toolbar-entry" id="createNotice"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> Neue Benachrichtigung...</span>
-     </div>
+    <!-- PROJECT MANAGEMENT -->
+    <div class="clappable clapp-modern starthidden" id="projectMngr">
+      <h4 class="clapp">Projektverwaltung</h4>
+      <div>
+        <table id="editProjects" class="table-modern">
+          <thead>
+            <tr>
+              <th>Projektname</th>
+              <th>Zugeordnete Benutzer</th>
+              <th>Zugeordnete Tagset-Typen</th>
+              <th>Edit?</th>
+              <th>Import?</th>
+              <th class="table-th-nosort"></th>
+              <th class="table-th-nosort"></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
 
-     <table id="editNotices">
-       <thead>
-         <tr>
-           <th>ID</th>
-           <th>Nachricht</th>
-           <th>Typ</th>
-           <th>Expires</th>
-           <th></th>
-         </tr>
-       </thead>
-       <tbody></tbody>
-     </table>
-   </div>
-</div>
+        <p><strong>Hinweis:</strong> Administratoren können <i>immer</i> alle Projektgruppen sehen.</p>
+      </div>
+    </div>
 
-<!-- USER MANAGEMENT -->
-<div class="panel clappable" id="users">
-   <h3 class="clapp">Benutzerverwaltung</h3>
+    <!-- SERVER NOTICES -->
+    <div class="clappable clapp-modern starthidden" id="serverNotices">
+      <h4 class="clapp">Server-Benachrichtigungen</h4>
+      <div>
+        <table id="editNotices" class="table-modern">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nachricht</th>
+              <th>Typ</th>
+              <th>Expires</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
 
-   <div>
-     <div class="btn-toolbar">
-       <span class="btn-toolbar-entry" id="adminUsersRefresh" title="Aktualisieren"><span class="oi" data-glyph="reload" aria-hidden="true"></span></span>
-       <span class="btn-toolbar-entry" id="createUser"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> Benutzer hinzufügen...</span>
-     </div>
+    <!-- TAGSET EDITOR
+    <div class="clappable clapp-modern" id="tagsets">
+      <h4 class="clapp">Tagset-Editor</h4>
+      <div>
+        <p>Tagsets können zur Zeit nicht über die Web-Oberfläche editiert werden.</p>
+      </div>
+    </div>
+    -->
+  </div>
 
-     <table id="editUsers">
-       <thead>
-         <tr>
-           <th>Benutzername</th>
-           <th>Admin?</th>
-           <th>Letzte Aktivität</th>
-           <th>Geöffnete Datei</th>
-           <th class="table-th-nosort"></th>
-           <th class="table-th-nosort"></th>
-         </tr>
-       </thead>
-       <tbody></tbody>
-     </table>
-   </div>
-</div>
-
-
-<!-- PROJECT MANAGEMENT -->
-<div class="panel clappable" id="projectMngr">
-   <h3 class="clapp">Projektverwaltung</h3>
-
-   <div>
-   <table id="editProjects">
-     <thead>
-     <tr>
-       <th>Projektname</th>
-       <th>Zugeordnete Benutzer</th>
-       <th>Zugeordnete Tagset-Typen</th>
-       <th>Edit-Skript?</th>
-       <th>Import-Skript?</th>
-       <th class="table-th-nosort"></th>
-       <th class="table-th-nosort"></th>
-     </tr>
-     </thead>
-     <tbody>
-     </tbody>
-   </table>
-
-   <p><strong>Hinweis:</strong> Administratoren können <i>immer</i> alle Projektgruppen sehen.</p>
-
-   <p>
-   <button id="createProject" type="button" class="mform">
-       <span class="oi oi-adjust oi-green" data-glyph="plus" aria-hidden="true"></span>
-       Neues Projekt hinzufügen...
-   </button>
-   </p>
-
-   </div>
-</div>
-
-
-<!-- TAGSET EDITOR -->
-<div class="panel clappable" id="tagsets">
-   <h3 class="clapp">Tagset-Editor</h3>
-
-   <div>
-     <p>Tagsets können zur Zeit nicht über die Web-Oberfläche editiert werden.</p>
-
-   <p>
-   <button id="viewTagset" type="button" class="mform">
-       (POS-)Tagsets anzeigen
-   </button>
-   <button id="importTagset" type="button" class="mform">
-       <span class="oi oi-adjust oi-green" data-glyph="plus" aria-hidden="true"></span>
-       Neues (POS-)Tagset importieren...
-   </button>
-   </p>
-
-   </div>
-</div>
-
+  <!-- TEMPLATES -->
   <div class="templateHolder" style="display: none;">
     <div id="templateCreateNotice">
       <form>

@@ -43,6 +43,23 @@ var gui = {
                     clappable.toggleClass('clapp-hidden');
                     content.toggle();
 		});
+                // inject clapp-status icons
+                if (clappable.hasClass('clapp-modern')
+                    && !clapper.hasClass('has-clapp-icons')) {
+                    clapper.grab(new Element('span',
+                                             {'class': 'oi clapp-status-hidden',
+                                              'data-glyph': 'caret-right',
+                                              'title': 'Aufklappen',
+                                              'aria-hidden': 'true'}),
+                                 'top');
+                    clapper.grab(new Element('span',
+                                             {'class': 'oi clapp-status-open',
+                                              'data-glyph': 'caret-bottom',
+                                              'title': 'Zuklappen',
+                                              'aria-hidden': 'true'}),
+                                 'top');
+                    clapper.addClass('has-clapp-icons');
+                }
             }
             // hide content by default, if necessary
             if (clappable.hasClass('starthidden')) {
@@ -348,7 +365,7 @@ var gui = {
         if(match) {
             d.set({
                 'year': match[1],
-                'mo':   match[2],
+                'mo':   match[2]-1,
                 'date': match[3],
                 'hr':   match[4],
                 'min':  match[5],
@@ -379,7 +396,7 @@ var gui = {
         }
         if(!date.isValid() || date.get('year') < 1980)
             return "";
-        if(date.diff(now) > 2)
+        if(date.diff(now) > 2 || date.diff(now) < 0)
             format_string += "%d.%m.%Y";
         else
             format_string += date_strings[date.diff(now)];

@@ -19,23 +19,26 @@ a:hover {
 
 h2 {
 	color : #343434;
-	font : italic large sans-serif;
+	font-size : large;
+        font-style : italic;
 }
 h3 {
 	color : #343434;
-	font : italic medium sans-serif;
+        font-size : medium;
+	font-style : italic;
 }
 h4 {
 	color : #343434;
-	font : bold small sans-serif;
+	font-weight : bold;
+        font-size : small;
 	padding : 1em 1em 0 1em;
 }
 
 html {
 	color : #565656;
-	font : 60% sans-serif;
+	font-size : 60%;
 	text-align : justify;
-	font-family: Helvetica, arial, sans-serif;
+	font-family: Helvetica, Arial, sans-serif;
 }
 
 p {
@@ -151,17 +154,20 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2b548c', end
 }
 #header h1 {
 	color : #ffffff;
-	font : italic 200% sans-serif;
+        font-weight : normal;
+        font-style : italic;
+	font-size : 200%;
 }
 
 #header h2 {
 	color : #ffffff;
-	font : italic 200% sans-serif;
+	font-style : italic;
+        font-size : 200%;
 }
 
 
 #menu {
-	font-family: "Trebuchet MS", sans-serif;
+	font-family: "Trebuchet MS", Helvetica, Arial, sans-serif;
 	font-size: 1.1em;
 }
 
@@ -192,7 +198,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2b548c', end
 }
 
 #menuRight {
-    font-family: "Trebuchet MS", sans-serif;
+    font-family: "Trebuchet MS", Helvetica, Arial, sans-serif;
     font-size: 1.1em;
     position: absolute;
     right: 2em;
