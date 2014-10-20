@@ -574,7 +574,7 @@ cora.noticeEditor = {
             closeOnBodyClick: false,
             closeOnEsc: true
         }).open();
-    },
+    }
 }
 
 // ***********************************************************************

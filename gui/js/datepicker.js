@@ -735,3 +735,4 @@ var DatePicker = new Class({
 		return d;
 	}
 });
+

@@ -15,10 +15,10 @@ cat css/screen.css css/myCss.css css/baseBox.css js/mbox/assets/mBoxCore.css js/
 
 echo "Minifying JavaScript..."
 cd js
-java -jar $CLOSURE_COMPILER --js_output_file=mbox.min.js mbox/mBox.Core.js mbox/mBox.Modal.js mbox/mBox.Notice.js mbox/mBox.Modal.Confirm.js mbox/mBox.Tooltip.js mbox/mForm.Core.js mbox/mForm.Submit.js mbox/mForm.Element.js mbox/mForm.Element.Select.js 2>/dev/null
+java -jar $CLOSURE_COMPILER --js_output_file=mbox.min.js mbox/mBox.Core.js mbox/mBox.Modal.js mbox/mBox.Notice.js mbox/mBox.Modal.Confirm.js mbox/mBox.Tooltip.js mbox/mForm.Core.js mbox/mForm.Submit.js mbox/mForm.Element.js mbox/mForm.Element.Select.js
 
-java -jar $CLOSURE_COMPILER --js_output_file=master.min.js baseBox.js ProgressBar.js dragtable_hack.js iFrameFormRequest.js Meio.Autocomplete.js gui.js file.js edit.js settings.js MultiSelect.js 2>/dev/null
+java -jar $CLOSURE_COMPILER --js_output_file=master.min.js baseBox.js ProgressBar.js dragtable_hack.js iFrameFormRequest.js Meio.Autocomplete.js gui.js file.js edit.js settings.js MultiSelect.js
 
-java -jar $CLOSURE_COMPILER --js_output_file=admin.min.js datepicker.js admin.js 2>/dev/null
+java -jar $CLOSURE_COMPILER --js_output_file=admin.min.js datepicker.js admin.js
 
 echo "Done!"
