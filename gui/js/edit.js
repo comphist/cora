@@ -248,27 +248,26 @@ var EditorModel = new Class({
 
 	/* activate extra menu bar */
 	mr = $('menuRight');
-	btn = mr.getElement('li#saveButton');
+	btn = mr.getElement('#saveButton');
 	btn.removeEvents();
 	btn.addEvent('click', function(e) {
 	    e.stop();
 	    ref.saveData();
 	});
-	btn = mr.getElement('li#closeButton');
+	btn = mr.getElement('#closeButton');
 	btn.removeEvents();
 	btn.addEvent('click', function(e) {
 	    e.stop();
 	    file.closeFile(ref.fileId); // breaks OO...
 	});
 	/* prepare automatic annotation dialog */
-	btn = mr.getElement('li#tagButton');
+	btn = mr.getElement('#tagButton');
 	if(btn && btn !== undefined) {
 	    btn.removeEvents();
 	    this.activateAnnotationDialog(btn);
 	    this.prepareAnnotationOptions();
 	}
-
-	mr.show();
+	mr.getElements('.when-file-open-only').addClass('file-open');
 
 	this.initializeColumnVisibility();
 

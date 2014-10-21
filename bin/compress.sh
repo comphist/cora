@@ -11,7 +11,7 @@ YUI_COMPRESSOR=/home/bollmann/tools/webdev/yuicompressor-2.4.8.jar
 
 echo "Minifying CSS..."
 cd gui
-cat css/screen.css css/myCss.css css/baseBox.css js/mbox/assets/mBoxCore.css js/mbox/assets/mBoxModal.css js/mbox/assets/mBoxNotice.css js/mbox/assets/mBoxTooltip.css js/mbox/assets/mForm_mod.css js/mbox/assets/mFormElement-Select.css css/Meio.Autocomplete.css css/MultiSelect.css | sed "s#url('images/#url('../images/mbox/#" | java -jar $YUI_COMPRESSOR --type css -o css/master.min.css
+cat css/screen.css css/baseBox.css js/mbox/assets/mBoxCore.css js/mbox/assets/mBoxModal.css js/mbox/assets/mBoxNotice.css js/mbox/assets/mBoxTooltip.css js/mbox/assets/mForm_mod.css js/mbox/assets/mFormElement-Select.css css/Meio.Autocomplete.css css/MultiSelect.css | sed "s#url('images/#url('../images/mbox/#" | java -jar $YUI_COMPRESSOR --type css -o css/master.min.css
 
 echo "Minifying JavaScript..."
 cd js

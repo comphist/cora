@@ -966,7 +966,7 @@ var file = {
 		        edit.editorModel = null;
 		        default_tab = 'file';
 		        gui.changeTab(default_tab);
-		        $('menuRight').hide();
+		        $$('div#menuRight .when-file-open-only').removeClass('file-open');
 		        $('editTable').hide();
 		        $('editTabButton').hide();
 		        $('currentfile').set('text','');

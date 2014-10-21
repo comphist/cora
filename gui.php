@@ -10,6 +10,7 @@
     <meta name="description" content="<?php echo DESCRIPTION; ?>" />
     <meta name="keywords" content="<?php echo KEYWORDS; ?>" />
     <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,700,400,600' rel='stylesheet' type='text/css'>
 
     <?php
     /**************** Cascading Style Sheets ****************/
@@ -100,24 +101,15 @@
     <div id="overlay"></div>
     <div id="spin-overlay"></div>
 
-    <!-- topbar & header -->
-    <div id="topbar" class="no-print">
-      <div id="header">
-        <div id="titelzeile">
-          <span id="otto">
-            <object><h1><?php echo TITLE; ?></h1><h2><?php echo VERSION; ?></h2></object>
-          </span>
+    <!-- header -->
+      <div id="header" class="no-print">
+        <div id="titlebar">
+          <span class="cora-title"><?php echo TITLE; ?></span>
+          <span class="cora-version"><?php echo VERSION; ?></span>
           <span id="currentfile"></span>
-        </div>
-
-        <div id="controls">
-          <?php if($_SESSION["loggedIn"]): ?>
-            <a href="index.php?do=logout" id="logoutLink"><img src="gui/images/logout.png" alt="Logout" width="60" height="30" /></a>
-          <?php endif; ?>
         </div>
         <?php include( "gui/menu.php" ); ?>
       </div>
-    </div>
 
     <!-- main content -->
     <div id="main" class="no-print">
@@ -125,7 +117,7 @@
                 include( $menu->getItemFile($item) );
 	    }
       ?>
-      <div id="footer"></div>
+      <div id="footer">&copy; 2012&mdash;2014 Marcel Bollmann, Florian Petran, Sprachwissenschaftliches Institut, Ruhr-Universität Bochum</div>
     </div>
 
     <!-- templates -->
