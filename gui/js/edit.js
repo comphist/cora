@@ -1716,7 +1716,7 @@ var EditorModel = new Class({
 
         if(userdata.textPreview == "off") {
             container.hide();
-            $('footer').setStyle('margin-bottom', 0);
+            $('editPanelDiv').setStyle('margin-bottom', 0);
             return;
         }
         if(userdata.textPreview == "utf") {
