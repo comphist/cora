@@ -170,15 +170,12 @@ $ulist = array();
     </div>
 
     <div id="projectCreateForm">
+      <form>
       <p>
-        <label for="project_name"><b>Projektname:</b></label>
+        <label for="project_name" class="ra">Projektname:</label>
         <input type="text" name="project_name" value="" />
       </p>
-      <p style="text-align:right;">
-        <button name="submitCreateProject" value="save" type="submit">
-          Projekt erstellen
-        </button>
-      </p>
+      </form>
     </div>
 
     <div id="tagsetImportForm">

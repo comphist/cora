@@ -248,17 +248,20 @@ var gui = {
        Parameters: 
         options - An object which may contain the following options:
 	           * message - Message to display (default: none)
+                   * noFx    - Display without fade-in (default: false)
     */
     showSpinner: function(options) {
 	var options = options || {};
 	var spinmsg = options.message || null;
+	var nofx    = options.noFx || false;
 
         this.disableScrolling();
 	$('overlay').show();
 	$('spin-overlay').show();
 	this.activeSpinner = new Spinner($('spin-overlay'),
-					 {message: spinmsg});
-	this.activeSpinner.show();
+					 {message: spinmsg,
+                                          fxOptions: {duration: 250}});
+	this.activeSpinner.show(nofx);
     },
 
     /* Function: hideSpinner

@@ -21,7 +21,8 @@
       embedCSS("gui/css/open-iconic.min.css", "all", true);
       if($_SESSION['admin'])
           embedCSS("gui/css/datepicker.css", "all", true);
-      embedCSS("gui/css/print.css", "print", false);  // do we even need this anymore?
+      //// this is currently not working:
+      // embedCSS("gui/css/print.css", "print", false);
 
     /********************** JavaScript **********************/
     ?>
@@ -93,11 +94,20 @@
                   embedJS("gui/js/admin.js", true);
               }
           }
+      } else {  // not logged in
+echo <<<NOTLOGGEDIN
+    <script type="text/javascript">
+      var gui = {changeTab: function() {}};
+      var onLoad = function() {
+          $('loginTabButton').set('active', 'true');
+      };
+    </script>
+NOTLOGGEDIN;
       }
     ?>
   </head>
   <?php flush(); ?>
-  <body <?php if($_SESSION['loggedIn']): ?>onload="onLoad();" onbeforeunload="return onBeforeUnload();"<?php endif; ?>>
+  <body onload="onLoad();"<?php if($_SESSION['loggedIn']): ?> onbeforeunload="return onBeforeUnload();"<?php endif; ?>>
     <div id="overlay"></div>
     <div id="spin-overlay"></div>
 

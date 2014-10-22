@@ -84,7 +84,7 @@
 
   <div id="horizontalTextViewContainer">
     <div id="horizontalTextView">
-      <span>Fehler bei der Text-Vorschau.</span>
+      <span>Text-Vorschau wird geladen...</span>
     </div>
   </div>
 

@@ -16,6 +16,8 @@ var EditorModel = new Class({
     inputErrorClass: "", // browser-dependent CSS styling for input errors
     dropdown: null,  // contains the currently opened dropdown menu, if any
     useLemmaLookup: false,
+    onPageChangeOnceHandlers: [],
+    pageDisplayInProgress: false,
 
     /* Constructor: EditorModel
 
@@ -26,8 +28,9 @@ var EditorModel = new Class({
 	 line_count - Total number of lines in the file
 	 last_edited_row - Line number that was last edited
 	 start_page - The page to first display
+         oninit - Callback function after successful initialization
     */
-    initialize: function(fileid, line_count, last_edited_row, start_page) {
+    initialize: function(fileid, line_count, last_edited_row, start_page, oninit) {
 	var elem, td, spos, smorph, slempos, et, mr, btn;
 	var ref = this;
 
@@ -48,6 +51,7 @@ var EditorModel = new Class({
 	et = this.editTable;
 
 	this.useLemmaLookup = false;
+	$('horizontalTextView').empty().set('text', "Text-Vorschau wird geladen...");
 
 	/* set up the line template */
 	elem = $('line_template');
@@ -92,7 +96,7 @@ var EditorModel = new Class({
 	    'click:relay(div)',
 	    function(event, target) {
 		var new_value;
-		var this_id = target.getParent('tr').get('id').substr(5);
+		var this_id = ref.getRowNumberFromElement(target);
 		if(target.hasClass('editTableError')) {
 		    new_value = target.hasClass('editTableErrorChecked') ? 0 : 1;
 		    target.toggleClass('editTableErrorChecked');
@@ -123,7 +127,7 @@ var EditorModel = new Class({
 	et.addEvent(
 	    'click:relay(a)',
 	    function(event, target) {
-		var this_id = target.getParent('tr').get('id').substr(5);
+		var this_id = ref.getRowNumberFromElement(target);
 		if(target.hasClass('editTableDdButtonDelete')) {
 		    ref.deleteToken(this_id);
 		} else if(target.hasClass('editTableDdButtonEdit')) {
@@ -136,7 +140,7 @@ var EditorModel = new Class({
 	et.addEvent(
 	    'change:relay(select)',
 	    function(event, target) {
-		var this_id = target.getParent('tr').get('id').substr(5);
+		var this_id = ref.getRowNumberFromElement(target);
 		var parent = target.getParent('td');
 		var new_value = target.getSelected()[0].get('value');
 		if (parent.hasClass("editTable_POS")) {
@@ -164,7 +168,7 @@ var EditorModel = new Class({
 	et.addEvent(
 	    'change:relay(input)',
 	    function(event, target) {
-		var this_id = target.getParent('tr').get('id').substr(5);
+		var this_id = ref.getRowNumberFromElement(target);
 		var parent = target.getParent('td');
 		var new_value = target.get('value');
 		if (parent.hasClass("editTable_Norm")) {
@@ -199,23 +203,34 @@ var EditorModel = new Class({
 		    ref.updateModSelect(parent, new_value);
 		}
                 var shiftFocus = function(nr, tc) {
-		    if(nr != null) {
-			var new_target = nr.getElement('td.'+tc+' input');
-			if(new_target != null) {
-			    new_target.focus();
-			}
+                    if(nr == null) return;
+		    var new_target = nr.getElement('td.'+tc+' input');
+		    if(new_target != null) {
+			new_target.focus();
 		    }
                 };
 		if (event.code == 40) { // down arrow
 		    if(event.control || this_class != "editTable_Lemma") {
-			new_row = parent.getParent('tr').getNext('tr');
-                        shiftFocus(new_row, this_class);
+			new_row = ref.getRowNumberFromElement(parent) + 1;
+                        if (ref.getRowFromNumber(new_row) !== null) {
+                            shiftFocus(ref.getRowFromNumber(new_row), this_class);
+                        } else {
+                            ref.displayNextPage(function() {
+                                shiftFocus(ref.getRowFromNumber(new_row), this_class);
+                            });
+                        }
 		    }
 		}
 		if (event.code == 38) { // up arrow
 		    if(event.control || this_class != "editTable_Lemma") {
-			new_row = parent.getParent('tr').getPrevious('tr');
-                        shiftFocus(new_row, this_class);
+			new_row = ref.getRowNumberFromElement(parent) - 1;
+                        if (ref.getRowFromNumber(new_row) !== null) {
+                            shiftFocus(ref.getRowFromNumber(new_row), this_class);
+                        } else {
+                            ref.displayPreviousPage(function() {
+                                shiftFocus(ref.getRowFromNumber(new_row), this_class);
+                            });
+                        }
 		    }
 		}
 	    }
@@ -223,7 +238,7 @@ var EditorModel = new Class({
 	et.addEvent(
 	    'dblclick:relay(td)',
 	    function(event, target) {
-		var this_id = target.getParent('tr').get('id').substr(5);
+		var this_id = ref.getRowNumberFromElement(target);
 		if (target.hasClass("editTable_token") ||
 		    target.hasClass("editTable_tok_trans")) {
 		    // we don't want text to get selected here:
@@ -239,7 +254,7 @@ var EditorModel = new Class({
 	    'focus:relay(input,select)',
 	    function(event, target) {
                 // highlight in text preview
-		var this_id = target.getParent('tr').get('id').substr(5);
+		var this_id = ref.getRowNumberFromElement(target);
 		ref.highlightHorizontalView(this_id);
                 // is hidden behind header?
                 var scrolltop_min = target.getTop() - $('header').getHeight() - 10;
@@ -286,6 +301,7 @@ var EditorModel = new Class({
 	start_page = Number.from(start_page);
 	if(start_page==null || start_page<1) { start_page = 1; }
 	this.renderPagesPanel(start_page);
+        this.onPageChangeOnce(oninit);
 	this.displayPage(start_page);
 	this.activePage = start_page;
     },
@@ -345,6 +361,27 @@ var EditorModel = new Class({
 	}
     },
 
+    /* Function: getRowNumberFromElement
+
+       Gets the number of the row (used in '#' column and the <tr
+       id=...> attribute) containing the supplied element.
+     */
+    getRowNumberFromElement: function(elem) {
+        var id = elem.get('id');
+        if(id === null || id.substr(0, 5) !== "line_") {
+            id = elem.getParent('tr').get('id');
+        }
+        return Number.from(id.substr(5));
+    },
+
+    /* Function: getRowFromNumber
+
+       Gets the <tr> element corresponding to a given row number.
+     */
+    getRowFromNumber: function(num) {
+        return $('line_'+num);
+    },
+    
     /* Function: isValidTagCombination
 
        Check whether a given combination of POS and morph tag is valid
@@ -549,12 +586,18 @@ var EditorModel = new Class({
     /* Function: displayNextPage
 
        Displays the next page of the document.
+
+       Parameters:
+         fn - Callback function to invoke after successful page change;
+              if there is no next page, this function is discarded.
     */
-    displayNextPage: function() {
+    displayNextPage: function(fn) {
 	var ps = $('pageSelector');
 	var new_page = ps.value.toInt() + 1;
 	if (new_page<=this.maxPage) {
 	    ps.set('value', new_page);
+            if(fn)
+                this.onPageChangeOnce(fn);
 	    this.displayPage(new_page);
 	}
     },
@@ -562,14 +605,31 @@ var EditorModel = new Class({
     /* Function: displayPreviousPage
 
        Displays the previous page of the document.
+
+       Parameters:
+         fn - Callback function to invoke after successful page change;
+              if there is no next page, this function is discarded.
     */
-    displayPreviousPage: function() {
+    displayPreviousPage: function(fn) {
 	var ps = $('pageSelector');
 	var new_page = ps.value.toInt() - 1;
 	if (new_page>0) {
 	    ps.set('value', new_page);
+            if(fn)
+                this.onPageChangeOnce(fn);
 	    this.displayPage(new_page);
 	}
+    },
+
+    /* Function: onPageChangeOnce
+
+       Registers a callback function to invoke after the next
+       successful page change.
+     */
+    onPageChangeOnce: function(fn) {
+        if(typeof(fn) == "function")
+            this.onPageChangeOnceHandlers.push(fn);
+        return this;
     },
 
     /* Function: focusFirstElement
@@ -635,8 +695,10 @@ var EditorModel = new Class({
 		events: {
 		    click: function(e) {
 			e.stop();
-			$('pageSelector').set('value', 1);
-			ref.displayPage(1);
+                        if(!ref.pageDisplayInProgress) {
+			    $('pageSelector').set('value', 1);
+			    ref.displayPage(1);
+                        }
 		    }
 		}
 	    }));
@@ -646,7 +708,8 @@ var EditorModel = new Class({
 		events: {
 		    click: function(e) {
 			e.stop();
-			ref.displayPreviousPage();
+                        if(!ref.pageDisplayInProgress)
+			    ref.displayPreviousPage();
 		    }
 		}
 	    }));
@@ -676,7 +739,8 @@ var EditorModel = new Class({
 		events: {
 		    click: function(e) {
 			e.stop();
-			ref.displayNextPage();
+                        if(!ref.pageDisplayInProgress)
+			    ref.displayNextPage();
 		    }
 		}
 	    }));
@@ -686,8 +750,10 @@ var EditorModel = new Class({
 		events: {
 		    click: function(e) {
 			e.stop();
-			$('pageSelector').set('value', ref.maxPage);
-			ref.displayPage(ref.maxPage);
+                        if(!ref.pageDisplayInProgress) {
+			    $('pageSelector').set('value', ref.maxPage);
+			    ref.displayPage(ref.maxPage);
+                        }
 		    }
 		}
 	    }));
@@ -824,6 +890,9 @@ var EditorModel = new Class({
 	var optgroup, elem, lemma_input;
 	var dlr, dynstart, dynend;
 	var lineinfo;
+        var fn_callback, fn_onerror;
+
+        this.pageDisplayInProgress = true;
 
 	/* calculate line numbers to be displayed */
 	if (page==0) { page++; }
@@ -835,14 +904,17 @@ var EditorModel = new Class({
 	}
 
 	/* ensure all lines are in memory */
-	try { 
-	    this.requestLines(start, end, false);
-	}
-	catch(e) {
-            gui.showNotice('error', "Problem beim Laden des Dokuments.");
-	    gui.showInfoDialog(e.message);
-	    return false;
-	}
+        if(!this.isRangeLoaded(start, end)) {
+            fn_callback = function() {
+                this.displayPage(page);
+            }.bind(this);
+            fn_onerror  = function(e) {
+                gui.showNotice('error', "Problem beim Laden des Dokuments.");
+	        gui.showInfoDialog(e.message);
+            };
+            this.requestLines(start, end, fn_callback, fn_onerror);
+            return;
+        }
 
 	/* hide the table */
 	et.hide();
@@ -1015,7 +1087,7 @@ var EditorModel = new Class({
 	dlr  = this.dynamicLoadRange * (userdata.noPageLines - cl);
 	dynstart = start - dlr;
 	dynend   = end   + dlr;
-	this.requestLines(dynstart, dynend, true);
+	this.requestLines(dynstart, dynend);
 
 	/* horizontal text view */
 	this.updateHorizontalView(start, end);
@@ -1024,6 +1096,13 @@ var EditorModel = new Class({
 	this.displayedLinesStart = start;
 	this.displayedLinesEnd = end - 1;
 	this.tries = 0;
+        this.pageDisplayInProgress = false;
+
+        Array.each(this.onPageChangeOnceHandlers, function(handler) {
+            handler();
+        });
+        this.onPageChangeOnceHandlers = [];
+
 	return true;
     },
 
@@ -1090,6 +1169,21 @@ var EditorModel = new Class({
 	return [start, end];
     },
 
+    /* Function: isRangeLoaded
+
+       Checks whether the lines in the given range are already loaded
+       in memory and need not be requested from the server.
+
+       Parameters:
+         start - Number of the first line
+         end - Number of the line after the last line
+
+       Returns:
+         True if all lines are already in memory
+     */
+    isRangeLoaded: function(start, end) {
+	return (this.getMinimumLineRange(start, end).length === 0);
+    },
 
     /* Function: requestLines
 
@@ -1099,38 +1193,45 @@ var EditorModel = new Class({
        Parameters:
          start - Number of the first line to load
 	 end - Number of the line after the last line to load
-	 async - Whether or not to perform asynchronous calls
+         fn - Callback function to invoke after successful request
+         onerror - Callback function to invoke on error
     */
-    requestLines: function(start, end, async) {
+    requestLines: function(start, end, fn, onerror) {
 	var range = this.getMinimumLineRange(start, end);
 	if(range.length == 0) { // success!
 	    this.tries = 0;
-	    return true;
+            if(typeof(fn) == "function")
+                fn();
+	    return;
 	}
 	if(this.tries++>20) { // prevent endless recursion
-	    throw {
-		'name': 'FailureToLoadLines',
-		'message': "Ein Fehler ist aufgetreten: Zeilen "+start+" bis "+(end-1)+" können nicht geladen werden.  Überprüfen Sie ggf. Ihre Internetverbindung."
-	    };
+            if(typeof(onerror) == "function")
+                onerror({
+		    'name': 'FailureToLoadLines',
+		    'message': "Ein Fehler ist aufgetreten: Zeilen "+start+" bis "+(end-1)+" können nicht geladen werden.  Überprüfen Sie ggf. Ihre Internetverbindung."
+	        });
+            return;
 	}
 
 	new Request.JSON({
 	    url: 'request.php',
-	    async: async,
+	    async: true,
 	    onSuccess: function(status, text) {
 		var lineArray = status['data'];
 		if (Object.getLength(lineArray)==0) {
-		    throw {
-			'name': 'EmptyRequest',
-			'message': "Ein Fehler ist aufgetreten: Server-Anfrage für benötigte Zeilen "+start+" bis "+(end-1)+" lieferte kein Ergebnis zurück."
-		    };
+                    if(typeof(onerror) == "function")
+                        onerror({
+			    'name': 'EmptyRequest',
+			    'message': "Ein Fehler ist aufgetreten: Server-Anfrage für benötigte Zeilen "+start+" bis "+(end-1)+" lieferte kein Ergebnis zurück."
+		        });
+                    return;
 		}
 		Object.each(lineArray, function(ln) {
 		    if (this.data[ln.num] == undefined) {
 			this.data[ln.num] = ln;
 		    }
 		}.bind(this));
-		this.requestLines(start, end, async);
+		this.requestLines(start, end, fn, onerror);
 	    }.bind(this)
 	}).get({'do': 'getLinesById', 'start_id': range[0], 'end_id': range[1]});
     },
@@ -1577,7 +1678,7 @@ var EditorModel = new Class({
 				  }
 			      }).addEvent('select', function(e,v,text,index) { 
 				  var parent = e.field.node.getParent("tr");
-				  var this_id = parent.get("id").substr(5);
+				  var this_id = ref.getRowNumberFromElement(parent);
 				  var verified = (v.t=="c") ? 1 : 0;
 
 				  if (verified) {
@@ -1608,9 +1709,10 @@ var EditorModel = new Class({
         var container = $('horizontalTextViewContainer');
 	var view = $('horizontalTextView');
 	var terminators = ['(.)', '(!)', '(?)'];
-	var maxctxlen = 50;
+	var maxctxlen = 30;
 	var startlimit = Math.max(0, start - maxctxlen);
 	var endlimit   = Math.min(this.lineCount, end + maxctxlen);
+        var fn_callback, fn_onerror;
 
         if(userdata.textPreview == "off") {
             container.hide();
@@ -1624,7 +1726,16 @@ var EditorModel = new Class({
         }
         container.show();
 
-	this.requestLines(startlimit, endlimit, false);
+        if(!this.isRangeLoaded(startlimit, endlimit)) {
+            fn_callback = function() {
+                this.updateHorizontalView(start, end);
+            }.bind(this);
+            fn_onerror  = function(e) {
+                gui.showNotice('error', "Problem beim Laden der Text-Vorschau.");
+            };
+	    this.requestLines(startlimit, endlimit, fn_callback, fn_onerror);
+            return;
+        }
 	// find nearest sentence boundaries
 	for (; start>=startlimit; start--) {
 	    if(data[start]!==undefined && terminators.contains(data[start].trans)) {

@@ -589,34 +589,35 @@ cora.projectEditor = {
 	var cp_mbox = new mBox.Modal({
 	    'title': 'Neues Projekt erstellen',
 	    'content': 'projectCreateForm',
-	    'attach': 'adminCreateProject'
+	    'attach': 'adminCreateProject',
+            'buttons': [ {title: "Abbrechen", addClass: "mform"},
+                         {title: "Erstellen", addClass: "mform button_green",
+                          event: function() {
+		              var pn = this.content.getElement('input').get('value');
+		              var req = new Request.JSON(
+		                  {url:'request.php',
+		                   onSuccess: function(status) {
+			               var pid = false;
+			               if(status!==null && status.success && status.pid) {
+			                   pid = Number.from(status.pid);
+			               }
+			               if(!pid || pid<1) {
+                                           gui.showNotice('error', 'Projekt erstellen fehlgeschlagen.');
+			               } else {
+			                   $('projectCreateForm').getElement('input').set('value', '');
+			                   this.close();
+                                           gui.showNotice('ok', 'Projekt angelegt.');
+                                           cora.projects.performUpdate(function() {
+                                               ref.showProjectEditDialog(pid);
+                                           });
+			               }
+		                   }.bind(this)
+		                  });
+		              req.get({'do': 'createProject', 'project_name': pn});
+                          }
+                         }
+                       ]
 	});
-	$('projectCreateForm').getElement("button[name='submitCreateProject']").addEvent(
-	    'click',
-	    function(event, target) {
-		var pn = $('projectCreateForm').getElement('input').get('value');
-		var req = new Request.JSON(
-		    {url:'request.php',
-		     onSuccess: function(status) {
-			 var pid = false;
-			 if(status!==null && status.success && status.pid) {
-			     pid = Number.from(status.pid);
-			 }
-			 if(!pid || pid<1) {
-                             gui.showNotice('error', 'Projekt erstellen fehlgeschlagen.');
-			 } else {
-			     $('projectCreateForm').getElement('input').set('value', '');
-			     cp_mbox.close();
-                             gui.showNotice('ok', 'Projekt angelegt.');
-                             cora.projects.performUpdate(function() {
-                                 ref.showProjectEditDialog(pid);
-                             });
-			 }
-		     }
-		    });
-		req.get({'do': 'createProject', 'project_name': pn});
-	    }
-	);
 
 	// deleting projects
 	$('editProjects').addEvent(

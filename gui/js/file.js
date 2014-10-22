@@ -788,26 +788,33 @@ var file = {
         );
     },
 
+    /* Function: _splitAtFirstDot
+       
+       Used internally by preprocessTagset().
+     */
+    _splitAtFirstDot: function(tag) {
+	var dotidx = tag.indexOf('.');
+	var pos = null; var morph = null;
+	if(dotidx<0 || dotidx==(tag.length-1)) {
+	    pos = tag;
+	}
+	else {
+	    pos = tag.substr(0, dotidx);
+	    morph = tag.substr(dotidx+1);
+	}
+	return [pos, morph];
+    },
+
     /* Function: preprocessTagset
 
        Parses tagset data and builds HTML code for drop-down boxes.
-    */
-    preprocessTagset: function(tslist) {
-	var ref = this;
-	var splitAtFirstDot;
 
-	splitAtFirstDot = function(tag) {
-	    var dotidx = tag.indexOf('.');
-	    var pos = null; var morph = null;
-	    if(dotidx<0 || dotidx==(tag.length-1)) {
-		pos = tag;
-	    }
-	    else {
-		pos = tag.substr(0, dotidx);
-		morph = tag.substr(dotidx+1);
-	    }
-	    return [pos, morph];
-	};
+       Parameters:
+         tslist - Tagset data as returned by AJAX request
+         fn - Callback function to invoke after processing is done
+    */
+    preprocessTagset: function(tslist, fn) {
+	var ref = this;
 
 	// collect tags into arrays, splitting POS if applicable
 	Object.each(tslist, function(tagset, tclass) {
@@ -822,7 +829,7 @@ var file = {
 		var tag;
 		if(data.needs_revision==1) return;
 		if(tclass === "POS") {
-		    tag = splitAtFirstDot(data.value);
+		    tag = ref._splitAtFirstDot(data.value);
 		    ref.tagsets["POS"]['tags'].push(tag[0]);
 		    if(tag[1] != null) {
 			if(!(tag[0] in ref.tagsets["morph"])) {
@@ -874,6 +881,9 @@ var file = {
 	    });
 	    ref.tagsets[tclass]['elems'] = optgroup_tclass;
 	});
+
+        if(typeof(fn) === "function")
+            fn();
     },
     
     /* Function: openFile
@@ -892,54 +902,61 @@ var file = {
             edit.editorModel.confirmClose(function() { ref.openFile(fileid, true); });
 	    return false;
 	}
-        
-        var lock = new Request.JSON({
-            url:'request.php',
-    	    onSuccess: function(data, text) {
-    		if(data.success) {
-        	    var request = new Request.JSON({
-        		url: 'request.php',
-        		onComplete: function(fileData) {        		         
-        		    if(fileData.success){
-				ref.tagsetlist = fileData.data.tagsets;
-				ref.taggers = fileData.data.taggers;
 
-       				// load tagset
-        		        var afterLoadTagset = function() {
-				    // code that depends on the tagsets being fully loaded
-				    edit.editorModel = new EditorModel(fileid, fileData.maxLinesNo, fileData.lastEditedRow, fileData.lastPage);
-				    $('editTabButton').show();
-				    default_tab = 'edit';
-				    gui.changeTab('edit');
-				};
-				
-        		        new Request.JSON({
-        		            url: "request.php",
-        		            async: true,
-				    method: 'get',
-				    data: {'do':'fetchTagsetsForFile','file_id':fileid},
-        		            onComplete: function(response){
-					// TODO: error handling?!
-					ref.preprocessTagset(response['data']);
-					afterLoadTagset();
-        		            }
-        		        }).send();
-				
-				$('currentfile').set('text','['+fileData.data.sigle+'] '+fileData.data.fullname);
-				ref.listFiles();
-			    }
-        		}
-        	    }).get({'do': 'openFile', 'fileid': fileid});
-    		} else {
-                    gui.showInfoDialog(
-                            "Das Dokument wird zur Zeit bearbeitet von Benutzer '"
-                            + data.lock.locked_by + "' seit "
-                            + gui.formatDateString(data.lock.locked_since).toLowerCase()
-                            + ".");
-    		}
+        // the following functions are called in inverse order of their definitions...
+
+        var onInitSuccess = function() {
+	    $('editTabButton').show();
+	    default_tab = 'edit';
+	    gui.changeTab('edit');
+            gui.hideSpinner();
+        };
+
+        var onOpenSuccess = function(fileData) {        		         
+            if(fileData.success){
+		ref.tagsetlist = fileData.data.tagsets;
+		ref.taggers = fileData.data.taggers;
+        	new Request.JSON({
+        	    url: "request.php",
+        	    async: true,
+        	    onComplete: function(response) {
+	                // TODO: error handling?!
+	                ref.preprocessTagset(response['data'], function() {
+            	            edit.editorModel = new EditorModel(fileid,
+                                                               fileData.maxLinesNo,
+                                                               fileData.lastEditedRow,
+                                                               fileData.lastPage,
+                                                               onInitSuccess);
+                        });
+                    }
+        	}).get({'do': 'fetchTagsetsForFile', 'file_id': fileid});
+		$('currentfile').set('text', cora.files.getDisplayName(fileid));
+		ref.listFiles();
+	    }
+        };
+        
+        var onLockSuccess = function(data, text) {
+    	    if(data.success) {
+                gui.showSpinner({
+                    message: "Datei wird geöffnet...",
+                });
+        	new Request.JSON({
+        	    url: 'request.php',
+        	    onComplete: onOpenSuccess
+        	}).get({'do': 'openFile', 'fileid': fileid});
+    	    } else {
+                gui.showInfoDialog(
+                    "Das Dokument wird zur Zeit bearbeitet von Benutzer '"
+                        + data.lock.locked_by + "' seit "
+                        + gui.formatDateString(data.lock.locked_since).toLowerCase()
+                        + ".");
     	    }
-    	});
-        lock.get({'do': 'lockFile', 'fileid': fileid});
+    	};
+
+        new Request.JSON({
+            url: 'request.php',
+    	    onSuccess: onLockSuccess
+    	}).get({'do': 'lockFile', 'fileid': fileid});
     },
     
     /* Function: closeFile
