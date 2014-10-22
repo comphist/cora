@@ -456,9 +456,15 @@ span.btn-toolbar-entry.start-disabled {
     text-decoration: none !important;
 }
 
+input[type=submit],
+button { 
+    font-family: 'Open Sans', Arial, sans-serif;
+}
+
 /* Footer */
 
 #footer {
+   display: none;
    font-size: 85%;
    margin: auto;
    padding: 1em 0 3em 0;
@@ -485,7 +491,7 @@ form label.vt
 
 form#newFileImportForm label.ra,
 form#newFileImportTransForm label.ra
-{  width: 4.5em; }
+{  width: 4.6em; }
 
 div.limitedWidth p {
     max-width: 31em;
@@ -790,17 +796,31 @@ div.editTableLemmaLink img {
 }
 
 /* Text preview */
-div#horizontalTextView {
-    padding: 4px;
-    margin: 20px 0 20px 20px;
-    font-size: 1.5em;
+div#horizontalTextViewContainer { 
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
     background: white;
     border: 1px solid #bbb;
     border-radius: 5px;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
     box-shadow: 0 0 10px #d8d8d8;
+}
+
+div#horizontalTextView {
+    padding: .2em 0 .2em 3em;
+    font-size: 1.5em;
     max-width: 60em;
+}
+
+div#horizontalTextView.text-preview-utf { 
+    font-family: Junicode, Cardo, Alphabetum, "Palemonas MUFI",
+                 "Andron Scriptor Web", LeedsUni, "Titus Cyberbit",
+		 "Times New Roman", Times, serif;
+    font-size: 1.6em;
+    line-height: 1.3em;
 }
 
 div#horizontalTextView span.highlighted {

@@ -82,8 +82,10 @@
     </tbody>
   </table>
 
-  <div id="horizontalTextView">
-    <span>Fehler bei der Text-Vorschau.</span>
+  <div id="horizontalTextViewContainer">
+    <div id="horizontalTextView">
+      <span>Fehler bei der Text-Vorschau.</span>
+    </div>
   </div>
 
   <div id="pagePanel_bottom" class="pagePanel">

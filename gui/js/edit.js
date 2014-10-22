@@ -192,33 +192,30 @@ var EditorModel = new Class({
 	    'keyup:relay(input)',
 	    function(event, target) {
 		var parent = target.getParent('td');
+                var this_class = parent.get('class');
 		var new_value = target.get('value');
-		var new_row, new_target, this_class;
+		var new_row;
 		if (parent.hasClass("editTable_Mod")) {
 		    ref.updateModSelect(parent, new_value);
 		}
+                var shiftFocus = function(nr, tc) {
+		    if(nr != null) {
+			var new_target = nr.getElement('td.'+tc+' input');
+			if(new_target != null) {
+			    new_target.focus();
+			}
+		    }
+                };
 		if (event.code == 40) { // down arrow
-		    this_class = parent.get('class');
 		    if(event.control || this_class != "editTable_Lemma") {
 			new_row = parent.getParent('tr').getNext('tr');
-			if(new_row != null) {
-			    new_target = new_row.getElement('td.'+this_class+' input');
-			    if(new_target != null) {
-				new_target.focus();
-			    }
-			}
+                        shiftFocus(new_row, this_class);
 		    }
 		}
 		if (event.code == 38) { // up arrow
-		    this_class = parent.get('class');
 		    if(event.control || this_class != "editTable_Lemma") {
 			new_row = parent.getParent('tr').getPrevious('tr');
-			if(new_row != null) {
-			    new_target = new_row.getElement('td.'+this_class+' input');
-			    if(new_target != null) {
-				new_target.focus();
-			    }
-			}
+                        shiftFocus(new_row, this_class);
 		    }
 		}
 	    }
@@ -241,8 +238,22 @@ var EditorModel = new Class({
 	et.addEvent(
 	    'focus:relay(input,select)',
 	    function(event, target) {
+                // highlight in text preview
 		var this_id = target.getParent('tr').get('id').substr(5);
 		ref.highlightHorizontalView(this_id);
+                // is hidden behind header?
+                var scrolltop_min = target.getTop() - $('header').getHeight() - 10;
+                if(window.getScrollTop() > scrolltop_min) {
+                    window.scrollTo(0, scrolltop_min);
+                }
+                // is hidden behind horizontal text view?
+                var scrolltop_max = target.getTop()
+                    - window.getHeight()
+                    + $('horizontalTextViewContainer').getHeight()
+                    + target.getHeight() + 10;
+                if(scrolltop_max > window.getScrollTop()) {
+                    window.scrollTo(0, scrolltop_max);
+                }
 	    }
 	);
 
@@ -1594,6 +1605,7 @@ var EditorModel = new Class({
 	var data = this.data;
 	var currenttok = -1;
 	var span;
+        var container = $('horizontalTextViewContainer');
 	var view = $('horizontalTextView');
 	var terminators = ['(.)', '(!)', '(?)'];
 	var maxctxlen = 50;
@@ -1601,10 +1613,16 @@ var EditorModel = new Class({
 	var endlimit   = Math.min(this.lineCount, end + maxctxlen);
 
         if(userdata.textPreview == "off") {
-            view.hide();
+            container.hide();
+            $('footer').setStyle('margin-bottom', 0);
             return;
         }
-        view.show();
+        if(userdata.textPreview == "utf") {
+            view.addClass("text-preview-utf");
+        } else {
+            view.removeClass("text-preview-utf");
+        }
+        container.show();
 
 	this.requestLines(startlimit, endlimit, false);
 	// find nearest sentence boundaries
@@ -1633,6 +1651,18 @@ var EditorModel = new Class({
 	    }
 	    view.adopt(span);
 	}
+
+        // ensure there's enough margin after the editor <div>
+        // to compensate for the preview pane
+        if(container.isVisible()) {
+            setTimeout(function(){ 
+                $('editPanelDiv').setStyle('margin-bottom', container.getHeight());
+            }, 100);
+        } else {
+            container.measure(function() {
+                $('editPanelDiv').setStyle('margin-bottom', this.getHeight());
+            });
+        }
     },
 
     highlightHorizontalView: function(lineid) {
