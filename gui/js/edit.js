@@ -18,6 +18,7 @@ var EditorModel = new Class({
     useLemmaLookup: false,
     onPageChangeOnceHandlers: [],
     pageDisplayInProgress: false,
+    horizontalViewSpinner: null,
 
     /* Constructor: EditorModel
 
@@ -1727,6 +1728,10 @@ var EditorModel = new Class({
         container.show();
 
         if(!this.isRangeLoaded(startlimit, endlimit)) {
+            if(this.horizontalViewSpinner == null || this.horizontalViewSpinner.hidden) {
+                this.horizontalViewSpinner = new Spinner($('horizontalTextView'));
+                this.horizontalViewSpinner.show();
+            }
             fn_callback = function() {
                 this.updateHorizontalView(start, end);
             }.bind(this);
@@ -1762,6 +1767,7 @@ var EditorModel = new Class({
 	    }
 	    view.adopt(span);
 	}
+        this.horizontalViewSpinner.hide();
 
         // ensure there's enough margin after the editor <div>
         // to compensate for the preview pane
