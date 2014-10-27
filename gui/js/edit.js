@@ -41,6 +41,9 @@ var LineJumper = new Class({
         } else if (value < 1 || value > this.parent.parent.lineCount) {
 	    gui.showNotice('error', 'Zeilennummer existiert nicht.');
         } else {
+            this.parent.parent.onRenderOnce(function() {
+                this.highlightRow(value - 1);
+            }.bind(this.parent.parent));
             this.parent.set(this.parent.getPageByLine(value)).render();
             this.mbox.close();
         }
@@ -913,6 +916,30 @@ var EditorModel = new Class({
 	if(visible!==null && visible.length) {
 	    visible[0].focus();
 	}
+    },
+
+    /* Function: highlightRow
+
+       Visually highlights a certain row in the editor table, and
+       positions it in the middle of the screen if possible.
+
+       Parameters:
+         number - Number of the row to highlight
+     */
+    highlightRow: function(number) {
+        var row = this.getRowFromNumber(number);
+        if (row != null) {
+            /* scroll to element */
+            window.scrollTo(0, (row.getTop() - (window.getHeight() / 2)));
+            /* tween background color */
+            row.setStyle('background-color', '#999');
+            setTimeout(function() {
+                new Fx.Tween(row, {
+                    duration: 'long',
+                    property: 'background-color'
+                }).start('#999', '#f8f8f8');
+            }, 200);
+        }
     },
 
     /* Function: updateProgress

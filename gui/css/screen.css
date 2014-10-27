@@ -716,6 +716,7 @@ div#transImportSpinner .proc {
 
 /* Edit-Table */
 table#editTable{
+    background-color: #f8f8f8;
     border-spacing: 0px;
     font-size: 1.5em;
     padding-top: 6px;
@@ -725,7 +726,7 @@ tr.editHeadLine{
     cursor: pointer;
 }
 
-table#editTable tr {
+table#editTable tr.highlight {
 
 }
 
