@@ -922,11 +922,8 @@ var file = {
         	    onComplete: function(response) {
 	                // TODO: error handling?!
 	                ref.preprocessTagset(response['data'], function() {
-            	            edit.editorModel = new EditorModel(fileid,
-                                                               fileData.maxLinesNo,
-                                                               fileData.lastEditedRow,
-                                                               fileData.lastPage,
-                                                               onInitSuccess);
+                            fileData.onInit = onInitSuccess;
+            	            edit.editorModel = new EditorModel(fileid, fileData);
                         });
                     }
         	}).get({'do': 'fetchTagsetsForFile', 'file_id': fileid});

@@ -26,13 +26,14 @@ var EditorModel = new Class({
 
        Parameters:
          fileid - ID of the file represented by this model
-	 line_count - Total number of lines in the file
-	 last_edited_row - Line number that was last edited
-	 start_page - The page to first display
-         oninit - Callback function after successful initialization
+         options - Object containing the following options:
+	   * maxLinesNo - Total number of lines in the file
+	   * lastEditedRow - Line number that was last edited
+           * lastPage - The page to first display
+           * onInit - Callback function after successful initialization
     */
-    initialize: function(fileid, line_count, last_edited_row, start_page, oninit) {
-	var elem, td, spos, smorph, slempos, et, mr, btn;
+    initialize: function(fileid, options) {
+	var elem, td, spos, smorph, slempos, et, mr, btn, start_page;
 	var ref = this;
 
 	if(Browser.chrome) {
@@ -41,9 +42,9 @@ var EditorModel = new Class({
 	    this.inputErrorClass = "input_error";
 	}
 
-	this.lineCount = Number.from(line_count);
-	if(last_edited_row!==null) {
-	    this.lastEditedRow = Number.from(last_edited_row);
+	this.lineCount = Number.from(options.maxLinesNo);
+	if(options.lastEditedRow !== null) {
+	    this.lastEditedRow = Number.from(options.lastEditedRow);
 	}
 	this.changedLines = new Array();
 	this.fileId = fileid;
@@ -299,10 +300,11 @@ var EditorModel = new Class({
 	this.initializeColumnVisibility();
 
 	/* render pages panel and set start page */
-	start_page = Number.from(start_page);
+	start_page = Number.from(options.lastPage);
 	if(start_page==null || start_page<1) { start_page = 1; }
 	this.renderPagesPanel(start_page);
-        this.onPageChangeOnce(oninit);
+        if(options.onInit)
+            this.onPageChangeOnce(options.onInit);
 	this.displayPage(start_page);
 	this.activePage = start_page;
     },
