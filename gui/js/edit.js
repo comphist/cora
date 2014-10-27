@@ -38,7 +38,7 @@ var LineJumper = new Class({
                                 .getElement('input[name="jumpTo"]').value);
         if (value == null) {
 	    gui.showNotice('error', 'Bitte eine Zahl eingeben.');
-        } else if (value < 1 || value > this.parent.parent.lineCount) {
+        } else if (!this.parent.isValidLine(value)) {
 	    gui.showNotice('error', 'Zeilennummer existiert nicht.');
         } else {
             this.parent.parent.onRenderOnce(function() {
@@ -98,12 +98,18 @@ var PageModel = new Class({
          div - A toolbar <div> to contain this page panel
      */
     addPanel: function(div) {
-        this._addPanelEvents(div);
+        this._activatePageBackForward(div)
+            ._activateJumpToLine(div)
+            ._activateJumpToPage(div);
         this.panels.push(div);
         return this;
     },
 
-    _addPanelEvents: function(div) {
+    /* Function: _activatePageBackForward
+
+       Activates buttons to jump back/forward by one page.
+     */
+    _activatePageBackForward: function(div) {
         var elem;
         /* page back */
         elem = div.getElement('span.btn-page-back');
@@ -121,55 +127,75 @@ var PageModel = new Class({
                 this.set(this.activePage + 1).render();
             }.bind(this));
         }
-        /* jump to line */
-        elem = div.getElement('span.btn-jump-to');
+        return this;
+    },
+
+    /* Function: _activateJumpToLine
+
+       Activates button that allows jumping to a specific line.
+     */
+    _activateJumpToLine: function(div) {
+        var elem = div.getElement('span.btn-jump-to');
         if (elem != null) {
             elem.removeEvents('click');
             elem.addEvent('click', function() {
                 this.lineJumper.open();
             }.bind(this));
         }
-        /* jump to page */
-        elem = div.getElement('span.btn-page-count');
-        if (elem != null) {
-            var input = elem.getElement('input.btn-page-to');
-            var span  = elem.getElement('span.page-active');
-            if (input != null && span != null) {
-                var changePage = function(event) {
-                    this.set(input.get('value').toInt()).render();
-                    input.hide();
-                    span.show('inline');
-                }.bind(this);
-                elem.removeEvents('click');
-                elem.addEvent('click', function() {
-                    if (span.isVisible()) {
-                        span.hide();
-                        input.set('value', this.activePage).show('inline').focus();
-                    }
-                }.bind(this));
-                input.removeEvents();
-                input.addEvents({
-                    keydown: function(event) {
-                        if (event.key == "enter")
-                            changePage();
-                    },
-                    blur: changePage,
-                    mousewheel: function(event) {
-                        var i = event.target, v = i.get('value').toInt();
-                        i.focus();
-                        if (event.wheel > 0 && v < this.maxPage)
-                            v++;
-                        else if (event.wheel < 0 && v > 1)
-                            v--;
-                        i.set('value', v);
-                        event.stop();
-                    }.bind(this)
-                });
-            }
+        return this;
+    },
+
+    /* Function: _activateJumpToPage
+
+       Activates element that allows jumping to a specific page.
+     */
+    _activateJumpToPage: function(div) {
+        var elem = div.getElement('span.btn-page-count');
+        if (elem == null)
+            return;
+        var input = elem.getElement('input.btn-page-to');
+        var span  = elem.getElement('span.page-active');
+        if (input != null && span != null) {
+            var changePage = function(event) {
+                this.set(input.get('value').toInt()).render();
+                input.hide();
+                span.show('inline');
+            }.bind(this);
+            elem.removeEvents('click');
+            elem.addEvent('click', function() {
+                if (span.isVisible()) {
+                    span.hide();
+                    input.set('value', this.activePage).show('inline').focus();
+                    input.select();
+                }
+            }.bind(this));
+            input.removeEvents();
+            input.addEvents({
+                keydown: function(event) {
+                    if (event.key == "enter")
+                        changePage();
+                },
+                blur: changePage,
+                mousewheel: function(event) {
+                    var i = event.target, v = i.get('value').toInt();
+                    i.focus();
+                    if (event.wheel > 0 && v < this.maxPage)
+                        v++;
+                    else if (event.wheel < 0 && v > 1)
+                        v--;
+                    i.set('value', v);
+                    event.stop();
+                }.bind(this)
+            });
         }
         return this;
     },
 
+    /* Function: _updatePageCounter
+
+       Updates the element that displays current and maximum page
+       numbers.
+     */
     _updatePageCounter: function() {
         var elem = null;
         Array.each(this.panels, function(panel) {
@@ -269,6 +295,14 @@ var PageModel = new Class({
 	return (line % y) ? Math.ceil(line/y) : (line/y);
     },
 
+    /* Function: isValidLine
+
+       Checks if a given line number is valid.
+     */
+    isValidLine: function(line) {
+        return (line > 0 && line <= this.parent.lineCount);
+    },
+
     /* Function: render
 
        Makes the parent editor model (re-)render the currently active
@@ -278,26 +312,6 @@ var PageModel = new Class({
         var range = this.getRange(this.activePage);
         this.parent.renderLines(range.from, range.to);
         return this;
-    },
-
-    renderPagesPanel: function(active_page) {
-	dropdown = new Element('select', {
-	    id: 'pageSelector',
-	    name: 'pages',
-	    size: 1,
-	    events: {
-		change: function(e) {
-		    e.stop();
-		    ref.displayPage(this.value);
-		}
-	    }
-	});
-        for (var i=1; i<=max_page; i++) {
-	    el = new Element('option', {text: i});
-	    if(i==active_page) { el.set('selected', 'selected'); }
-	    dropdown.adopt(el);
-        };
-	pp.adopt(dropdown);
     }
 });
 

@@ -14,22 +14,23 @@ window.addEvent('domready', function() {
             resetForm: false,
             extraData: {'do': 'saveEditorUserSettings'},
             onSuccess: function(){
-		var cl, pl, dls, em, np;
+		var cl, pl, em, range;
+		em = ref.editorModel;
+                if (em !== null)
+                    range = em.pages.getRange(em.pages.activePage);
 		cl = eus.getElement('input[name="contextLines"]').get('value').toInt();
 		pl = eus.getElement('input[name="noPageLines"]').get('value').toInt();
 		userdata.contextLines = cl;
 		userdata.noPageLines = pl;
-		em = ref.editorModel;
 		if (em !== null) {
 		    /* re-render page navigation panel, because page
 		     * numbers will likely have changed; also,
 		     * calculate page which contains the line that was
 		     * the first displayed line before the change,
 		     * then navigate to that one */
-		    dls = em.displayedLinesStart;
-		    np = ((dls+1) / (pl-cl)).ceil();
-		    em.renderPagesPanel(np);
-                    em.displayPage(np);
+                    em.pages.update()
+                        .set(em.pages.getPageByLine(range.from))
+                        .render();
 		    gui.changeTab('edit');
 		}
 		new mBox.Notice({

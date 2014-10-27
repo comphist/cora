@@ -86,13 +86,15 @@ var gui = {
 		'alt+left': function(e) {
 		    e.stop(); 
 		    if(edit!==null && edit.editorModel!==null) {
-			edit.editorModel.displayPreviousPage();
+			edit.editorModel.pages.decrement();
+			edit.editorModel.pages.render();
 		    }
 		},
 		'alt+right': function(e) {
 		    e.stop(); 
 		    if(edit!==null && edit.editorModel!==null) {
-			edit.editorModel.displayNextPage();
+			edit.editorModel.pages.increment();
+			edit.editorModel.pages.render();
 			edit.editorModel.focusFirstElement();
 		    }
 		} */
