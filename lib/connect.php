@@ -772,6 +772,25 @@
      return false;
    }
 
+   /** Change sigle, name, and/or header for a given file.
+    */
+   public function changeMetadata($options) {
+       try {
+           $qs = "UPDATE text SET `sigle`=:sigle, `fullname`=:name, "
+               . "                `header`=:header "
+               . "          WHERE `id`=:id";
+           $stmt = $this->dbo->prepare($qs);
+           $stmt->execute(array(':id' => $options['id'],
+                                ':sigle' => $options['sigle'],
+                                ':name' => $options['name'],
+                                ':header' => $options['header']));
+       }
+       catch(PDOException $ex) {
+           return "Ein interner Fehler ist aufgetreten (Code: 1061).\n"
+               . $ex->getMessage();
+       }
+   }
+
    /** Get a list of all projects and their associated files and
     *  settings.
     */

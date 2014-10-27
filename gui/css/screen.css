@@ -524,6 +524,10 @@ form#newFileImportForm label.ra,
 form#newFileImportTransForm label.ra
 {  width: 4.6em; }
 
+textarea.sans { 
+    font-family: 'Open Sans', Arial, sans-serif;
+}
+
 div.limitedWidth p {
     max-width: 31em;
 }

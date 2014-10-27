@@ -372,6 +372,19 @@ class CoraSessionHandler {
     return array('success' => (bool) $ans);
   }
 
+  public function saveMetadata($post) {
+    if(!$_SESSION['admin'] && !$this->db->isAllowedToDeleteFile($fileid, $_SESSION['user'])) {
+      return array("success" => false, "error_msg" => "Keine Berechtigung.");
+    }
+    $status = $this->db->changeMetadata($post);
+    if($status) {
+      return array("success" => false, "error_msg" => $status);
+    }
+    else {
+      return array("success" => true);
+    }
+  }
+
   /** Calculate the page number on which a given line appears.
    *
    * @param int $line The line number

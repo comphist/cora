@@ -252,6 +252,9 @@ class RequestHandler {
       case "deleteFile":
 	return $this->sh->deleteFile($post["file_id"]);
 
+      case "saveMetadata":
+	return $this->sh->saveMetadata($post);
+
       case "createProject": 
 	return $this->sh->createProject($get['project_name']);
 

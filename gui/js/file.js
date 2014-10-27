@@ -170,8 +170,8 @@ cora.files = {
        interface.
 
        Parameters:
-        file - A file object, e.g. as returned by cora.files.get,
-               or a file ID
+         file - A file object, e.g. as returned by cora.files.get,
+                or a file ID
     */
     getDisplayName: function(file) {
         if(!file.id) {
@@ -182,6 +182,18 @@ cora.files = {
         if(file.sigle)
             return '[' + file.sigle + '] ' + file.fullname;
         return file.fullname;
+    },
+
+    /* Function: mayDeleteFile
+
+       Checks whether the current user is allowed to delete the file
+       with the given id.
+     */
+    mayDeleteFile: function(fid) {
+        var file = this.get(fid);
+        if (file == null)
+            return false;
+        return (userdata.admin || (file.creator_name == userdata.name));
     }
 };
 
@@ -885,6 +897,12 @@ var file = {
         if(typeof(fn) === "function")
             fn();
     },
+
+    /* Function: setHeaderFilename
+     */
+    setHeaderFilename: function(fileid) {
+	$('currentfile').set('text', cora.files.getDisplayName(fileid));
+    },
     
     /* Function: openFile
 
@@ -927,7 +945,7 @@ var file = {
                         });
                     }
         	}).get({'do': 'fetchTagsetsForFile', 'file_id': fileid});
-		$('currentfile').set('text', cora.files.getDisplayName(fileid));
+                ref.setHeaderFilename(fileid);
 		ref.listFiles();
 	    }
         };
@@ -1076,7 +1094,7 @@ var file = {
         if(file.opened)
             tr.addClass('opened');
         // delete icon (if applicable)
-        if(userdata.admin || (file.creator_name == userdata.name)){
+        if(cora.files.mayDeleteFile(file.id)) {
             tr.getElement('a.deleteFileLink').removeClass('start-hidden');
         }
         // filename

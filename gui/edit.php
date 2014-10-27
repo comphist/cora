@@ -150,6 +150,23 @@
     </p>
   </div>
 
+  <div id="fileMetadataForm">
+    <form>
+    <p>
+      <label for="fmf-sigle" class="ra">Sigle: </label>
+      <input type="text" name="fmf-sigle" size="30" placeholder="" class="mform" />
+    </p>
+    <p>
+      <label for="fmf-name" class="ra">Dateiname: </label>
+      <input type="text" name="fmf-name" size="30" placeholder="" class="mform"/>
+    </p>
+    <p>
+      <label for="fmf-header" class="ra vt">Header: </label>
+      <textarea cols="60" rows="10" name="fmf-header" class="mform sans"></textarea>
+    </p>
+    </form>
+  </div>
+
   <div id="editAnnotateSpinner">
     <div id="editAnnotateStatusContainer">
       <div id="eAS_progress"></div>

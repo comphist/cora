@@ -324,6 +324,7 @@ var EditorModel = new Class({
     displayedLinesEnd: 0,
     lineCount: 0,
     data: {},
+    header: "",
     changedLines: null,
     editTable: null,
     tries: 0,            
@@ -343,6 +344,7 @@ var EditorModel = new Class({
        Parameters:
          fileid - ID of the file represented by this model
          options - Object containing the following options:
+           * data.header - File header
 	   * maxLinesNo - Total number of lines in the file
 	   * lastEditedRow - Line number that was last edited
            * lastPage - The page to first display
@@ -364,6 +366,7 @@ var EditorModel = new Class({
 	}
 	this.changedLines = new Array();
 	this.fileId = fileid;
+        this.header = options.data.header;
 
 	this.editTable = $('editTable');
 	et = this.editTable;
@@ -620,6 +623,7 @@ var EditorModel = new Class({
 	mr.getElements('.when-file-open-only').addClass('file-open');
 
 	this.initializeColumnVisibility();
+        this._activateMetadataForm($('pagePanel'));
 
 	/* render pages panel and set start page */
 	start_page = Number.from(options.lastPage);
@@ -628,6 +632,75 @@ var EditorModel = new Class({
         if(options.onInit)
             this.onRenderOnce(options.onInit);
         this.pages.set(start_page).render();
+    },
+
+    /* Function: _activateMetadataForm
+       
+       Activates form the view/edit file metadata such as name and
+       header.
+    */
+    _activateMetadataForm: function(div) {
+        var ref  = this;
+        var elem = div.getElement('span.btn-text-info');
+        if (elem != null) {
+            elem.removeEvents('click');
+            elem.addEvent('click', function() {
+                var content = $('fileMetadataForm');
+                var current = cora.files.get(this.fileId);
+                var buttons = [{title: "Schließen", addClass: "mform"}];
+                var may_modify = cora.files.mayDeleteFile(this.fileId);
+                content.getElement('input[name="fmf-sigle"]')
+                    .set('value', current.sigle)
+                    .set('disabled', !may_modify);
+                content.getElement('input[name="fmf-name"]')
+                    .set('value', current.fullname)
+                    .set('disabled', !may_modify);
+                content.getElement('textarea')
+                    .set('value', this.header)
+                    .set('disabled', !may_modify);
+                if(may_modify) {
+                    buttons.unshift({
+                        title: "Ändern", addClass: "mform button_red",
+                        event: function() {
+                            ref.saveMetadataFromForm(this.content);
+                            this.close();
+                        }
+                    });
+                }
+                new mBox.Modal({
+                    content: content,
+                    title: "Metadaten",
+                    buttons: buttons
+                }).open();
+            }.bind(this));
+        }
+    },
+
+    /* Function: saveMetadataFromForm
+
+       Sends a server request to save metadata changes.
+     */
+    saveMetadataFromForm: function(form) {
+        var sigle, name, header;
+        sigle  = form.getElement('input[name="fmf-sigle"]').get('value');
+        name   = form.getElement('input[name="fmf-name"]').get('value');
+        header = form.getElement('textarea').get('value');
+        new Request.JSON({
+            url: "request.php?do=saveMetadata",
+            async: true,
+            onSuccess: function(status) {
+                if (status.success) {
+                    cora.projects.performUpdate();
+                    file.setHeaderFilename({id: this.fileId,
+                                            sigle: sigle,
+                                            fullname: name});
+                    gui.showNotice("ok", "Metadaten erfolgreich geändert.");
+                } else {
+                    gui.showNotice("error", "Metadaten konnten nicht geändert werden.");
+                }
+            }.bind(this)
+        }).post({'id': this.fileId, 'sigle': sigle,
+                 'name': name, 'header': header});
     },
 
     /* Function: initializeColumnVisibility
