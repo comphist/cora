@@ -20,7 +20,7 @@ $ulist = array();
       <span class="btn-toolbar-entry" id="adminCreateUser"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> Neuer Benutzer</span>
       <span class="btn-toolbar-entry" id="adminCreateProject"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> Neues Projekt</span>
       <span class="btn-toolbar-entry" id="adminCreateNotice"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> Neue Benachrichtigung</span>
-      <span class="btn-toolbar-entry" id="adminViewTagset">Tagset-Browser</span>
+      <span class="btn-toolbar-entry" id="adminViewTagset"><span class="oi" aria-hidden="true"></span>Tagset-Browser</span>
       <span class="btn-toolbar-entry" id="adminImportTagset"><span class="oi" data-glyph="data-transfer-upload" aria-hidden="true"></span> Tagset importieren</span>
     </div>
 

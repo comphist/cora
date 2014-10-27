@@ -6,8 +6,11 @@
 
 <div id="editDiv" class="content" style="display: none;">
 <div id="editPanelDiv" class="panel">
-  <div id="pagePanel" class="pagePanel">
-    <span>Seite: </span>
+  <div class="btn-toolbar" id="pagePanel">
+    <span class="btn-toolbar-entry btn-page-count"><span class="oi" aria-hidden="true"></span>Seite <input type="text" class="btn-page-to" size="2" /><span class="page-active"></span>/<span class="page-max"></span></span>
+    <span class="btn-toolbar-entry btn-page-back" title="Seite zurück"><span class="oi" data-glyph="arrow-thick-left" aria-hidden="true"></span></span>
+    <span class="btn-toolbar-entry btn-page-forward" title="Seite vor"><span class="oi" data-glyph="arrow-thick-right" aria-hidden="true"></span></span>
+    <span class="btn-toolbar-entry btn-jump-to"><span class="oi" data-glyph="book" aria-hidden="true"></span> Springe zu Zeile</span>
   </div>
 
   <table id="editTable" border="0" class="draggable">
@@ -88,8 +91,11 @@
     </div>
   </div>
 
-  <div id="pagePanel_bottom" class="pagePanel">
-    <span>Seite: </span>
+  <div class="btn-toolbar" id="pagePanelBottom">
+    <span class="btn-toolbar-entry btn-page-count"><span class="oi" aria-hidden="true"></span>Seite <input type="text" class="btn-page-to" size="2" /><span class="page-active"></span>/<span class="page-max"></span></span>
+    <span class="btn-toolbar-entry btn-page-back" title="Seite zurück"><span class="oi" data-glyph="arrow-thick-left" aria-hidden="true"></span></span>
+    <span class="btn-toolbar-entry btn-page-forward" title="Seite vor"><span class="oi" data-glyph="arrow-thick-right" aria-hidden="true"></span></span>
+    <span class="btn-toolbar-entry btn-jump-to"><span class="oi" data-glyph="book" aria-hidden="true"></span> Springe zu Zeile</span>
   </div>
 </div>
 

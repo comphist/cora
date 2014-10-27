@@ -1,9 +1,308 @@
+var LineJumper = new Class({
+    parent: null,
+    mbox: null,
+
+    initialize: function(parent, content) {
+        var ref = this;
+        this.parent = parent;
+        this.mbox = new mBox.Modal({
+	    content: content,
+	    title: 'Springe zu Zeile',
+	    buttons: [
+		{title: 'Abbrechen', addClass: 'mform'},
+		{title: 'OK', addClass: 'mform button_green',
+		 event: function() {
+		     ref.jump();
+		 }
+		}
+	    ],
+	    onOpenComplete: function() {
+                var box = this.content.getElement('input[name="jumpTo"]');
+                box.removeEvents('keydown');
+                box.addEvent('keydown', function(event) {
+                    if(event.key == "enter")
+                        ref.jump();
+                });
+		box.focus();
+		box.select();
+	    }
+	});
+    },
+
+    open: function() {
+        this.mbox.open();
+    },
+
+    jump: function() {
+        var value = Number.from(this.mbox.content
+                                .getElement('input[name="jumpTo"]').value);
+        if (value == null) {
+	    gui.showNotice('error', 'Bitte eine Zahl eingeben.');
+        } else if (value < 1 || value > this.parent.parent.lineCount) {
+	    gui.showNotice('error', 'Zeilennummer existiert nicht.');
+        } else {
+            this.parent.set(this.parent.getPageByLine(value)).render();
+            this.mbox.close();
+        }
+    }
+});
+
+var PageModel = new Class({
+    parent: null,
+    lineJumper: null,
+    panels: [],
+    maxPage: 0,
+    activePage: 0,
+
+    initialize: function(parent) {
+        this.parent = parent;
+        this._calculateMaxPage();
+        this.lineJumper = new LineJumper(this, $('jumpToLineForm'));
+    },
+    
+    /* Function: _calculateMaxPage
+
+       Calculates the total number of pages with the given display
+       settings.      
+     */
+    _calculateMaxPage: function() {
+        var lines_per_page = userdata.noPageLines;
+        var lines_context  = userdata.contextLines;
+        var x = (this.parent.lineCount - lines_context);
+        var y = (lines_per_page - lines_context);
+        this.maxPage = (x % y) ? Math.ceil(x/y) : (x/y);
+        return this;
+    },
+
+    /* Function: update
+
+       Recalculate the page count and change the active page to a
+       valid number, if necessary.
+     */
+    update: function() {
+        this._calculateMaxPage();
+        this.set(this.activePage);
+        return this;
+    },
+
+    /* Function: addPanel
+
+       Adds a <div> toolbar element that acts as a container for this
+       page panel.  Recognized elements within this <div> are attached
+       events and are updated when the page panel updates.
+
+       Parameters:
+         div - A toolbar <div> to contain this page panel
+     */
+    addPanel: function(div) {
+        this._addPanelEvents(div);
+        this.panels.push(div);
+        return this;
+    },
+
+    _addPanelEvents: function(div) {
+        var elem;
+        /* page back */
+        elem = div.getElement('span.btn-page-back');
+        if (elem != null) {
+            elem.removeEvents('click');
+            elem.addEvent('click', function() {
+                this.set(this.activePage - 1).render();
+            }.bind(this));
+        }
+        /* page forward */
+        elem = div.getElement('span.btn-page-forward');
+        if (elem != null) {
+            elem.removeEvents('click');
+            elem.addEvent('click', function() {
+                this.set(this.activePage + 1).render();
+            }.bind(this));
+        }
+        /* jump to line */
+        elem = div.getElement('span.btn-jump-to');
+        if (elem != null) {
+            elem.removeEvents('click');
+            elem.addEvent('click', function() {
+                this.lineJumper.open();
+            }.bind(this));
+        }
+        /* jump to page */
+        elem = div.getElement('span.btn-page-count');
+        if (elem != null) {
+            var input = elem.getElement('input.btn-page-to');
+            var span  = elem.getElement('span.page-active');
+            if (input != null && span != null) {
+                var changePage = function(event) {
+                    this.set(input.get('value').toInt()).render();
+                    input.hide();
+                    span.show('inline');
+                }.bind(this);
+                elem.removeEvents('click');
+                elem.addEvent('click', function() {
+                    if (span.isVisible()) {
+                        span.hide();
+                        input.set('value', this.activePage).show('inline').focus();
+                    }
+                }.bind(this));
+                input.removeEvents();
+                input.addEvents({
+                    keydown: function(event) {
+                        if (event.key == "enter")
+                            changePage();
+                    },
+                    blur: changePage,
+                    mousewheel: function(event) {
+                        var i = event.target, v = i.get('value').toInt();
+                        i.focus();
+                        if (event.wheel > 0 && v < this.maxPage)
+                            v++;
+                        else if (event.wheel < 0 && v > 1)
+                            v--;
+                        i.set('value', v);
+                        event.stop();
+                    }.bind(this)
+                });
+            }
+        }
+        return this;
+    },
+
+    _updatePageCounter: function() {
+        var elem = null;
+        Array.each(this.panels, function(panel) {
+            elem = panel.getElement('span.page-active');
+            if (elem != null)
+                elem.set('text', this.activePage);
+            elem = panel.getElement('span.page-max');
+            if (elem != null)
+                elem.set('text', this.maxPage);
+        }.bind(this));
+        return this;
+    },
+
+    /* Function: set
+
+       Sets the active page to a specific page number.
+     */
+    set: function(page) {
+        if (page === null || page < 1) {
+            this.activePage = 1;
+        } else if (page > this.maxPage) {
+            this.activePage = this.maxPage;
+        } else {
+            this.activePage = page;
+        }
+        this._updatePageCounter();
+        return this;
+    },
+
+    /* Function: increment
+
+       Increments the active page by one, if possible.
+
+       Returns:
+         True if the page number changed, false otherwise.
+    */
+    increment: function() {
+        var former = this.activePage;
+        this.set(this.activePage + 1);
+        return (this.activePage > former);
+    },
+
+    /* Function: decrement
+
+       Decrements the active page by one, if possible.
+
+       Returns:
+         True if the page number changed, false otherwise.
+    */
+    decrement: function() {
+        var former = this.activePage;
+        this.set(this.activePage - 1);
+        return (this.activePage < former);
+    },
+
+    /* Function: getRange
+
+       Gets the line numbers where a given page starts and ends.
+
+       Parameters:
+         page - Number of the page
+
+       Returns:
+         {from: <start>, to: <end>}, where <start> is the first
+         line of the given page and <end> is the last
+     */
+    getRange: function(page) {
+        var start, end;
+	var cl = userdata.contextLines;
+	var pl = userdata.noPageLines;
+	if (page === null || page < 1) {
+            page = 1;
+        } else if (page > this.maxPage) {
+            page = this.maxPage;
+        }
+	end   = page * (pl - cl) + cl;
+	start = end - pl;
+        end   = Math.min(end, this.parent.lineCount);
+        return {from: start, to: end};
+    },
+
+    /* Function: getPageByLine
+
+       Calculates the page number which contains a given line.
+
+       Parameters:
+         line - Number of the line
+
+       Returns:
+         The page number that holds the given line.
+     */
+    getPageByLine: function(line) {
+	if (line > this.parent.lineCount) {
+	    line = this.parent.lineCount;
+	}
+	var y = (userdata.noPageLines - userdata.contextLines);
+	return (line % y) ? Math.ceil(line/y) : (line/y);
+    },
+
+    /* Function: render
+
+       Makes the parent editor model (re-)render the currently active
+       page.
+     */
+    render: function() {
+        var range = this.getRange(this.activePage);
+        this.parent.renderLines(range.from, range.to);
+        return this;
+    },
+
+    renderPagesPanel: function(active_page) {
+	dropdown = new Element('select', {
+	    id: 'pageSelector',
+	    name: 'pages',
+	    size: 1,
+	    events: {
+		change: function(e) {
+		    e.stop();
+		    ref.displayPage(this.value);
+		}
+	    }
+	});
+        for (var i=1; i<=max_page; i++) {
+	    el = new Element('option', {text: i});
+	    if(i==active_page) { el.set('selected', 'selected'); }
+	    dropdown.adopt(el);
+        };
+	pp.adopt(dropdown);
+    }
+});
+
 var EditorModel = new Class({
     fileId: 0,
     lineTemplate: null,
     lastEditedRow: -1,
-    activePage: 0,
-    maxPage: 0,
+    pages: null,
     displayedLinesStart: 0,
     displayedLinesEnd: 0,
     lineCount: 0,
@@ -16,9 +315,9 @@ var EditorModel = new Class({
     inputErrorClass: "", // browser-dependent CSS styling for input errors
     dropdown: null,  // contains the currently opened dropdown menu, if any
     useLemmaLookup: false,
-    onPageChangeOnceHandlers: [],
     pageDisplayInProgress: false,
     horizontalViewSpinner: null,
+    onRenderOnceHandlers: [],
 
     /* Constructor: EditorModel
 
@@ -217,9 +516,12 @@ var EditorModel = new Class({
                         if (ref.getRowFromNumber(new_row) !== null) {
                             shiftFocus(ref.getRowFromNumber(new_row), this_class);
                         } else {
-                            ref.displayNextPage(function() {
-                                shiftFocus(ref.getRowFromNumber(new_row), this_class);
-                            });
+                            if (ref.pages.increment()) {
+                                ref.onRenderOnce(function() {
+                                    shiftFocus(ref.getRowFromNumber(new_row), this_class);
+                                });
+                                ref.pages.render();
+                            }
                         }
 		    }
 		}
@@ -229,9 +531,12 @@ var EditorModel = new Class({
                         if (ref.getRowFromNumber(new_row) !== null) {
                             shiftFocus(ref.getRowFromNumber(new_row), this_class);
                         } else {
-                            ref.displayPreviousPage(function() {
-                                shiftFocus(ref.getRowFromNumber(new_row), this_class);
-                            });
+                            if (ref.pages.decrement()) {
+                                ref.onRenderOnce(function() {
+                                    shiftFocus(ref.getRowFromNumber(new_row), this_class);
+                                });
+                                ref.pages.render();
+                            }
                         }
 		    }
 		}
@@ -301,12 +606,11 @@ var EditorModel = new Class({
 
 	/* render pages panel and set start page */
 	start_page = Number.from(options.lastPage);
-	if(start_page==null || start_page<1) { start_page = 1; }
-	this.renderPagesPanel(start_page);
+        this.pages = new PageModel(this);
+        this.pages.addPanel($('pagePanel')).addPanel($('pagePanelBottom'));
         if(options.onInit)
-            this.onPageChangeOnce(options.onInit);
-	this.displayPage(start_page);
-	this.activePage = start_page;
+            this.onRenderOnce(options.onInit);
+        this.pages.set(start_page).render();
     },
 
     /* Function: initializeColumnVisibility
@@ -362,6 +666,17 @@ var EditorModel = new Class({
 	} else {
 	    $('editTable').getElements(".editTableLemmaLink").hide();
 	}
+    },
+
+    /* Function: onRenderOnce
+
+       Registers a callback function to invoke after the next
+       successful line rendering.
+     */
+    onRenderOnce: function(fn) {
+        if(typeof(fn) == "function")
+            this.onRenderOnceHandlers.push(fn);
+        return this;
     },
 
     /* Function: getRowNumberFromElement
@@ -498,7 +813,7 @@ var EditorModel = new Class({
     */
     forcePageRedraw: function() {
 	$('editTable').getElements('tr[id^=line][id!=line_template]').destroy();
-	this.displayPage(this.activePage);
+	this.renderLines(this.displayedLinesStart, this.displayedLinesEnd+1);
     },
 
     /* Function: renderMorphOptions
@@ -586,55 +901,6 @@ var EditorModel = new Class({
 	}
     },
 
-    /* Function: displayNextPage
-
-       Displays the next page of the document.
-
-       Parameters:
-         fn - Callback function to invoke after successful page change;
-              if there is no next page, this function is discarded.
-    */
-    displayNextPage: function(fn) {
-	var ps = $('pageSelector');
-	var new_page = ps.value.toInt() + 1;
-	if (new_page<=this.maxPage) {
-	    ps.set('value', new_page);
-            if(fn)
-                this.onPageChangeOnce(fn);
-	    this.displayPage(new_page);
-	}
-    },
-
-    /* Function: displayPreviousPage
-
-       Displays the previous page of the document.
-
-       Parameters:
-         fn - Callback function to invoke after successful page change;
-              if there is no next page, this function is discarded.
-    */
-    displayPreviousPage: function(fn) {
-	var ps = $('pageSelector');
-	var new_page = ps.value.toInt() - 1;
-	if (new_page>0) {
-	    ps.set('value', new_page);
-            if(fn)
-                this.onPageChangeOnce(fn);
-	    this.displayPage(new_page);
-	}
-    },
-
-    /* Function: onPageChangeOnce
-
-       Registers a callback function to invoke after the next
-       successful page change.
-     */
-    onPageChangeOnce: function(fn) {
-        if(typeof(fn) == "function")
-            this.onPageChangeOnceHandlers.push(fn);
-        return this;
-    },
-
     /* Function: focusFirstElement
 
        Sets focus on the first editable element (input or select) in
@@ -647,165 +913,6 @@ var EditorModel = new Class({
 	if(visible!==null && visible.length) {
 	    visible[0].focus();
 	}
-    },
-
-    /* Function: renderPagesPanel
-
-       Render the page navigator panel.
-
-       Disposes of the old panel (if present) and creates a new 
-       one. Typically called on first page load and whenever 
-       editor settings change, affecting the total number of
-       pages.
-
-       Parameters:
-         active_page - The page number to set as the active page.
-	               Does not cause that page to be displayed;
-		       for this, a separate call to <displayPage>
-		       is required.
-    */
-    renderPagesPanel: function(active_page) {
-	var x, y, max_page, dropdown, el;
-	var jumpto, jumptoFunc, jumptoBox;
-	var pp = $('pagePanel');
-	var ppb = $('pagePanel_bottom');
-	var ref = this;
-	active_page = Number.from(active_page);
-	
-	pp.hide();
-        pp.getElements('a').dispose();
-	pp.getElements('select').dispose();
-	ppb.hide();
-        ppb.getElements('a').dispose();
-
-	/* calculate the total number of pages */
-	x = (this.lineCount - userdata.contextLines);
-	y = (userdata.noPageLines - userdata.contextLines);
-	max_page = (x % y) ? Math.ceil(x/y) : (x/y);
-	this.maxPage = max_page;
-
-	if (active_page==null || active_page<1) {
-	    active_page = 1;
-	} else if (active_page>max_page) { 
-	    active_page = max_page;
-	}
-
-	/* create navigation elements */
-
-	Array(pp, ppb).each(function(elem) {
-            elem.adopt(new Element('a',{
-		href: 'first', text: '|<<',
-		events: {
-		    click: function(e) {
-			e.stop();
-                        if(!ref.pageDisplayInProgress) {
-			    $('pageSelector').set('value', 1);
-			    ref.displayPage(1);
-                        }
-		    }
-		}
-	    }));
-
-            elem.adopt(new Element('a',{
-		href: 'back', text: '<',
-		events: {
-		    click: function(e) {
-			e.stop();
-                        if(!ref.pageDisplayInProgress)
-			    ref.displayPreviousPage();
-		    }
-		}
-	    }));
-	});
-	
-	dropdown = new Element('select', {
-	    id: 'pageSelector',
-	    name: 'pages',
-	    size: 1,
-	    events: {
-		change: function(e) {
-		    e.stop();
-		    ref.displayPage(this.value);
-		}
-	    }
-	});
-        for (var i=1; i<=max_page; i++) {
-	    el = new Element('option', {text: i});
-	    if(i==active_page) { el.set('selected', 'selected'); }
-	    dropdown.adopt(el);
-        };
-	pp.adopt(dropdown);
-
-	Array(pp, ppb).each(function(elem) {
-            elem.adopt(new Element('a',{
-		href: 'forward', text: '>',
-		events: {
-		    click: function(e) {
-			e.stop();
-                        if(!ref.pageDisplayInProgress)
-			    ref.displayNextPage();
-		    }
-		}
-	    }));
-
-	    elem.adopt(new Element('a',{
-		href: 'last', text: '>>|',
-		events: {
-		    click: function(e) {
-			e.stop();
-                        if(!ref.pageDisplayInProgress) {
-			    $('pageSelector').set('value', ref.maxPage);
-			    ref.displayPage(ref.maxPage);
-                        }
-		    }
-		}
-	    }));
-	});
-
-	// Jump to line
-	// Whoa, this is a mess ...
-	jumpto = new Element('a',{
-	    href: 'javascript:;', text: 'Springe zu Zeile...'
-	});
-	jumptoFunc = function(mbox) {
-	    var line_no = Number.from($('jumpToBox').value);
-	    if(line_no==null) {
-		gui.showNotice('error', 'Bitte eine Zahl eingeben.');
-	    } else if(line_no>ref.lineCount || line_no<1) {
-		gui.showNotice('error', 'Zeilennummer existiert nicht.');
-	    } else {
-		var new_page = ref.displayPageByLine(line_no);
-		$('pageSelector').set('value', new_page);
-		mbox.close();
-	    }
-	}
-	pp.adopt(jumpto);
-	jumptoBox = new mBox.Modal({
-	    content: 'jumpToLineForm',
-	    title: 'Springe zu Zeile',
-	    buttons: [
-		{title: 'Abbrechen', addClass: 'mform'},
-		{title: 'OK', addClass: 'mform button_green',
-		 event: function() {
-		     jumptoFunc(this);
-		 }
-		}
-	    ],
-	    onOpenComplete: function() {
-		$('jumpToBox').focus();
-		$('jumpToBox').select();
-	    },
-	    attach: jumpto
-	});
-	$('jumpToBox').removeEvents('keydown');
-	$('jumpToBox').addEvent('keydown', function(event) {
-	    if(event.key == "enter") {
-		jumptoFunc(jumptoBox);
-	    }
-	});
-
-	pp.show();
-	ppb.show();
     },
 
     /* Function: updateProgress
@@ -863,53 +970,42 @@ var EditorModel = new Class({
 	}
     },
 
-    /* Function: displayPage
+    /* Function: renderLines
 
-       Render a page of editor lines.
+       Render a given range of lines.
 
-       Takes a page number and renders all lines belonging to that
-       page number. If lines are not in memory, they are dynamically
-       fetched from the server. Lines in the editor are constructed
-       by hiding the editor table, modifying the existing HTML table
-       rows in place by filling them with the new data, then showing
-       the editor table again. If there are not enough lines (e.g.
-       on first load, or because editor settings have changed),
-       new lines are constructed from the class's line template.
+       If lines are not in memory, they are dynamically fetched from
+       the server. Lines in the editor are constructed by hiding the
+       editor table, modifying the existing HTML table rows in place
+       by filling them with the new data, then showing the editor
+       table again. If there are not enough lines (e.g.  on first
+       load, or because editor settings have changed), new lines are
+       constructed from the class's line template.
 
        Parameters:
-         page - Number of the page to be displayed
+         start - First line to be rendered
+         end   - Last line to be rendered
 
        Returns:
-         'true' if the page was displayed successfully.
+         'true' if lines were rendered successfully.
      */
-    displayPage: function(page){
-	var ref = this;
-	var cl = userdata.contextLines;
-	var pl = userdata.noPageLines;
-	var data = this.data;
-	var et = this.editTable;
-	var ler = this.lastEditedRow;
-	var end, start, tr, line, posopt, morphopt, mselect, trs, j;
+    renderLines: function(start, end){
+	var tr, line, posopt, morphopt, mselect, trs, j;
 	var optgroup, elem, lemma_input;
 	var dlr, dynstart, dynend;
 	var lineinfo;
         var fn_callback, fn_onerror;
-
+	var data = this.data;
+	var et = this.editTable;
+	var cl = userdata.contextLines;
+        var pl = end - start;
+	var ler = this.lastEditedRow;
         this.pageDisplayInProgress = true;
-
-	/* calculate line numbers to be displayed */
-	if (page==0) { page++; }
-	end   = page * (pl - cl) + cl;
-	start = end - pl;
-	if (end>this.lineCount) { 
-	    end = this.lineCount;
-	    pl  = end - start;
-	}
 
 	/* ensure all lines are in memory */
         if(!this.isRangeLoaded(start, end)) {
             fn_callback = function() {
-                this.displayPage(page);
+                this.renderLines(start, end);
             }.bind(this);
             fn_onerror  = function(e) {
                 gui.showNotice('error', "Problem beim Laden des Dokuments.");
@@ -928,7 +1024,7 @@ var EditorModel = new Class({
 	   no computing time anyway (0-3ms) as long as nothing
 	   changes */
 	trs = et.getElements('tr[id!=line_template]');
-	j=1;
+	j = 1;
 	while (trs[j] != undefined) {
 	    if (j>pl) { // remove superfluous lines
 		trs[j].destroy();
@@ -1095,38 +1191,17 @@ var EditorModel = new Class({
 	/* horizontal text view */
 	this.updateHorizontalView(start, end);
 
-	this.activePage = page;
 	this.displayedLinesStart = start;
 	this.displayedLinesEnd = end - 1;
 	this.tries = 0;
         this.pageDisplayInProgress = false;
 
-        Array.each(this.onPageChangeOnceHandlers, function(handler) {
+        Array.each(this.onRenderOnceHandlers, function(handler) {
             handler();
         });
-        this.onPageChangeOnceHandlers = [];
+        this.onRenderOnceHandlers = [];
 
 	return true;
-    },
-
-    /* Function: displayPageByLine
-
-       Display page where a given line number appears.
-
-       Parameters:
-         line - Number of the line to display
-
-       Returns:
-         The page number that holds the given line.
-     */
-    displayPageByLine: function(line) {
-	if(line>this.lineCount){
-	    line = this.lineCount;
-	}
-	y = (userdata.noPageLines - userdata.contextLines);
-	page_no = (line % y) ? Math.ceil(line/y) : (line/y);
-	this.displayPage(page_no);
-	return page_no;
     },
 
     /* Function: getMinimumLineRange
@@ -1353,8 +1428,7 @@ var EditorModel = new Class({
 	});
 	// update line count and re-load page
 	this.lineCount = this.lineCount + lcdiff;
-	this.renderPagesPanel(this.activePage);
-	this.displayPage(this.activePage);
+	this.pages.update().render();
     },
 
 

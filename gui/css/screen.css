@@ -8,6 +8,7 @@
 }
 
 html {
+    background: #f8f8f8;
     color: #565656;
     font-size: 60%;
     font-family: 'Open Sans', Arial, sans-serif;
@@ -149,9 +150,9 @@ ol {
 }
 
 #menu li[active=true] a {
-    background: #ffffff;
+    background: #f8f8f8;
     border: 1px solid #2b548c;
-    border-bottom: 1px solid #ffffff !important;
+    border-bottom: 1px solid #f8f8f8 !important;
     color: #437fda;
     font-weight: bold;
 }
@@ -195,17 +196,10 @@ ol {
 .panel {
    height: auto !important;
    overflow: auto;
-   border: 1px solid #d1d1d1;
-   padding: .5em 3em 2em 3em;
+   padding: 1em 2.5em;
    background: #f8f8f8;
-   margin: 0.5%;
+   margin: 0;
    clear: both;
-   border-radius: 10px;
-   box-shadow: 0px 0px 10px #e1e1e1;
-   -moz-border-radius: 10px;
-   -moz-box-shadow: #e1e1e1 0px 0px 10px;
-   -webkit-border-radius: 10px;
-   -webkit-box-shadow: 0px 0px 10px #E1E1E1;
 }
 
 .panel .panel {
@@ -336,14 +330,13 @@ table.table-modern tbody tr:nth-child(odd) {
 /***************************************************************************/
 
 div.btn-toolbar { 
-    padding: 0 0 16px 0;
-    margin-top: 8px;
+    padding-bottom: 6px;
 }
 
 /* inspired by mBox buttons ... */
 span.btn-toolbar-entry { 
     display: inline-block;
-    line-height: 2.2em;
+    line-height: 2em;
     padding: 0 6px;
     margin: 0 4px;
     font-size: 1.2em;
@@ -368,7 +361,11 @@ span.btn-toolbar-entry {
     vertical-align: middle;
 }
 
-span.btn-toolbar-entry span { 
+span.btn-toolbar-entry span.gray { 
+    color: #aaa;
+}
+
+span.btn-toolbar-entry span.oi { 
     font-size: 1.2em;
     vertical-align: middle;
 }
@@ -414,6 +411,38 @@ span.btn-toolbar-entry.start-disabled {
     filter:progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=#f9f9f9,EndColorStr=#e4e4e4) !important;
 }
 
+/* Styles specific to edit-panel toolbar */
+
+span.btn-page-count {
+    color: #aaaaaa;
+}
+
+span.btn-page-count span.page-active {
+    color: #707070 !important;
+}
+
+input.btn-page-to {
+    display: none;
+    height: 100%;
+    background-color:#fff;
+    font-weight: 700;
+    text-align: right;
+    vertical-align: middle;
+    width: 2.2em;
+    padding:2px;
+    border:1px solid #d0d0d0;
+    color:#606060;
+    resize:none;
+    border-radius:2px;
+    -moz-border-radius:2px;
+    -webkit-border-radius:2px;
+    box-shadow:inset 0 0 2px rgba(0, 0, 0, 0.12);
+    -moz-box-shadow:inset 0 0 2px rgba(0, 0, 0, 0.12);
+    -webkit-box-shadow:inset 0 0 2px rgba(0, 0, 0, 0.12);
+}
+
+/* Dark toolbar */
+
 .btn-toolbar-dark span.btn-toolbar-entry { 
     border: 1px solid #2b6cad;
     border-bottom: 1px solid #245b91;
@@ -455,6 +484,8 @@ span.btn-toolbar-entry.start-disabled {
     color: #efefef !important;
     text-decoration: none !important;
 }
+
+/* HTML Buttons */
 
 input[type=submit],
 button { 
@@ -836,25 +867,6 @@ tr#line_template {
     display: none;
 }
 
-/* Page panel */
-
-.pagePanel{
-    font-size: 1.5em;
-    padding-bottom: 0.5em;
-}
-
-.pagePanel span {
-    text-align: center;
-}
-
-.pagePanel a {
-    padding: 0 6px;
-}
-
-.pagePanel .currentPage{
-    font-weight: bold;
-}
-
 /* Dropdown Menu */
 
 .editTableDropdownIcon {
@@ -885,6 +897,10 @@ div.editTableDropdownMenu a {
 div.editTableDropdownMenu a:hover {
     color: #4444cc;
     text-decoration: none;
+}
+
+div#pagePanelBottom {
+    margin-top: 1em;
 }
 
 div#aa_tagger_select { 
