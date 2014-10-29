@@ -235,6 +235,11 @@ p.clappable span {
     font-size: 1.6em;
     font-weight: bold;
     padding: 10px 0 0 0;
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 span.clapp-status-hidden, span.clapp-status-open {
@@ -274,6 +279,11 @@ table.table-modern th {
     text-align: left;
     padding: .4em .4em;
     border-bottom: 1px solid #999;
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 table.table-modern tbody tr:nth-child(odd) {
@@ -331,6 +341,11 @@ table.table-modern tbody tr:nth-child(odd) {
 
 div.btn-toolbar { 
     padding-bottom: 6px;
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 /* inspired by mBox buttons ... */
@@ -442,6 +457,10 @@ input.btn-page-to {
 }
 
 /* Dark toolbar */
+
+.btn-toolbar-dark { 
+    padding-bottom: 0 !important;
+}
 
 .btn-toolbar-dark span.btn-toolbar-entry { 
     border: 1px solid #2b6cad;
