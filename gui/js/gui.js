@@ -10,7 +10,8 @@ var gui = {
     activeSpinner: null,
     keepaliveRequest: null,
     editKeyboard: null,
-    serverNotices: {},
+    serverNoticeQueue: [],
+    serverNoticeShowing: false,
 
     initialize: function() {
 	this._addKeyboardShortcuts();
@@ -119,8 +120,9 @@ var gui = {
 		limit: 60000,
                 onSuccess: function(status, text) {
                     if (status && status.notices) {
-                        Array.each(status.notices,
-                                   this.processServerNotice.bind(this));
+                        Array.prototype.push.apply(this.serverNoticeQueue,
+                                                   status.notices);
+                        this.processServerNotices();
                     }
                 }.bind(this)
 	    });
@@ -128,21 +130,23 @@ var gui = {
 	}
     },
 
-    /* Function: processServerNotice
+    /* Function: processServerNotices
 
-       Checks whether a server notice has been shown before, and 
-       displays a notice if appropriate.  Notices shown this way
-       don't close automatically.
-
-       Parameters:
-         text - Notice as {id: 0, text: "", type: ""}
+       Shows the next server notice in the queue, and only shows
+       another notice if the previous one has been closed.  Notices
+       shown this way don't close automatically.
      */
-    processServerNotice: function(notice) {
-        if (this.serverNotices[notice.id])
-            return;  // already processed
-        if (notice.type == 'alert')
-            this.showNotice('notice', notice.text, true);
-        this.serverNotices[notice.id] = true;
+    processServerNotices: function() {
+        if (this.serverNoticeShowing || this.serverNoticeQueue.length < 1)
+            return;
+        var notice = this.serverNoticeQueue.shift();
+        var n_type = (notice.type == 'alert') ? 'notice' : 'info';
+        this.serverNoticeShowing = true;
+        this.showNotice(n_type, notice.text, true,
+                        function() {
+                            this.serverNoticeShowing = false;
+                            this.processServerNotices();
+                        }.bind(this));
     },
 
     /* Function: changeTab
@@ -191,13 +195,15 @@ var gui = {
          ntype - Type of the notice ('ok' or 'error')
          message - String to appear in the notice
          keepopen - If true, notice stays open (defaults to false)
+         onclose - Callback function to invoke when notice is closed
     */
-    showNotice: function(ntype, message, keepopen) {
+    showNotice: function(ntype, message, keepopen, onclose) {
 	new mBox.Notice({
 	    type: ntype,
 	    position: {x: 'right'},
 	    content: new Element('span', {text: message}),
-            neverClose: (keepopen || false)
+            neverClose: (keepopen || false),
+            onClose: onclose
 	});
     },
 

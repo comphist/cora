@@ -691,7 +691,14 @@ class CoraSessionHandler {
   /** Handle a keepalive request, checking for any new server notices.
    */
   public function keepalive() {
-    $notices = $this->db->checkForNotices();
+    $notices = array();
+    foreach($this->db->checkForNotices() as $notice) {
+        $skey = "notice_".$notice['id'];
+        if(!array_key_exists($skey, $_SESSION)) {
+            $_SESSION[$skey] = true;
+            $notices[] = $notice;
+        }
+    }
     if(!empty($notices))
         return array("success" => true, "notices" => $notices);
     return array("success" => true);

@@ -542,6 +542,14 @@ cora.noticeEditor = {
             type = content.getElement('select').getSelected()[0].get('value');
             text = content.getElement('textarea').get('value');
             expires = content.getElement('input').get('value');
+            if(!expires || expires.length < 1) {
+                gui.showNotice('error', 'Ablauftermin muss angegeben werden!');
+                return false;
+            }
+            if(!text || text.length < 1) {
+                gui.showNotice('error', 'Benachrichtigung darf nicht leer sein!');
+                return false;
+            }
             this.createNotice(type, text, expires, function (status) {
                 if(status['success']) {
                     gui.showNotice('ok', 'Benachrichtigung hinzugefügt.');
@@ -550,6 +558,7 @@ cora.noticeEditor = {
                     gui.showNotice('error', 'Benachrichtigung nicht hinzugefügt.');
                 }
             });
+            return true;
         }.bind(this);
         new mBox.Modal({
             title: "Neue Server-Benachrichtigung erstellen",
@@ -557,8 +566,8 @@ cora.noticeEditor = {
             buttons: [ {title: "Abbrechen", addClass: "mform"},
                        {title: "Erstellen", addClass: "mform button_green",
                         event: function() {
-                            performRequest(this.content);
-                            this.close();
+                            if(performRequest(this.content))
+                                this.close();
                         }
                        }
                      ],
