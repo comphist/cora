@@ -328,12 +328,13 @@ var EditorModel = new Class({
     changedLines: null,
     editTable: null,
     tries: 0,            
-    maximumTries: 20,    // maximum number of load requests before giving up
-    dynamicLoadRange: 5, // how many pages should be loaded in advance
-    inputErrorClass: "", // browser-dependent CSS styling for input errors
+    maximumTries: 20,     // max. number of load requests before giving up
+    dynamicLoadPages: 5,  // min. number of pages in each direction to be pre-fetched
+    dynamicLoadLines: 50, // min. number of lines in each direction to be pre-fetched
+    inputErrorClass: "",  // browser-dependent CSS styling for input errors
     dropdown: null,  // contains the currently opened dropdown menu, if any
     useLemmaLookup: false,
-    pageDisplayInProgress: false,
+    lineRequestInProgress: false,
     horizontalViewSpinner: null,
     onRenderOnceHandlers: [],
 
@@ -1108,20 +1109,23 @@ var EditorModel = new Class({
 	var optgroup, elem, lemma_input;
 	var dlr, dynstart, dynend;
 	var lineinfo;
+        var et_spinner;
         var fn_callback, fn_onerror;
 	var data = this.data;
 	var et = this.editTable;
 	var cl = userdata.contextLines;
         var pl = end - start;
 	var ler = this.lastEditedRow;
-        this.pageDisplayInProgress = true;
 
 	/* ensure all lines are in memory */
         if(!this.isRangeLoaded(start, end)) {
+            et_spinner = new Spinner(et, {style: {'background': '#f8f8f8'}});
+            et_spinner.show();
             fn_callback = function() {
+                et_spinner.hide().destroy();
                 this.renderLines(start, end);
             }.bind(this);
-            fn_onerror  = function(e) {
+            fn_onerror = function(e) {
                 gui.showNotice('error', "Problem beim Laden des Dokuments.");
 	        gui.showInfoDialog(e.message);
             };
@@ -1296,19 +1300,19 @@ var EditorModel = new Class({
 	/* unhide the table */
 	et.show();
 
+	/* horizontal text view */
+	this.updateHorizontalView(start, end);
+
 	/* dynamically load context lines */
-	dlr  = this.dynamicLoadRange * (userdata.noPageLines - cl);
+	dlr  = Math.max(this.dynamicLoadPages * (userdata.noPageLines - cl),
+                        this.dynamicLoadLines);
 	dynstart = start - dlr;
 	dynend   = end   + dlr;
 	this.requestLines(dynstart, dynend);
 
-	/* horizontal text view */
-	this.updateHorizontalView(start, end);
-
 	this.displayedLinesStart = start;
 	this.displayedLinesEnd = end - 1;
 	this.tries = 0;
-        this.pageDisplayInProgress = false;
 
         Array.each(this.onRenderOnceHandlers, function(handler) {
             handler();
@@ -1385,19 +1389,28 @@ var EditorModel = new Class({
        Parameters:
          start - Number of the first line to load
 	 end - Number of the line after the last line to load
-         fn - Callback function to invoke after successful request
+         fn - Callback function to invoke when the given range is in memory
          onerror - Callback function to invoke on error
     */
     requestLines: function(start, end, fn, onerror) {
-	var range = this.getMinimumLineRange(start, end);
+        var range, handlers;
+        /* request in progress? -> come back later */
+        if(this.lineRequestInProgress) {
+            setTimeout(function(){this.requestLines(start,end,fn);}.bind(this),
+                       10);
+            return;
+        }
+
+        /* get minimum required range */
+	range = this.getMinimumLineRange(start, end);
 	if(range.length == 0) { // success!
 	    this.tries = 0;
-            if(typeof(fn) == "function")
+            if(typeof(fn) === "function")
                 fn();
 	    return;
 	}
 	if(this.tries++>20) { // prevent endless recursion
-            if(typeof(onerror) == "function")
+            if(typeof(onerror) === "function")
                 onerror({
 		    'name': 'FailureToLoadLines',
 		    'message': "Ein Fehler ist aufgetreten: Zeilen "+start+" bis "+(end-1)+" können nicht geladen werden.  Überprüfen Sie ggf. Ihre Internetverbindung."
@@ -1405,13 +1418,15 @@ var EditorModel = new Class({
             return;
 	}
 
+        this.lineRequestInProgress = true;
 	new Request.JSON({
 	    url: 'request.php',
 	    async: true,
 	    onSuccess: function(status, text) {
+                this.lineRequestInProgress = false;
 		var lineArray = status['data'];
 		if (Object.getLength(lineArray)==0) {
-                    if(typeof(onerror) == "function")
+                    if(typeof(onerror) === "function")
                         onerror({
 			    'name': 'EmptyRequest',
 			    'message': "Ein Fehler ist aufgetreten: Server-Anfrage für benötigte Zeilen "+start+" bis "+(end-1)+" lieferte kein Ergebnis zurück."
@@ -1427,7 +1442,7 @@ var EditorModel = new Class({
 	    }.bind(this)
 	}).get({'do': 'getLinesById', 'start_id': range[0], 'end_id': range[1]});
     },
-			    
+
     /* Function: saveData
 
        Send a server request to save the modified lines
@@ -1928,7 +1943,7 @@ var EditorModel = new Class({
             fn_onerror  = function(e) {
                 gui.showNotice('error', "Problem beim Laden der Text-Vorschau.");
             };
-	    this.requestLines(startlimit, endlimit, fn_callback, fn_onerror);
+            this.requestLines(startlimit, endlimit, fn_callback, fn_onerror);
             return;
         }
 	// find nearest sentence boundaries

@@ -772,7 +772,7 @@ table#editTable td.editTable_Mod input {
 }
 
 table#editTable td.editTable_Lemma input {
-    width: 15em;
+    width: 13em;
 }
 
 table#editTable td.editTable_Comment input {
