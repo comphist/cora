@@ -526,7 +526,11 @@ button {
 /***** FORMS ***************************************************************/
 /***************************************************************************/
 
-form label.ra
+input[type=text] { 
+    word-break: normal !important;
+}
+
+label.ra
 {
     display: inline-block;
     width: 8em;
@@ -534,7 +538,7 @@ form label.ra
     padding-right: 5px;
 }
 
-form label.vt
+label.vt
 {
     vertical-align: top;
 }
@@ -1034,8 +1038,61 @@ div.projectEditForm p > label {
     font-weight: bold;
 }
 
-div.projectEditForm input[type="text"] { 
-    overflow: scroll;
+div.annotatorEditForm { 
+    max-width: 42em;
+}
+
+div.annotatorEditForm p { 
+    padding-left: 0;
+    padding-right: 0;
+}
+
+div.annotatorEditForm input[type="text"] { 
+    width: 25em;
+}
+
+div.annotatorEditForm input[type="checkbox"] { 
+    position: relative;
+    top: -2px;
+    margin-right: 6px;
+}
+
+div.annotatorEditForm input.annotatorOptKey { 
+    width: 8em !important;
+}
+
+div.annotatorEditForm input.annotatorOptValue { 
+    width: 22em !important;
+}
+
+div.annotatorEditForm ul {
+    list-style-type: none;
+    padding-left: 1em !important;
+}
+
+div.annotatorEditForm span.annotatorOptDelete,
+div.annotatorEditForm span.annotatorOptAdd {
+    cursor: pointer;
+}
+
+div.annotatorEditForm span.annotatorOptAdd {
+    color: rgb(0, 128, 0);
+    padding-left: 6px;
+    position: relative;
+    top: 4px;
+}
+
+div.annotatorEditForm span.annotatorOptAdd:hover {
+    color: rgb(64, 192, 64);
+}
+
+div.annotatorEditForm span.annotatorOptDelete {
+    color: rgb(224, 0, 0);
+    padding-left: 6px;
+}
+
+div.annotatorEditForm span.annotatorOptDelete:hover {
+    color: rgb(255, 64, 64);
 }
 
 /***************************************************************************/

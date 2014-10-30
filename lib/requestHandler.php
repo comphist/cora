@@ -289,14 +289,26 @@ class RequestHandler {
       case "performAnnotation":
 	return $this->sh->performAnnotation($get['tagger'], $get['action']);
 	
-      case "createNotice":
+      case "adminCreateNotice":
 	return $this->sh->createNotice($post);
 
-      case "deleteNotice":
+      case "adminDeleteNotice":
 	return $this->sh->deleteNotice($get['id']);
 
-      case "getAllNotices":
+      case "adminGetAllNotices":
 	return $this->sh->getAllNotices();
+
+      case "adminGetAllAnnotators":
+	return $this->sh->getAllAnnotators();
+
+      case "adminCreateAnnotator":
+	return $this->sh->createAnnotator($post);
+
+      case "adminDeleteAnnotator":
+	return $this->sh->deleteAnnotator($get['id']);
+
+      case "adminChangeAnnotator":
+	return $this->sh->changeAnnotator($post);
 
       default:
 	return array("errors" => array("Unknown GET request."));

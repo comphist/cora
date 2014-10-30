@@ -1208,15 +1208,15 @@ var file = {
 	var content = new mBox.Modal({
 	    title: "Tagset-Verknüpfungen für '"+fullname+"'",
 	    content: contentdiv,
-	    buttons: [ {title: "Ändern", addClass: "mform button_red",
+	    buttons: [ {title: "Schließen", addClass: "mform",
+			id: "editTagsetAssocOK",
+			event: function() { this.close(); }},
+                       {title: "Ändern", addClass: "mform button_red",
 			id: "editTagsetAssocPerform",
 			event: function() {
                             ref.performChangeTagsetAssoc(fileid, contentdiv);
                             this.close();
-                        }},
-                       {title: "Schließen", addClass: "mform",
-			id: "editTagsetAssocOK",
-			event: function() { this.close(); }}                       
+                        }}
 		     ]
 	});
 	content.open();

@@ -382,7 +382,7 @@ cora.userEditor = {
             title: "Passwort ändern",
             content: $('templateChangePassword'),
             buttons: [ {title: "Abbrechen", addClass: "mform"},
-                       {title: "Hinzufügen", addClass: "mform button_green",
+                       {title: "Ändern", addClass: "mform button_red",
                         event: function() {
                             var pw = performChecks(this.content);
                             if(pw) {
@@ -429,6 +429,274 @@ cora.userEditor = {
 }
 
 // ***********************************************************************
+// ********** AUTOMATIC ANNOTATION ***************************************
+// ***********************************************************************
+cora.annotatorEditor = {
+    byID: {},
+    annotators: [],
+    table: null,
+    editForm: null,
+
+    initialize: function() {
+        this.table = $('editAutomaticAnnotators');
+        this.editForm = $('annotatorEditForm');
+        $('adminCreateAnnotator').addEvent(
+            'click', function() {this.showCreateAnnotatorDialog();}.bind(this)
+        );
+	this.table.addEvent(
+	    'click:relay(a)',
+	    function(event, target) {
+                var parent = target.getParent('td');
+		if(target.hasClass('deletion-link')
+                   && parent.hasClass("adminAnnotatorConfig")) {
+		    this.deleteAnnotator(event);
+		} else if(target.hasClass('adminAnnotatorEditButton')) {
+                    var tid = parent.getParent('tr')
+                        .getElement('td.adminAnnotatorIDCell').get('text');
+                    this.showAnnotatorOptionsDialog(tid);
+                }
+	    }.bind(this)
+	);
+        this.editForm.addEvent(
+            'click:relay(span)',
+            function(event, target) {
+                var parent = target.getParent('li');
+                if(target.hasClass("annotatorOptAdd")) {
+                    $('annotatorOptEntryTemplate').clone().inject(parent, 'before');
+                } else if(target.hasClass("annotatorOptDelete")) {
+                    parent.destroy();
+                }
+            }.bind(this)
+        );
+
+        this.performUpdate();
+    },
+
+    /* Function: performUpdate
+
+       Sends a server request to get a list of all taggers.
+     */
+    performUpdate: function() {
+        new Request.JSON({
+            url: 'request.php',
+            onSuccess: function(status, text) {
+                if(!status['success']) {
+                    gui.showNotice('error',
+                                   "Konnte Tagger nicht laden.");
+                    return;
+                }
+                this.annotators = status['taggers'];
+                this.byID = {};
+                Array.each(this.annotators, function(annotator, idx) {
+                    this.byID[annotator.id] = idx;
+                }.bind(this));
+                this.refreshTable();
+            }.bind(this)
+        }).get({'do': 'adminGetAllAnnotators'});
+    },
+
+    /* Function: refreshTable
+
+       Recreates the table listing all taggers.
+     */
+    refreshTable: function() {
+        var table = this.table.getElement('tbody');
+        table.empty();
+        Array.each(this.annotators, function(tagger) {
+            var tr = $('templateAnnotatorInfoRow').clone();
+            var tlist = cora.tagsets.get(tagger.tagsets).map(function(ts) {
+                return ts['class'];
+            }).sort();
+            tr.getElement('td.adminAnnotatorIDCell').set('text', tagger.id);
+            tr.getElement('td.adminAnnotatorNameCell').set('text', tagger.name);
+            tr.getElement('td.adminAnnotatorClassCell').set('text', tagger.class_name);
+            tr.getElement('span.adminAnnotatorTrainableStatus')
+                .setStyle('display', tagger.trainable ? 'inline-block' : 'none');
+            tr.getElement('td.adminAnnotatorTagsetCell')
+                .set('text', tlist.join(', '));
+            tr.inject(table);
+        });
+    },
+
+    /* Function: deleteAnnotator
+
+       Sends a server request to delete a given tagger.
+     */
+    deleteAnnotator: function(event) {
+	var parentrow = event.target.getParent('tr');
+	var tid = parentrow.getElement('td.adminAnnotatorIDCell').get('text');
+        new Request.JSON({
+            'url': 'request.php',
+            'async': false,
+	    onSuccess: function(status, text) {
+		this.performUpdate();
+                if(status['success']) {
+                    gui.showNotice('ok', 'Tagger gelöscht.');
+                }
+                else {
+                    gui.showNotice('error', 'Tagger nicht gelöscht.');
+                }
+	    }.bind(this)
+	}).get({'do': 'adminDeleteAnnotator', 'id': tid});
+    },
+
+    /* Function: createAnnotator
+
+       Sends a server request to create a new tagger.
+
+       Parameters:
+         name - Display name of the tagger
+         fn - Callback function to invoke after the server request
+     */
+    createAnnotator: function(name, fn) {
+        var ref = this;
+	new Request.JSON({
+	    'url': 'request.php?do=adminCreateAnnotator',
+	    'async': false,
+	    'data': {'name': name, 'class': 'None'},
+	    onSuccess: function(status, text) {
+		ref.performUpdate();
+                if(typeof(fn) == "function")
+                    fn(status, text);
+	    }
+	}).post();
+    },
+
+    /* Function: changeAnnotatorOptionsFromDialog
+
+       Change the options for an annotator based on the contents of a
+       dialog window.  Sends a server request to perform the change
+       and calls performUpdate() afterwards.
+
+       Parameters:
+         tid - ID of the annotator to be modified
+         content - Content of the dialog window from where to extract
+                   the changes
+     */
+    changeAnnotatorOptionsFromDialog: function(tid, content) {
+        /* extract settings */
+        var annotator = {id: tid};
+        annotator.name = content.getElement('input[name=annotatorDisplayName]')
+                                .get('value');
+        annotator.class_name = content.getElement('input[name=annotatorClassName]')
+                                      .get('value');
+        annotator.trainable = content.getElement('input[name=annotatorIsTrainable]')
+                                     .get('checked') ? 1 : 0;
+        annotator.tagsets = [];
+        content.getElements('input[name="linkannotagsets[]"]').each(function(el) {
+            if(el.get('checked'))
+                annotator.tagsets.push(el.get('value'));
+        });
+        annotator.options = {};
+        content.getElements('li.annotatorOptEntry').each(function(li) {
+            var key = li.getElement('input.annotatorOptKey').get('value');
+            var value = li.getElement('input.annotatorOptValue').get('value');
+            if (key && key.length > 0)
+                annotator.options[key] = value;
+        });
+        /* send request */
+        new Request.JSON({
+            url: 'request.php?do=adminChangeAnnotator',
+            data: annotator,
+            onSuccess: function(status, text) {
+                if(status['success']) {
+                    gui.showNotice('ok', "Optionen geändert.");
+                } else {
+                    gui.showNotice('error', "Optionen nicht geändert.");
+                }
+                this.performUpdate();
+            }.bind(this)
+        }).post();
+    },
+
+    /* Function: showAnnotatorOptionsDialog
+
+       Display a dialog to edit the automatic annotator's options.
+
+       Parameters:
+         tid - ID of the annotator to be modified
+    */
+    showAnnotatorOptionsDialog: function(tid) {
+        if(this.byID[tid] === undefined)
+            return;
+        var ref = this;
+        var annotator = this.annotators[this.byID[tid]];
+	var content   = this.editForm;
+        var opt_add   = content.getElement('li.annotatorOptAddLi');
+        /* name, class, tagsets */
+        content.getElement('input[name=annotatorDisplayName]')
+            .set('value', annotator.name);
+        content.getElement('input[name=annotatorClassName]')
+            .set('value', annotator.class_name);
+        content.getElement('input[name=annotatorIsTrainable]')
+            .set('checked', (annotator.trainable ? 'checked' : ''));
+        cora.tagsets
+            .makeMultiSelectBox(annotator.tagsets, 'linkannotagsets', 'LinkTagsets_AA')
+            .addClass('tagsetSelectPlaceholder')
+            .replaces(content.getElement('.tagsetSelectPlaceholder'));
+        /* option list */
+        content.getElements('li.annotatorOptEntry').destroy();
+        Object.each(annotator.options, function(value, key) {
+            var thisopt = $('annotatorOptEntryTemplate').clone();
+            thisopt.getElement('input.annotatorOptKey').set('value', key);
+            thisopt.getElement('input.annotatorOptValue').set('value', value);
+            thisopt.inject(opt_add, 'before');
+        });
+        /* dialog window */
+        new mBox.Modal({
+            title: "Optionen für Tagger "+tid,
+            content: content,
+            buttons: [
+                {title: 'Schließen', addClass: 'mform'},
+                {title: 'Ändern', addClass: 'mform button_red',
+                 event: function() {
+                     ref.changeAnnotatorOptionsFromDialog(tid, this.content);
+                     this.close();
+                 }}
+            ],
+            closeOnBodyClick: false
+        }).open();
+    },
+
+    /* Function: showCreateAnnotatorDialog
+
+       Displays a dialog to create a new automatic annotator.
+     */
+    showCreateAnnotatorDialog: function() {
+        var performRequest = function(content) {
+            var name = content.getElement('input').get('value');
+            if(!name || name.length < 1) {
+                gui.showNotice('error', 'Name darf nicht leer sein!');
+                return false;
+            }
+            this.createAnnotator(name, function (status) {
+                if(status['success']) {
+                    gui.showNotice('ok', 'Tagger hinzugefügt.');
+                    this.showAnnotatorOptionsDialog(status['id']);
+                }
+                else {
+                    gui.showNotice('error', 'Tagger nicht hinzugefügt.');
+                }
+            }.bind(this));
+            return true;
+        }.bind(this);
+        new mBox.Modal({
+            title: "Neuen Tagger definieren",
+            content: $('annotatorCreateForm'),
+            buttons: [ {title: "Abbrechen", addClass: "mform"},
+                       {title: "Erstellen", addClass: "mform button_green",
+                        event: function() {
+                            if(performRequest(this.content))
+                                this.close();
+                        }
+                       }
+                     ]
+        }).open();
+    }
+
+}
+
+// ***********************************************************************
 // ********** SERVER NOTICES *********************************************
 // ***********************************************************************
 cora.noticeEditor = {
@@ -446,6 +714,11 @@ cora.noticeEditor = {
 		}
 	    }.bind(this)
 	);
+        $('editNotices').store('HtmlTable',
+                               new HtmlTable($('editNotices'),
+                                             {sortable: true,
+                                              parsers: ['number', 'string',
+                                                        'string', 'date']}));
         this.performUpdate();
     },
 
@@ -465,7 +738,7 @@ cora.noticeEditor = {
                 this.notices = status['notices'];
                 this.refreshNoticeTable();
             }.bind(this)
-        }).get({'do': 'getAllNotices'});
+        }).get({'do': 'adminGetAllNotices'});
     },
 
     /* Function: refreshNoticeTable
@@ -1014,6 +1287,7 @@ window.addEvent('domready', function() {
     cora.projects.onInit(cora.userEditor.initialize.bind(cora.userEditor));
     cora.projectEditor.initialize();
     cora.tagsetEditor.initialize();
+    cora.annotatorEditor.initialize();
 
     $('adminViewCollapseAll').addEvent('click',
         function(e){

@@ -742,6 +742,58 @@ class CoraSessionHandler {
                                    ." for this action."));
   }
 
+  /** Creates a new automatic annotator.
+   */
+  public function createAnnotator($data) {
+    if ($_SESSION["admin"]) {
+        return $this->db->addTagger($data['name'],
+                                    $data['class']);
+    }
+    return array('success' => false,
+                 'errors' => array("Administrator privileges are required "
+                                   ." for this action."));
+  }
+
+  /** Deletes an automatic annotator.
+   */
+  public function deleteAnnotator($tagger_id) {
+    if ($_SESSION["admin"]) {
+        $status = $this->db->deleteTagger($tagger_id);
+        return array('success' => (bool) $status);
+    }
+    return array('success' => false,
+                 'errors' => array("Administrator privileges are required "
+                                   ." for this action."));
+  }
+
+  /** Changes the settings of an automatic annotator.
+   */
+  public function changeAnnotator($data) {
+    if ($_SESSION["admin"]) {
+        try {
+            $this->db->setTaggerSettings($data);
+            return array('success' => true);
+        } catch(Exception $ex) {
+            return array('success' => false, 'errors' => array($ex->getMessage()));
+        }
+    }
+    return array('success' => false,
+                 'errors' => array("Administrator privileges are required "
+                                   ." for this action."));
+  }
+
+  /** Fetches all automatic annotators, checking for admin privileges first.
+   */
+  public function getAllAnnotators() {
+    if ($_SESSION["admin"]) {
+        $taggers = $this->db->getTaggerListAndOptions();
+        return array('success' => true, 'taggers' => $taggers);
+    }
+    return array('success' => false,
+                 'errors' => array("Administrator privileges are required "
+                                   ." for this action."));
+  }
+
   /** Perform user login.
    *
    * Calls DBInterface::getUserData() to verify access information,

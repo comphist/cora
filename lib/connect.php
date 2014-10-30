@@ -553,14 +553,37 @@
      return true;
    }
 
+   /** Delete a tagger with a given ID. */
+   public function deleteTagger($tid) {
+     $qs = "DELETE FROM `tagger` WHERE `id`=:tid";
+     // ON DELETE CASCADE should take care of everything else
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':tid' => $tid));
+     return $stmt->rowCount();
+   }
+
+   /** Create a new tagger. */
+   public function addTagger($name, $tclass) {
+     try {
+       $qs = "INSERT INTO `tagger` (`class_name`, `display_name`)"
+           ."               VALUES (:cname, :dname)";
+       $stmt = $this->dbo->prepare($qs);
+       $stmt->execute(array(':cname' => $tclass, ':dname' => $name));
+       return array("success" => true, "id" => $this->dbo->lastInsertId());
+     }
+     catch (PDOException $ex) {
+       return array("success" => false, "errors" => array($ex->getMessage()));
+     }
+   }
+
    /** Get a list of all taggers with their associated tagset links.
     */
    public function getTaggerList() {
      $tlist = array();
      $qs = "SELECT t.id, t.class_name, t.display_name, "
        . "         t.trainable, ts.tagset_id "
-       . "    FROM tagger2tagset ts "
-       . "    LEFT JOIN tagger t ON t.id=ts.tagger_id";
+       . "    FROM tagger t "
+       . "    LEFT JOIN tagger2tagset ts ON t.id=ts.tagger_id";
      $stmt = $this->dbo->prepare($qs);
      $stmt->execute();
      while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -585,6 +608,58 @@
        $stmt = $this->dbo->prepare($qs);
        $stmt->execute(array($taggerid));
        return $stmt->fetchAll(PDO::FETCH_COLUMN|PDO::FETCH_GROUP|PDO::FETCH_UNIQUE);
+   }
+
+   /** Sets information about a tagger. */
+   public function setTaggerSettings($data) {
+       try {
+           $this->dbo->beginTransaction();
+           $tid = $data['id'];
+           $qs = "UPDATE `tagger` SET `class_name`=:cname, "
+               . "                    `display_name`=:dname, "
+               . "                    `trainable`=:trainable "
+               . "              WHERE `id`=:tid";
+           $stmt = $this->dbo->prepare($qs);
+           $stmt->execute(array(':cname' => $data['class_name'],
+                                ':dname' => $data['name'],
+                                ':trainable' => $data['trainable'],
+                                ':tid' => $tid));
+           /* options */
+           $qs = "DELETE FROM `tagger_options` WHERE `tagger_id`=:tid";
+           $stmt = $this->dbo->prepare($qs);
+           $stmt->execute(array(':tid' => $tid));
+           $qs = "INSERT INTO `tagger_options` (`tagger_id`, `opt_key`, `opt_value`)"
+               . "                      VALUES (:tid, :k, :v)";
+           $stmt_insert = $this->dbo->prepare($qs);
+           foreach($data['options'] as $k => $v) {
+               $stmt_insert->execute(array(':tid' => $tid, ':k' => $k, ':v' => $v));
+           }
+           /* tagset links */
+           $qs = "DELETE FROM `tagger2tagset` WHERE `tagger_id`=:tid";
+           $stmt = $this->dbo->prepare($qs);
+           $stmt->execute(array(':tid' => $tid));
+           $qs = "INSERT INTO `tagger2tagset` (`tagger_id`, `tagset_id`)"
+               . "                     VALUES (:tid, :tsid)";
+           $stmt_insert = $this->dbo->prepare($qs);
+           foreach($data['tagsets'] as $tsid) {
+               $stmt_insert->execute(array(':tid' => $tid, ':tsid' => $tsid));
+           }
+       } catch(PDOException $ex) {
+           $this->dbo->rollBack();
+           throw $ex;
+       }
+       $this->dbo->commit();
+   }
+
+   /** Get a list of all taggers, including tagset links and options. */
+   public function getTaggerListAndOptions() {
+       $tlist = array();
+       foreach($this->getTaggerList() as $tid => $tagger) {
+           $tagger['id']      = $tid;
+           $tagger['options'] = $this->getTaggerOptions($tagger['id']);
+           $tlist[] = $tagger;
+       }
+       return $tlist;
    }
 
    /** Get options (e.g. associated check script) for a given project. */

@@ -19,6 +19,7 @@ $ulist = array();
       <span class="btn-toolbar-entry" id="adminViewExpandAll" title="Alle Kategorien aufklappen"><span class="oi" data-glyph="collapse-down" aria-hidden="true"></span></span>
       <span class="btn-toolbar-entry" id="adminCreateUser"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> Neuer Benutzer</span>
       <span class="btn-toolbar-entry" id="adminCreateProject"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> Neues Projekt</span>
+      <span class="btn-toolbar-entry" id="adminCreateAnnotator"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> Neuer Tagger</span>
       <span class="btn-toolbar-entry" id="adminCreateNotice"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> Neue Benachrichtigung</span>
       <span class="btn-toolbar-entry" id="adminViewTagset"><span class="oi" aria-hidden="true"></span>Tagset-Browser</span>
       <span class="btn-toolbar-entry" id="adminImportTagset"><span class="oi" data-glyph="data-transfer-upload" aria-hidden="true"></span> Tagset importieren</span>
@@ -67,6 +68,26 @@ $ulist = array();
       </div>
     </div>
 
+    <!-- AUTOMATIC ANNOTATORS -->
+    <div class="clappable clapp-modern starthidden" id="automaticAnnotators">
+      <h4 class="clapp">Automatische Annotation</h4>
+      <div>
+        <table id="editAutomaticAnnotators" class="table-modern">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Klasse</th>
+              <th>Train?</th>
+              <th>Zugeordnete Tagset-Typen</th>
+              <th class="table-th-nosort"></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- SERVER NOTICES -->
     <div class="clappable clapp-modern starthidden" id="serverNotices">
       <h4 class="clapp">Server-Benachrichtigungen</h4>
@@ -78,7 +99,7 @@ $ulist = array();
               <th>Nachricht</th>
               <th>Typ</th>
               <th>Expires</th>
-              <th></th>
+              <th class="table-th-nosort"></th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -148,6 +169,31 @@ $ulist = array();
       </form>
     </div>
 
+    <div id="annotatorEditForm" class="annotatorEditForm">
+      <p>
+        <label for="annotatorDisplayName" class="ra">Name: </label>
+        <input type="text" name="annotatorDisplayName" class="mform" />
+      </p>
+      <p>
+        <label for="annotatorClassName" class="ra">Klasse: </label>
+        <input type="text" name="annotatorClassName" class="mform" />
+      </p>
+      <p>
+        <label for="annotatorOptions">Optionen: </label>
+        <ul>
+          <li class="annotatorOptAddLi"><span class="oi oi-shadow annotatorOptAdd" data-glyph="plus" aria-hidden="true"></span></li>
+        </ul>
+      </p>
+      <p>
+        <input type="checkbox" id="annotatorIsTrainable" name="annotatorIsTrainable" value="trainable" class="mform" /><label for="annotatorIsTrainable">Projekt-spezifisch trainierbar</label>
+      </p>
+      <p><label>Zugeordnete Tagsets:</label></p>
+      <div class="tagsetSelectPlaceholder"></div>
+      <p>
+        Nur Texte, denen auch mindestens die hier ausgewählten Tagsets zugeordnet sind, können mit diesem Tagger annotiert werden.
+      </p>
+    </div>
+
     <div id="projectEditForm" class="projectEditForm">
       <p>
         <label for="projectCmdEditToken">Befehl zum Editieren von Tokens: </label><br />
@@ -174,6 +220,15 @@ $ulist = array();
       <p>
         <label for="project_name" class="ra">Projektname:</label>
         <input type="text" name="project_name" value="" />
+      </p>
+      </form>
+    </div>
+
+    <div id="annotatorCreateForm">
+      <form>
+      <p>
+        <label for="annotator_name" class="ra">Name:</label>
+        <input type="text" name="annotator_name" value="" />
       </p>
       </form>
     </div>
@@ -215,6 +270,10 @@ $ulist = array();
       </p>
       <p><textarea id="aTBtextarea" cols="80" rows="10" readonly="readonly"></textarea></p>
     </div>
+
+    <ul>
+      <li class="annotatorOptEntry" id="annotatorOptEntryTemplate"><input type="text" name="annotatorOptKey[]" class="mform annotatorOptKey"><input type="text" name="annotatorOptValue[]" class="mform annotatorOptValue"><span class="oi oi-shadow annotatorOptDelete" data-glyph="delete" aria-hidden="true"></span></li>
+    </ul>
  
     <table>
       <tr id="templateUserInfoRow" class="adminUserInfoRow">
@@ -251,6 +310,17 @@ $ulist = array();
         <td class="adminNoticeTypeCell"></td>
         <td class="adminNoticeExpiresCell"></td>
         <td class="adminNoticeDelete"><a class="deletion-link"><span class="oi oi-shadow" data-glyph="delete" title="Benachrichtigung löschen" aria-hidden="true"></span></a></td>
+      </tr>
+      <tr id="templateAnnotatorInfoRow" class="adminAnnotatorInfoRow">
+        <td class="adminAnnotatorIDCell"></td>
+        <td class="adminAnnotatorNameCell"></td>
+        <td class="adminAnnotatorClassCell"></td>
+        <td class="centered adminAnnotatorTrainableCell"><span class="oi oi-shadow oi-green adminAnnotatorTrainableStatus" data-glyph="check" aria-hidden="true"></span>
+        </td>
+        <td class="adminAnnotatorTagsetCell"></td>
+        <td class="adminAnnotatorConfig">
+          <a class="adminAnnotatorEditButton"><span class="oi oi-shadow" data-glyph="cog" aria-hidden="true"></span> Optionen...</a>
+          <a class="deletion-link"><span class="oi oi-shadow" data-glyph="delete" title="Tagger löschen" aria-hidden="true"></span></a></td>
       </tr>
     </table>
   </div>
