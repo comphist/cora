@@ -1127,7 +1127,7 @@ var EditorModel = new Class({
             }.bind(this);
             fn_onerror = function(e) {
                 gui.showNotice('error', "Problem beim Laden des Dokuments.");
-	        gui.showInfoDialog(e.message);
+	        gui.showMsgDialog('error', e.message);
             };
             this.requestLines(start, end, fn_callback, fn_onerror);
             return;

@@ -153,14 +153,33 @@
 
 /*** modal: info dialog ***/
 
-.mBox.Modal.InfoDialog .mBoxContent { 
-	color:#555555;
-	font-size:16px;
-	padding:30px 30px 30px 75px;
-	background:url('images/mBox-Sprites.png') #fff 20px -778px no-repeat;
-        max-width:31em;
+.mBox.Modal.MessageDialog .mBoxContent { 
+    color:#555555;
+    font-size:16px;
+    padding:30px 30px 30px 75px;
+    background-color:#fff;
+    background-image:url('images/mBox-Sprites.png');
+    background-repeat:no-repeat;
+    max-width:31em;
 }
-.mBox.Modal.InfoDialog .mBoxButtonContainer {
+
+.mBox.Modal.MessageDialog.mBoxModalInfo .mBoxContent { 
+    background-position:20px -778px;
+}
+
+.mBox.Modal.MessageDialog.mBoxModalError .mBoxContent { 
+    background-position:20px -478px;
+}
+
+.mBox.Modal.MessageDialog.mBoxModalNotice .mBoxContent { 
+    background-position:20px -1078px;
+}
+
+.mBox.Modal.MessageDialog.mBoxModalSuccess .mBoxContent { 
+    background-position:20px -178px;
+}
+
+.mBox.Modal.MessageDialog .mBoxButtonContainer {
 	text-align:center;
 }
 

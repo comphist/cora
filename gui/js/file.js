@@ -960,8 +960,8 @@ var file = {
         	    onComplete: onOpenSuccess
         	}).get({'do': 'openFile', 'fileid': fileid});
     	    } else {
-                gui.showInfoDialog(
-                    "Das Dokument wird zur Zeit bearbeitet von Benutzer '"
+                gui.showMsgDialog('info',
+                        "Das Dokument wird zur Zeit bearbeitet von Benutzer '"
                         + data.lock.locked_by + "' seit "
                         + gui.formatDateString(data.lock.locked_since).toLowerCase()
                         + ".");

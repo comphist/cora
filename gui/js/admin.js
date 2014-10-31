@@ -520,24 +520,29 @@ cora.annotatorEditor = {
 
     /* Function: deleteAnnotator
 
-       Sends a server request to delete a given tagger.
+       Asks for confirmation to delete a tagger and requests the delete.
      */
     deleteAnnotator: function(event) {
 	var parentrow = event.target.getParent('tr');
-	var tid = parentrow.getElement('td.adminAnnotatorIDCell').get('text');
-        new Request.JSON({
-            'url': 'request.php',
-            'async': false,
-	    onSuccess: function(status, text) {
-		this.performUpdate();
-                if(status['success']) {
-                    gui.showNotice('ok', 'Tagger gelöscht.');
-                }
-                else {
-                    gui.showNotice('error', 'Tagger nicht gelöscht.');
-                }
-	    }.bind(this)
-	}).get({'do': 'adminDeleteAnnotator', 'id': tid});
+	var tid  = parentrow.getElement('td.adminAnnotatorIDCell').get('text');
+	var name = parentrow.getElement('td.adminAnnotatorNameCell').get('text');
+        var performDelete = function() {
+            new Request.JSON({
+                'url': 'request.php',
+                'async': false,
+	        onSuccess: function(status, text) {
+		    this.performUpdate();
+                    if(status['success']) {
+                        gui.showNotice('ok', 'Tagger gelöscht.');
+                    }
+                    else {
+                        gui.showNotice('error', 'Tagger nicht gelöscht.');
+                    }
+	        }.bind(this)
+	    }).get({'do': 'adminDeleteAnnotator', 'id': tid});
+        };
+        gui.confirm("Tagger "+tid+" '"+name+"' wirklich löschen?",
+                    performDelete, true);
     },
 
     /* Function: createAnnotator
@@ -772,7 +777,7 @@ cora.noticeEditor = {
     createNotice: function(type, text, expires, fn) {
         var ref = this;
 	new Request.JSON({
-	    'url': 'request.php?do=createNotice',
+	    'url': 'request.php?do=adminCreateNotice',
 	    'async': false,
 	    'data': {'type': type, 'text': text, 'expires': expires},
 	    onSuccess: function(status, text) {
@@ -785,24 +790,28 @@ cora.noticeEditor = {
 
     /* Function: deleteNotice
 
-       Sends a server request to delete a given notice.
+       Asks for confirmation to delete a notice and requests the delete.
      */
     deleteNotice: function(event) {
 	var parentrow = event.target.getParent('tr');
 	var nid = parentrow.getElement('td.adminNoticeIDCell').get('text');
-        new Request.JSON({
-            'url': 'request.php',
-            'async': false,
-	    onSuccess: function(status, text) {
-		this.performUpdate();
-                if(status['success']) {
-                    gui.showNotice('ok', 'Benachrichtigung gelöscht.');
-                }
-                else {
-                    gui.showNotice('error', 'Benachrichtigung nicht gelöscht.');
-                }
-	    }.bind(this)
-	}).get({'do': 'deleteNotice', 'id': nid});
+        var performDelete = function() {
+            new Request.JSON({
+                'url': 'request.php',
+                'async': false,
+	        onSuccess: function(status, text) {
+		    this.performUpdate();
+                    if(status['success']) {
+                        gui.showNotice('ok', 'Benachrichtigung gelöscht.');
+                    }
+                    else {
+                        gui.showNotice('error', 'Benachrichtigung nicht gelöscht.');
+                    }
+	        }.bind(this)
+	    }).get({'do': 'adminDeleteNotice', 'id': nid});
+        }.bind(this);
+        gui.confirm("Benachrichtigung "+nid+" wirklich löschen?",
+                    performDelete, true);
     },
 
     /* Function: showCreateNoticeDialog
@@ -906,30 +915,9 @@ cora.projectEditor = {
 	    'click:relay(a)',
 	    function(event, target) {
 		if(target.hasClass("adminProjectDelete")) {
-		    var pid = target.getParent('tr').get('id').substr(8);
-		    var pn  = target.getParent('tr').getElement('td.adminProjectNameCell').get('html');
-                    var prj = cora.projects.get(pid);
-		    if (prj.files == undefined || prj.files.length == 0) {
-			var req =  new Request.JSON(
-			    {url:'request.php',
-			     onSuccess: function(data, text) {
-				 if(data.success) {
-                                     gui.showNotice('ok', 'Projekt gelöscht.');
-                                     cora.projects.performUpdate();
-				 } else {
-                                     gui.showNotice('error', 'Projekt löschen fehlgeschlagen.');
-				 }
-			     }
-			    }
-			);
-			req.get({'do': 'deleteProject', 'project_id': pid});
-	   
-		    } else {
-                        gui.showTextDialog('Projekt löschen: "'+pn+'"',
-                                           'Projekte können nicht gelöscht werden, solange noch mindestens ein Dokument dem Projekt zugeordnet ist.');
-		    }
+                    this.deleteProject(target);
 		}
-	    }
+	    }.bind(this)
 	);
 	// editing project groups
 	$('editProjects').addEvent(
@@ -949,6 +937,41 @@ cora.projectEditor = {
                                                parsers: ['string', 'string',
                                                          'string',
                                                          'title',  'title']}));
+    },
+
+    /* Function: deleteProject
+
+       Asks for confirmation to delete a project and requests the delete.
+    */
+    deleteProject: function(target) {
+	var pid = target.getParent('tr').get('id').substr(8);
+	var pn  = target.getParent('tr').getElement('td.adminProjectNameCell').get('html');
+        var performDelete = function() {
+            var prj = cora.projects.get(pid);
+	    if (prj.files == undefined || prj.files.length == 0) {
+	        var req = new Request.JSON(
+		    {url:'request.php',
+		     onSuccess: function(data, text) {
+		         if(data.success) {
+                             gui.showNotice('ok', 'Projekt gelöscht.');
+                             cora.projects.performUpdate();
+		         } else {
+                             gui.showNotice('error', 'Projekt löschen fehlgeschlagen.');
+		         }
+		     }
+		    }
+	        );
+	        req.get({'do': 'deleteProject', 'project_id': pid});
+	    } else {
+                setTimeout(function() {
+                    gui.showMsgDialog('error', 'Projekte können nicht gelöscht werden, '
+                                      + 'solange noch mindestens ein Dokument dem Projekt '
+                                      + 'zugeordnet ist.');
+                }, 10);
+	    }
+        };
+        gui.confirm("Projekt "+pid+" '"+pn+"' wirklich löschen?",
+                    performDelete, true);
     },
 
     /* Function: refreshProjectTable

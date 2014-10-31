@@ -192,7 +192,7 @@ var gui = {
        Displays a floating notice, e.g., to indicate success.
 
        Parameters:
-         ntype - Type of the notice ('ok' or 'error')
+         ntype - Type of the notice ('ok', 'error')
          message - String to appear in the notice
          keepopen - If true, notice stays open (defaults to false)
          onclose - Callback function to invoke when notice is closed
@@ -285,20 +285,27 @@ var gui = {
         this.enableScrolling();
     },
 
-    /* Function: showInfoDialog
+    /* Function: showMsgDialog
 
-       Displays a modal dialog containing an informational message.
+       Displays a title-less modal dialog containing an icon and an
+       informational message.
 
        Parameters:
+         ntype - Type of the message ('ok', 'error')
          message - Message to display
-         title - (optional) Title of the dialog window
      */
-    showInfoDialog: function(message, title) {
+    showMsgDialog: function(ntype, message) {
+        var cls = "mBoxModalInfo";
+        if(ntype == "error")
+            cls = "mBoxModalError";
+        else if(ntype == "ok" || ntype == "success")
+            cls = "mBoxModalSuccess";
+        else if(ntype == "notice" || ntype == "attention")
+            cls = "mBoxModalNotice";
 	new mBox.Modal({
-	    title: title,
 	    content: message,
-            addClass: {wrapper: 'InfoDialog'},
-	    buttons: [ {title: "Schließen", addClass: "mform button_green"} ]
+            addClass: {wrapper: 'MessageDialog '+cls},
+	    buttons: [ {title: "Schließen", addClass: "mform"} ]
 	}).open();
     },
 
@@ -340,7 +347,7 @@ var gui = {
             addClass: {wrapper: 'TextDialog'},
 	    closeOnBodyClick: false,
 	    closeOnEsc: false,
-	    buttons: [ {title: "Schließen", addClass: "mform button_green"} ]
+	    buttons: [ {title: "Schließen", addClass: "mform"} ]
 	}).open();
     },
 
