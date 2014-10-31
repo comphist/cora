@@ -337,13 +337,11 @@ cora.userEditor = {
                 gui.showNotice('error', 'Admin-Status nicht geändert.');
                 return;
             }
-	    var arrow = td.getElement('.adminUserAdminStatus');
-	    if(arrow.isDisplayed()) {
-		arrow.hide();
-                td.set('title', 'Kein Admin');
-	    } else {
-		arrow.show('inline');
+            td.toggleClass('adminUserIsAdmin');
+	    if(ts.hasClass('adminUserIsAdmin')) {
                 td.set('title', 'Admin');
+	    } else {
+                td.set('title', 'Kein Admin');
 	    }
         });
     },
@@ -418,9 +416,9 @@ cora.userEditor = {
             }
             if(user.active == "1")
                 tr.addClass('userActive');
-            if(user.admin == "0") {
-                tr.getElement('.adminUserAdminStatus').hide();
-                tr.getElement('.adminUserAdminStatusTD').set('title', 'Kein Admin');
+            if(user.admin == "1") {
+                tr.getElement('.adminUserAdminStatusTD')
+                    .addClass('adminUserIsAdmin').set('title', 'Admin');
             }
             tr.inject(table);
         });

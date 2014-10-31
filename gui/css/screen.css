@@ -1000,7 +1000,22 @@ table#editNotices td.adminNoticeTextCell {
 
 tr.adminUserInfoRow .adminUserDelete,
 tr.adminUserInfoRow .adminUserAdminStatusTD { 
-    cursor: pointer;                  
+    cursor: pointer;
+}
+
+tr.adminUserInfoRow .adminUserAdminStatusTD span { 
+    display: none;
+}
+
+tr.adminUserInfoRow .adminUserAdminStatusTD:hover span { 
+    display: block !important;
+    opacity: 0.4;
+}
+
+tr.adminUserInfoRow .adminUserAdminStatusTD.adminUserIsAdmin span,
+tr.adminUserInfoRow .adminUserAdminStatusTD.adminUserIsAdmin:hover span { 
+    display: block !important;
+    opacity: 1.0 !important;
 }
 
 tr.adminUserInfoRow .adminUserLastactiveCell { 

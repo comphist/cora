@@ -278,7 +278,7 @@ $ulist = array();
     <table>
       <tr id="templateUserInfoRow" class="adminUserInfoRow">
         <td class="adminUserNameCell"></td>
-        <td class="centered adminUserAdminStatusTD" title="Admin"><span class="oi oi-shadow oi-green adminUserAdminStatus" data-glyph="check" aria-hidden="true"></span>
+        <td class="centered adminUserAdminStatusTD" title="Kein Admin"><span class="oi oi-shadow oi-green adminUserAdminStatus" data-glyph="check" aria-hidden="true"></span>
         </td>
         <td class="adminUserLastactiveCell"></td>
         <td class="adminUserActivityCell"></td>
