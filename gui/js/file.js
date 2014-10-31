@@ -550,8 +550,9 @@ cora.fileImporter = {
         }
         if(message != "") {}
         else if(!re || typeof re.success == "undefined") {
-            title = "Datei-Import fehlgeschlagen";
             message = "Beim Hinzufügen der Datei ist ein unbekannter Fehler aufgetreten.";
+            gui.showMsgDialog('error', message);
+            return false;
         }
         else if(!re.success) {
             title = "Datei-Import fehlgeschlagen";
@@ -564,6 +565,7 @@ cora.fileImporter = {
             return true;
         }
         else {
+            success = true;
             title = "Datei-Import erfolgreich";
             message = "Die Datei wurde erfolgreich hinzufügt.";
             if(re.warnings instanceof Array && re.warnings.length>0) {
@@ -572,8 +574,10 @@ cora.fileImporter = {
                             (re.warnings.length + " Warnungen") : "eine Warnung")
                          + " zurück:";
                 textarea = re.warnings.join("\n");
+            } else {
+                gui.showMsgDialog('info', message);
+                return true;
             }
-            success = true;
         }
         gui.showTextDialog(title, message, textarea);
         return success;
