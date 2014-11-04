@@ -8,6 +8,7 @@
 
 var gui = {
     activeSpinner: null,
+    activeSpinnerFadeDuration: 250,
     keepaliveRequest: null,
     editKeyboard: null,
     serverNoticeQueue: [],
@@ -268,7 +269,8 @@ var gui = {
 	$('spin-overlay').show();
 	this.activeSpinner = new Spinner($('spin-overlay'),
 					 {message: spinmsg,
-                                          fxOptions: {duration: 250}});
+                                          fxOptions:
+                                          {duration: this.activeSpinnerFadeDuration}});
 	this.activeSpinner.show(nofx);
     },
 
