@@ -466,6 +466,11 @@ cora.annotatorEditor = {
                 }
             }.bind(this)
         );
+        this.table.store('HtmlTable',
+                         new HtmlTable(this.table,
+                                       {sortable: true,
+                                        parsers: ['number', 'string',
+                                                  'string', 'title', 'string']}));
 
         this.performUpdate();
     },
@@ -508,6 +513,9 @@ cora.annotatorEditor = {
             tr.getElement('td.adminAnnotatorIDCell').set('text', tagger.id);
             tr.getElement('td.adminAnnotatorNameCell').set('text', tagger.name);
             tr.getElement('td.adminAnnotatorClassCell').set('text', tagger.class_name);
+            tr.getElement('td.adminAnnotatorTrainableCell')
+                .set('title', tagger.trainable ? 'Individuell trainierbar'
+                                               : 'Nicht individuell trainierbar');
             tr.getElement('span.adminAnnotatorTrainableStatus')
                 .setStyle('display', tagger.trainable ? 'inline-block' : 'none');
             tr.getElement('td.adminAnnotatorTagsetCell')
