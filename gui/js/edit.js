@@ -1617,6 +1617,17 @@ var EditorModel = new Class({
 	confirmbox.open();
     },
 
+    /* Function: _resizeTextarea
+
+       Resizes a <textarea> element based on the required number of lines.
+
+       Parameters:
+         event - A trigger event (e.g. keydown) that called this function
+    */
+    _resizeTextarea: function(event) {
+        event.target.rows = event.target.get('value').split("\n").length;
+    },
+
     /* Function: editToken
 
        Display a pop-up with the option to edit the transcription of a
@@ -1644,37 +1655,10 @@ var EditorModel = new Class({
 		gui.showNotice('error', "Transkription darf nicht leer sein!");
 		return false;
 	    }
-	    if(new_token.indexOf("=")>-1) {
-		checkstr = new_token.replace(/=\) /g, "").replace(/= /g, "")
-		    .replace(/=\| /g, "").replace(/<=> /g, "").replace(/<=>\| /g, "")
-		    .replace(/<<=>> /g, "").replace(/<<=>>\| /g, "")
-		    .replace(/\[=\] /g, "").replace(/\[=\]\| /g, "")
-		    .replace(/\[\[=\]\] /g, "").replace(/\[\[=\]\]\| /g, "");
-		if(checkstr.indexOf("=")>-1) {
-		    new mBox.Modal({
-			title: 'Sind Sie sicher?',
-			content: 'editTokenConfirm',
-			buttons: [
-			    {title: 'Abbrechen', addClass: 'mform'},
-			    {title: 'Ja', addClass: 'mform button_green',
-			     event: function() {
-				 this.close();
-				 performEditRequest(mbox, new_token);
-			     }
-			    }
-			],
-			closeOnBodyClick: false,
-			closeInTitle: false
-		    }).open();
-		    return false;
-		}
-	    }
 	    performEditRequest(mbox, new_token);
 	}
 
 	var performEditRequest = function(mbox, new_token) {
-	    // spaces are treated as line breaks atm
-	    new_token = new_token.replace(/ /g, "\n");
 	    gui.showSpinner({message: 'Bitte warten...'});
 	    new Request.JSON({
 		url: 'request.php',
@@ -1726,12 +1710,9 @@ var EditorModel = new Class({
 	    },
 	    closeOnBodyClick: false
 	});
-	$('editTokenBox').removeEvents('keydown');
-	$('editTokenBox').addEvent('keydown', function(event) {
-	    if(event.key == "enter") {
-		performEdit(editTokenBox);
-	    }
-	});
+	$('editTokenBox').removeEvents('keyup');
+	$('editTokenBox').addEvent('keyup', this._resizeTextarea);
+        this._resizeTextarea({target: $('editTokenBox')});
 	editTokenBox.open();
     },
 
@@ -1763,11 +1744,6 @@ var EditorModel = new Class({
 		gui.showNotice('error', "Transkription darf nicht leer sein!");
 		return false;
 	    }
-	    if(new_token.indexOf(" ") !== -1) {
-		gui.showNotice('error', "Transkription darf keine Leerzeichen enthalten!");
-		return false;
-	    }
-
 	    gui.showSpinner({message: 'Bitte warten...'});
 	    new Request.JSON({
 		url: 'request.php',
@@ -1820,12 +1796,9 @@ var EditorModel = new Class({
 	    },
 	    closeOnBodyClick: false
 	});
-	$('addTokenBox').removeEvents('keydown');
-	$('addTokenBox').addEvent('keydown', function(event) {
-	    if(event.key == "enter") {
-		performAdd(addTokenBox);
-	    }
-	});
+	$('addTokenBox').removeEvents('keyup');
+	$('addTokenBox').addEvent('keyup', this._resizeTextarea);
+        this._resizeTextarea({target: $('addTokenBox')});
 	addTokenBox.open();
     },
 

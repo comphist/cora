@@ -1432,13 +1432,13 @@
      foreach($data as &$line) {
        $mid = $line['id'];
 
-       // Transcription including spaces for line breaks
+       // Transcription including line breaks
        $ttrans = "";
        $lastline = null;
        $stmt_trans->execute(array(':tokid' => $line['tok_id']));
        while($row = $stmt_trans->fetch(PDO::FETCH_ASSOC)) {
 	 if($lastline!==null && $lastline!==$row['line_id']) {
-	   $ttrans .= " ";
+	   $ttrans .= "\n";
 	 }
 	 $ttrans .= $row['trans'];
 	 $lastline = $row['line_id'];

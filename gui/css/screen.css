@@ -49,7 +49,7 @@ h4 {
 }
 
 p {
-    padding: 1em 1em 0 1em;
+    padding: 0.5em 1em;
 }
 
 ul,
@@ -551,8 +551,17 @@ textarea.sans {
     font-family: 'Open Sans', Arial, sans-serif;
 }
 
+textarea.auto-resize {
+    display: block;
+    overflow-y: hidden;
+}
+
 div.limitedWidth p {
     max-width: 31em;
+}
+
+div.limitedWidth-tiny p {
+    max-width: 22.5em;
 }
 
 .error_text {
@@ -1155,7 +1164,7 @@ a.deletion-link:hover {
     -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=90);
     z-index: 999;
     background: #fff;
-    width: 100% !important;
+    max-width: 100% !important;
 }
 
 .spinner-msg {
