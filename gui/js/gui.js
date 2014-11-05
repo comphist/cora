@@ -25,7 +25,7 @@ var FlexRowList = new Class({
      */
     initialize: function(container, template) {
         this.container = container.empty().addClass("flexrow");
-        this.rowTemplate = template.addClass("flexrow-content");
+        this.rowTemplate = template.clone().addClass("flexrow-content");
         this.rowTemplate.grab(this._makeDeleteButton());
         this._makeAddRow();
         this._addContainerEvents();

@@ -270,7 +270,7 @@ $ulist = array();
     </div>
 
     <ul>
-      <li id="annotatorOptEntryTemplate"><input type="text" name="annotatorOptKey[]" class="mform annotatorOptKey"><input type="text" name="annotatorOptValue[]" class="mform annotatorOptValue"></li>
+      <li id="annotatorOptEntryTemplate"><input type="text" name="annotatorOptKey[]" class="mform annotatorOptKey" /><input type="text" name="annotatorOptValue[]" class="mform annotatorOptValue" /></li>
     </ul>
  
     <table>

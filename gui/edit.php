@@ -11,6 +11,7 @@
     <span class="btn-toolbar-entry btn-page-back" title="Seite zurück"><span class="oi" data-glyph="arrow-thick-left" aria-hidden="true"></span></span>
     <span class="btn-toolbar-entry btn-page-forward" title="Seite vor"><span class="oi" data-glyph="arrow-thick-right" aria-hidden="true"></span></span>
     <span class="btn-toolbar-entry btn-jump-to"><span class="oi" data-glyph="book" aria-hidden="true"></span> Springe zu Zeile</span>
+    <span class="btn-toolbar-entry btn-text-search"><span class="oi" data-glyph="magnifying-glass" aria-hidden="true"></span> Suchen</span>
     <span class="btn-toolbar-entry btn-text-info"><span class="oi" data-glyph="info" aria-hidden="true"></span> Metadaten</span>
   </div>
 
@@ -107,6 +108,18 @@
     <input id="jumpToBox" type="text" name="jumpTo" placeholder="" size="6" class="mform" />
   </div>
 
+  <div id="searchTokenForm">
+    <p>
+      Suche Tokens, die
+        <select class="editSearchOperator" size="1">
+          <option value="all">alle</option>
+          <option value="any">mind. eine</option>
+        </select>
+      diese(r) Bedingungen erfüllen:
+      <ul class="flexrow-container"></ul>
+    </p>
+  </div>
+
   <div id="deleteTokenWarning">
     <p class="important_text"><strong>Achtung!</strong> Diese Aktion kann nicht rückgängig gemacht werden!</p>
     <p>Soll das Token &quot;<span id="deleteTokenToken"></span>&quot; wirklich gelöscht werden?</p>
@@ -164,5 +177,24 @@
       <div id="eAS_progress"></div>
     </div>
   </div>
+
+  <ul>
+    <li id="editSearchCriterionTemplate">
+      <select class="editSearchField" size="1">
+        <option value="token_all">Token</option>
+        <option value="token_trans">Token (Trans)</option>
+        <option value="...">...</option>
+        // This is dependent on the linked tagsets...
+      </select>
+      <select class="editSearchMatch" size="1">
+        <option value="eq">ist gleich</option>
+        <option value="in">enthält</option>
+        <option value="regex">matcht RegEx</option>
+        <option value="...">...</option>
+        // This is dependent on the selection in "editSearchField"
+      </select>
+      <input type="text" name="editSearchText[]" class="editSearchText" />
+    </li>
+  </ul>
 </div>
 </div>
