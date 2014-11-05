@@ -180,9 +180,7 @@ $ulist = array();
       </p>
       <p>
         <label for="annotatorOptions">Optionen: </label>
-        <ul>
-          <li class="annotatorOptAddLi"><span class="oi oi-shadow annotatorOptAdd" data-glyph="plus" aria-hidden="true"></span></li>
-        </ul>
+        <ul class="flexrow-container"></ul>
       </p>
       <p>
         <input type="checkbox" id="annotatorIsTrainable" name="annotatorIsTrainable" value="trainable" class="mform" /><label for="annotatorIsTrainable">Projekt-spezifisch trainierbar</label>
@@ -272,7 +270,7 @@ $ulist = array();
     </div>
 
     <ul>
-      <li class="annotatorOptEntry" id="annotatorOptEntryTemplate"><input type="text" name="annotatorOptKey[]" class="mform annotatorOptKey"><input type="text" name="annotatorOptValue[]" class="mform annotatorOptValue"><span class="oi oi-shadow annotatorOptDelete" data-glyph="delete" aria-hidden="true"></span></li>
+      <li id="annotatorOptEntryTemplate"><input type="text" name="annotatorOptKey[]" class="mform annotatorOptKey"><input type="text" name="annotatorOptValue[]" class="mform annotatorOptValue"></li>
     </ul>
  
     <table>

@@ -1,10 +1,101 @@
-
 /** @file
  * GUI-related functions
  *
  * @author Marcel Bollmann
  * @date January 2012
  */
+
+/* Class: FlexRowList
+
+   A list (e.g., <ul>) element that allows the user to dynamically add
+   or delete rows.
+ */
+var FlexRowList = new Class({
+    container: null,
+    rowTemplate: null,
+    rowAdd: null,
+
+    /* Function: initialize
+
+       Create a new FlexRowList object.
+
+       Parameters:
+         container - The <ul>/<ol> element to become a FlexRowList
+         template - Template for a newly added row
+     */
+    initialize: function(container, template) {
+        this.container = container.empty().addClass("flexrow");
+        this.rowTemplate = template.addClass("flexrow-content");
+        this.rowTemplate.grab(this._makeDeleteButton());
+        this._makeAddRow();
+        this._addContainerEvents();
+    },
+
+    _makeAddRow: function() {
+        var li = new Element('li', {'class': "flexrow-add"});
+        var span = new Element('span',
+                               {'class': "oi oi-shadow flexrow-add-btn",
+                                'data-glyph': "plus",
+                                'aria-hidden': "true"});
+        this.rowAdd = li.grab(span);
+        this.container.grab(this.rowAdd);
+        return this;
+    },
+
+    _addContainerEvents: function() {
+        this.container.removeEvents('click');
+        this.container.addEvent(
+            'click:relay(span)',
+            function(event, target) {
+                if(target.hasClass("flexrow-add-btn")) {
+                    this.grabNewRow();
+                } else if(target.hasClass("flexrow-del-btn")) {
+                    target.getParent('li').destroy();
+                }
+            }.bind(this)
+        );
+        return this;
+    },
+
+    _makeDeleteButton: function() {
+        return new Element('span',
+                           {'class': "oi oi-shadow flexrow-del-btn",
+                            'data-glyph': "delete",
+                            'aria-hidden': "true"});
+    },
+
+    /* Function: grabNewRow
+
+       Add a new row cloned from the row template to this element.
+     */
+    grabNewRow: function() {
+        this.rowTemplate.clone().inject(this.rowAdd, 'before');
+        return this;
+    },
+
+    /* Function: grab
+
+       Add a specific row to the bottom of this container.
+     */
+    grab: function(li) {
+        li.addClass("flexrow-content").inject(this.rowAdd, 'before');
+        return this;
+    },
+
+    /* Function: getAllRows
+
+       Get all content rows from the container.
+     */
+    getAllRows: function() {
+        return this.container.getElements('li.flexrow-content');
+    },
+
+    empty: function() {
+        this.container.getElements('li.flexrow-content').destroy();
+        return this;
+    }
+
+});
 
 var gui = {
     activeSpinner: null,

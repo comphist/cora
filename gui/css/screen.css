@@ -522,6 +522,38 @@ button {
    width: 65%;
 }
 
+/* FlexRowList */
+
+.flexrow {
+    list-style-type: none;
+    padding-left: 1em !important;
+}
+
+.flexrow span.flexrow-add-btn,
+.flexrow span.flexrow-del-btn {
+    cursor: pointer;
+}
+
+.flexrow span.flexrow-add-btn {
+    color: rgb(0, 128, 0);
+    padding-left: 6px;
+    position: relative;
+    top: 4px;
+}
+
+.flexrow span.flexrow-add-btn:hover {
+    color: rgb(64, 192, 64);
+}
+
+.flexrow span.flexrow-del-btn {
+    color: rgb(224, 0, 0);
+    padding-left: 6px;
+}
+
+.flexrow span.flexrow-del-btn:hover {
+    color: rgb(255, 64, 64);
+}
+
 /***************************************************************************/
 /***** FORMS ***************************************************************/
 /***************************************************************************/
@@ -1087,36 +1119,6 @@ div.annotatorEditForm input.annotatorOptKey {
 
 div.annotatorEditForm input.annotatorOptValue { 
     width: 22em !important;
-}
-
-div.annotatorEditForm ul {
-    list-style-type: none;
-    padding-left: 1em !important;
-}
-
-div.annotatorEditForm span.annotatorOptDelete,
-div.annotatorEditForm span.annotatorOptAdd {
-    cursor: pointer;
-}
-
-div.annotatorEditForm span.annotatorOptAdd {
-    color: rgb(0, 128, 0);
-    padding-left: 6px;
-    position: relative;
-    top: 4px;
-}
-
-div.annotatorEditForm span.annotatorOptAdd:hover {
-    color: rgb(64, 192, 64);
-}
-
-div.annotatorEditForm span.annotatorOptDelete {
-    color: rgb(224, 0, 0);
-    padding-left: 6px;
-}
-
-div.annotatorEditForm span.annotatorOptDelete:hover {
-    color: rgb(255, 64, 64);
 }
 
 /***************************************************************************/

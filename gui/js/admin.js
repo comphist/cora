@@ -434,6 +434,7 @@ cora.annotatorEditor = {
     annotators: [],
     table: null,
     editForm: null,
+    flexrow: null,
 
     initialize: function() {
         this.table = $('editAutomaticAnnotators');
@@ -455,17 +456,8 @@ cora.annotatorEditor = {
                 }
 	    }.bind(this)
 	);
-        this.editForm.addEvent(
-            'click:relay(span)',
-            function(event, target) {
-                var parent = target.getParent('li');
-                if(target.hasClass("annotatorOptAdd")) {
-                    $('annotatorOptEntryTemplate').clone().inject(parent, 'before');
-                } else if(target.hasClass("annotatorOptDelete")) {
-                    parent.destroy();
-                }
-            }.bind(this)
-        );
+        this.flexrow = new FlexRowList(this.editForm.getElement('ul.flexrow-container'),
+                                       $('annotatorOptEntryTemplate'));
         this.table.store('HtmlTable',
                          new HtmlTable(this.table,
                                        {sortable: true,
@@ -599,7 +591,7 @@ cora.annotatorEditor = {
                 annotator.tagsets.push(el.get('value'));
         });
         annotator.options = {};
-        content.getElements('li.annotatorOptEntry').each(function(li) {
+        content.getElements('li.flexrow-content').each(function(li) {
             var key = li.getElement('input.annotatorOptKey').get('value');
             var value = li.getElement('input.annotatorOptValue').get('value');
             if (key && key.length > 0)
@@ -646,13 +638,13 @@ cora.annotatorEditor = {
             .addClass('tagsetSelectPlaceholder')
             .replaces(content.getElement('.tagsetSelectPlaceholder'));
         /* option list */
-        content.getElements('li.annotatorOptEntry').destroy();
+        this.flexrow.empty();
         Object.each(annotator.options, function(value, key) {
-            var thisopt = $('annotatorOptEntryTemplate').clone();
+            var thisopt = this.flexrow.rowTemplate.clone();
             thisopt.getElement('input.annotatorOptKey').set('value', key);
             thisopt.getElement('input.annotatorOptValue').set('value', value);
-            thisopt.inject(opt_add, 'before');
-        });
+            this.flexrow.grab(thisopt);
+        }.bind(this));
         /* dialog window */
         new mBox.Modal({
             title: "Optionen für Tagger "+tid,
