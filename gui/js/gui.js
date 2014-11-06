@@ -338,7 +338,7 @@ var gui = {
        Enable scrolling for the page.
     */
     enableScrolling: function() {
-        document.getElement('body').setStyle('overflow', 'scroll');
+        document.getElement('body').setStyle('overflow', 'auto');
     },
 
     /* Function: showSpinner
