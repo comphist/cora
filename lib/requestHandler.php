@@ -209,7 +209,7 @@ class RequestHandler {
                                                $get["linktagsets"]);
 
       case "fetchTagsetsForFile":
-	return $this->sh->fetchTagsetsForFile($get["file_id"]);
+	return $this->sh->fetchTagsetsForFile($get["fileid"]);
 
       case "fetchLemmaSugg":
 	return $this->sh->getLemmaSuggestion($get["linenum"],

@@ -171,26 +171,10 @@ var gui = {
 	    events: {
 		'ctrl+s': function(e) {
 		    e.stop(); 
-		    if(edit!==null && edit.editorModel!==null) {
-			edit.editorModel.saveData();
+		    if(cora.editor!==null) {
+			cora.editor.saveData();
 		    }
 		}
-		/* ,
-		'alt+left': function(e) {
-		    e.stop(); 
-		    if(edit!==null && edit.editorModel!==null) {
-			edit.editorModel.pages.decrement();
-			edit.editorModel.pages.render();
-		    }
-		},
-		'alt+right': function(e) {
-		    e.stop(); 
-		    if(edit!==null && edit.editorModel!==null) {
-			edit.editorModel.pages.increment();
-			edit.editorModel.pages.render();
-			edit.editorModel.focusFirstElement();
-		    }
-		} */
 	    }
 	});
     },
@@ -222,6 +206,16 @@ var gui = {
 	}
     },
 
+    /* Function: setHeader
+
+       Sets the header text, typically reserved for the name of the
+       currently opened file.
+     */
+    setHeader: function(text) {
+	$('currentfile').set('text', text);
+        return this;
+    },
+    
     /* Function: processServerNotices
 
        Shows the next server notice in the queue, and only shows
@@ -239,6 +233,36 @@ var gui = {
                             this.serverNoticeShowing = false;
                             this.processServerNotices();
                         }.bind(this));
+    },
+
+    /* Function: showTab
+
+       Makes a tab visible in the menu.
+
+       Parameters:
+        tabName - Internal name of the tab to be shown
+     */
+    showTab: function(tabName) {
+        var tabButton = $(tabName+"TabButton");
+        if (tabButton) {
+            tabButton.show();
+        }
+        return this;
+    },
+
+    /* Function: showTab
+
+       Hides a tab in the menu.
+
+       Parameters:
+        tabName - Internal name of the tab to be hidden
+     */
+    hideTab: function(tabName) {
+        var tabButton = $(tabName+"TabButton");
+        if (tabButton) {
+            tabButton.hide();
+        }
+        return this;
     },
 
     /* Function: changeTab
@@ -277,6 +301,8 @@ var gui = {
             alert(tabName + " tab not implemented!");
 	}
 	activeTab.setStyle("display", "block");
+
+        return this;
     },
 
     /* Function: showNotice
@@ -297,6 +323,7 @@ var gui = {
             neverClose: (keepopen || false),
             onClose: onclose
 	});
+        return this;
     },
 
     /* Function: confirm
@@ -331,6 +358,7 @@ var gui = {
     */
     disableScrolling: function() {
         document.getElement('body').setStyle('overflow', 'hidden');
+        return this;
     },
 
     /* Function: enableScrolling
@@ -339,6 +367,23 @@ var gui = {
     */
     enableScrolling: function() {
         document.getElement('body').setStyle('overflow', 'auto');
+        return this;
+    },
+
+    /* Function: lock
+
+       Locks the screen by showing a transparent overlay.
+     */
+    lock: function() {
+        $('overlay').show(); return this;
+    },
+
+    /* Function: unlock
+
+       Unlocks a previously locked screen.
+     */
+    unlock: function() {
+        $('overlay').hide(); return this;
     },
 
     /* Function: showSpinner
@@ -356,13 +401,14 @@ var gui = {
 	var nofx    = options.noFx || false;
 
         this.disableScrolling();
-	$('overlay').show();
+        this.lock();
 	$('spin-overlay').show();
 	this.activeSpinner = new Spinner($('spin-overlay'),
 					 {message: spinmsg,
                                           fxOptions:
                                           {duration: this.activeSpinnerFadeDuration}});
 	this.activeSpinner.show(nofx);
+        return this;
     },
 
     /* Function: hideSpinner
@@ -372,10 +418,11 @@ var gui = {
     hideSpinner: function() {
 	if(this.activeSpinner !== undefined && this.activeSpinner !== null) {
 	    this.activeSpinner.hide();
-	    $('overlay').hide();
+	    this.unlock();
 	    $('spin-overlay').hide();
 	}
         this.enableScrolling();
+        return this;
     },
 
     /* Function: showMsgDialog
@@ -529,8 +576,8 @@ function onLoad() {
 }
 
 function onBeforeUnload() {
-    if (typeof edit!="undefined" && edit.editorModel!==null) {
-	var chl = edit.editorModel.changedLines.length;
+    if (cora.editor !== null) {
+	var chl = cora.editor.changedLines.length;
 	if (chl>0) {
 	    var zeile = (chl>1) ? "Zeilen" : "Zeile";
 	    return ("Im geöffneten Dokument gibt es noch ungespeicherte Änderungen in "+chl+" "+zeile+", die verloren gehen, wenn Sie fortfahren.");

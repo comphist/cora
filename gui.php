@@ -136,6 +136,7 @@ NOTLOGGEDIN;
         <p></p>
         <p><textarea cols="80" rows="10" readonly="readonly"></textarea></p>
       </div>
+      <iframe id="fileDownloadTarget"></iframe>
     </div>
   </body>
 </html>

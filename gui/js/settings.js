@@ -3,19 +3,16 @@
 // ***********************************************************************
 
 window.addEvent('domready', function() {
-    var ref;
     var eus = $('editUserSettings');
 
     if(eus!==null && typeof edit!="undefined") {
-	ref = edit;
-
 	/* Initialize editor settings tab */
 	new Form.Request($('editUserSettings'),'',{
             resetForm: false,
             extraData: {'do': 'saveEditorUserSettings'},
             onSuccess: function(){
 		var cl, pl, em, range;
-		em = ref.editorModel;
+		em = cora.editor;
                 if (em !== null)
                     range = em.pages.getRange(em.pages.activePage);
 		cl = eus.getElement('input[name="contextLines"]').get('value').toInt();
@@ -82,8 +79,8 @@ window.addEvent('domready', function() {
 		var value = target.get('value');
 		if (checked) {
 		    $('editTable').getElements(".editTable_"+value).show();
-		    if(edit!=null && edit.editorModel!=null && edit.editorModel!=undefined) {
-			edit.editorModel.forcePageRedraw();
+		    if(cora.editor !== null) {
+			cora.editor.forcePageRedraw();
 		    }
 		    userdata.hiddenColumns = userdata.hiddenColumns.replace(value+",","");
 		} else {
@@ -108,8 +105,8 @@ window.addEvent('domready', function() {
             function(event, target) {
                 var value = estp.getElement('input:checked').get('value');
                 userdata.textPreview = value;
-                if (ref.editorModel!=null) {
-                    ref.editorModel.forcePageRedraw();
+                if (cora.editor !== null) {
+                    cora.editor.forcePageRedraw();
                 }
 		new Request({url: 'request.php'}).get(
 		    {'do': 'setUserEditorSetting',
@@ -129,8 +126,8 @@ window.addEvent('domready', function() {
 		userdata[value] = checked;
 		if(value=="show_error") {
 		    userdata.showInputErrors = checked;
-		    if (ref.editorModel!=null) {
-			ref.editorModel.updateShowInputErrors();
+		    if (cora.editor !== null) {
+			cora.editor.updateShowInputErrors();
 		    }
 		}
 		new Request({url: 'request.php'}).get(

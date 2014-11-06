@@ -158,11 +158,33 @@ cora.projects = {
 
 /* Class: cora.files
 
-   Provides aliases for file-specific functions in cora.projects.
+   Provides access to file-specific functions, including aliases for
+   the file-specific functions in cora.projects.
 */
 cora.files = {
     get: cora.projects.getFile.bind(cora.projects),
     getProject: cora.projects.getProjectForFile.bind(cora.projects),
+
+    /* Function: _performGETRequest
+
+       Performs an asynchronous GET request that includes a file ID.
+
+       Parameters:
+         name - Name of request
+         fid - ID of the file
+         fn  - Callback function to invoke after successful request
+    */
+    _performGETRequest: function(name, fid, fn) {
+        new Request.JSON(
+            {'url': 'request.php',
+             'async': true,
+             onComplete: function(status, text) {
+                 if(typeof(fn) == "function")
+                     fn(status, text);
+             }
+            }
+        ).get({'do': name, 'fileid': fid});
+    },
 
     /* Function: getDisplayName
 
@@ -194,7 +216,78 @@ cora.files = {
         if (file == null)
             return false;
         return (userdata.admin || (file.creator_name == userdata.name));
+    },
+
+    /* Function: deleteFile
+
+       Sends a server request to delete the file with the given id.
+
+       Parameters:
+         fid - ID of the file to be deleted
+         fn  - Callback function to invoke after successful request
+     */
+    deleteFile: function(fid, fn) {
+        new Request.JSON(
+    	    {'url': 'request.php?do=deleteFile',
+    	     'async': false,
+    	     'data': 'file_id='+fid,
+    	     onSuccess: function(status, text) {
+                 if(typeof(fn) == "function")
+                     fn(status, text);
+    	     }
+    	    }
+    	).post();
+    },
+
+    /* Function: lock
+
+       Sends a server request to lock a given file.
+
+       Parameters:
+         fid - ID of the file to be locked
+         fn  - Callback function to invoke after successful request
+     */
+    lock: function(fid, fn) {
+        this._performGETRequest("lockFile", fid, fn);
+    },
+
+    /* Function: open
+
+       Sends a server request to open a given file.
+
+       Parameters:
+         fid - ID of the file to be opened
+         fn  - Callback function to invoke after successful request
+     */
+    open: function(fid, fn) {
+        this._performGETRequest("openFile", fid, fn);
+    },
+
+    /* Function: close
+
+       Sends a server request to close/unlock a given file.
+
+       Parameters:
+         fid - ID of the file to be closed/unlocked
+         fn  - Callback function to invoke after successful request
+     */
+    close: function(fid, fn) {
+        this._performGETRequest("unlockFile", fid, fn);
+    },
+
+    /* Function: prefetchTagsets
+
+       Sends a server request to fetch all closed tagsets associated
+       with the given file.
+
+       Parameters:
+         fid - ID of the file
+         fn  - Callback function to invoke after successful request
+     */
+    prefetchTagsets: function(fid, fn) {
+        this._performGETRequest("fetchTagsetsForFile", fid, fn);
     }
+
 };
 
 // ***********************************************************************
@@ -769,19 +862,28 @@ cora.fileImporter = {
     }
 };
 
-var file = {
-    tagsets: {},
-    tagsetlist: [],
-    taggers: [],
-    files_div: null,
+// ***********************************************************************
+// ********** File manager ***********************************************
+// ***********************************************************************
 
-    initialize: function(){
-        cora.projects.onUpdate(function(status, text) {
-            this.renderFileTable();
-        }.bind(this));
+/* Class: fileManager
 
-        this.files_div = $('files');
-        this.files_div.addEvent(
+   Manages opening/closing of files and renders the file table.
+ */
+cora.fileManager = {
+    content: null,
+    
+    initialize: function() {
+        this.content = $('files');
+        this._prepareEvents();
+    },
+
+    /* Function: _prepareEvents
+
+       Sets up events for links/buttons in the file table.
+     */
+    _prepareEvents: function() {
+        this.content.addEvent(
             'click:relay(a)',
             function(event, target) {
                 var parent = target.getParent('tr');
@@ -802,6 +904,376 @@ var file = {
                 }
             }.bind(this)
         );
+    },
+    
+    /* Function: render
+
+       (Re-)renders the file & project listing table.
+     */
+    render: function() {
+        if(cora.projects.isEmpty()) {
+            this.content.empty().grab($('noProjectGroups').clone());
+            return this;
+        }
+        var last_div = null;
+        Array.each(cora.projects.getAll(), function(project) {
+            var prj_div, prj_table, html_table;
+            var div_id = 'proj_'+project.id;
+            prj_div = this.content.getElementById(div_id);
+            if(prj_div === null) {  // create project div if necessary
+                prj_div = $('fileGroup').clone();
+                prj_div.set('id', div_id);
+                prj_div.getElement('.projectname')
+                    .empty().appendText(project.name);
+                if(userdata.admin) {
+                    prj_div.getElement('.projectname')
+                        .appendText(' (id: '+project.id+')');
+                    prj_div.getElements('.admin-only').removeClass('start-hidden');
+                }
+                if(last_div !== null)
+                    prj_div.inject(last_div, 'after');
+                else
+                    prj_div.inject(this.content);
+                gui.addToggleEvents(prj_div);
+                html_table = new HtmlTable(prj_div.getElement('table'),
+                                           {sortable: true,
+                                            parsers: ['string', 'string',
+                                                      'date',   'string',
+                                                      'date',   'string']});
+                prj_div.store('HtmlTable', html_table);
+            }
+            prj_table = prj_div.getElement('tbody').empty();
+            if(project.files.length == 0) {  // no files?
+                prj_table.adopt($('noProjectFiles').clone());
+            }
+            else {  // rebuild list of files from scratch
+                Array.each(project.files, function(file) {
+                    prj_table.adopt(this.renderTableLine(file));
+                }.bind(this));
+                prj_div.retrieve('HtmlTable').reSort();
+            }
+            last_div = prj_div;
+        }.bind(this));
+        return this;
+    },
+
+    /* Function: renderTableLine
+
+       Renders a line of the file listing table.
+
+       Parameters:
+        file - Object representing the file to be rendered
+
+       Returns:
+        A <tr> Element for the file listing table.
+     */
+    renderTableLine: function(file){
+        var td;
+        var tr = $('fileTableRow').clone();
+        tr.set('id', 'file_'+file.id);
+        if(file.opened)
+            tr.addClass('opened');
+        // delete icon (if applicable)
+        if(cora.files.mayDeleteFile(file.id)) {
+            tr.getElement('a.deleteFileLink').removeClass('start-hidden');
+        }
+        // filename
+        tr.getElement('td.ftr-id').set('text', file.id);
+        tr.getElement('td.ftr-sigle a').set('text', '['+file.sigle+']');
+        tr.getElement('td.ftr-filename a').set('text', file.fullname);
+        // changer & creator info
+        tr.getElement('td.ftr-changed-at')
+            .set('text', gui.formatDateString(file.changed));
+        tr.getElement('td.ftr-changed-by').set('text', file.changer_name);
+        tr.getElement('td.ftr-created-at')
+            .set('text', gui.formatDateString(file.created));
+        tr.getElement('td.ftr-created-by').set('text', file.creator_name);
+        // close button
+        if(file.opened && (userdata.admin || (file.opened == userdata.name))) {
+            tr.getElement('a.closeFileLink').removeClass('start-hidden');
+        }
+        // admin stuff
+        if(userdata.admin)
+            tr.getElements('.admin-only').removeClass('start-hidden');
+        // done!
+        return tr;
+    },
+
+    /* Function: openFile
+
+       Opens a file, instantiating the editor.
+
+       Parameters:
+         fid - ID of the file to open
+    */
+    openFile: function(fid) {
+        var startChain, onLockSuccess, onOpenSuccess, onInitSuccess;
+
+        // Is there a file already opened?
+        if (cora.editor !== null && cora.editor.fileId !== null) {
+            cora.editor.confirmClose(function() {
+                this.closeCurrentlyOpened(function() {
+                    this.openFile(fid);
+                }.bind(this));
+            }.bind(this));
+            return false;
+        }
+
+        // 1. Acquire the lock
+        startChain = function() {
+            cora.files.lock(fid, onLockSuccess);
+        };
+
+        // 2. If lock was successful, open the file
+        onLockSuccess = function(status) {
+            if(status.success) {
+                gui.showSpinner({message: "Datei wird geöffnet..."});
+                cora.files.open(fid, onOpenSuccess);
+            } else {
+                if(status.lock) {
+                    gui.showMsgDialog('info',
+                        "Das Dokument wird zur Zeit bearbeitet von Benutzer '"
+                        + data.lock.locked_by + "' seit "
+                        + gui.formatDateString(data.lock.locked_since).toLowerCase()
+                        + ".");
+                } else {
+                    gui.showMsgDialog('error',
+                                      "Das Dokument konnte nicht geöffnet werden.");
+                }     
+            }
+        };
+
+        // 3. If open was successful, fetch and preprocess any closed tagsets
+        onOpenSuccess = function(status) {
+            var response = status;
+            if(status.success) {
+                file.tagsetlist = status.data.tagsets;  // XXX
+                file.taggers = status.data.taggers;  // XXX
+                gui.setHeader(cora.files.getDisplayName(fid));
+                cora.projects.performUpdate();
+                cora.files.prefetchTagsets(fid, function(status) {
+                    if(status.success && status.data !== undefined) {
+                        file.preprocessTagset(status.data, function() {  // XXX
+                            response.onInit = onInitSuccess;
+                            cora.editor = new EditorModel(fid, response);
+                        });
+                    } else {
+                        gui.showMsgDialog('error', "Fehler beim Laden der Tagsets.");
+                    }
+                });
+            } else {
+                gui.showMsgDialog('error', "Das Dokument konnte nicht geöffnet werden.");
+            }
+        };
+
+        // 4. Show the editor tab and clean up
+        onInitSuccess = function() {
+            $('editTabButton').show();
+            default_tab = 'edit';
+            gui.changeTab('edit');
+            gui.hideSpinner();
+        };
+
+        startChain();
+    },
+
+    /* Function: closeFile
+
+       Closes a file, asking for confirmation if there are any unsaved
+       changes or the file is currently opened by someone else.
+
+       Parameters:
+         fid - ID of the file to close
+     */
+    closeFile: function(fid) {
+        // are we closing the currently opened file?
+        if (cora.editor !== null && cora.editor.fileId == fid) {
+            cora.editor.confirmClose(this.closeCurrentlyOpened);
+        } else {
+            // if we're admin, we can close any file
+            if(!userdata.admin) {
+                gui.showMsgDialog('error',
+                           "Sie haben keine Berechtigung, diese Datei zu schließen.");
+            } else {
+                gui.confirm(
+                    "Sie sind dabei, eine Datei zu schließen, die aktuell nicht von "
+                        +"Ihnen bearbeitet wird. Falls jemand anderes diese Datei "
+                        +"zur Zeit bearbeitet, könnten Datenverluste auftreten. "
+                        +"Trotzdem schließen?",
+                    function() {
+                        cora.files.close(fid, function() {
+                            cora.projects.performUpdate();
+                        });
+                    }
+                );
+            }
+        }
+    },
+
+    /* Function: closeCurrentlyOpened
+
+       Closes the currently opened file and destructs the editor tab.
+       
+       TODO: this function certainly belongs somewhere else
+     */
+    closeCurrentlyOpened: function(fn) {
+        if (cora.editor != null && cora.editor.fileId != null) {
+            gui.lock();
+            cora.files.close(cora.editor.fileId, function(status) {
+                cora.editor.destruct();
+                cora.editor = null;
+                cora.projects.performUpdate();
+                gui.setHeader("").hideTab('edit').changeTab('file').unlock();
+                if(typeof(fn) == "function")
+                    fn();
+            });
+        }
+    },
+
+    /* Function: deleteFile
+
+       Asks for confirmation to delete a file and, if confirmed, sends
+       a server request for deletion.
+
+       Parameters:
+         fid - ID of the file to be deleted
+     */
+    deleteFile: function(fid) {
+        var message = "Soll das Dokument '" + cora.files.getDisplayName(fid)
+            + "' wirklich gelöscht werden? Dieser Schritt kann nicht rückgängig "
+            + "gemacht werden!";
+        var performDelete = function() {
+            cora.files.deleteFile(fid, function(status) {
+		if(!status || !status.success)
+		    gui.showNotice('error', "Konnte Datei nicht löschen.");
+		else
+		    gui.showNotice('ok', "Datei gelöscht.");
+                cora.projects.performUpdate();
+            });
+        };
+        gui.confirm(message, performDelete, true);
+    },
+
+    /* Function: exportFile
+
+       Displays a dialog to export a file and triggers the export.
+
+       Parameters:
+         fid - ID of the file to be exported
+     */
+    exportFile: function(fid){
+	new mBox.Modal({
+	    content: 'fileExportPopup',
+	    title: 'Datei exportieren',
+	    buttons: [
+		{title: 'Abbrechen', addClass: 'mform'},
+		{title: 'Exportieren', addClass: 'mform button_green',
+		 event: function() {
+		     var format = $('fileExportFormat').getSelected()[0].get('value');
+		     this.close();
+		     $('fileDownloadTarget').src = 'request.php?do=exportFile'
+                         +'&fileid='+fid+'&format='+format;
+		 }
+		}
+	    ]
+	}).open();
+    },
+
+    /* Function: performChangeTagsetAssoc
+
+       Performs a server request to change tagset associations for a
+       single file.  Will only succeed if user is admin.
+
+       Parameters:
+         fileid - ID of the file
+         div    - Content div with the currently selected tagsets
+     */
+    performChangeTagsetAssoc: function(fileid, div) {
+        var tagsets = div.getElements('input[name="linktagsets[]"]')
+                         .filter(function(elem) { return elem.get('checked'); })
+                         .get('value');
+        new Request.JSON(
+    	    {'url': 'request.php',
+    	     'async': false,
+    	     onSuccess: function(status, x) {
+                 if(status.success) {
+                     gui.showNotice('ok', "Tagset-Verknüpfungen geändert.");
+                 }
+                 else {
+                     gui.showNotice('error', "Tagset-Verknüpfungen nicht geändert.");
+                     if(status.errors && status.errors.length>0) {
+                         gui.showTextDialog("Ändern fehlgeschlagen",
+                                            "Tagset-Verknüpfungen konnten nicht "
+                                            +"geändert werden.",
+                                            status.errors);
+                     }
+                 }
+    	     }
+    	    }
+    	).get({'do': 'changeTagsetsForFile',
+               'file_id': fileid, 'linktagsets': tagsets});
+    },
+
+    /* Function: editTagsetAssoc
+
+       Shows a dialog with the associated tagsets for a file.
+
+       Parameters:
+         fileid - ID of the file
+     */
+    editTagsetAssoc: function(fileid) {
+        var ref = this;
+        var fullname = cora.files.getDisplayName(fileid);
+	var contentdiv = $('tagsetAssociationTable');
+	var spinner = new Spinner(contentdiv);
+	var content = new mBox.Modal({
+	    title: "Tagset-Verknüpfungen für '"+fullname+"'",
+	    content: contentdiv,
+	    buttons: [ {title: "Schließen", addClass: "mform",
+			id: "editTagsetAssocOK",
+			event: function() { this.close(); }},
+                       {title: "Ändern", addClass: "mform button_red",
+			id: "editTagsetAssocPerform",
+			event: function() {
+                            ref.performChangeTagsetAssoc(fileid, contentdiv);
+                            this.close();
+                        }}
+		     ]
+	});
+	content.open();
+	spinner.show();
+
+	new Request.JSON(
+    	    {'url': 'request.php',
+    	     'async': false,
+    	     onSuccess: function(tlist, x) {
+		 // show tagset associations
+		 if(!tlist['success']) {
+                     gui.showNotice('error',
+                                    "Fehler beim Laden der Tagset-Verknüpfungen.");
+		     spinner.destroy();
+		     content.close();
+		 }
+		 contentdiv.getElement('table.tagset-list')
+		     .getElements('input').each(function(input) {
+			 var checked = tlist['data'].contains(input.value) ? "yes" : "";
+			 input.set('checked', checked);
+		     });
+		 spinner.destroy();
+    	     }
+    	    }
+    	).get({'do': 'getTagsetsForFile', 'file_id': fileid});
+    }
+
+};
+
+var file = {
+    tagsets: {},
+    tagsetlist: [],
+    taggers: [],
+    files_div: null,
+
+    initialize: function(){
     },
 
     /* Function: _splitAtFirstDot
@@ -902,374 +1374,10 @@ var file = {
             fn();
     },
 
-    /* Function: setHeaderFilename
-     */
-    setHeaderFilename: function(fileid) {
-	$('currentfile').set('text', cora.files.getDisplayName(fileid));
-    },
-    
-    /* Function: openFile
-
-       Opens a file.
-
-       Parameters:
-         fileid - ID of the file to open
-         force - (optional) If true, skips any confirmation dialogs
-     */
-    openFile: function(fileid, force) {
-        var ref = this;
-	var emf = (edit.editorModel!=null && edit.editorModel.fileId!=null);
-
-	if (emf && !force) {
-            edit.editorModel.confirmClose(function() { ref.openFile(fileid, true); });
-	    return false;
-	}
-
-        // the following functions are called in inverse order of their definitions...
-
-        var onInitSuccess = function() {
-	    $('editTabButton').show();
-	    default_tab = 'edit';
-	    gui.changeTab('edit');
-            gui.hideSpinner();
-        };
-
-        var onOpenSuccess = function(fileData) {        		         
-            if(fileData.success){
-		ref.tagsetlist = fileData.data.tagsets;
-		ref.taggers = fileData.data.taggers;
-        	new Request.JSON({
-        	    url: "request.php",
-        	    async: true,
-        	    onComplete: function(response) {
-	                // TODO: error handling?!
-	                ref.preprocessTagset(response['data'], function() {
-                            fileData.onInit = onInitSuccess;
-            	            edit.editorModel = new EditorModel(fileid, fileData);
-                        });
-                    }
-        	}).get({'do': 'fetchTagsetsForFile', 'file_id': fileid});
-                ref.setHeaderFilename(fileid);
-		ref.listFiles();
-	    }
-        };
-        
-        var onLockSuccess = function(data, text) {
-    	    if(data.success) {
-                gui.showSpinner({
-                    message: "Datei wird geöffnet...",
-                });
-        	new Request.JSON({
-        	    url: 'request.php',
-        	    onComplete: onOpenSuccess
-        	}).get({'do': 'openFile', 'fileid': fileid});
-    	    } else {
-                gui.showMsgDialog('info',
-                        "Das Dokument wird zur Zeit bearbeitet von Benutzer '"
-                        + data.lock.locked_by + "' seit "
-                        + gui.formatDateString(data.lock.locked_since).toLowerCase()
-                        + ".");
-    	    }
-    	};
-
-        new Request.JSON({
-            url: 'request.php',
-    	    onSuccess: onLockSuccess
-    	}).get({'do': 'lockFile', 'fileid': fileid});
-    },
-    
-    /* Function: closeFile
-
-       Closes a file.
-
-       Parameters:
-         fileid - ID of the file to close
-     */
-    closeFile: function(fileid){
-        var ref = this;
-	var emf = (edit.editorModel!=null && edit.editorModel.fileId==fileid);
-
-	if (emf) {
-            var doClose = function() {
-	        $('overlay').show();
-	        new Request.JSON({
-		    url: "request.php",
-		    onSuccess: function(data) {
-		        if (!data.success) {
-			    console.log("Error closing file?");
-		        }
-		        ref.listFiles();
-		        edit.editorModel = null;
-		        default_tab = 'file';
-		        gui.changeTab(default_tab);
-		        $$('div#menuRight .when-file-open-only').removeClass('file-open');
-		        $('editTable').hide();
-		        $('editTabButton').hide();
-		        $('currentfile').set('text','');
-		        $('overlay').hide();
-		    }
-	        }).get({'do': 'unlockFile', 'fileid': fileid});
-            };
-            edit.editorModel.confirmClose(doClose);
-	} else {
-            var forceClose = function () {
-		new Request({
-		    url:"request.php",
-		    onSuccess: function(data){
-			ref.listFiles();
-		    }
-		}).get({'do': 'unlockFile', 'fileid': fileid, 'force': true});
-            };
-            gui.confirm("Sie sind dabei, eine Datei zu schließen, die aktuell nicht von Ihnen bearbeitet wird. Falls jemand anderes diese Datei zur Zeit bearbeitet, könnten Datenverluste auftreten. Trotzdem schließen?", forceClose);
-	}
-    },
-    
     listFiles: function(){
         cora.projects.performUpdate();
-    },
-
-    /* Function: renderFileTable
-
-       (Re-)renders the file & project listing table.
-     */
-    renderFileTable: function() {
-        var ref = this;
-        var files_div = this.files_div;
-        if(cora.projects.isEmpty()) {
-            files_div.empty().grab($('noProjectGroups').clone());
-            return;
-        }
-        var last_div = null;
-        Array.each(cora.projects.getAll(), function(project) {
-            var prj_div, prj_table, html_table;
-            var div_id = 'proj_'+project.id;
-            prj_div = files_div.getElementById(div_id);
-            if(prj_div === null) {  // create project div if necessary
-                prj_div = $('fileGroup').clone();
-                prj_div.set('id', div_id);
-                prj_div.getElement('.projectname')
-                    .empty().appendText(project.name);
-                if(userdata.admin) {
-                    prj_div.getElement('.projectname')
-                        .appendText(' (id: '+project.id+')');
-                    prj_div.getElements('.admin-only').removeClass('start-hidden');
-                }
-                if(last_div !== null)
-                    prj_div.inject(last_div, 'after');
-                else
-                    prj_div.inject(files_div);
-                gui.addToggleEvents(prj_div);
-                html_table = new HtmlTable(prj_div.getElement('table'),
-                                           {sortable: true,
-                                            parsers: ['string', 'string',
-                                                      'date',   'string',
-                                                      'date',   'string']});
-                prj_div.store('HtmlTable', html_table);
-            }
-            prj_table = prj_div.getElement('tbody').empty();
-            if(project.files.length == 0) {  // no files?
-                prj_table.adopt($('noProjectFiles').clone());
-            }
-            else {  // rebuild list of files from scratch
-                Array.each(project.files, function(file) {
-                    prj_table.adopt(ref.renderTableLine(file));
-                });
-                prj_div.retrieve('HtmlTable').reSort();
-            }
-            last_div = prj_div;
-        });
-    },
-
-    /* Function: renderTableLine
-
-       Renders a line of the file listing table.
-
-       Parameters:
-        file - Object representing the file to be rendered
-
-       Returns:
-        A <tr> Element for the file listing table.
-     */
-    renderTableLine: function(file){
-	var ref = this;
-        var td;
-        var tr = $('fileTableRow').clone();
-        tr.set('id', 'file_'+file.id);
-        if(file.opened)
-            tr.addClass('opened');
-        // delete icon (if applicable)
-        if(cora.files.mayDeleteFile(file.id)) {
-            tr.getElement('a.deleteFileLink').removeClass('start-hidden');
-        }
-        // filename
-        tr.getElement('td.ftr-id').set('text', file.id);
-        tr.getElement('td.ftr-sigle a').set('text', '['+file.sigle+']');
-        tr.getElement('td.ftr-filename a').set('text', file.fullname);
-        // changer & creator info
-        tr.getElement('td.ftr-changed-at')
-            .set('text', gui.formatDateString(file.changed));
-        tr.getElement('td.ftr-changed-by').set('text', file.changer_name);
-        tr.getElement('td.ftr-created-at')
-            .set('text', gui.formatDateString(file.created));
-        tr.getElement('td.ftr-created-by').set('text', file.creator_name);
-        // close button
-        if(file.opened && (userdata.admin || (file.opened == userdata.name))) {
-            tr.getElement('a.closeFileLink').removeClass('start-hidden');
-        }
-        // admin stuff
-        if(userdata.admin)
-            tr.getElements('.admin-only').removeClass('start-hidden');
-        // done!
-        return tr;
-    },
-    
-    /* Function: deleteFile
-
-       Asks for confirmation to delete a file and, if confirmed, sends
-       a server request for deletion.
-
-       Parameters:
-         fileid - ID of the file to be deleted
-     */
-    deleteFile: function(fileid) {
-        var performDelete = function() {
-            new Request.JSON(
-    	        {'url': 'request.php?do=deleteFile',
-    	         'async': false,
-    	         'data': 'file_id='+fileid,
-    	         onFailure: function(xhr) {
-		     gui.showNotice('error', "Konnte Datei nicht löschen.");
-    	         },
-    	         onSuccess: function(status, blubb) {
-		     if(!status || !status.success)
-		         gui.showNotice('error', "Konnte Datei nicht löschen.");
-		     else
-		         gui.showNotice('ok', "Datei gelöscht.");
-                     cora.projects.performUpdate();
-    	         }
-    	        }
-    	    ).post();
-        };
-
-        var filename = cora.files.get(fileid).fullname;
-        var message = "Soll das Dokument '" + filename + "' wirklich gelöscht werden? Dieser Schritt kann nicht rückgängig gemacht werden!";
-        gui.confirm(message, performDelete, true);
-    },
-
-    /* Function: performChangeTagsetAssoc
-
-       Performs a server request to change tagset associations for a
-       single file.  Will only succeed if user is admin.
-
-       Parameters:
-         fileid - ID of the file
-         div    - Content div with the currently selected tagsets
-     */
-    performChangeTagsetAssoc: function(fileid, div) {
-        var tagsets = div.getElements('input[name="linktagsets[]"]')
-                         .filter(function(elem) { return elem.get('checked'); })
-                         .get('value');
-        new Request.JSON(
-    	    {'url': 'request.php',
-    	     'async': false,
-    	     onFailure: function(xhr) {
-                 gui.showNotice('error',
-                                "Serverfehler beim Ändern der Tagset-Verknüpfungen.");
-    	     },
-    	     onSuccess: function(status, x) {
-                 if(status.success) {
-                     gui.showNotice('ok',
-                                    "Tagset-Verknüpfungen geändert.");
-                 }
-                 else {
-                     gui.showNotice('error',
-                                    "Tagset-Verknüpfungen nicht geändert.");
-                     if(status.errors && status.errors.length>0) {
-                         gui.showTextDialog("Ändern fehlgeschlagen",
-                                            "Tagset-Verknüpfungen konnten nicht "
-                                            +"geändert werden.",
-                                            status.errors);
-                     }
-                 }
-    	     }
-    	    }
-    	).get({'do': 'changeTagsetsForFile',
-               'file_id': fileid, 'linktagsets': tagsets});
-    },
-
-    /* Function: editTagsetAssoc
-
-       Shows a dialog with the associated tagsets for a file.
-
-       Parameters:
-         fileid - ID of the file
-     */
-    editTagsetAssoc: function(fileid) {
-        var ref = this;
-        var fullname = cora.files.get(fileid).fullname;
-	var contentdiv = $('tagsetAssociationTable');
-	var spinner = new Spinner(contentdiv);
-	var content = new mBox.Modal({
-	    title: "Tagset-Verknüpfungen für '"+fullname+"'",
-	    content: contentdiv,
-	    buttons: [ {title: "Schließen", addClass: "mform",
-			id: "editTagsetAssocOK",
-			event: function() { this.close(); }},
-                       {title: "Ändern", addClass: "mform button_red",
-			id: "editTagsetAssocPerform",
-			event: function() {
-                            ref.performChangeTagsetAssoc(fileid, contentdiv);
-                            this.close();
-                        }}
-		     ]
-	});
-	content.open();
-	spinner.show();
-
-	new Request.JSON(
-    	    {'url': 'request.php',
-    	     'async': false,
-    	     onFailure: function(xhr) {
-                 gui.showNotice('error',
-                                "Serverfehler beim Laden der Tagset-Verknüpfungen.");
-		 spinner.destroy();
-		 content.close();
-    	     },
-    	     onSuccess: function(tlist, x) {
-		 // show tagset associations
-		 if(!tlist['success']) {
-                     gui.showNotice('error',
-                                    "Fehler beim Laden der Tagset-Verknüpfungen.");
-		     spinner.destroy();
-		     content.close();
-		 }
-		 contentdiv.getElement('table.tagset-list')
-		     .getElements('input').each(function(input) {
-			 var checked = tlist['data'].contains(input.value) ? "yes" : "";
-			 input.set('checked', checked);
-		     });
-		 spinner.destroy();
-    	     }
-    	    }
-    	).get({'do': 'getTagsetsForFile', 'file_id': fileid});
-    },
-
-    exportFile: function(fileid){
-	new mBox.Modal({
-	    content: 'fileExportPopup',
-	    title: 'Datei exportieren',
-	    buttons: [
-		{title: 'Abbrechen', addClass: 'mform'},
-		{title: 'Exportieren', addClass: 'mform button_green',
-		 event: function() {
-		     var format = $('fileExportFormat').getSelected()[0].get('value');
-		     this.close();
-		     window.location = 'request.php?do=exportFile&fileid='+fileid+'&format='+format;
-		 }
-		}
-	    ]
-	}).open();
     }
+
 };
 
 
@@ -1280,9 +1388,15 @@ var file = {
 window.addEvent('domready', function() {
     cora.tagsets.performUpdate();
     cora.fileImporter.initialize();
+    cora.fileManager.initialize();
+    cora.projects.onUpdate(cora.fileManager.render.bind(cora.fileManager));
+
     file.initialize();    
 
-    $('fileViewRefresh').addEvent('click',function(e){ e.stop(); file.listFiles() });
+    $('fileViewRefresh').addEvent('click', function (e) {
+        e.stop();
+        cora.projects.performUpdate();
+    });
     $('fileViewCollapseAll').addEvent('click',
         function(e){
             e.stop();
@@ -1300,7 +1414,7 @@ window.addEvent('domready', function() {
             });
         });
 
-    file.listFiles();
+    cora.projects.performUpdate();
     if(userdata.currentFileId)
-        file.openFile(userdata.currentFileId);
+        cora.fileManager.openFile(userdata.currentFileId);
 });

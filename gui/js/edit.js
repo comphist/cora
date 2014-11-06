@@ -659,7 +659,7 @@ var EditorModel = new Class({
 	btn.removeEvents();
 	btn.addEvent('click', function(e) {
 	    e.stop();
-	    file.closeFile(ref.fileId); // breaks OO...
+	    cora.fileManager.closeFile(ref.fileId);
 	});
 	/* prepare automatic annotation dialog */
 	btn = mr.getElement('#tagButton');
@@ -724,6 +724,15 @@ var EditorModel = new Class({
         }
     },
 
+    /* Function: destruct
+
+       Clean-up when closing the editor.
+     */
+    destruct: function() {
+        this.editTable.hide();
+        $$('div#menuRight .when-file-open-only').removeClass('file-open');
+    },
+
     /* Function: saveMetadataFromForm
 
        Sends a server request to save metadata changes.
@@ -739,9 +748,11 @@ var EditorModel = new Class({
             onSuccess: function(status) {
                 if (status.success) {
                     cora.projects.performUpdate();
-                    file.setHeaderFilename({id: this.fileId,
-                                            sigle: sigle,
-                                            fullname: name});
+                    gui.setHeader(cora.files.getDisplayName(
+                        {id: this.fileId,
+                         sigle: sigle,
+                         fullname: name}
+                    ));
                     gui.showNotice("ok", "Metadaten erfolgreich geändert.");
                 } else {
                     gui.showNotice("error", "Metadaten konnten nicht geändert werden.");
@@ -2139,15 +2150,8 @@ var EditorModel = new Class({
 
 });
 
-var edit = {
-    editorModel: null,
-    
-    initialize: function(){
-	$('editTabButton').hide();
-        this.lastEditLine = 0;
-    }
-}
+cora.editor = null;
 
 window.addEvent('domready',function(){
-    edit.initialize();
+    $('editTabButton').hide();
 })
