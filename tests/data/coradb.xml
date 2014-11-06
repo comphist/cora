@@ -14,6 +14,8 @@
 		<field name="name">system</field>
 		<field name="password"></field>
 		<field name="admin">1</field>
+		<field name="email" xsi:nil="true" />
+		<field name="comment" xsi:nil="true" />
 		<field name="lines_per_page">30</field>
 		<field name="lines_context">5</field>
 		<field name="columns_order" xsi:nil="true" />
@@ -27,6 +29,8 @@
 		<field name="name">bollmann</field>
 		<field name="password">4d8902ba9a9130dbf55947e88393bd47</field>
 		<field name="admin">1</field>
+		<field name="email" xsi:nil="true" />
+		<field name="comment" xsi:nil="true" />
 		<field name="lines_per_page">30</field>
 		<field name="lines_context">5</field>
 		<field name="columns_order">7/6,6/7</field>
@@ -40,6 +44,8 @@
 		<field name="name">test</field>
 		<field name="password">68358d5d9cbbf39fe571ba41f26524b6</field>
 		<field name="admin">0</field>
+		<field name="email" xsi:nil="true" />
+		<field name="comment" xsi:nil="true" />
 		<field name="lines_per_page">30</field>
 		<field name="lines_context">5</field>
 		<field name="columns_order" xsi:nil="true" />
