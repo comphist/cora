@@ -503,6 +503,18 @@ class CoraSessionHandler {
     return $this->db->saveProjectSettings($data['id'], $data);
   }
 
+  /** Wraps DBInterface::saveUserSettings(), checking for
+      administrator privileges first */
+  public function saveUserSettings($data) {
+    if (!$_SESSION["admin"])
+      return array("success" => false, "errors" => ["Permission denied."]);
+    if(!array_key_exists('id', $data))
+      return array("success" => false, "errors" => ["No user ID given."]);
+    if($this->db->saveUserSettings($data['id'], $data) < 1)
+      return array("success" => false, "errors" => ["Unknown error."]);
+    return array("success" => true);
+  }
+
   /** Wraps DBInterface::getLines(), calculating start line and limit first */
   public function getLines($page){
     if($page==0) $page++;

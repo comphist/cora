@@ -36,6 +36,8 @@ $ulist = array();
               <th>Admin?</th>
               <th>Letzte Aktivität</th>
               <th>Geöffnete Datei</th>
+              <th>E-Mail</th>
+              <th>Notiz</th>
               <th class="table-th-nosort"></th>
               <th class="table-th-nosort"></th>
             </tr>
@@ -120,53 +122,47 @@ $ulist = array();
   <!-- TEMPLATES -->
   <div class="templateHolder" style="display: none;">
     <div id="templateCreateNotice">
-      <form>
       <p>
         <label for="noticetype" class="ra">Typ: </label>
         <select name="noticetype" size="1">
           <option value="alert">Alert</option>
-          <option value="info">Info</option>
+          <!-- <option value="info">Info</option> -->
         </select>
       </p>
       <p>
         <label for="noticeexpires" class="ra">Expires: </label>
-        <input type="text" name="noticeexpires" value="" data-required="" />
+        <input type="text" name="noticeexpires" value="" data-required="" class="mform" />
       </p>
       <p>
         <label for="noticetext" class="ra vt">Nachricht: </label>
-        <textarea cols="30" rows="3" name="noticetext" value="" data-required=""></textarea>
+        <textarea cols="30" rows="3" name="noticetext" value="" data-required="" class="mform"></textarea>
       </p>
-      </form>
     </div>
 
     <div id="templateCreateUser">
-      <form>
       <p>
         <label for="newuser" class="ra">Benutzername: </label>
-        <input type="text" name="newuser" value="" data-required="" />
+        <input type="text" name="newuser" value="" data-required="" class="mform" />
       </p>
       <p>
         <label for="newpw" class="ra">Passwort: </label>
-        <input type="password" name="newpw" value="" data-required="" />
+        <input type="password" name="newpw" value="" data-required="" class="mform" />
       </p>
       <p>
         <label for="newpw2" class="ra">Passwort wiederholen: </label>
-        <input type="password" name="newpw2" value="" data-required="" />
+        <input type="password" name="newpw2" value="" data-required="" class="mform" />
       </p>
-      </form>
     </div>
 
     <div id="templateChangePassword">
-      <form>
       <p>
         <label for="newchpw" class="ra">Neues Passwort: </label>
-        <input type="password" name="newchpw" value="" data-required="" />
+        <input type="password" name="newchpw" value="" data-required="" class="mform" />
       </p>
       <p>
         <label for="newchpw2" class="ra">Neues Passwort wiederholen: </label>
-        <input type="password" name="newchpw2" value="" data-required="" />
+        <input type="password" name="newchpw2" value="" data-required="" class="mform" />
       </p>
-      </form>
     </div>
 
     <div id="annotatorEditForm" class="annotatorEditForm">
@@ -192,6 +188,17 @@ $ulist = array();
       </p>
     </div>
 
+    <div id="userEditForm" class="userEditForm">
+      <p>
+        <label for="adminUserEmail">E-Mail-Adresse: </label><br />
+        <input type="text" name="adminUserEmail" placeholder="max@mustermann.de" size="60" class="mform" />
+      </p>
+      <p>
+        <label for="adminUserComment">Notiz: </label><br />
+        <input type="text" name="adminUserComment" placeholder="(keine)" size="60" class="mform" />
+      </p>
+    </div>
+
     <div id="projectEditForm" class="projectEditForm">
       <p>
         <label for="projectCmdEditToken">Befehl zum Editieren von Tokens: </label><br />
@@ -214,21 +221,17 @@ $ulist = array();
     </div>
 
     <div id="projectCreateForm">
-      <form>
       <p>
         <label for="project_name" class="ra">Projektname:</label>
-        <input type="text" name="project_name" value="" />
+        <input type="text" name="project_name" value="" class="mform" />
       </p>
-      </form>
     </div>
 
     <div id="annotatorCreateForm">
-      <form>
       <p>
         <label for="annotator_name" class="ra">Name:</label>
-        <input type="text" name="annotator_name" value="" />
+        <input type="text" name="annotator_name" value="" class="mform" />
       </p>
-      </form>
     </div>
 
     <div id="tagsetImportForm">
@@ -280,8 +283,10 @@ $ulist = array();
         </td>
         <td class="adminUserLastactiveCell"></td>
         <td class="adminUserActivityCell"></td>
+        <td class="adminUserEmailCell"></td>
+        <td class="adminUserCommentCell"></td>
         <td>
-          <a class="adminUserPasswordButton">Passwort ändern...</a>
+          <a class="adminUserEditButton"><span class="oi oi-shadow" data-glyph="cog" aria-hidden="true"></span> Optionen...</a>
         </td>
         <td class="adminUserDelete"><a class="deletion-link"><span class="oi oi-shadow" data-glyph="delete" title="Benutzer löschen" aria-hidden="true"></span></a></td>
       </tr>

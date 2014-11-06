@@ -1069,6 +1069,15 @@ tr.adminUserInfoRow.userActive .adminUserLastactiveCell {
     color: orangered;
 }
 
+tr.adminUserInfoRow .adminUserActivityCell,
+tr.adminUserInfoRow .adminUserCommentCell
+{ 
+    max-width: 20em;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
 div.userChangeEditTable {
     min-width: 40em;
     max-width: 40em;

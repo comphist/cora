@@ -227,18 +227,20 @@ cora.userEditor = {
 	    }.bind(this)
 	);
         $('editUsers').addEvent(
-            'click:relay(a.adminUserPasswordButton)',
+            'click:relay(a)',
             function(event, button) {
                 event.stop();
                 var uid = button.getParent('tr').get('id').substr(5);
-                this.changePassword(uid);
+                if(button.hasClass("adminUserEditButton"))
+                    this.showUserEditDialog(uid);
             }.bind(this)
         );
         $('editUsers').store('HtmlTable',
                              new HtmlTable($('editUsers'),
                                            {sortable: true,
                                             parsers: ['string', 'title',
-                                                      'date',   'string']}));
+                                                      'date',   'string',
+                                                      'string', 'string']}));
     },
 
     /* Function: createUser
@@ -346,6 +348,88 @@ cora.userEditor = {
         });
     },
 
+    /* Function: showUserEditDialog
+
+       Opens the dialog to edit user settings.
+
+       Parameters:
+         uid - ID of the user to be edited
+     */
+    showUserEditDialog: function(uid) {
+        var content, mbox;
+        var ref = this;
+        var user = cora.users.get(uid);
+
+        if(user == undefined || user.id != uid) {
+            gui.showMsgDialog('error',
+                              'Die Daten für den Benutzer konnten nicht geladen werden.');
+            return;
+        }
+
+        content = $('userEditForm').clone();
+        content.getElement('input[name=adminUserEmail]').set('value', user.email);
+        content.getElement('input[name=adminUserComment]').set('value', user.comment);
+	mbox = new mBox.Modal({
+	    title: 'Einstellungen für Benutzer "'+user.name+'"',
+	    content: content,
+            closeOnBodyClick: false,
+	    buttons: [ {title: "Passwort ändern...", addClass: "mform button_left",
+                        event: function() {
+                            this.addEvent('closeComplete', function() {
+                                ref.changePassword(uid);
+                            });
+                            this.close();
+                        }
+                       },
+                       {title: "Abbrechen", addClass: "mform"},
+                       {title: "Speichern", addClass: "mform button_green",
+			event: function() {
+                            var cb = function (status, text) {
+                                if(status && status['success']) {
+                                    gui.showNotice('ok',
+                                                   "Einstellungen gespeichert.");
+                                    cora.users.performUpdate();
+                                    this.close();
+                                }
+                                else {
+                                    gui.showNotice('error',
+                                                   "Speichern der Einstellungen fehlgeschlagen.");
+                                }
+                            }.bind(this);
+                            ref.saveUserSettings(uid, this.content, cb);
+			}}
+                     ]
+	});
+        mbox.open();
+    },
+
+    /* Function: saveUserSettings
+
+       Sends a server request to save settings for a user.
+       
+       Parameters:
+        uid - ID of the user
+        div - Content <div> containing the settings
+        fn  - Callback function after the request
+     */
+    saveUserSettings: function(uid, div, fn) {
+        // extract data
+        var data = {'id': uid};
+        data.email = div.getElement('input[name=adminUserEmail]').get('value');
+        data.comment = div.getElement('input[name=adminUserComment]').get('value');
+
+        // send request
+	new Request.JSON(
+	    {'url': 'request.php?do=saveUserSettings',
+	     'async': false,
+	     'data': data,
+	     onSuccess: function(status, text) {
+                 if(typeof(fn) == "function")
+                     fn(status, text);
+	     }
+	}).post();
+    },
+
     /* Function: changePassword
 
        Displays a dialog to change the password for a user.
@@ -409,9 +493,11 @@ cora.userEditor = {
             if(user.opened_text) {
                 var opened_text = cora.files.get(user.opened_text);
                 if(opened_text) {
+                    var activity_text = cora.files.getProject(user.opened_text).name
+                        + ": " + cora.files.getDisplayName(opened_text);
                     tr.getElement('td.adminUserActivityCell')
-                        .appendText(cora.files.getProject(user.opened_text).name)
-                        .appendText(": "+cora.files.getDisplayName(opened_text));
+                        .set('text', activity_text)
+                        .set('title', activity_text);
                 }
             }
             if(user.active == "1")
@@ -420,6 +506,9 @@ cora.userEditor = {
                 tr.getElement('.adminUserAdminStatusTD')
                     .addClass('adminUserIsAdmin').set('title', 'Admin');
             }
+            tr.getElement('td.adminUserEmailCell').set('text', user.email);
+            tr.getElement('td.adminUserCommentCell')
+                .set('text', user.comment).set('title', user.comment);
             tr.inject(table);
         });
         $('editUsers').retrieve('HtmlTable').reSort();
@@ -1048,8 +1137,8 @@ cora.projectEditor = {
         var prj = cora.projects.get(pid);
 
         if(prj == undefined || prj.id != pid) {
-            gui.showTextDialog('Unbekannter Fehler',
-                               'Die Einstellungen für das Projekt konnten nicht geladen werden.');
+            gui.showMsgDialog('error',
+                              'Die Einstellungen für das Projekt konnten nicht geladen werden.');
             return;
         }
 
@@ -1058,8 +1147,8 @@ cora.projectEditor = {
 	    title: 'Einstellungen für Projekt "'+prj.name+'"',
 	    content: content,
             closeOnBodyClick: false,
-	    buttons: [ {title: "OK", addClass: "mform button_green",
-			id: "importCloseButton", 
+	    buttons: [ {title: "Abbrechen", addClass: "mform"},
+                       {title: "Speichern", addClass: "mform button_green",
 			event: function() {
                             var cb = function (status, text) {
                                 if(status && status['success']) {
@@ -1074,8 +1163,7 @@ cora.projectEditor = {
                                 }
                             }.bind(this);
                             ref.saveProjectSettings(pid, this.content, cb);
-			}},
-                       {title: "Abbrechen", addClass: "mform"}
+			}}
                      ]
 	});
         mbox.open();

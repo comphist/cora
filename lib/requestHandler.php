@@ -240,6 +240,9 @@ class RequestHandler {
       case "saveProjectSettings":
         return $this->sh->saveProjectSettings($post);
 
+      case "saveUserSettings":
+        return $this->sh->saveUserSettings($post);
+
       case "lockFile":
 	return $this->sh->lockFile($get["fileid"]);
     

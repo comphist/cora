@@ -103,7 +103,7 @@
      return $stmt->fetch(PDO::FETCH_COLUMN);
    }
 
-   /** Return settings for the current user. 
+   /** Return settings for a given user. 
     *
     * @param string $user Username
     *
@@ -119,6 +119,21 @@
      return $stmt->fetch(PDO::FETCH_ASSOC);
    }
 
+   /** Save settings for a given user. 
+    *
+    * @param string $uid User ID
+    * @param array $data Array containing the user settings
+    */
+   public function saveUserSettings($uid, $data){
+     $qs = "UPDATE `users` SET `email`=:email, `comment`=:comment "
+         . " WHERE `id`=:uid";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':uid' => $uid,
+                          ':email' => $data['email'],
+                          ':comment' => $data['comment']));
+     return $stmt->rowCount();
+   }
+
    /** Get a list of all users.
     *
     * @return An @em array containing all usernames in the database and
@@ -126,8 +141,10 @@
     */
    public function getUserList($to) {
      $qs = "SELECT users.id, users.name, users.admin, users.lastactive,"
-       ."          CASE WHEN lastactive BETWEEN DATE_SUB(NOW(), INTERVAL {$to} MINUTE)"
-       ."                                   AND NOW()"
+       ."          users.email, users.comment,"
+       ."          CASE WHEN users.lastactive "
+       ."                    BETWEEN DATE_SUB(NOW(), INTERVAL {$to} MINUTE)"
+       ."                        AND NOW()"
        ."               THEN 1 ELSE 0 END AS active, "
        ."          text.id AS opened_text "
        ."     FROM users "
