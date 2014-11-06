@@ -14,6 +14,10 @@ html {
     font-family: 'Open Sans', Arial, sans-serif;
 }
 
+body { 
+    overflow: scroll;
+}
+
 a {
     cursor: pointer;
     color: #437fda;
@@ -189,13 +193,11 @@ ol {
 .content {
     height: auto !important;
     height: 1%;
-    overflow: hidden;
     padding: 8px 0 0 0;
 }
 
 .panel {
    height: auto !important;
-   overflow: auto;
    padding: 1em 2.5em;
    background: #f8f8f8;
    margin: 0;
