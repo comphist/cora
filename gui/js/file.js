@@ -838,15 +838,15 @@ var file = {
 	       || tagset.tags.length < 1) return;
 	    ref.tagsets[tclass] = {'tags': [],
 				   'html': ""};
-	    if(tclass === "POS") {
+	    if(tclass === "pos") {
 		ref.tagsets["morph"] = {};
 	    }
 	    Array.each(tagset.tags, function(data) {
 		var tag;
 		if(data.needs_revision==1) return;
-		if(tclass === "POS") {
+		if(tclass === "pos") {
 		    tag = ref._splitAtFirstDot(data.value);
-		    ref.tagsets["POS"]['tags'].push(tag[0]);
+		    ref.tagsets["pos"]['tags'].push(tag[0]);
 		    if(tag[1] != null) {
 			if(!(tag[0] in ref.tagsets["morph"])) {
 			    ref.tagsets["morph"][tag[0]] = {'tags': [],
@@ -862,8 +862,8 @@ var file = {
 	    });
 	});
 
-	if("POS" in ref.tagsets) {
-	    ref.tagsets["POS"]['tags'] = ref.tagsets["POS"]['tags'].unique();
+	if("pos" in ref.tagsets) {
+	    ref.tagsets["pos"]['tags'] = ref.tagsets["pos"]['tags'].unique();
 	}
 	
 	// generate HTML code
@@ -874,7 +874,7 @@ var file = {
 	    Array.each(tagset.tags, function(tag) {
                 optgroup_tclass.grab(new Element('option',
                                                  {text: tag, value: tag}));
-		if(tclass==="POS") {
+		if(tclass==="pos") {
 		    var optgroup_morph = new Element('optgroup',
                                                      {'label': "Alle Tags für '"
                                                                 +tag+"'"});

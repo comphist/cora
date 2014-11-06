@@ -153,7 +153,7 @@ class XMLHandler {
       }
       // then, parse all selected annotations
       foreach($modnode->children() as $annonode) {
-        $annotype = $annonode->getName();
+        $annotype = strtolower($annonode->getName());
         // CorA-internal comment  
 	if($annotype=='cora-comment') {
           $document->addComment(null, $modern['parent_xml_id'],

@@ -44,7 +44,7 @@ class AutomaticAnnotator {
     public function annotate($tokens) {
         return array();
         /* array(
-                 array("id" => 42, "anno_POS" => "PPER", ...),
+                 array("id" => 42, "anno_pos" => "PPER", ...),
                  ...
                  );
         */

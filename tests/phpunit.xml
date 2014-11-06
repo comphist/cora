@@ -5,7 +5,7 @@
         <var name="DB_USER" value="cora"/>
         <var name="DB_PASSWD" value="trustthetext"/>
         <var name="DB_DBNAME" value="coratest"/>
-        <var name="DB_ROOTPW" value="hansolo9"/>
+        <var name="DB_ROOTPW" value="Hrv89SQL7tsu"/>
     </php>
     <testsuites>
         <testsuite name="Cora Tests">

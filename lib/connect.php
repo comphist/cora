@@ -164,8 +164,9 @@
     * @return A list of associative arrays, containing the names
     * and IDs of the tagset.
     */
-   public function getTagsets($class="POS", $orderby="name") {
-     $qs = "SELECT `id`, `id` AS shortname, name AS longname, class, set_type"
+   public function getTagsets($class="pos", $orderby="name") {
+     $qs = "SELECT `id`, `id` AS `shortname`, `name` AS `longname`, `set_type`,"
+       . "         LOWER(class) AS `class`"
        . "    FROM tagset";
      if($class) {
        $qs .= " WHERE `class`=:class";
@@ -173,7 +174,7 @@
      $qs .= " ORDER BY {$orderby}";
      $stmt = $this->dbo->prepare($qs);
      if($class) {
-       $stmt->bindValue(':class', $class, PDO::PARAM_STR);
+       $stmt->bindValue(':class', strtolower($class), PDO::PARAM_STR);
      }
      $stmt->execute();
      return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -498,7 +499,7 @@
     */
    public function getTagsetMetadata($idlist) {
      $place_holders = implode(',', array_fill(0, count($idlist), '?'));
-     $qs  = "SELECT ts.id, ts.name, ts.class, ts.set_type "
+     $qs  = "SELECT ts.id, ts.name, LOWER(ts.class) AS `class`, ts.set_type "
        . "     FROM tagset ts "
        . "    WHERE ts.id IN ($place_holders)";
      $stmt = $this->dbo->prepare($qs);
@@ -527,7 +528,7 @@
     * given file.
     */
    public function getTagsetsForFile($fileid) {
-     $qs  = "SELECT ts.id, ts.name, ts.class, ts.set_type "
+     $qs  = "SELECT ts.id, ts.name, LOWER(ts.class) AS `class`, ts.set_type "
        . "     FROM text2tagset ttt "
        . "     LEFT JOIN tagset ts  ON ts.id=ttt.tagset_id "
        . "    WHERE ttt.text_id=:tid";
@@ -734,7 +735,7 @@
      $qs .= "       text.currentmod_id, text.header, tagset.id AS 'tagset_id' ";
      $qs .= "  FROM (text, text2tagset ttt) ";
      $qs .= "  LEFT JOIN tagset ON ttt.tagset_id=tagset.id ";
-     $qs .= " WHERE text.id=:tid AND tagset.class='POS' AND ttt.text_id=:tid";
+     $qs .= " WHERE text.id=:tid AND LOWER(tagset.class)='pos' AND ttt.text_id=:tid";
      $stmt = $this->dbo->prepare($qs);
      $stmt->execute(array(':tid' => $fileid));
      $metadata = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -1258,7 +1259,7 @@
      $stmt->execute(array(':tid' => $fileid));
      $moderns = $stmt->fetchAll(PDO::FETCH_ASSOC);
      $qs  = "SELECT tag.value AS tag, ts.score, ts.selected, ts.source,"
-	 ."           tt.class AS type "
+	 ."           LOWER(tt.class) AS type "
 	 ."      FROM   modern"
 	 ."      LEFT JOIN (tag_suggestion ts, tag) "
 	 ."             ON (ts.tag_id=tag.id AND ts.mod_id=modern.id) "
@@ -1311,7 +1312,7 @@
      $moderns = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
      if($do_anno) {
-         $qs  = "SELECT modern.id, tag.value AS tag, tt.class AS type "
+         $qs  = "SELECT modern.id, tag.value AS tag, LOWER(tt.class) AS type "
              ."      FROM   modern"
              ."      LEFT JOIN (tag_suggestion ts, tag) "
              ."             ON (ts.tag_id=tag.id AND ts.mod_id=modern.id) "
@@ -1431,7 +1432,8 @@
      $qs .= "WHERE  d.tok_id=:tokid ";
      $qs .= " ORDER BY d.id ASC LIMIT 1";
      $stmt_layout = $this->dbo->prepare($qs);
-     $qs  = "SELECT tag.value, ts.score, ts.selected, ts.source, tt.class ";
+     $qs  = "SELECT tag.value, ts.score, ts.selected, ts.source, ";
+     $qs .= "       LOWER(tt.class) AS `class` ";
      $qs .= "FROM   modern";
      $qs .= "  LEFT JOIN (tag_suggestion ts, tag) ";
      $qs .= "         ON (ts.tag_id=tag.id AND ts.mod_id=modern.id) ";
@@ -1501,10 +1503,10 @@
 	 else if($row['class']=='lemma' && $row['selected']=='1') {
 	   $line['anno_lemma'] = $row['value'];
 	 }
-	 else if($row['class']=='lemmaPOS' && $row['selected']=='1') {
-	   $line['anno_lemmaPOS'] = $row['value'];
+	 else if($row['class']=='lemmapos' && $row['selected']=='1') {
+	   $line['anno_lemmapos'] = $row['value'];
 	 }
-	 else if($row['class']=='POS') {
+	 else if($row['class']=='pos') {
 	   $tag = $row['value'];
 	   if((substr($tag, -1)=='.') || (substr_count($tag, '.')==0)) {
 	     $pos = $tag;
@@ -1517,11 +1519,11 @@
 	   }
 
 	   if($row['selected']=='1') {
-	     $line['anno_POS'] = $pos;
+	     $line['anno_pos'] = $pos;
 	     $line['anno_morph'] = $morph;
 	   }
 	   if($row['source']=='auto') {
-	     $line['suggestions'][] = array('POS' => $pos,
+	     $line['suggestions'][] = array('pos' => $pos,
 					    'morph' => $morph,
 					    'score' => $row['score']);
 	   }
@@ -2163,7 +2165,7 @@
     try{
       $this->dbo->beginTransaction();
       $qs  = "INSERT INTO tagset (name, set_type, class) ";
-      $qs .= "VALUES (:name, 'closed', 'POS')";
+      $qs .= "VALUES (:name, 'closed', 'pos')";
       $stmt = $this->dbo->prepare($qs);
       $stmt->execute(array(':name' => $tagsetname));
       $tagsetid = $this->dbo->lastInsertId();
@@ -2239,11 +2241,12 @@
     $suggestions = array();
 
     // get automatic suggestions stored with the line number
-    $qstr  = "SELECT ts.id, ts.tag_id, ts.source, tag.value, tagset.class ";
-    $qstr .= "FROM   tag_suggestion ts ";
-    $qstr .= "  LEFT JOIN tag ON tag.id=ts.tag_id ";
-    $qstr .= "  LEFT JOIN tagset ON tagset.id=tag.tagset_id ";
-    $qstr .= "WHERE  ts.mod_id=:modid AND tagset.class='lemma' AND ts.source='auto'";
+    $qstr  = "SELECT ts.id, ts.tag_id, ts.source, tag.value, "
+        . "          LOWER(tagset.class) AS `class` "
+        . "     FROM tag_suggestion ts "
+        . "LEFT JOIN tag ON tag.id=ts.tag_id "
+        . "LEFT JOIN tagset ON tagset.id=tag.tagset_id "
+        . "    WHERE ts.mod_id=:modid AND `class`='lemma' AND ts.source='auto'";
     $stmt = $this->dbo->prepare($qstr);
     $stmt->execute(array(':modid' => $linenum));
     while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -2269,7 +2272,7 @@
 	  . "     WHERE  mod2error.error_id=:errid "
 	  . "        AND UPPER(modern.ascii)=UPPER(:ascii) "
 	  . "        AND text.project_id=:projectid "
-	  . "        AND tagset.class='lemma' "
+	  . "        AND LOWER(tagset.class)='lemma' "
 	  . "        AND ts.selected=1 ";
 	$stmt = $this->dbo->prepare($qstr);
 	$stmt->execute(array(':errid' => $lemma_verified,
@@ -2292,7 +2295,7 @@
       $tslist = $this->getTagsetsForFile($fileid);
       $tsid = 0;
       foreach($tslist as $tagset) {
-	if($tagset['class']=="lemma_sugg") {
+        if($tagset['class']=="lemma_sugg") {
 	  $tsid = $tagset['id'];
 	}
       }

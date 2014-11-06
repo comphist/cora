@@ -342,29 +342,29 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         //saveLines($fid, $lastedited, $lines);
         $lines = array(
                     array('id' => '2',
-                          'anno_POS' => 'PPOSS',
+                          'anno_pos' => 'PPOSS',
                           'anno_morph' => 'Fem.Nom.Sg',
                           'comment' => 'testcomment'),
                     array('id' => '3',
-                          'anno_POS' => 'VVFIN',
+                          'anno_pos' => 'VVFIN',
                           'anno_morph' => '3.Pl.Past.Konj',
                           'comment' => ''),
                     array('id' => '4',
-                          'anno_POS' => null),
+                          'anno_pos' => null),
                     array('id' => '5',
-                          'anno_POS' => 'VVPP',
+                          'anno_pos' => 'VVPP',
                           'anno_lemma' => 'newlemma',
                           'comment' => ''),
                     array('id' => '6',
                           'anno_norm' => 'newnorm'),
                     array('id' => '7',
-                          'anno_POS' => 'NN',
+                          'anno_pos' => 'NN',
                           'anno_morph' => 'Neut.Dat.Pl',
                           'general_error' => false,
                           'anno_lemma' => null),
                     array('id' => '8',
                           'anno_norm' => 'bla',
-                          'anno_POS' => '',
+                          'anno_pos' => '',
                           'general_error' => true),
                     array('id' => '9',
                           'anno_morph' => 'Neut.Nom.Sg',
@@ -399,7 +399,7 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
 
     public function testTags() {
         $tagsets = array(array('id' => '1',
-                               'class' => 'POS',
+                               'class' => 'pos',
                                'shortname' => '1',
                                'longname' => 'ImportTest',
 			       'set_type' => 'closed'),
@@ -417,12 +417,12 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         $this->assertEquals($tagsets,
                             $this->dbi->getTagsets(null));
         $this->assertEquals(array($tagsets[0]),
-                            $this->dbi->getTagsets("POS"));
+                            $this->dbi->getTagsets("pos"));
 
         // getTagsetsForFile returns a slightly different array,
         // so we can't use the expected array from above.
         $this->assertEquals(array(array('id' => '1',
-                                        'class' => 'POS',
+                                        'class' => 'pos',
 					'name' => 'ImportTest',
 					'set_type' => 'closed'),
                                   array('id' => '2',

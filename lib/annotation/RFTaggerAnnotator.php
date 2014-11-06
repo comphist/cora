@@ -66,7 +66,7 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         foreach($tokens as $tok) {
             fwrite($handle, $tok['ascii']);
             if($training) {
-                fwrite($handle, "\t".$tok['tags']['POS']);
+                fwrite($handle, "\t".$tok['tags']['pos']);
             }
             fwrite($handle, "\n");
         }
@@ -91,7 +91,7 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         }
         return array("id" => $mod['id'],
                      "ascii" => $mod['ascii'],
-                     "anno_POS" => $line[1]);
+                     "anno_pos" => $line[1]);
     }
 
 
@@ -119,7 +119,7 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         $currentlist = array();
         $currentspan = 0;
         foreach($tokens as $tok) {
-            if($tok['verified'] && isset($tok['tags']['POS'])
+            if($tok['verified'] && isset($tok['tags']['pos'])
                && !empty($tok['ascii'])) {
                 $currentspan++;
                 $currentlist[] = $tok;

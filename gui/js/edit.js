@@ -426,20 +426,20 @@ var EditorModel = new Class({
 	elem = $('line_template');
 	
 	spos = new Element('select');
-	spos.grab(file.tagsets["POS"]["elems"].clone());
-	td = elem.getElement('td.editTable_POS')
+	spos.grab(file.tagsets["pos"]["elems"].clone());
+	td = elem.getElement('td.editTable_pos')
 	td.empty();
 	td.adopt(spos);
 	
 	smorph = new Element('select');
-	td = elem.getElement('td.editTable_Morph');
+	td = elem.getElement('td.editTable_morph');
 	td.empty();
 	td.adopt(smorph);
 
-	if(file.tagsets['lemmaPOS'] !== undefined) {
+	if(file.tagsets['lemmapos'] !== undefined) {
 	    slempos = new Element('select');
-	    slempos.grab(file.tagsets["lemmaPOS"]["elems"].clone());
-	    td = elem.getElement('td.editTable_LemmaPOS');
+	    slempos.grab(file.tagsets["lemmapos"]["elems"].clone());
+	    td = elem.getElement('td.editTable_lemmapos');
 	    td.empty();
 	    td.adopt(slempos);
 	}
@@ -512,21 +512,21 @@ var EditorModel = new Class({
 		var this_id = ref.getRowNumberFromElement(target);
 		var parent = target.getParent('td');
 		var new_value = target.getSelected()[0].get('value');
-		if (parent.hasClass("editTable_POS")) {
-		    ref.updateData(this_id, 'anno_POS', new_value);
+		if (parent.hasClass("editTable_pos")) {
+		    ref.updateData(this_id, 'anno_pos', new_value);
 		    ref.renderMorphOptions(this_id, target.getParent('tr'), new_value);
 		    if (userdata.showInputErrors)
 			ref.updateInputError(target.getParent('tr'));
-		} else if (parent.hasClass("editTable_Morph")) {
+		} else if (parent.hasClass("editTable_morph")) {
 		    ref.updateData(this_id, 'anno_morph', new_value);
 		    if (userdata.showInputErrors)
 			ref.updateInputError(target.getParent('tr'));
-		} else if (parent.hasClass("editTable_Mod")) {
+		} else if (parent.hasClass("editTable_mod")) {
 		    ref.updateData(this_id, 'anno_modtype', new_value);
 		    if (userdata.showInputErrors)
 			ref.updateInputError(target.getParent('tr'));
-		} else if (parent.hasClass("editTable_LemmaPOS")) {
-		    ref.updateData(this_id, 'anno_lemmaPOS', new_value);
+		} else if (parent.hasClass("editTable_lemmapos")) {
+		    ref.updateData(this_id, 'anno_lemmapos', new_value);
 		    if (userdata.showInputErrors)
 			ref.updateInputError(target.getParent('tr'));
 		}
@@ -540,17 +540,17 @@ var EditorModel = new Class({
 		var this_id = ref.getRowNumberFromElement(target);
 		var parent = target.getParent('td');
 		var new_value = target.get('value');
-		if (parent.hasClass("editTable_Norm")) {
+		if (parent.hasClass("editTable_norm")) {
 		    ref.updateData(this_id, 'anno_norm', new_value);
-		    parent.getSiblings("td.editTable_Mod input")[0].set('placeholder', new_value);
+		    parent.getSiblings("td.editTable_mod input")[0].set('placeholder', new_value);
 		    ref.updateProgress(this_id, true);
-		} else if (parent.hasClass("editTable_Mod")) {
+		} else if (parent.hasClass("editTable_mod")) {
 		    ref.updateData(this_id, 'anno_mod', new_value);
 		    //ref.updateModSelect(parent, new_value);
 		    if (userdata.showInputErrors)
 			ref.updateInputError(target.getParent('tr'));
 		    ref.updateProgress(this_id, true);
-		} else if (parent.hasClass("editTable_Lemma")) {
+		} else if (parent.hasClass("editTable_lemma")) {
 		    ref.updateData(this_id, 'anno_lemma', new_value);
 		    ref.updateProgress(this_id, true);
 		    // deselect "lemma verified" box after a change
@@ -568,7 +568,7 @@ var EditorModel = new Class({
                 var this_class = parent.get('class');
 		var new_value = target.get('value');
 		var new_row;
-		if (parent.hasClass("editTable_Mod")) {
+		if (parent.hasClass("editTable_mod")) {
 		    ref.updateModSelect(parent, new_value);
 		}
                 var shiftFocus = function(nr, tc) {
@@ -579,7 +579,7 @@ var EditorModel = new Class({
 		    }
                 };
 		if (event.code == 40) { // down arrow
-		    if(event.control || this_class != "editTable_Lemma") {
+		    if(event.control || this_class != "editTable_lemma") {
 			new_row = ref.getRowNumberFromElement(parent) + 1;
                         if (ref.getRowFromNumber(new_row) !== null) {
                             shiftFocus(ref.getRowFromNumber(new_row), this_class);
@@ -594,7 +594,7 @@ var EditorModel = new Class({
 		    }
 		}
 		if (event.code == 38) { // up arrow
-		    if(event.control || this_class != "editTable_Lemma") {
+		    if(event.control || this_class != "editTable_lemma") {
 			new_row = ref.getRowNumberFromElement(parent) - 1;
                         if (ref.getRowFromNumber(new_row) !== null) {
                             shiftFocus(ref.getRowFromNumber(new_row), this_class);
@@ -758,28 +758,28 @@ var EditorModel = new Class({
     */
     initializeColumnVisibility: function() {
 	var visibility = {
-	    "Norm":     false,
-	    "Mod":      false,
-	    "Lemma":    false,
-	    "LemmaPOS": false
+	    "norm":     false,
+	    "mod":      false,
+	    "lemma":    false,
+	    "lemmapos": false
 	};
 	var normbroad = false;
 	var normtype = false;
 	/* Check tagset associations */
 	file.tagsetlist.each(function(tagset) {
 	    if(tagset['class'] == "lemma") {
-		visibility["Lemma"] = true;
+		visibility["lemma"] = true;
             }
             if(tagset['class'] == "lemma_sugg") {
 		this.useLemmaLookup = true;
 	    }
-	    if(tagset['class'] == "lemmaPOS") { visibility["LemmaPOS"] = true; }
-	    if(tagset['class'] == "norm") { visibility["Norm"] = true; }
+	    if(tagset['class'] == "lemmapos") { visibility["lemmapos"] = true; }
+	    if(tagset['class'] == "norm") { visibility["norm"] = true; }
 	    if(tagset['class'] == "norm_broad") { normbroad = true; }
 	    if(tagset['class'] == "norm_type") { normtype = true; }
 	}.bind(this));
 	if(normbroad && normtype) {
-	    visibility["Mod"] = true;
+	    visibility["mod"] = true;
 	}
 
 	/* Show/hide columns and settings checkboxes */
@@ -848,7 +848,7 @@ var EditorModel = new Class({
 	morph - the morphology tag
      */
     isValidTagCombination: function(pos,morph) {
-	if(pos && morph && file.tagsets["POS"]['tags'].contains(pos) &&
+	if(pos && morph && file.tagsets["pos"]['tags'].contains(pos) &&
 	   file.tagsets["morph"][pos]!== null &&
 	   file.tagsets["morph"][pos]['tags'].contains(morph)) {
 		return true;
@@ -890,9 +890,9 @@ var EditorModel = new Class({
 	var tselect, ttag, modval;
 	var pselect, ptag, mselect, mtag;
 	try {
-	    tselect = tr.getElement('td.editTable_Mod select');
+	    tselect = tr.getElement('td.editTable_mod select');
 	    ttag = tselect.getSelected()[0].get('value');
-	    modval = tr.getElement('td.editTable_Mod input').get('value');
+	    modval = tr.getElement('td.editTable_mod input').get('value');
 	} catch(err) {}
 	if(tselect) {
 	    if(modval!="" && ttag=="") {
@@ -903,15 +903,15 @@ var EditorModel = new Class({
 	}
 
 	try {
-	    pselect = tr.getElement('td.editTable_POS select');
+	    pselect = tr.getElement('td.editTable_pos select');
 	    ptag = pselect.getSelected()[0].get('value');
-	    mselect = tr.getElement('td.editTable_Morph select');
+	    mselect = tr.getElement('td.editTable_morph select');
 	    mtag = mselect.getSelected()[0].get('value');
 	} catch(err) {	// row doesn't have the select, or the select is empty
 	    return;
 	}
 	if(ptag!="") {
-	    if(!file.tagsets["POS"]['tags'].contains(ptag)) {
+	    if(!file.tagsets["pos"]['tags'].contains(ptag)) {
 		pselect.addClass(iec);
 	    } else {
 		pselect.removeClass(iec);
@@ -936,8 +936,8 @@ var EditorModel = new Class({
 	if(userdata.showInputErrors) {
 	    $('editTable').getElements('tr').each(this.updateInputError.bind(this));
 	} else {
-	    $$('.editTable_POS select').removeClass(this.inputErrorClass);
-	    $$('.editTable_Morph select').removeClass(this.inputErrorClass);
+	    $$('.editTable_pos select').removeClass(this.inputErrorClass);
+	    $$('.editTable_morph select').removeClass(this.inputErrorClass);
 	}
     },
 
@@ -978,7 +978,7 @@ var EditorModel = new Class({
     renderMorphOptions: function(id, tr, postag) {
 	var morphopt, suggestions, line, isvalid;
 	var ref = this;
-	var mselect = tr.getElement('.editTable_Morph select');
+	var mselect = tr.getElement('.editTable_morph select');
 
 	if (!postag) {
 	    mselect.empty();
@@ -1239,9 +1239,9 @@ var EditorModel = new Class({
 	    tr.getElement('.editTable_Comment input').set('value', line.comment);
 
 	    // build annotation elements
-	    var norm_tr = tr.getElement('.editTable_Norm input');
-	    var mod_tr  = tr.getElement('.editTable_Mod input');
-	    var mod_trs = tr.getElement('.editTable_Mod select');
+	    var norm_tr = tr.getElement('.editTable_norm input');
+	    var mod_tr  = tr.getElement('.editTable_mod input');
+	    var mod_trs = tr.getElement('.editTable_mod select');
 	    if(norm_tr != null && norm_tr != undefined) {
 		norm_tr.set('value', line.anno_norm);
 	    }
@@ -1265,7 +1265,7 @@ var EditorModel = new Class({
 	    }
 
 	    // Lemma auto-completion
-	    lemma_input = tr.getElement('.editTable_Lemma input');
+	    lemma_input = tr.getElement('.editTable_lemma input');
 	    lemma_input.removeEvents();
 	    lemma_input.set('value', line.anno_lemma);
 	    /* Auto-completion now returns more than just results from
@@ -1274,40 +1274,40 @@ var EditorModel = new Class({
 	    this.makeNewAutocomplete(lemma_input, line.num);
 
 	    // Lemma-POS
-	    var lemma_pos = tr.getElement('.editTable_LemmaPOS select');
+	    var lemma_pos = tr.getElement('.editTable_lemmapos select');
 	    if(lemma_pos != null && lemma_pos != undefined) {
 		lemma_pos.getElements('.lineSuggestedTag').destroy();
 		lemma_pos.grab(new Element('option',{
-		    text: (line.anno_lemmaPOS == undefined) ? '' : line.anno_lemmaPOS,
-		    value: line.anno_lemmaPOS,
+		    text: (line.anno_lemmapos == undefined) ? '' : line.anno_lemmapos,
+		    value: line.anno_lemmapos,
 		    selected: 'selected',
 		    'class': 'lineSuggestedTag'
 		}),'top');
 	    }
 
             // POS
-	    posopt = tr.getElement('.editTable_POS select');
+	    posopt = tr.getElement('.editTable_pos select');
 	    posopt.getElements('.lineSuggestedTag').destroy();
 	    if(line.suggestions.length>0) {
 		optgroup = new Element('optgroup', {'label': 'Vorgeschlagene Tags', 'class': 'lineSuggestedTag'});
 		line.suggestions.each(function(opt){
 		    optgroup.grab(new Element('option',{
-			text: opt.POS+" ("+opt.score+")",
-			value: opt.POS,
+			text: opt.pos+" ("+opt.score+")",
+			value: opt.pos,
 			'class': 'lineSuggestedTag'
 		    }),'top');
 		});
 		posopt.grab(optgroup, 'top');
 	    }
 	    posopt.grab(new Element('option',{
-		text: (line.anno_POS == undefined) ? '' : line.anno_POS,
-		value: line.anno_POS,
+		text: (line.anno_pos == undefined) ? '' : line.anno_pos,
+		value: line.anno_pos,
 		selected: 'selected',
 		'class': 'lineSuggestedTag'
 	    }),'top');
             
             // Morph
-	    mselect = tr.getElement('.editTable_Morph select');
+	    mselect = tr.getElement('.editTable_morph select');
 	    mselect.empty();
 	    mselect.grab(new Element('option',{
                 text: (line.anno_morph == undefined) ? '' : line.anno_morph,
@@ -1328,13 +1328,13 @@ var EditorModel = new Class({
 		mselect.grab(optgroup);
 	    }
 
-	    if (line.anno_POS!=null) {
-		if (file.tagsets["morph"][line.anno_POS] != undefined) {
-		    mselect.grab(file.tagsets["morph"][line.anno_POS]["elems"].clone());
+	    if (line.anno_pos!=null) {
+		if (file.tagsets["morph"][line.anno_pos] != undefined) {
+		    mselect.grab(file.tagsets["morph"][line.anno_pos]["elems"].clone());
 		}
 		else {
 		    mselect.grab(new Element('optgroup',
-					     {'label': "Alle Tags für '"+line.anno_POS+"'",
+					     {'label': "Alle Tags für '"+line.anno_pos+"'",
 					      html: '<option value="--">--</option>'}));
 		}
 	    }
@@ -1506,15 +1506,15 @@ var EditorModel = new Class({
 
 	for (var i=0, len=cl.length; i<len; i++) {
 	    line=data[cl[i]];
-	    tp = line.anno_POS==null ? "" : line.anno_POS;
+	    tp = line.anno_pos==null ? "" : line.anno_pos;
 	    tm = line.anno_morph==null ? "" : line.anno_morph;
 	    save.push({
 		id: line.id,
 		general_error: line.general_error,
 		lemma_verified: line.lemma_verified,
 		anno_lemma: line.anno_lemma,
-		anno_lemmaPOS: line.anno_lemmaPOS,
-		anno_POS: tp, //.replace(/\s[\d\.]+/g,""),
+		anno_lemmapos: line.anno_lemmapos,
+		anno_pos: tp, //.replace(/\s[\d\.]+/g,""),
 		anno_morph: tm, //.replace(/\s[\d\.]+/g,""),
 		anno_norm: line.anno_norm,
 		anno_mod: line.anno_mod,

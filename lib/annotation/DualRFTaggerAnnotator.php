@@ -94,10 +94,10 @@ class DualRFTaggerAnnotator extends AutomaticAnnotator {
             throw new Exception("Fehler beim Zusammenführen der Tagger-Outputs:"
                                 ."Token sind nicht identisch.");
         }
-        if($fixline["anno_POS"] == "?") {
+        if($fixline["anno_pos"] == "?") {
             return $varline;
         }
-        if($varline["anno_POS"] == "?") {
+        if($varline["anno_pos"] == "?") {
             return $fixline;
         }
         if(array_key_exists($fixline["ascii"], $this->vocabulary)

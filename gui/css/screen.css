@@ -819,23 +819,23 @@ table#editTable td.editTable_tokenid {
     text-align: right;
 }
 
-table#editTable td.editTable_POS select {
+table#editTable td.editTable_pos select {
     width: 8em;
 }
 
-table#editTable td.editTable_Morph select {
+table#editTable td.editTable_morph select {
     width: 12em;
 }
 
-table#editTable td.editTable_Norm input {
+table#editTable td.editTable_norm input {
     width: 8em;
 }
 
-table#editTable td.editTable_Mod input {
+table#editTable td.editTable_mod input {
     width: 8em;
 }
 
-table#editTable td.editTable_Lemma input {
+table#editTable td.editTable_lemma input {
     width: 13em;
 }
 

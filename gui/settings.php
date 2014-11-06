@@ -33,12 +33,12 @@
           <input type="checkbox" name="displayedColumns" id="eshc-tokenid" value="tokenid" checked="yes" /><label for="eshc-tokenid">Zeilennummer</label>
           <input type="checkbox" name="displayedColumns" id="eshc-tok_trans" value="tok_trans" checked="yes" /><label for="eshc-tok_trans">Token (Trans)</label>
           <input type="checkbox" name="displayedColumns" id="eshc-token" value="token" checked="yes" /><label for="eshc-token">Token (UTF)</label>
-          <input type="checkbox" name="displayedColumns" id="eshc-Norm" value="Norm" checked="yes" /><label for="eshc-Norm">Normalisierung</label>
-          <input type="checkbox" name="displayedColumns" id="eshc-Mod" value="Mod" checked="yes" /><label for="eshc-Mod">Modernisierung</label>
-          <input type="checkbox" name="displayedColumns" id="eshc-POS" value="POS" checked="yes" /><label for="eshc-POS">POS-Tag</label>
-          <input type="checkbox" name="displayedColumns" id="eshc-Morph" value="Morph" checked="yes" /><label for="eshc-Morph">Morphologie-Tag</label>
-          <input type="checkbox" name="displayedColumns" id="eshc-Lemma" value="Lemma" checked="yes" /><label for="eshc-Lemma">Lemma</label>
-          <input type="checkbox" name="displayedColumns" id="eshc-LemmaPOS" value="LemmaPOS" checked="yes" /><label for="eshc-LemmaPOS">Lemma-Tag</label>
+          <input type="checkbox" name="displayedColumns" id="eshc-norm" value="norm" checked="yes" /><label for="eshc-norm">Normalisierung</label>
+          <input type="checkbox" name="displayedColumns" id="eshc-mod" value="mod" checked="yes" /><label for="eshc-mod">Modernisierung</label>
+          <input type="checkbox" name="displayedColumns" id="eshc-pos" value="pos" checked="yes" /><label for="eshc-pos">POS-Tag</label>
+          <input type="checkbox" name="displayedColumns" id="eshc-morph" value="morph" checked="yes" /><label for="eshc-morph">Morphologie-Tag</label>
+          <input type="checkbox" name="displayedColumns" id="eshc-lemma" value="lemma" checked="yes" /><label for="eshc-lemma">Lemma</label>
+          <input type="checkbox" name="displayedColumns" id="eshc-lemmapos" value="lemmapos" checked="yes" /><label for="eshc-lemmapos">Lemma-Tag</label>
           <input type="checkbox" name="displayedColumns" id="eshc-Comment" value="Comment" checked="yes" /><label for="eshc-Comment">Kommentar</label>
         </p>
       </div>

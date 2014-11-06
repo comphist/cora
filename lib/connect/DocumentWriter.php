@@ -128,10 +128,10 @@ class DocumentWriter extends DocumentAccessor {
       unset($line['anno_modtype']);
     }
     if(array_key_exists('anno_morph', $line)) {
-      if(array_key_exists('anno_POS', $line)
+      if(array_key_exists('anno_pos', $line)
 	 && !empty($line['anno_morph'])
 	 && $line['anno_morph'] != "--") {
-	$line['anno_POS'] .= "." . $line['anno_morph'];
+	$line['anno_pos'] .= "." . $line['anno_morph'];
       }
       unset($line['anno_morph']);
     }
@@ -197,15 +197,6 @@ class DocumentWriter extends DocumentAccessor {
 					':modid' => $modid));
   }
 
-  /** Temporary hack: maps case-sensitive class names. */
-  private function mapAnnoClass($annoclass) {
-      if(strtolower($annoclass) == "pos")
-          return "POS";
-      if(strtolower($annoclass) == "lemmapos")
-          return "lemmaPOS";
-      return $annoclass;
-  }
-
   /** Save an annotation for a given mod.
    *
    * @param string $modid A mod ID
@@ -215,7 +206,6 @@ class DocumentWriter extends DocumentAccessor {
    */
   protected function saveAnnotation($modid, $current, $annoclass, $value,
                                     $selected=1, $source="user", $score=NULL) {
-    $annoclass = $this->mapAnnoClass($annoclass);
     if(!array_key_exists($annoclass, $this->tagsets)) {
       $this->warn("Skipping unknown annotation class '{$annoclass}' for mod {$modid}.");
       return;

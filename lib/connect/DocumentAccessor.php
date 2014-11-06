@@ -86,7 +86,8 @@ class DocumentAccessor {
   }
 
   private function prepare_getSelectedAnnotations() {
-    $stmt = "SELECT ts.id, ts.tag_id, ts.source, tag.value, tagset.class "
+    $stmt = "SELECT ts.id, ts.tag_id, ts.source, tag.value, "
+      . "           LOWER(tagset.class) AS `class` "
       . "      FROM tag_suggestion ts "
       . " LEFT JOIN tag     ON tag.id=ts.tag_id "
       . " LEFT JOIN tagset  ON tagset.id=tag.tagset_id "

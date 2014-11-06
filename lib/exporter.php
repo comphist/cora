@@ -190,7 +190,7 @@ class Exporter {
       $tok = $mod['ascii'];
       $pos = '';
       foreach($mod['tags'] as $tag) {
-	if($tag['type']=='POS' && $tag['selected']==1) {
+	if($tag['type']=='pos' && $tag['selected']==1) {
 	  $pos = $tag['tag'];
 	}
       }

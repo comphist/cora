@@ -34,7 +34,7 @@ function get_DBInterface_expected() {
 	"tagsets" => array(
 			   "ts1" => array("id" => '1',
 					  "name" => "ImportTest",
-					  "class" => "POS",
+					  "class" => "pos",
 					  "set_type" => "closed"),
 			   "ts2" => array("id" => '2',
 					  "name" => "NormTest",
@@ -125,11 +125,11 @@ function get_DBInterface_expected() {
                             'full_trans' => '*{A*4}n$helm%9',
                             'num' => '0',
                             'suggestions' => array (
-                                array ( 'POS' => 'VVFIN',
+                                array ( 'pos' => 'VVFIN',
                                         'morph' => '3.Pl.Past.Konj',
                                         'score' => '0.97')
                             ),
-                            'anno_POS' => 'VVFIN',
+                            'anno_pos' => 'VVFIN',
                             'anno_morph' => '3.Pl.Past.Konj',
 			     'comment' => null,
 			     'page_name' => '1',
@@ -144,11 +144,11 @@ function get_DBInterface_expected() {
                             'full_trans'  => 'pi$t||u||s',
                             'num'         => '1',
                             'suggestions' => array(
-                                array( 'POS' => 'PPOSAT',
+                                array( 'pos' => 'PPOSAT',
                                        'morph' => 'Fem.Nom.Sg',
                                        'score' => null)
                             ),
-                            'anno_POS'    => "PPOSAT",
+                            'anno_pos'    => "PPOSAT",
                             'anno_morph'  => "Fem.Nom.Sg",
 			      'comment' => null,
 			     'page_name' => '1',
@@ -163,10 +163,10 @@ function get_DBInterface_expected() {
                             'full_trans'  => 'pi$t||u||s',
                             'num'         => '2',
                             'general_error' => 1,
-                            'suggestions' => array(array('POS' => 'VMINF',
+                            'suggestions' => array(array('pos' => 'VMINF',
                                                    'morph' => '--',
                                                    'score' => null)),
-                            'anno_POS' => 'VMINF',
+                            'anno_pos' => 'VMINF',
                             'anno_morph' => '--',
 			      'comment' => null,
 			     'page_name' => '1',
@@ -181,11 +181,11 @@ function get_DBInterface_expected() {
                             'full_trans'  => 'pi$t||u||s',
                             'num'         => '3',
                             'suggestions' => array(
-                                array('POS' => 'VVFIN',
+                                array('pos' => 'VVFIN',
                                       'morph' => '3.Pl.Pres.Konj',
                                       'score' => null)
                             ),
-                            'anno_POS'    => 'VVFIN',
+                            'anno_pos'    => 'VVFIN',
                             'anno_morph'  => '3.Pl.Pres.Konj',
 			      'comment' => null,
 			     'page_name' => '1',
@@ -200,7 +200,7 @@ function get_DBInterface_expected() {
                             'full_trans'  => 'aller#lieb$tev',
                             'num'         => '4',
                             'suggestions' => array(),
-                            'anno_POS'    => 'PDS',
+                            'anno_pos'    => 'PDS',
                             'anno_morph'  => '*.Gen.Pl',
                             'anno_lemma'  => 'lemma',
 			      'comment' => 'cora comment',
@@ -250,7 +250,7 @@ function get_DBInterface_expected() {
 			     'page_side' => 'r',
 			     'col_name' => '',
 			     'line_name' => '5',
-                             'anno_POS' => 'PDS',
+                             'anno_pos' => 'PDS',
                              'anno_morph' => 'Fem.Nom.Sg'
                         ),
                         array('id' => '9',
@@ -595,11 +595,11 @@ function get_XMLHandler_initial() {
                             'full_trans' => '*{A*4}n$helm%9',
                             'num' => '0',
                             'suggestions' => array (
-                                array ( 'POS' => 'VVFIN',
+                                array ( 'pos' => 'VVFIN',
                                         'morph' => '3.Pl.Past.Konj',
                                         'score' => '0.97')
                             ),
-                            'anno_POS' => 'VVFIN',
+                            'anno_pos' => 'VVFIN',
                             'anno_morph' => '3.Pl.Past.Konj',
                             'comment' => null
                         ),
@@ -891,19 +891,19 @@ function get_AutomaticAnnotator_data() {
                                              array("id" => 801,
                                                    "ascii" => "vnd",
                                                    "verified" => 0,
-                                                   "tags" => array("POS" => "DARTU",
+                                                   "tags" => array("pos" => "DARTU",
                                                                    "norm" => "und")
                                                    ),
                                              array("id" => 802,
                                                    "ascii" => "er",
                                                    "verified" => 1,
-                                                   "tags" => array("POS" => "PPER",
+                                                   "tags" => array("pos" => "PPER",
                                                                    "norm" => "er")
                                                    ),
                                              array("id" => 803,
                                                    "ascii" => "giebt",
                                                    "verified" => 0,
-                                                   "tags" => array("POS" => "NE",
+                                                   "tags" => array("pos" => "NE",
                                                                    "norm" => "giebel")
                                                    )
                                                ),
@@ -916,7 +916,7 @@ function get_AutomaticAnnotator_data() {
                                        ),
                  "tagsetlist" => array("ts1" => array("id" => '1',
                                                       "name" => "ImportTest",
-                                                      "class" => "POS",
+                                                      "class" => "pos",
                                                       "set_type" => "closed"),
                                        "ts2" => array("id" => '2',
                                                       "name" => "NormTest",
@@ -927,10 +927,10 @@ function get_AutomaticAnnotator_data() {
                                            "par" => $outfile),
                  "expected" => array(array("id" => 801,
                                            "anno_norm" => "und",
-                                           "anno_POS" => "KOKOM"),
+                                           "anno_pos" => "KOKOM"),
                                      array("id" => 803,
                                            "anno_norm" => "ging",
-                                           "anno_POS" => "VVFIN")
+                                           "anno_pos" => "VVFIN")
                                      )
                  );
 }
@@ -951,7 +951,7 @@ function get_Exporter_data() {
                                                                          "score" => 0.1,
                                                                          "selected" => 1,
                                                                          "source" => "auto",
-                                                                         "type" => "POS"),
+                                                                         "type" => "pos"),
                                                                    array("tag" => "und",
                                                                          "score" => 0.1,
                                                                          "selected" => 1,
@@ -972,7 +972,7 @@ function get_Exporter_data() {
                                                                          "score" => 0.8,
                                                                          "selected" => 1,
                                                                          "source" => "auto",
-                                                                         "type" => "POS"),
+                                                                         "type" => "pos"),
                                                                    array("tag" => "ihn",
                                                                          "score" => 0.8,
                                                                          "selected" => 1,
@@ -1003,12 +1003,12 @@ function get_Exporter_data() {
                                                                          "score" => 0.5,
                                                                          "selected" => 1,
                                                                          "source" => "auto",
-                                                                         "type" => "POS"),
+                                                                         "type" => "pos"),
                                                                    array("tag" => "VVIMP",
                                                                          "score" => 0.75,
                                                                          "selected" => 0,
                                                                          "source" => "auto",
-                                                                         "type" => "POS"),
+                                                                         "type" => "pos"),
                                                                    array("tag" => "giebel",
                                                                          "score" => 0.8,
                                                                          "selected" => 1,
@@ -1029,7 +1029,7 @@ function get_Exporter_data() {
                                                    "tags" => array(
                                                                    array("tag" => "CARD",
                                                                          "selected" => 1,
-                                                                         "type" => "POS"),
+                                                                         "type" => "pos"),
                                                                    array("tag" => "eins",
                                                                          "selected" => 1,
                                                                          "type" => "norm")
@@ -1043,7 +1043,7 @@ function get_Exporter_data() {
                                                    "tags" => array(
                                                                    array("tag" => "CARD",
                                                                          "selected" => 1,
-                                                                         "type" => "POS"),
+                                                                         "type" => "pos"),
                                                                    array("tag" => "zwei",
                                                                          "selected" => 1,
                                                                          "type" => "norm")
@@ -1057,7 +1057,7 @@ function get_Exporter_data() {
                                                    "tags" => array(
                                                                    array("tag" => "CARD",
                                                                          "selected" => 1,
-                                                                         "type" => "POS"),
+                                                                         "type" => "pos"),
                                                                    array("tag" => "drei",
                                                                          "selected" => 1,
                                                                          "type" => "norm")
@@ -1079,10 +1079,10 @@ function get_Exporter_data() {
                                        ),
                  "expected_POS" => "vnd\tDARTU\njn\tPPER\ngiebt\tNE\n",
                  "expected_norm" => "vnd\tund\njn\tihn\tihnen\tf\ngiebt\tgiebel\n",
-                 "expected_tagging_1" => "ascii\tPOS\tnorm\nvnd\tDARTU\tund\n"
+                 "expected_tagging_1" => "ascii\tpos\tnorm\nvnd\tDARTU\tund\n"
                                          ."jn\tPPER\tihn\ngiebt\tNE\tgiebel\n",
                  "expected_tagging_2" => "vnd\tund\njn\tihn\ngiebt\tgiebel\n",
-                 "expected_training"  => "ascii\tPOS\tnorm\nvnd\tDARTU\tund\n"
+                 "expected_training"  => "ascii\tpos\tnorm\nvnd\tDARTU\tund\n"
                                          ."\ngiebt\tNE\tgiebel\n"
                                          ."\nzwey\tCARD\tzwei\ndrey\tCARD\tdrei"
                                          ."\nvier\t\tvier\n"

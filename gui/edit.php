@@ -24,12 +24,12 @@
         <th class="editTable_error">E</th>
         <th class="editTable_tok_trans">Token (Trans)</th>
         <th class="editTable_token">Token (UTF)</th>
-        <th class="editTable_Norm">Normalisierung</th>
-        <th class="editTable_Mod">Modernisierung</th>
-        <th class="editTable_POS">POS-Tag</th>
-        <th class="editTable_Morph">Morphologie-Tag</th>
-        <th class="editTable_Lemma">Lemma</th>
-        <th class="editTable_LemmaPOS">Lemma-Tag</th>
+        <th class="editTable_norm">Normalisierung</th>
+        <th class="editTable_mod">Modernisierung</th>
+        <th class="editTable_pos">POS-Tag</th>
+        <th class="editTable_morph">Morphologie-Tag</th>
+        <th class="editTable_lemma">Lemma</th>
+        <th class="editTable_lemmapos">Lemma-Tag</th>
         <th class="editTable_Comment">Kommentar</th>
         <th class="editTable_dropdown"></th>
       </tr>
@@ -46,10 +46,10 @@
         </td>
         <td class="editTable_tok_trans"></td>
         <td class="editTable_token"></td>
-        <td class="editTable_Norm">
+        <td class="editTable_norm">
           <input type="text" value="" />
         </td>
-        <td class="editTable_Mod">
+        <td class="editTable_mod">
           <input type="text" value="" />
           <select size="1" disabled="disabled">
             <option value=""></option>
@@ -58,16 +58,16 @@
             <option value="x">x</option>
           </select>
         </td>
-        <td class="editTable_POS"></td>
-        <td class="editTable_Morph"></td>
-        <td class="editTable_Lemma">
+        <td class="editTable_pos"></td>
+        <td class="editTable_morph"></td>
+        <td class="editTable_lemma">
           <div class="editTableLemma editTableCheckbox"></div>
           <input type="text" value="" />
           <div class="editTableLemmaLink">
              <span class="oi oi-adjust oi-shadow" data-glyph="external-link" title="Externen Link öffnen" aria-hidden="true"></span>
           </div>
         </td>
-        <td class="editTable_LemmaPOS"></td>
+        <td class="editTable_lemmapos"></td>
         <td class="editTable_Comment">
           <input type="text" value="" maxlength="255" />
         </td>

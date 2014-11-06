@@ -77,7 +77,7 @@ class Cora_Tests_Exporter_test extends PHPUnit_Framework_TestCase {
     }
 
     public function testExportForTagging_First() {
-        $classes = array("POS", "norm");
+        $classes = array("pos", "norm");
         $stream  = fopen("php://memory", 'r+');
         $moderns = $this->exp->exportForTagging(42, $stream, $classes, true);
         rewind($stream);
@@ -103,7 +103,7 @@ class Cora_Tests_Exporter_test extends PHPUnit_Framework_TestCase {
     }
 
     public function testExportForTraining() {
-        $classes = array("POS", "norm");
+        $classes = array("pos", "norm");
         $stream  = fopen("php://memory", 'r+');
         $this->exp->exportForTraining(99, $stream, $classes, true);
         rewind($stream);

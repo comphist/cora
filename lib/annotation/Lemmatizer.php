@@ -54,7 +54,7 @@ class Lemmatizer extends AutomaticAnnotator {
         foreach($tokens as $tok) {
             fwrite($handle, $tok['ascii']);
             if($this->use_pos) {
-                fwrite($handle, "\t".$tok['tags']['POS']);
+                fwrite($handle, "\t".$tok['tags']['pos']);
             }
             fwrite($handle, "\n");
         }
@@ -121,13 +121,13 @@ class Lemmatizer extends AutomaticAnnotator {
         $lines = array();
         foreach($tokens as $tok) {
             if(!$tok['verified'] ||
-               !isset($tok['tags']['POS']) || empty($tok['tags']['POS']) ||
+               !isset($tok['tags']['pos']) || empty($tok['tags']['pos']) ||
                !isset($tok['tags']['lemma']) || empty($tok['tags']['lemma'])) {
                 continue;
             }
             $newline = $tok['ascii']."\t";
             if($this->use_pos) {
-                $newline = $newline . $tok['tags']['POS']."\t";
+                $newline = $newline . $tok['tags']['pos']."\t";
             }
             $newline = $newline . $tok['tags']['lemma'];
             $lines[] = $newline;
