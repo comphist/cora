@@ -333,6 +333,13 @@ cora.files = {
          fn  - Callback function to invoke after successful request
      */
     prefetchTagsets: function(fid, fn) {
+        if(this.allTagsetsPrefetched(fid)) {
+            console.log("all prefetched!");
+            if(typeof(fn) == "function")
+                fn({success: true}, '');
+            return;
+        }
+        console.log("prefetching...");
         this._performGETRequest("fetchTagsetsForFile", fid, function(status, text) {
             if(status.success && status.data) {
                 Object.each(status.data, function(tagset, cls) {
@@ -342,8 +349,26 @@ cora.files = {
             if(typeof(fn) == "function")
                 fn(status, text);
         });
-    }
+    },
 
+    /* Function: allTagsetsPrefetched
+
+       Check if all tagsets associated with the given file have
+       already been fetched, so we don't need to issue another server
+       request.
+
+       Parameters:
+         fid - ID of the file
+     */
+    allTagsetsPrefetched: function(fid) {
+        var tagsets = this.getTagsets(fid);
+        if(tagsets) {
+            return Object.values(tagsets).every(function(tid) {
+                return cora.tagsets.isProcessed(tid);
+            });
+        }
+        return false;
+    }
 };
 
 // ***********************************************************************
@@ -995,7 +1020,7 @@ cora.fileManager = {
                 gui.setHeader(cora.files.getDisplayName(fid));
                 cora.projects.performUpdate();
                 cora.files.prefetchTagsets(fid, function(status) {
-                    if(status.success && typeof(status.data) !== "undefined") {
+                    if(status.success) {
                         response.onInit = onInitSuccess;
                         cora.editor = new EditorModel(fid, response);
                     } else {

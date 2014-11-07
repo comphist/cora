@@ -59,6 +59,23 @@ cora.tagsets = {
         return false;
     },
 
+    /* Function: isProcessed
+
+       Check whether a given tagset has already been processed, or
+       does not need any processing.
+       
+       Parameters:
+        tid - Tagset ID
+     */
+    isProcessed: function(tid) {
+        var tagset = this.get(tid);
+        if(!tagset)
+            return false;
+        if(tagset.set_type == "closed" && tagset['class'] != "lemma_sugg")
+            return (typeof(tagset.tags) !== "undefined");
+        return true;
+    },
+
     /* Function: onInit
 
        Add a callback function to be called after the project list has
@@ -117,7 +134,7 @@ cora.tagsets = {
        
        Parameters:
        data - Tagset data object as returned by the
-              'prefetchTagsetsForFile' request
+              'fetchTagsetsForFile' request
      */
     preprocess: function(data) {
         if(typeof(data.tags) === "undefined" || data.tags.length < 1)
