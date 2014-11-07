@@ -334,12 +334,10 @@ cora.files = {
      */
     prefetchTagsets: function(fid, fn) {
         if(this.allTagsetsPrefetched(fid)) {
-            console.log("all prefetched!");
             if(typeof(fn) == "function")
                 fn({success: true}, '');
             return;
         }
-        console.log("prefetching...");
         this._performGETRequest("fetchTagsetsForFile", fid, function(status, text) {
             if(status.success && status.data) {
                 Object.each(status.data, function(tagset, cls) {
