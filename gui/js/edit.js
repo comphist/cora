@@ -426,8 +426,8 @@ var EditorModel = new Class({
 	elem = $('line_template');
 	
 	spos = new Element('select');
-	spos.grab(file.tagsets["pos"]["elems"].clone());
-	td = elem.getElement('td.editTable_pos')
+	spos.grab(cora.currentTagset("pos").optgroup.clone());                  
+	td = elem.getElement('td.editTable_pos');
 	td.empty();
 	td.adopt(spos);
 	
@@ -436,9 +436,9 @@ var EditorModel = new Class({
 	td.empty();
 	td.adopt(smorph);
 
-	if(file.tagsets['lemmapos'] !== undefined) {
+	if(cora.currentHasTagset("lemmapos")) {
 	    slempos = new Element('select');
-	    slempos.grab(file.tagsets["lemmapos"]["elems"].clone());
+	    slempos.grab(cora.currentTagset("lemmapos").optgroup.clone());
 	    td = elem.getElement('td.editTable_lemmapos');
 	    td.empty();
 	    td.adopt(slempos);
@@ -777,21 +777,16 @@ var EditorModel = new Class({
 	var normbroad = false;
 	var normtype = false;
 	/* Check tagset associations */
-	file.tagsetlist.each(function(tagset) {
-	    if(tagset['class'] == "lemma") {
-		visibility["lemma"] = true;
-            }
-            if(tagset['class'] == "lemma_sugg") {
-		this.useLemmaLookup = true;
-	    }
-	    if(tagset['class'] == "lemmapos") { visibility["lemmapos"] = true; }
-	    if(tagset['class'] == "norm") { visibility["norm"] = true; }
-	    if(tagset['class'] == "norm_broad") { normbroad = true; }
-	    if(tagset['class'] == "norm_type") { normtype = true; }
-	}.bind(this));
-	if(normbroad && normtype) {
-	    visibility["mod"] = true;
-	}
+        if(cora.currentHasTagset("lemma"))
+            visibility["lemma"] = true;
+        if(cora.currentHasTagset("lemma_sugg"))
+            this.useLemmaLookup = true;
+        if(cora.currentHasTagset("lemmapos"))
+            visibility["lemmapos"] = true;
+        if(cora.currentHasTagset("norm"))
+            visibility["norm"] = true;
+        if(cora.currentHasTagset("norm_broad") && cora.currentHasTagset("norm_type"))
+            visibility["mod"] = true;
 
 	/* Show/hide columns and settings checkboxes */
 	var eshc = $('editorSettingsHiddenColumns');
@@ -858,13 +853,9 @@ var EditorModel = new Class({
         pos - the POS tag
 	morph - the morphology tag
      */
-    isValidTagCombination: function(pos,morph) {
-	if(pos && morph && file.tagsets["pos"]['tags'].contains(pos) &&
-	   file.tagsets["morph"][pos]!== null &&
-	   file.tagsets["morph"][pos]['tags'].contains(morph)) {
-		return true;
-	}
-	return false;
+    isValidTagCombination: function(pos, morph) {
+        var tag = (morph && morph !== "--") ? (pos+"."+morph) : pos;
+        return (cora.currentTagset("pos").tags.contains(tag));
     },
 
     /* Function: updateModSelect
@@ -922,7 +913,7 @@ var EditorModel = new Class({
 	    return;
 	}
 	if(ptag!="") {
-	    if(!file.tagsets["pos"]['tags'].contains(ptag)) {
+            if(typeof(cora.currentTagset("pos").tags_for[ptag]) == "undefined") {
 		pselect.addClass(iec);
 	    } else {
 		pselect.removeClass(iec);
@@ -997,14 +988,11 @@ var EditorModel = new Class({
 	    return;
 	}
 
-	if (file.tagsets["morph"][postag] != undefined) {
-            morphopt = file.tagsets["morph"][postag]["elems"].clone();
-	}
-	else { // ensure there is always at least the empty selection
-	    morphopt = new Element('optgroup',
-                                   {'label': "Alle Tags für '"+postag+"'",
-                                    'html': '<option value="--">--</option>'});
-	}
+        morphopt = cora.currentTagset("pos").optgroup_for[postag];
+        if(typeof(morphopt) !== "undefined")
+            morphopt = morphopt.clone();
+        else
+            morphopt = cora.tagsets.generateOptgroup([]);
 	line = this.data[id];
 	if (line.suggestions) {
 	    suggestions = new Element('optgroup', {'label': 'Vorgeschlagene Tags', 'class': 'lineSuggestedTag'});
@@ -1321,7 +1309,7 @@ var EditorModel = new Class({
 	    mselect = tr.getElement('.editTable_morph select');
 	    mselect.empty();
 	    mselect.grab(new Element('option',{
-                text: (line.anno_morph == undefined) ? '' : line.anno_morph,
+                text: line.anno_morph,
 		value: line.anno_morph,
 		selected: 'selected',
 		'class': 'lineSuggestedTag'
@@ -1339,15 +1327,9 @@ var EditorModel = new Class({
 		mselect.grab(optgroup);
 	    }
 
-	    if (line.anno_pos!=null) {
-		if (file.tagsets["morph"][line.anno_pos] != undefined) {
-		    mselect.grab(file.tagsets["morph"][line.anno_pos]["elems"].clone());
-		}
-		else {
-		    mselect.grab(new Element('optgroup',
-					     {'label': "Alle Tags für '"+line.anno_pos+"'",
-					      html: '<option value="--">--</option>'}));
-		}
+            var m_optgroup = cora.currentTagset("pos").optgroup_for[line.anno_pos];
+	    if (typeof(m_optgroup) !== "undefined") {
+                mselect.grab(m_optgroup.clone());
 	    }
 
 	    if(userdata.showInputErrors) {
@@ -2033,6 +2015,7 @@ var EditorModel = new Class({
      */
     prepareAnnotationOptions: function() {
 	var aaselect = $('automaticAnnotationForm').getElement('#aa_tagger_select');
+        var alltaggers = cora.files.getTaggers(cora.current());
 	var onTaggerChange = function(e) {
 	    var id;
 	    var trainbtn = e.target.getParent("div.mBoxContainer").getElement("#trainStartButton");
@@ -2042,15 +2025,15 @@ var EditorModel = new Class({
 		trainbtn.set('disabled', true);
 		return;
 	    }
-	    Array.each(file.taggers, function(tagger) {
+	    Array.each(alltaggers, function(tagger) {
 		if(tagger.id == id) {
 		    trainbtn.set('disabled', !tagger.trainable);
 		}
 	    });
 	};
 	aaselect.empty();
-        if(file.taggers.length > 0) {
-	    Array.each(file.taggers, function(tagger) {
+        if(alltaggers.length > 0) {
+	    Array.each(alltaggers, function(tagger) {
 	        aaselect.adopt(new Element('input',
 				           {'value': tagger.id,
                                             'type':  'radio',

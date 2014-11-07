@@ -81,6 +81,7 @@
               embedJS("gui/js/iFrameFormRequest.js", true);
               embedJS("gui/js/Meio.Autocomplete.js", true);
               embedJS("gui/js/gui.js", true);
+              embedJS("gui/js/tagset.js", true);
               embedJS("gui/js/file.js", true);
               embedJS("gui/js/edit.js", true);
               embedJS("gui/js/settings.js", true);

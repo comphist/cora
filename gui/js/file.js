@@ -164,6 +164,8 @@ cora.projects = {
 cora.files = {
     get: cora.projects.getFile.bind(cora.projects),
     getProject: cora.projects.getProjectForFile.bind(cora.projects),
+    tagsetsByID: {},
+    taggersByID: {},
 
     /* Function: _performGETRequest
 
@@ -184,6 +186,34 @@ cora.files = {
              }
             }
         ).get({'do': name, 'fileid': fid});
+    },
+
+    /* Function: getTagsets
+
+       Returns tagset associations for a given file, if available.
+
+       Parameters:
+         file - A file object or a file ID
+     */
+    getTagsets: function(file) {
+        var id = file.id || file;
+        if(typeof(this.tagsetsByID[id]) === "undefined")
+            return {};
+        return this.tagsetsByID[id];
+    },
+
+    /* Function: getTaggers
+
+       Returns a list of taggers for a given file, if available.
+
+       Parameters:
+         file - A file object or a file ID
+     */
+    getTaggers: function(file) {
+        var id = file.id || file;
+        if(typeof(this.taggersByID[id]) === "undefined")
+            return {};
+        return this.taggersByID[id];
     },
 
     /* Function: getDisplayName
@@ -255,12 +285,29 @@ cora.files = {
 
        Sends a server request to open a given file.
 
+       If tagset and tagger associations are not already set, this
+       information is automatically set from the returned data.
+
        Parameters:
          fid - ID of the file to be opened
          fn  - Callback function to invoke after successful request
      */
     open: function(fid, fn) {
-        this._performGETRequest("openFile", fid, fn);
+        this._performGETRequest("openFile", fid, function(status, text) {
+            // tagset assocs?
+            if(status.data && status.data.tagsets) {
+                this.tagsetsByID[fid] = {};
+                Object.each(status.data.tagsets, function(ts) {
+                    this.tagsetsByID[fid][ts['class']] = ts.id;
+                }.bind(this));
+            }
+            // tagger assoc?
+            if(status.data && status.data.taggers) {
+                this.taggersByID[fid] = status.data.taggers;
+            }
+            if(typeof(fn) == "function")
+                fn(status, text);
+        }.bind(this));
     },
 
     /* Function: close
@@ -278,137 +325,25 @@ cora.files = {
     /* Function: prefetchTagsets
 
        Sends a server request to fetch all closed tagsets associated
-       with the given file.
+       with the given file, and automatically triggers pre-processing
+       for these tagsets as well.
 
        Parameters:
          fid - ID of the file
          fn  - Callback function to invoke after successful request
      */
     prefetchTagsets: function(fid, fn) {
-        this._performGETRequest("fetchTagsetsForFile", fid, fn);
-    }
-
-};
-
-// ***********************************************************************
-// ********** Tagset Information *****************************************
-// ***********************************************************************
-
-/* Class: cora.tagsets
-
-   Acts as a wrapper for an array containing all tagset information.
-*/
-cora.tagsets = {
-    initialized: false,
-    data: [],
-    byID: {},
-    onInitHandlers: [],
-
-    /* Function: get
-
-       Return a tagset by ID.
-
-       Parameters:
-        pid - ID(s) of the tagset(s) to be returned
-     */
-    get: function(pid) {
-        if(pid instanceof Array) {
-            var data = [];
-            pid.each(function(p) {
-                var idx = this.byID[p];
-                if(idx != undefined)
-                    data.push(this.data[idx]);
-            }.bind(this));
-            return data;
-        }
-        else {
-            var idx = this.byID[pid];
-            if(idx == undefined)
-                return Object();
-            return this.data[idx];
-        }
-    },
-
-    /* Function: getAll
-
-       Return an array containing all projects.
-    */
-    getAll: function() {
-        return this.data;
-    },
-
-    /* Function: onInit
-
-       Add a callback function to be called after the project list has
-       been first initialized (or immediately if it already has).
-
-       Parameters:
-        fn - function to be called
-     */
-    onInit: function(fn) {
-        if(typeof(fn) == "function") {
-            if(this.initialized)
-                fn();
-            else
-                this.onInitHandlers.push(fn);
-        }
-        return this;
-    },
-
-    /* Function: makeMultiSelectBox
-       
-       Creates and returns a dropdown box using MultiSelect.js with all
-       available tagsets as entries.
-       
-       Parameters:
-        tagsets - Array of tagset IDs that should be pre-selected
-        name    - Name of the input array
-        ID      - ID of the selector div
-    */
-    makeMultiSelectBox: function(tagsets, name, id) {
-        var multiselect = new Element('div',
-                                      {'class': 'MultiSelect',
-                                       'id':    id});
-        Array.each(this.data, function(tagset, idx) {
-            var entry = new Element('input',
-                                    {'type': 'checkbox',
-                                     'id':   name+'_'+tagset.id,
-                                     'name': name+'[]',
-                                     'value': tagset.id});
-            var textr = "["+tagset['class']+"] "+tagset.longname+" (id: "+tagset.id+")";
-            var label = new Element('label',
-                                    {'for':  name+'_'+tagset.id,
-                                     'text': textr});
-            if(tagsets.some(function(el){ return el == tagset.id; }))
-                entry.set('checked', 'checked');
-            multiselect.grab(entry).grab(label);
+        this._performGETRequest("fetchTagsetsForFile", fid, function(status, text) {
+            if(status.success && status.data) {
+                Object.each(status.data, function(tagset, cls) {
+                    cora.tagsets.preprocess(tagset);
+                });
+            }
+            if(typeof(fn) == "function")
+                fn(status, text);
         });
-        new MultiSelect(multiselect,
-                        {monitorText: ' Tagset(s) ausgewählt'});
-        return multiselect;
-    },
-
-    /* Function: performUpdate
-       
-       Analogous to cora.projects.performUpdate(), this function is
-       supposed to update the tagset information.  Currently doesn't
-       perform a server request, but reads the data from another
-       PHP-generated variable.  (HACK)
-     */
-    performUpdate: function(){
-        this.data = PHP_tagsets;
-        this.byID = {};
-        Array.each(this.data, function(prj, idx) {
-            this.byID[prj.id] = idx;
-        }.bind(this));
-        if(!this.initialized) {
-            this.initialized = true;
-            Array.each(this.onInitHandlers, function(handler) {
-                handler();
-            });
-        }
-        return this;
     }
+
 };
 
 // ***********************************************************************
@@ -872,6 +807,7 @@ cora.fileImporter = {
  */
 cora.fileManager = {
     content: null,
+    currentFileId: null,
     
     initialize: function() {
         this.content = $('files');
@@ -904,6 +840,14 @@ cora.fileManager = {
                 }
             }.bind(this)
         );
+    },
+
+    /* Function: isFileOpened
+
+       Checks whether a file is currently opened in this CorA instance.
+     */
+    isFileOpened: function() {
+        return (this.currentFileId !== null);
     },
     
     /* Function: render
@@ -1010,7 +954,7 @@ cora.fileManager = {
         var startChain, onLockSuccess, onOpenSuccess, onInitSuccess;
 
         // Is there a file already opened?
-        if (cora.editor !== null && cora.editor.fileId !== null) {
+        if (this.isFileOpened()) {
             cora.editor.confirmClose(function() {
                 this.closeCurrentlyOpened(function() {
                     this.openFile(fid);
@@ -1046,25 +990,23 @@ cora.fileManager = {
         // 3. If open was successful, fetch and preprocess any closed tagsets
         onOpenSuccess = function(status) {
             var response = status;
-            if(status.success) {
-                file.tagsetlist = status.data.tagsets;  // XXX
-                file.taggers = status.data.taggers;  // XXX
+            if(response.success) {
+                this.currentFileId = fid;
                 gui.setHeader(cora.files.getDisplayName(fid));
                 cora.projects.performUpdate();
                 cora.files.prefetchTagsets(fid, function(status) {
-                    if(status.success && status.data !== undefined) {
-                        file.preprocessTagset(status.data, function() {  // XXX
-                            response.onInit = onInitSuccess;
-                            cora.editor = new EditorModel(fid, response);
-                        });
+                    if(status.success && typeof(status.data) !== "undefined") {
+                        response.onInit = onInitSuccess;
+                        cora.editor = new EditorModel(fid, response);
                     } else {
                         gui.showMsgDialog('error', "Fehler beim Laden der Tagsets.");
+                        this.closeCurrentlyOpened();
                     }
-                });
+                }.bind(this));
             } else {
                 gui.showMsgDialog('error', "Das Dokument konnte nicht geöffnet werden.");
             }
-        };
+        }.bind(this);
 
         // 4. Show the editor tab and clean up
         onInitSuccess = function() {
@@ -1087,8 +1029,8 @@ cora.fileManager = {
      */
     closeFile: function(fid) {
         // are we closing the currently opened file?
-        if (cora.editor !== null && cora.editor.fileId == fid) {
-            cora.editor.confirmClose(this.closeCurrentlyOpened);
+        if (this.currentFileId == fid) {
+            cora.editor.confirmClose(this.closeCurrentlyOpened.bind(this));
         } else {
             // if we're admin, we can close any file
             if(!userdata.admin) {
@@ -1117,16 +1059,17 @@ cora.fileManager = {
        TODO: this function certainly belongs somewhere else
      */
     closeCurrentlyOpened: function(fn) {
-        if (cora.editor != null && cora.editor.fileId != null) {
+        if (this.isFileOpened()) {
             gui.lock();
-            cora.files.close(cora.editor.fileId, function(status) {
+            cora.files.close(this.currentFileId, function(status) {
+                this.currentFileId = null;
                 cora.editor.destruct();
                 cora.editor = null;
                 cora.projects.performUpdate();
                 gui.setHeader("").hideTab('edit').changeTab('file').unlock();
                 if(typeof(fn) == "function")
                     fn();
-            });
+            }.bind(this));
         }
     },
 
@@ -1264,134 +1207,35 @@ cora.fileManager = {
     	    }
     	).get({'do': 'getTagsetsForFile', 'file_id': fileid});
     }
-
 };
 
-var file = {
-    tagsets: {},
-    tagsetlist: [],
-    taggers: [],
-    files_div: null,
+// ***********************************************************************
+// ********** Convenience functions **************************************
+// ***********************************************************************
 
-    initialize: function(){
-    },
-
-    /* Function: _splitAtFirstDot
-       
-       Used internally by preprocessTagset().
-     */
-    _splitAtFirstDot: function(tag) {
-	var dotidx = tag.indexOf('.');
-	var pos = null; var morph = null;
-	if(dotidx<0 || dotidx==(tag.length-1)) {
-	    pos = tag;
-	}
-	else {
-	    pos = tag.substr(0, dotidx);
-	    morph = tag.substr(dotidx+1);
-	}
-	return [pos, morph];
-    },
-
-    /* Function: preprocessTagset
-
-       Parses tagset data and builds HTML code for drop-down boxes.
-
-       Parameters:
-         tslist - Tagset data as returned by AJAX request
-         fn - Callback function to invoke after processing is done
-    */
-    preprocessTagset: function(tslist, fn) {
-	var ref = this;
-
-	// collect tags into arrays, splitting POS if applicable
-	Object.each(tslist, function(tagset, tclass) {
-	    if(typeof tagset.tags === 'undefined'
-	       || tagset.tags.length < 1) return;
-	    ref.tagsets[tclass] = {'tags': [],
-				   'html': ""};
-	    if(tclass === "pos") {
-		ref.tagsets["morph"] = {};
-	    }
-	    Array.each(tagset.tags, function(data) {
-		var tag;
-		if(data.needs_revision==1) return;
-		if(tclass === "pos") {
-		    tag = ref._splitAtFirstDot(data.value);
-		    ref.tagsets["pos"]['tags'].push(tag[0]);
-		    if(tag[1] != null) {
-			if(!(tag[0] in ref.tagsets["morph"])) {
-			    ref.tagsets["morph"][tag[0]] = {'tags': [],
-							    'html': ""};
-			}
-			ref.tagsets["morph"][tag[0]]['tags'].push(tag[1]);
-		    }
-		}
-		else {
-		    tag = data.value;
-		    ref.tagsets[tclass]['tags'].push(tag);
-		}
-	    });
-	});
-
-	if("pos" in ref.tagsets) {
-	    ref.tagsets["pos"]['tags'] = ref.tagsets["pos"]['tags'].unique();
-	}
-	
-	// generate HTML code
-	Object.each(ref.tagsets, function(tagset, tclass) {
-	    if(tclass==="morph") return;
-	    var optgroup_tclass = new Element('optgroup',
-                                              {'label': 'Alle Tags'});
-	    Array.each(tagset.tags, function(tag) {
-                optgroup_tclass.grab(new Element('option',
-                                                 {text: tag, value: tag}));
-		if(tclass==="pos") {
-		    var optgroup_morph = new Element('optgroup',
-                                                     {'label': "Alle Tags für '"
-                                                                +tag+"'"});
-                    // new Elements();
-		    if(ref.tagsets['morph'][tag]) {
-			Array.each(ref.tagsets['morph'][tag]['tags'], function(morph) {
-                            optgroup_morph.grab(new Element('option',
-                                                            {text: morph,
-                                                             value: morph}));
-			});
-		    }
-		    else {
-                        optgroup_morph.grab(new Element('option',
-                                                        {text: '--',
-                                                         value: '--'}));
-			ref.tagsets['morph'][tag] = {'tags': ['--']};
-		    }
-		    ref.tagsets['morph'][tag]['elems'] = optgroup_morph;
-		}
-	    });
-	    ref.tagsets[tclass]['elems'] = optgroup_tclass;
-	});
-
-        if(typeof(fn) === "function")
-            fn();
-    },
-
-    listFiles: function(){
-        cora.projects.performUpdate();
-    }
-
+cora.current = function() {
+    return cora.files.get(cora.fileManager.currentFileId);
 };
 
+cora.currentTagset = function(cls) {
+    return cora.tagsets.get(
+        cora.files.getTagsets(cora.fileManager.currentFileId)[cls]
+    );
+};
+
+cora.currentHasTagset = function(cls) {
+    return (typeof(cora.files.getTagsets(cora.fileManager.currentFileId)[cls])
+            !== "undefined");
+};
 
 // ***********************************************************************
 // ********** DOMREADY BINDINGS ******************************************
 // ***********************************************************************
 
 window.addEvent('domready', function() {
-    cora.tagsets.performUpdate();
     cora.fileImporter.initialize();
     cora.fileManager.initialize();
     cora.projects.onUpdate(cora.fileManager.render.bind(cora.fileManager));
-
-    file.initialize();    
 
     $('fileViewRefresh').addEvent('click', function (e) {
         e.stop();
