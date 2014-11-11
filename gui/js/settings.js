@@ -5,7 +5,7 @@
 window.addEvent('domready', function() {
     var eus = $('editUserSettings');
 
-    if(eus!==null && typeof edit!="undefined") {
+    if(eus!==null) {
 	/* Initialize editor settings tab */
 	new Form.Request($('editUserSettings'),'',{
             resetForm: false,
@@ -40,14 +40,14 @@ window.addEvent('domready', function() {
 		alert('Error occured while saving');
             }
 	});
-	
-	
+
+
 	// validate input -- change to MooTools's Form.Validator some day?
 	eus.getElement("input[type='submit']").addEvent(
 	    'click',
 	    function(e) {
 		var new_cl = Number.from(eus.getElement('input[name="contextLines"]').get('value'));
-		var new_pl = Number.from(eus.getElement('input[name="noPageLines"]').get('value'))
+		var new_pl = Number.from(eus.getElement('input[name="noPageLines"]').get('value'));
 		if (new_cl==null || new_pl==null) {
 		    alert("Fehler: Es dürfen nur Zahlen eingegeben werden.");
 		    e.stop();
@@ -64,14 +64,14 @@ window.addEvent('domready', function() {
 		}
 	    }
 	);
-    
+
 	/* Hiding columns */
 	var eshc = $('editorSettingsHiddenColumns');
 	userdata.hiddenColumns.split(",").each(function(value){
 	    eshc.getElements('input[value="'+value+'"]').set('checked', false);
 	    $('editTable').getElements(".editTable_"+value).hide();
 	});
-	
+
 	eshc.addEvent(
 	    'change:relay(input)',
 	    function(event, target) {
@@ -106,7 +106,9 @@ window.addEvent('domready', function() {
                 var value = estp.getElement('input:checked').get('value');
                 userdata.textPreview = value;
                 if (cora.editor !== null) {
-                    cora.editor.forcePageRedraw();
+                    cora.editor.horizontalTextView
+                        .setPreviewType(value)
+                        .redraw();
                 }
 		new Request({url: 'request.php'}).get(
 		    {'do': 'setUserEditorSetting',

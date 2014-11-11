@@ -93,11 +93,11 @@ var PageModel = new Class({
         this.lineJumper = new LineJumper(this, $('jumpToLineForm'));
         this.tokenSearcher = new TokenSearcher(this, $('searchTokenForm'));
     },
-    
+
     /* Function: _calculateMaxPage
 
        Calculates the total number of pages with the given display
-       settings.      
+       settings.
      */
     _calculateMaxPage: function() {
         var lines_per_page = userdata.noPageLines;
@@ -199,7 +199,7 @@ var PageModel = new Class({
     _activateJumpToPage: function(div) {
         var elem = div.getElement('span.btn-page-count');
         if (elem == null)
-            return;
+            return this;
         var input = elem.getElement('input.btn-page-to');
         var span  = elem.getElement('span.page-active');
         if (input != null && span != null) {
@@ -362,6 +362,217 @@ var PageModel = new Class({
     }
 });
 
+/* Class: HorizontalTextPreview
+
+   Shows a preview of the text at the bottom of the page, highlighting the word
+   that is currently being edited.
+ */
+var HorizontalTextPreview = new Class({
+    container: null,
+    view: null,
+    spinner: null,
+    previewType: "utf",
+    hidden: false,
+    currentStart: -1,
+    currentEnd: -1,
+    maxContextLength: 30,
+    useTerminators: true,
+    terminators: ['(.)', '(!)', '(?)'],
+
+    /* Constructor: HorizontalTextPreview
+
+       Creates a new text preview in the given container.
+
+       Parameters:
+         parent - The parent EditorModel object
+         container - <div> to contain the text preview
+    */
+    initialize: function(parent, container) {
+        this.parent = parent;
+        this.container = container;
+        this.view = this.container.getElement('div');
+	this.view.empty().set('text', "Text-Vorschau wird geladen...");
+        this.spinner = new Spinner(this.container);
+        this.setPreviewType(userdata.textPreview);
+    },
+
+    /* Function: setPreviewType
+
+       Set the type of token to use for the preview.
+
+       For legacy reasons, this function accepts "off" as a parameter to turn
+       the preview pane off, but you should rather use hide() instead.
+
+       Parameters:
+         ptype - The new preview type, one of {utf|trans|off}
+     */
+    setPreviewType: function(ptype) {
+        if(ptype == "off") {
+            this.hide();
+            return this;
+        }
+        this.show();
+        if(ptype == "utf") {
+            this.view.addClass("text-preview-utf");
+        } else {
+            this.view.removeClass("text-preview-utf");
+        }
+        this.previewType = ptype;
+        return this;
+    },
+
+    /* Function: hide
+
+       Hides the preview pane.
+    */
+    hide: function() {
+        this.container.hide();
+        this.hidden = true;
+        this.redraw();
+        return this;
+    },
+
+    /* Function: show
+
+       Shows the preview pane.
+    */
+    show: function() {
+        this.container.show();
+        this.hidden = false;
+        this.redraw();
+        return this;
+    },
+
+    /* Function: adjustPageMargin
+
+       Sets the page margin so the preview pane doesn't hide content.
+    */
+    adjustPageMargin: function() {
+        if(this.hidden) {
+            $('editPanelDiv').setStyle('margin-bottom', 0);
+        } else {
+            if(this.container.isVisible()) {
+                setTimeout(function(){
+                    $('editPanelDiv').setStyle('margin-bottom',
+                                               this.container.getHeight());
+                }.bind(this), 100);
+            } else {
+                this.container.measure(function() {
+                    $('editPanelDiv').setStyle('margin-bottom', this.getHeight());
+                });
+            }
+        }
+        return this;
+    },
+
+    /* Function: update
+
+       Updates the preview to cover at least the given range of lines (tokens).
+
+       Makes sure all necessary lines are in memory, determines the range of
+       tokens to show, assembles them into the preview pane, and sets window
+       borders to ensure the pane doesn't hide any content.  In short: Still
+       does too much at once (refactor!).
+
+       Parameters:
+         start, end - Range of tokens that must minimally be included
+    */
+    update: function(start, end) {
+        var data, start_bound, end_bound;
+
+        if(this.hidden) {
+            this.currentStart = start;
+            this.currentEnd   = end;
+            return this;
+        }
+
+        // fetch lines
+	start_bound = Math.max(0, start - this.maxContextLength);
+	end_bound   = Math.min(this.parent.lineCount, end + this.maxContextLength);
+        if(!this.parent.isRangeLoaded(start_bound, end_bound)) {
+            if(this.spinner.hidden)
+                this.spinner.show();
+            this.parent.requestLines(start_bound, end_bound,
+                                function(){ this.update(start, end); }.bind(this),
+                                function(){ gui.showNotice('error',
+                                            "Problem beim Laden der Text-Vorschau.");});
+            return this;
+        } else {
+            data = this.parent.data;  // TODO: make this at least a call to parent
+        }
+
+	// find nearest sentence boundaries
+        if(this.useTerminators) {
+	    for (; start >= start_bound; start--) {
+	        if(data[start]!==undefined && this.terminators.contains(data[start].trans))
+		    break;
+	    }
+	    start++;
+	    for (; end < end_bound; end++) {
+	        if(data[end]!==undefined && this.terminators.contains(data[end].trans))
+		    break;
+	    }
+	    end++;
+        } else {
+            start = start_bound;
+            end   = end_bound;
+        }
+
+        this.currentStart = start;
+        this.currentEnd   = end;
+        this.redraw();
+        this.spinner.hide();
+        return this;
+    },
+
+    /* Function: redraw
+
+       (Re-)draws the preview pane.  Will fail if the lines aren't properly
+       loaded yet; use update() in this case.
+    */
+    redraw: function() {
+        var data = this.parent.data;
+        var line, currenttok = -1;
+        if(this.hidden)
+            return this.adjustPageMargin();
+        if(!this.parent.isRangeLoaded(this.currentStart, this.currentEnd))
+            return this;
+
+	this.view.empty();
+	for (var i = this.currentStart; i < this.currentEnd; i++) {
+	    line = data[i];
+	    if(line.tok_id != currenttok) {
+		this.view.appendText(" ");
+		currenttok = line.tok_id;
+	    }
+	    this.view.adopt(new Element('span', {'id': 'htvl_'+line.num,
+					         'text': line[this.previewType]}));
+	}
+
+        this.adjustPageMargin();
+        return this;
+    },
+
+    /* Function: highlight
+
+       Highlight a particular token in the preview pane.
+
+       Parameters:
+         lineid - Line ID of the token to highlight
+    */
+    highlight: function(lineid) {
+	var span;
+        if(this.hidden)
+            return this;
+	this.view.getElements('.highlighted').removeClass('highlighted');
+	span = this.view.getElement('#htvl_'+lineid);
+	if(span != null) {
+	    span.addClass('highlighted');
+	}
+        return this;
+    }
+});
+
 var EditorModel = new Class({
     fileId: 0,
     lineTemplate: null,
@@ -374,7 +585,7 @@ var EditorModel = new Class({
     header: "",
     changedLines: null,
     editTable: null,
-    tries: 0,            
+    tries: 0,
     maximumTries: 20,     // max. number of load requests before giving up
     dynamicLoadPages: 5,  // min. number of pages in each direction to be pre-fetched
     dynamicLoadLines: 50, // min. number of lines in each direction to be pre-fetched
@@ -382,7 +593,7 @@ var EditorModel = new Class({
     dropdown: null,  // contains the currently opened dropdown menu, if any
     useLemmaLookup: false,
     lineRequestInProgress: false,
-    horizontalViewSpinner: null,
+    horizontalTextView: null,
     onRenderOnceHandlers: [],
 
     /* Constructor: EditorModel
@@ -402,12 +613,7 @@ var EditorModel = new Class({
 	var elem, td, spos, smorph, slempos, et, mr, btn, start_page;
 	var ref = this;
 
-	if(Browser.chrome) {
-	    this.inputErrorClass = "input_error_chrome";
-	} else {
-	    this.inputErrorClass = "input_error";
-	}
-
+        /* File-specific options */
 	this.lineCount = Number.from(options.maxLinesNo);
 	if(options.lastEditedRow !== null) {
 	    this.lastEditedRow = Number.from(options.lastEditedRow);
@@ -416,21 +622,22 @@ var EditorModel = new Class({
 	this.fileId = fileid;
         this.header = options.data.header;
 
+        /* General options */
 	this.editTable = $('editTable');
 	et = this.editTable;
-
-	this.useLemmaLookup = false;
-	$('horizontalTextView').empty().set('text', "Text-Vorschau wird geladen...");
+        this.inputErrorClass = (Browser.chrome) ? "input_error_chrome" : "input_error";
+        this.horizontalTextView =
+            new HorizontalTextPreview(this, $('horizontalTextViewContainer'));
 
 	/* set up the line template */
 	elem = $('line_template');
-	
+
 	spos = new Element('select');
-	spos.grab(cora.currentTagset("pos").optgroup.clone());                  
+	spos.grab(cora.currentTagset("pos").optgroup.clone());
 	td = elem.getElement('td.editTable_pos');
 	td.empty();
 	td.adopt(spos);
-	
+
 	smorph = new Element('select');
 	td = elem.getElement('td.editTable_morph');
 	td.empty();
@@ -477,7 +684,7 @@ var EditorModel = new Class({
 		    new_value = target.getSiblings('div.editTableDropdownMenu')[0];
 		    if(ref.dropdown!==null) {
 			ref.dropdown.hide();
-			if(ref.dropdown==new_value) { 
+			if(ref.dropdown==new_value) {
 			    ref.dropdown = null;
 			    return;
 			}
@@ -630,7 +837,7 @@ var EditorModel = new Class({
 	    function(event, target) {
                 // highlight in text preview
 		var this_id = ref.getRowNumberFromElement(target);
-		ref.highlightHorizontalView(this_id);
+		ref.horizontalTextView.highlight(this_id);
                 // is hidden behind header?
                 var scrolltop_min = target.getTop() - $('header').getHeight() - 10;
                 if(window.getScrollTop() > scrolltop_min) {
@@ -683,7 +890,7 @@ var EditorModel = new Class({
     },
 
     /* Function: _activateMetadataForm
-       
+
        Activates form the view/edit file metadata such as name and
        header.
     */
@@ -763,7 +970,7 @@ var EditorModel = new Class({
     },
 
     /* Function: initializeColumnVisibility
-       
+
        Hide or show columns based on whether the required tagsets are
        associated with the currently opened file.
     */
@@ -843,7 +1050,7 @@ var EditorModel = new Class({
     getRowFromNumber: function(num) {
         return $('line_'+num);
     },
-    
+
     /* Function: isValidTagCombination
 
        Check whether a given combination of POS and morph tag is valid
@@ -971,7 +1178,7 @@ var EditorModel = new Class({
        is not desired during the initial page rendering, though, which
        is another reason (besides performance) why this function
        should not be called during page rendering!
-    
+
        Parameters:
         id - line ID
 	tr - table row object of that line
@@ -1082,7 +1289,7 @@ var EditorModel = new Class({
        visual representation accordingly, if necessary.
 
        Parameters:
-         line_id - The line number up to which progress should be 
+         line_id - The line number up to which progress should be
 	           marked, or from which on it should be unmarked
          marked  - Whether to mark or unmark progress
      */
@@ -1113,7 +1320,7 @@ var EditorModel = new Class({
     },
 
     /* Function: updateData
-       
+
        Updates a field of data of a given line in memory.
 
        Parameters:
@@ -1304,7 +1511,7 @@ var EditorModel = new Class({
 		selected: 'selected',
 		'class': 'lineSuggestedTag'
 	    }),'top');
-            
+
             // Morph
 	    mselect = tr.getElement('.editTable_morph select');
 	    mselect.empty();
@@ -1341,7 +1548,7 @@ var EditorModel = new Class({
 	et.show();
 
 	/* horizontal text view */
-	this.updateHorizontalView(start, end);
+	this.horizontalTextView.update(start, end);
 
 	/* dynamically load context lines */
 	dlr  = Math.max(this.dynamicLoadPages * (userdata.noPageLines - cl),
@@ -1393,7 +1600,7 @@ var EditorModel = new Class({
 	}
 	if (!brk) { // all the lines are already there
 	    return [];
-	} 
+	}
 
 	for (var j=end-1; j>=start; j--) {
 	    if (!keys.contains(String.from(j))) {
@@ -1536,7 +1743,7 @@ var EditorModel = new Class({
 			    textarea += status.errors[i] + "\n";
 			}
 		    }
-		    
+
 		    gui.showTextDialog('Speichern fehlgeschlagen', message, textarea);
 		}
 		gui.hideSpinner();
@@ -1588,7 +1795,7 @@ var EditorModel = new Class({
     */
     updateDataArray: function(tok_id, lcdiff) {
 	tok_id = Number.from(tok_id);
-	// delete all lines after the changed line from memory 
+	// delete all lines after the changed line from memory
 	this.data = Object.filter(this.data, function(item, index) {
 	    return index < tok_id;
 	});
@@ -1708,7 +1915,7 @@ var EditorModel = new Class({
 		    if (status!=null && status.success) {
 			gui.showNotice('ok', 'Transkription erfolgreich geändert.');
 			// update data array if number of mods has changed
-			ref.updateDataArray(tok_id, Number.from(status.newmodcount)-Number.from(status.oldmodcount)); 
+			ref.updateDataArray(tok_id, Number.from(status.newmodcount)-Number.from(status.oldmodcount));
 		    }
 		    else {
 			var rows = (status!=null ? status.errors : ["Ein unbekannter Fehler ist aufgetreten."]);
@@ -1792,7 +1999,7 @@ var EditorModel = new Class({
 		    mbox.close();
 		    if (status!=null && status.success) {
 			gui.showNotice('ok', 'Transkription erfolgreich hinzugefügt.');
-			ref.updateDataArray(tok_id, Number.from(status.newmodcount)); 
+			ref.updateDataArray(tok_id, Number.from(status.newmodcount));
 		    }
 		    else {
 			var rows = (status!=null ? status.errors : ["Ein unbekannter Fehler ist aufgetreten."]);
@@ -1809,7 +2016,8 @@ var EditorModel = new Class({
 		}
 	    }).get({'do': 'addToken', 'token_id': db_id, 'value': new_token});
 	    mbox.close();
-	}
+            return true;
+	};
 
 	$('addTokenBox').set('value', '');
 	$('addTokenBefore').empty().appendText(old_token);
@@ -1895,7 +2103,7 @@ var EditorModel = new Class({
 					  return item;
 				      }
 				  }
-			      }).addEvent('select', function(e,v,text,index) { 
+			      }).addEvent('select', function(e,v,text,index) {
 				  var parent = e.field.node.getParent("tr");
 				  var this_id = ref.getRowNumberFromElement(parent);
 				  var verified = (v.t=="c") ? 1 : 0;
@@ -1910,105 +2118,6 @@ var EditorModel = new Class({
 				  ref.updateData(this_id, 'lemma_verified', verified);
 				  ref.updateProgress(this_id, true);
 			      });
-    },
-
-    /* Function: updateHorizontalView
-
-       Updates the horizontal text preview.
-
-       TODO: This implementation is rather hacky and inelegant. It
-       contains several hardcoded values, and probably, all functions
-       related to the preview should be encapsulated in a separate
-       object.
-     */
-    updateHorizontalView: function(start, end) {
-	var data = this.data;
-	var currenttok = -1;
-	var span;
-        var container = $('horizontalTextViewContainer');
-	var view = $('horizontalTextView');
-	var terminators = ['(.)', '(!)', '(?)'];
-	var maxctxlen = 30;
-	var startlimit = Math.max(0, start - maxctxlen);
-	var endlimit   = Math.min(this.lineCount, end + maxctxlen);
-        var fn_callback, fn_onerror;
-
-        if(userdata.textPreview == "off") {
-            container.hide();
-            $('editPanelDiv').setStyle('margin-bottom', 0);
-            return;
-        }
-        if(userdata.textPreview == "utf") {
-            view.addClass("text-preview-utf");
-        } else {
-            view.removeClass("text-preview-utf");
-        }
-        container.show();
-
-        if(!this.isRangeLoaded(startlimit, endlimit)) {
-            if(this.horizontalViewSpinner == null || this.horizontalViewSpinner.hidden) {
-                this.horizontalViewSpinner = new Spinner($('horizontalTextView'));
-                this.horizontalViewSpinner.show();
-            }
-            fn_callback = function() {
-                this.updateHorizontalView(start, end);
-            }.bind(this);
-            fn_onerror  = function(e) {
-                gui.showNotice('error', "Problem beim Laden der Text-Vorschau.");
-            };
-            this.requestLines(startlimit, endlimit, fn_callback, fn_onerror);
-            return;
-        }
-	// find nearest sentence boundaries
-	for (; start>=startlimit; start--) {
-	    if(data[start]!==undefined && terminators.contains(data[start].trans)) {
-		break;
-	    }
-	}
-	start++;
-	for (; end<endlimit; end++) {
-	    if(data[end]!==undefined && terminators.contains(data[end].trans)) {
-		end++;
-		break;
-	    }
-	}
-
-	// update the view
-	view.empty();
-	for (var i=start; i<end; i++) {
-	    line = data[i];
-	    span = new Element('span', {'id': 'htvl_'+line.num,
-					      'text': line[userdata.textPreview]});
-	    if(line.tok_id != currenttok) {
-		view.appendText(" ");
-		currenttok = line.tok_id;
-	    }
-	    view.adopt(span);
-	}
-        this.horizontalViewSpinner.hide();
-
-        // ensure there's enough margin after the editor <div>
-        // to compensate for the preview pane
-        if(container.isVisible()) {
-            setTimeout(function(){ 
-                $('editPanelDiv').setStyle('margin-bottom', container.getHeight());
-            }, 100);
-        } else {
-            container.measure(function() {
-                $('editPanelDiv').setStyle('margin-bottom', this.getHeight());
-            });
-        }
-    },
-
-    highlightHorizontalView: function(lineid) {
-        if(userdata.textPreview == "off") return;
-	var view = $('horizontalTextView');
-	var span;
-	view.getElements('.highlighted').removeClass('highlighted');
-	span = view.getElement('#htvl_'+lineid);
-	if(span != null) {
-	    span.addClass('highlighted');
-	}
     },
 
     /* Function: prepareAnnotationOptions
@@ -2085,7 +2194,7 @@ var EditorModel = new Class({
                         else {
 			    gui.showNotice('ok', 'Automatische Annotation war erfolgreich.');
 			    // clear and reload all lines
-			    ref.updateDataArray(0, 0); 
+			    ref.updateDataArray(0, 0);
                         }
 		    } else {
 			gui.showNotice('error', 'Annotation fehlgeschlagen.');
@@ -2099,7 +2208,7 @@ var EditorModel = new Class({
 			title: 'Annotation fehlgeschlagen',
 			content: 'Ein unbekannter Fehler ist aufgetreten.'
 		    }).open();
-		    gui.hideSpinner();		    
+		    gui.hideSpinner();
 		},
 		onFailure: function(xhr) {
 		    new mBox.Modal({
@@ -2110,7 +2219,7 @@ var EditorModel = new Class({
 		}
 	    }).get({'do': 'performAnnotation', 'action': action, 'tagger': taggerID});
 	    mbox.close();
-	}
+	};
 
 	// define the dialog window
 	mbox = new mBox.Modal({
@@ -2137,4 +2246,4 @@ cora.editor = null;
 
 window.addEvent('domready',function(){
     $('editTabButton').hide();
-})
+});
