@@ -1,5 +1,5 @@
 // ***********************************************************************
-// ********** Tagset Information *****************************************
+// ********** General tagset information *********************************
 // ***********************************************************************
 
 /* Class: cora.tagsets
@@ -63,7 +63,7 @@ cora.tagsets = {
 
        Check whether a given tagset has already been processed, or
        does not need any processing.
-       
+
        Parameters:
         tid - Tagset ID
      */
@@ -95,10 +95,10 @@ cora.tagsets = {
     },
 
     /* Function: makeMultiSelectBox
-       
+
        Creates and returns a dropdown box using MultiSelect.js with all
        available tagsets as entries.
-       
+
        Parameters:
         tagsets - Array of tagset IDs that should be pre-selected
         name    - Name of the input array
@@ -131,7 +131,7 @@ cora.tagsets = {
 
        Preprocesses tagset data, storing all tags in an array and
        creating HTML elements containing these tags.
-       
+
        Parameters:
        data - Tagset data object as returned by the
               'fetchTagsetsForFile' request
@@ -199,7 +199,7 @@ cora.tagsets = {
     },
 
     /* Function: performUpdate
-       
+
        Analogous to cora.projects.performUpdate(), this function is
        supposed to update the tagset information.  Currently doesn't
        perform a server request, but reads the data from another
@@ -221,6 +221,11 @@ cora.tagsets = {
         return this;
     }
 };
+
+// ***********************************************************************
+// ********** Specialized tagset information *****************************
+// ***********************************************************************
+
 
 // ***********************************************************************
 // ********** DOMREADY BINDINGS ******************************************

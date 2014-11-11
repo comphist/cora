@@ -70,7 +70,7 @@
               embedJS("gui/js/mbox/mForm.Element.js", true);
               embedJS("gui/js/mbox/mForm.Element.Select.js", true);
           }
-          
+
           if(file_exists(dirname(__FILE__) . "/gui/js/master.min.js")) {
               embedJS("gui/js/master.min.js", true);
           } else {
@@ -83,6 +83,11 @@
               embedJS("gui/js/gui.js", true);
               embedJS("gui/js/tagset.js", true);
               embedJS("gui/js/file.js", true);
+              embedJS("gui/js/edit/LineJumper.js", true);
+              embedJS("gui/js/edit/TokenSearcher.js", true);
+              embedJS("gui/js/edit/HorizontalTextPreview.js", true);
+              embedJS("gui/js/edit/PageModel.js", true);
+              embedJS("gui/js/edit/EditorModel.js", true);
               embedJS("gui/js/edit.js", true);
               embedJS("gui/js/settings.js", true);
           }
