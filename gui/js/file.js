@@ -117,7 +117,7 @@ cora.projects = {
     },
 
     /* Function: performUpdate
-       
+
        Perform a server request to update the project data.  Calls any
        handlers previously registered via onUpdate().
 
@@ -162,10 +162,25 @@ cora.projects = {
    the file-specific functions in cora.projects.
 */
 cora.files = {
-    get: cora.projects.getFile.bind(cora.projects),
     getProject: cora.projects.getProjectForFile.bind(cora.projects),
     tagsetsByID: {},
     taggersByID: {},
+
+    /* Function: get
+
+       Return a file by ID.
+
+       Parameters:
+        fid - ID of the file to be returned
+     */
+    get: function(fid) {
+        var file = cora.projects.getFile(fid);
+        if(typeof(this.tagsetsByID[fid]) !== "undefined")
+            file.tagsets = this.tagsetsByID[fid];
+        if(typeof(this.taggersByID[fid]) !== "undefined")
+            file.taggers = this.taggersByID[fid];
+        return file;
+    },
 
     /* Function: _performGETRequest
 
@@ -510,7 +525,7 @@ cora.fileImporter = {
 	    boxID: 'tISPB_box1',
 	    percentageID: 'tISPB_perc1',
 	    displayID: 'tISPB_disp1',
-	    displayText: true	    
+	    displayText: true
         });
         this.transImportProgressDialog = new mBox.Modal({
 	    title: "Importiere Daten...",
@@ -519,7 +534,7 @@ cora.fileImporter = {
 	    closeOnEsc: false,
 	    closeInTitle: false,
 	    buttons: [ {title: "OK", addClass: "mform button_green tIS_cb",
-			id: "importCloseButton", 
+			id: "importCloseButton",
 			event: function() {
 			    this.close();
 			}} ],
@@ -531,7 +546,7 @@ cora.fileImporter = {
     },
 
     /* Function: _prepareImportFormEvents
-       
+
        Sets up events for the import form.  Called internally by
        activateImportForm.
 
@@ -581,7 +596,7 @@ cora.fileImporter = {
         re_json - The server response as a JSON string
         error_only - If true, only show a dialog on error,
                      and just return true otherwise
-       
+
        Returns:
         True if the server response indicates a successful import,
         false otherwise
@@ -664,7 +679,7 @@ cora.fileImporter = {
 	});
         import_update.startTimer();
     },
-    
+
     /* Function: updateImportProgress
 
        Updates the import progress dialog with status information from
@@ -672,7 +687,7 @@ cora.fileImporter = {
 
        Parameters:
         re_json - The server response as a JSON string
-       
+
        Returns:
         A status object {done: ..., message: ..., output: ...}
      */
@@ -736,7 +751,7 @@ cora.fileImporter = {
     },
 
     /* Function: resetImportForm
-       
+
        Resets an import form.
 
        Parameters:
@@ -831,7 +846,7 @@ cora.fileImporter = {
 cora.fileManager = {
     content: null,
     currentFileId: null,
-    
+
     initialize: function() {
         this.content = $('files');
         this._prepareEvents();
@@ -872,7 +887,7 @@ cora.fileManager = {
     isFileOpened: function() {
         return (this.currentFileId !== null);
     },
-    
+
     /* Function: render
 
        (Re-)renders the file & project listing table.
@@ -1006,7 +1021,7 @@ cora.fileManager = {
                 } else {
                     gui.showMsgDialog('error',
                                       "Das Dokument konnte nicht geöffnet werden.");
-                }     
+                }
             }
         };
 
@@ -1078,7 +1093,7 @@ cora.fileManager = {
     /* Function: closeCurrentlyOpened
 
        Closes the currently opened file and destructs the editor tab.
-       
+
        TODO: this function certainly belongs somewhere else
      */
     closeCurrentlyOpened: function(fn) {
@@ -1241,14 +1256,11 @@ cora.current = function() {
 };
 
 cora.currentTagset = function(cls) {
-    return cora.tagsets.get(
-        cora.files.getTagsets(cora.fileManager.currentFileId)[cls]
-    );
+    return cora.tagsets.get(cora.current().tagsets[cls]);
 };
 
 cora.currentHasTagset = function(cls) {
-    return (typeof(cora.files.getTagsets(cora.fileManager.currentFileId)[cls])
-            !== "undefined");
+    return (typeof(cora.current().tagsets[cls]) !== "undefined");
 };
 
 // ***********************************************************************

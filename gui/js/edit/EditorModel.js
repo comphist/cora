@@ -1553,7 +1553,7 @@ var EditorModel = new Class({
      */
     prepareAnnotationOptions: function() {
 	var aaselect = $('automaticAnnotationForm').getElement('#aa_tagger_select');
-        var alltaggers = cora.files.getTaggers(cora.current());
+        var alltaggers = cora.current().taggers;
 	var onTaggerChange = function(e) {
 	    var id;
 	    var trainbtn = e.target.getParent("div.mBoxContainer").getElement("#trainStartButton");
