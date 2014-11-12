@@ -48,7 +48,7 @@
      return md5(sha1($pw));
    }
 
-   /** Look up username and password. 
+   /** Look up username and password.
     *
     * @param string $user Username to be looked up.
     * @param string $pw Password corresponding to the username.
@@ -103,7 +103,7 @@
      return $stmt->fetch(PDO::FETCH_COLUMN);
    }
 
-   /** Return settings for a given user. 
+   /** Return settings for a given user.
     *
     * @param string $user Username
     *
@@ -119,7 +119,7 @@
      return $stmt->fetch(PDO::FETCH_ASSOC);
    }
 
-   /** Save settings for a given user. 
+   /** Save settings for a given user.
     *
     * @param string $uid User ID
     * @param array $data Array containing the user settings
@@ -185,7 +185,7 @@
     * This function retrieves all valid tags of a given tagset.
     *
     * @param string $tagset The id of the tagset to be retrieved
-    * @param string $limit String argument containing "none" or "legal", 
+    * @param string $limit String argument containing "none" or "legal",
     *                 indicating whether tags marked with "needs_revision"
     *                 should be included or not
     *
@@ -259,7 +259,7 @@
     * @param boolean $admin    Whether the user should have administrator status
     *
     * @return The result of the corresponding @c mysql_query() command.
-    */ 
+    */
    public function createUser($username, $password, $admin) {
      $user = $this->getUserByName($username);
      if(!empty($user)) { // username already exists
@@ -387,7 +387,7 @@
     * which is set to @c true if the lock was successful. If set to @c
     * false, a key named @c lock contains further information about the
     * already-existing, conflicting lock.
-    */	  
+    */
    public function lockFile($fileid,$uname) {
      // first, check if file exists
      $stmt = $this->dbo->prepare("SELECT COUNT(*) FROM text WHERE `id`=:textid");
@@ -426,7 +426,7 @@
     * @param string $user username
     *
     * @return An @em array with file id and file name of the locked file
-    */	
+    */
    public function getLockedFiles($uname){
      $uid = $this->getUserIDFromName($uname);
      $qs  = "SELECT a.text_id as 'file_id', b.fullname as 'file_name' "
@@ -445,7 +445,7 @@
     * @param string $user username (defaults to current session user)
     *
     * @return @em array result of the mysql query
-    */		
+    */
    public function unlockFile($fileid,$uname="",$force=false) {
      $qs = "DELETE FROM locks WHERE text_id=:tid";
      if (!$force) {
@@ -461,7 +461,7 @@
 
    /** Locks a project for automatic annotation.
     *
-    * @param string $pid The project ID 
+    * @param string $pid The project ID
     * @param string $tid The tagger ID
     *
     * @return A boolean indicating whether the lock was successful
@@ -482,7 +482,7 @@
 
    /** Releases the annotation lock for a given project.
     *
-    * @param string $pid The project ID 
+    * @param string $pid The project ID
     */
    public function unlockProjectForTagger($pid) {
      $qs = "DELETE FROM tagger_locks WHERE project_id=:pid";
@@ -803,8 +803,8 @@
     *
     * @param string $fileid file id
     *
-    * @return bool @c true 
-    */	
+    * @return bool @c true
+    */
    public function deleteFile($fileid){
      // first, get all open class tags associated with this file as
      // they have to be deleted separately
@@ -828,7 +828,7 @@
 
      // delete associated open class tags
      if(!empty($deletetag)) {
-       $qs = "DELETE FROM tag_suggestion WHERE `tag_id` IN (" 
+       $qs = "DELETE FROM tag_suggestion WHERE `tag_id` IN ("
 	 . implode(",", $deletetag) . ")";
        try {
 	 $stmt = $this->dbo->prepare($qs);
@@ -934,7 +934,7 @@
     * getFilesForUser() function.
     *
     * @return an two-dimensional @em array with the meta data
-    */		
+    */
    public function getFiles(){
      $qs = "SELECT a.id, a.sigle, a.fullname, a.created, "
        . "         a.creator_id, a.changer_id, "
@@ -961,7 +961,7 @@
     *
     * @param string $user username
     * @return an two-dimensional @em array with the meta data
-    */		
+    */
    public function getFilesForUser($uname){
      $uid = $this->getUserIDFromName($uname);
      $qs = "SELECT a.id, a.sigle, a.fullname, a.created, "
@@ -988,14 +988,14 @@
     * @return an two-dimensional @em array with the meta data
     */
    public function getFilesForProject($pid){
-     $qs = "SELECT a.id, a.sigle, a.fullname " 
+     $qs = "SELECT a.id, a.sigle, a.fullname "
          . "FROM  text a WHERE a.project_id={$pid}";
      $stmt = $this->dbo->prepare($qs);
      $stmt->execute();
      return $stmt->fetchAll(PDO::FETCH_ASSOC);
    }
 
-   /** Get a list of all projects.  
+   /** Get a list of all projects.
     *
     * Should only be called for administrators; otherwise, use @c
     * getProjectsForUser() function.
@@ -1019,7 +1019,7 @@
      return $pa->getAllProjects($uid);
    }
 
-   /** Get a list of all project user groups.  
+   /** Get a list of all project user groups.
     *
     * Should only be called for administrators.
     *
@@ -1091,7 +1091,7 @@
     * @param string $cl number of context lines
     *
     * @return bool result of the mysql query
-    */			
+    */
    public function setUserSettings($user,$lpp,$cl){
      $qs = "UPDATE users SET lines_per_page=:lpp, lines_context=:cl"
        . "   WHERE name=:name AND `id`!=1";
@@ -1396,7 +1396,7 @@
     * @param string $lim numbers of lines to be retrieved
     *
     * @return an @em array containing the lines
-    */ 	
+    */
    public function getLines($fileid,$start,$lim){
      $qs  = "SELECT x.* FROM ";
      $qs .= "  (SELECT q.*, @rownum := @rownum + 1 AS num FROM ";
@@ -1486,7 +1486,7 @@
 
        // Annotations
        $stmt_anno->execute(array(':modid' => $mid));
-       
+
        // prepare results for CorA---this is less flexible, but
        // probably faster than doing it on the client side
        $line['suggestions'] = array();
@@ -1495,10 +1495,10 @@
 	   $line['anno_norm'] = $row['value'];
 	 }
 	 else if($row['class']=='norm_broad' && $row['selected']=='1') {
-	   $line['anno_mod'] = $row['value'];
+	   $line['anno_norm_broad'] = $row['value'];
 	 }
 	 else if($row['class']=='norm_type' && $row['selected']=='1') {
-	   $line['anno_modtype'] = $row['value'];
+	   $line['anno_norm_type'] = $row['value'];
 	 }
 	 else if($row['class']=='lemma' && $row['selected']=='1') {
 	   $line['anno_lemma'] = $row['value'];
@@ -1554,14 +1554,14 @@
    /** Saves changed lines.
     *
     * This function is called from the session handler during the
-    * saving process.  
+    * saving process.
     *
     * Important: Empty annotations in $lines will cause the respective
     * entry in the database to be deleted (if any), but missing
     * annotations will cause no modifications in the database. Illegal
     * POS tags or POS+morph combinations are ignored, and the
     * respective DB entry is not modified.
-    * 
+    *
     * @param string $fileid the file id
     * @param string $lasteditedrow the id of the mod which
     *               should receive the progress marker
@@ -1570,13 +1570,13 @@
     *               file and updating the last_edited timestamp
     *
     * @return @bool the result of the mysql query
-    */ 		
+    */
    public function saveLines($fileid,$lasteditedrow,$lines,$uname) {
      $locked = $this->lockFile($fileid, $uname);
      if(!$locked['success']) {
        return "lock failed";
      }
-     
+
      $warnings = $this->performSaveLines($fileid,$lines);
      $this->markLastPosition($fileid,$lasteditedrow);
      $userid = $this->getUserIDFromName($uname);
@@ -1612,7 +1612,7 @@
     * Progress is shown by a green bar at the left side of the editor and indicates the last line for which changes have been made.
     *
     * This function is called during the saving process.
-    * 
+    *
     * @param string $file the file id
     * @param string $line the current mod id
     *
@@ -1762,7 +1762,7 @@
        $this->dbo->rollBack();
        return array("success" => false, "errors" => $errors);
      }
-     
+
      $this->dbo->commit();
      $this->updateChangedTimestamp($textid,$userid);
      return array("success" => true, "oldmodcount" => $oldmodcount);
@@ -1812,7 +1812,7 @@
        return array("success" => false, "errors" => $errors);
      }
      $tokenid = $this->dbo->lastInsertId();
-     
+
      // re-order tokens
      $qs  = "UPDATE token SET `ordnr`=`ordnr`+1 ";
      $qs .= "WHERE `text_id`=:tid AND (`id`=:id OR `ordnr`>:ordnr)";
@@ -1976,7 +1976,7 @@
      $stmt = $this->dbo->prepare($qs);
      $stmt->execute(array(':tokid' => $tokenid));
      $oldmod = $stmt->fetchAll(PDO::FETCH_ASSOC);
-     
+
      // prepare mod queries
      $modinsert = array();
      $moddelete = array();
@@ -2102,7 +2102,7 @@
     $warnings = array();
     $pos = "";
     $numattr = 0;
-    
+
     foreach($taglist as $tag) {
       $tag = trim($tag);
       if(empty($tag)) {
@@ -2155,12 +2155,12 @@
     if(empty($tagarray)) {
       $errors[] = "Keine Tags zum Importieren gefunden.";
     }
-    
+
     // did errors occur? then abort
     if(!empty($errors)) {
       return array("success"=>false, "errors"=>$errors);
     }
-    
+
     // otherwise, perform the import
     try{
       $this->dbo->beginTransaction();
@@ -2183,7 +2183,7 @@
       $this->dbo->rollBack();
       return array("success"=>false, "errors"=>array($ex->getMessage()));
     }
-    
+
     // done!
     return array("success"=>true, "warnings"=>$warnings);
   }
@@ -2310,7 +2310,7 @@
 	}
       }
     }
-    
+
     return $suggestions;
   }
 

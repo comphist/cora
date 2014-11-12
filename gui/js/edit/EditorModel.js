@@ -61,29 +61,23 @@ var EditorModel = new Class({
 	/* set up the line template */
 	elem = $('line_template');
 
-	spos = new Element('select');
+	spos = elem.getElement('td.editTable_pos select');
+        spos.empty();
 	spos.grab(cora.currentTagset("pos").optgroup.clone());
-	td = elem.getElement('td.editTable_pos');
-	td.empty();
-	td.adopt(spos);
 
-	smorph = new Element('select');
-	td = elem.getElement('td.editTable_morph');
-	td.empty();
-	td.adopt(smorph);
+	smorph = elem.getElement('td.editTable_morph select');
+        smorph.empty();
 
 	if(cora.currentHasTagset("lemmapos")) {
-	    slempos = new Element('select');
+	    slempos = elem.getElement('td.editTable_lemmapos select');
+            slempos.empty();
 	    slempos.grab(cora.currentTagset("lemmapos").optgroup.clone());
-	    td = elem.getElement('td.editTable_lemmapos');
-	    td.empty();
-	    td.adopt(slempos);
 	}
 
 	this.lineTemplate = elem;
 
 	/* clear out any previously generated lines */
-	et.getElements('tr[id^=line][id!=line_template]').destroy();
+	et.getElements('tbody tr[id!=line_template]').destroy();
 
 	/* define delegated events */
 	et.removeEvents();
@@ -148,6 +142,8 @@ var EditorModel = new Class({
 		var this_id = ref.getRowNumberFromElement(target);
 		var parent = target.getParent('td');
 		var new_value = target.getSelected()[0].get('value');
+                if (parent.hasClass("et-anno")) {
+                }
 		if (parent.hasClass("editTable_pos")) {
 		    ref.updateData(this_id, 'anno_pos', new_value);
 		    ref.renderMorphOptions(this_id, target.getParent('tr'), new_value);
@@ -157,8 +153,8 @@ var EditorModel = new Class({
 		    ref.updateData(this_id, 'anno_morph', new_value);
 		    if (userdata.showInputErrors)
 			ref.updateInputError(target.getParent('tr'));
-		} else if (parent.hasClass("editTable_mod")) {
-		    ref.updateData(this_id, 'anno_modtype', new_value);
+		} else if (parent.hasClass("editTable_norm_type")) {
+		    ref.updateData(this_id, 'anno_norm_type', new_value);
 		    if (userdata.showInputErrors)
 			ref.updateInputError(target.getParent('tr'));
 		} else if (parent.hasClass("editTable_lemmapos")) {
@@ -178,10 +174,10 @@ var EditorModel = new Class({
 		var new_value = target.get('value');
 		if (parent.hasClass("editTable_norm")) {
 		    ref.updateData(this_id, 'anno_norm', new_value);
-		    parent.getSiblings("td.editTable_mod input")[0].set('placeholder', new_value);
+		    parent.getSiblings("td.editTable_norm_broad input")[0].set('placeholder', new_value);
 		    ref.updateProgress(this_id, true);
-		} else if (parent.hasClass("editTable_mod")) {
-		    ref.updateData(this_id, 'anno_mod', new_value);
+		} else if (parent.hasClass("editTable_norm_broad")) {
+		    ref.updateData(this_id, 'anno_norm_broad', new_value);
 		    //ref.updateModSelect(parent, new_value);
 		    if (userdata.showInputErrors)
 			ref.updateInputError(target.getParent('tr'));
@@ -204,7 +200,7 @@ var EditorModel = new Class({
                 var this_class = parent.get('class');
 		var new_value = target.get('value');
 		var new_row;
-		if (parent.hasClass("editTable_mod")) {
+		if (parent.hasClass("editTable_norm_broad")) {
 		    ref.updateModSelect(parent, new_value);
 		}
                 var shiftFocus = function(nr, tc) {
@@ -404,25 +400,18 @@ var EditorModel = new Class({
        associated with the currently opened file.
     */
     initializeColumnVisibility: function() {
-	var visibility = {
-	    "norm":     false,
-	    "mod":      false,
-	    "lemma":    false,
-	    "lemmapos": false
-	};
-	var normbroad = false;
-	var normtype = false;
-	/* Check tagset associations */
-        if(cora.currentHasTagset("lemma"))
-            visibility["lemma"] = true;
-        if(cora.currentHasTagset("lemma_sugg"))
+        var visibility = {};
+        Array.each(cora.supportedTagsets, function(ts) {
+            visibility[ts] = cora.currentHasTagset(ts);
+        });
+
+        // HACKS we want to get rid of as well:
+        if(visibility["lemma_sugg"]) {
             this.useLemmaLookup = true;
-        if(cora.currentHasTagset("lemmapos"))
-            visibility["lemmapos"] = true;
-        if(cora.currentHasTagset("norm"))
-            visibility["norm"] = true;
-        if(cora.currentHasTagset("norm_broad") && cora.currentHasTagset("norm_type"))
-            visibility["mod"] = true;
+            visibility["lemma_sugg"] = false;
+        }
+        if(visibility["pos"])
+            visibility["morph"] = true;
 
 	/* Show/hide columns and settings checkboxes */
 	var eshc = $('editorSettingsHiddenColumns');
@@ -431,7 +420,7 @@ var EditorModel = new Class({
 		eshc.getElements('input#eshc-'+value+']').show();
 		eshc.getElements('label[for="eshc-'+value+'"]').show();
 		if(eshc.getElement('input#eshc-'+value+']').get('checked')) {
-		    $('editTable').getElements(".editTable_"+value).show();
+		    $('editTable').getElements(".editTable_"+value).show('table-cell');
 		} else {
 		    $('editTable').getElements(".editTable_"+value).hide();
 		}
@@ -503,6 +492,9 @@ var EditorModel = new Class({
 	mod - current modernisation value
     */
     updateModSelect: function(td, mod) {
+        td = td.getSiblings("td.editTable_norm_type")[0];
+        if(!td)
+            return;
 	if(!mod || mod=="") {
 	    td.getElement("option[value='']").set('selected', 'selected');
 	    td.getElement("select").set('disabled', 'disabled');
@@ -528,9 +520,9 @@ var EditorModel = new Class({
 	var tselect, ttag, modval;
 	var pselect, ptag, mselect, mtag;
 	try {
-	    tselect = tr.getElement('td.editTable_mod select');
+	    tselect = tr.getElement('td.editTable_norm_type select');
 	    ttag = tselect.getSelected()[0].get('value');
-	    modval = tr.getElement('td.editTable_mod input').get('value');
+	    modval = tr.getElement('td.editTable_norm_broad input').get('value');
 	} catch(err) {}
 	if(tselect) {
 	    if(modval!="" && ttag=="") {
@@ -833,7 +825,7 @@ var EditorModel = new Class({
 	}
 	while (j<=pl) { // add missing lines
 	    tr_clone = this.lineTemplate.clone();
-	    et.adopt(tr_clone);
+	    et.getElement("tbody").adopt(tr_clone);
 	    j++;
 	}
 
@@ -875,24 +867,24 @@ var EditorModel = new Class({
 
 	    // build annotation elements
 	    var norm_tr = tr.getElement('.editTable_norm input');
-	    var mod_tr  = tr.getElement('.editTable_mod input');
-	    var mod_trs = tr.getElement('.editTable_mod select');
+	    var mod_tr  = tr.getElement('.editTable_norm_broad input');
+	    var mod_trs = tr.getElement('.editTable_norm_type select');
 	    if(norm_tr != null && norm_tr != undefined) {
 		norm_tr.set('value', line.anno_norm);
 	    }
 	    if(mod_tr != null && mod_tr != undefined) {
-		mod_tr.set('value', line.anno_mod);
+		mod_tr.set('value', line.anno_norm_broad);
 		mod_tr.set('placeholder', line.anno_norm);
 	    }
 	    if(mod_trs != null && mod_trs != undefined) {
-		if(line.anno_mod != null && line.anno_mod != undefined) {
+		if(line.anno_norm_broad != null && line.anno_norm_broad != undefined) {
 		    mod_trs.set('disabled', null);
 		} else {
 		    mod_trs.set('disabled', 'disabled');
 		}
 		mod_trs.getElement("option[value='']").set('selected', 'selected');
-		if(line.anno_modtype != null && line.anno_modtype != undefined) {
-		    mod_trs = mod_trs.getElement("option[value='" + line.anno_modtype + "']");
+		if(line.anno_norm_type != null && line.anno_norm_type != undefined) {
+		    mod_trs = mod_trs.getElement("option[value='" + line.anno_norm_type + "']");
 		    if(mod_trs != null) {
 			mod_trs.set('selected', 'selected');
 		    }
@@ -1146,8 +1138,8 @@ var EditorModel = new Class({
 		anno_pos: tp, //.replace(/\s[\d\.]+/g,""),
 		anno_morph: tm, //.replace(/\s[\d\.]+/g,""),
 		anno_norm: line.anno_norm,
-		anno_mod: line.anno_mod,
-		anno_modtype: line.anno_modtype,
+		anno_norm_broad: line.anno_norm_broad,
+		anno_norm_type: line.anno_norm_type,
 		comment: line.comment
 	    });
 	}

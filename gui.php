@@ -81,7 +81,9 @@
               embedJS("gui/js/iFrameFormRequest.js", true);
               embedJS("gui/js/Meio.Autocomplete.js", true);
               embedJS("gui/js/gui.js", true);
-              embedJS("gui/js/tagset.js", true);
+              embedJS("gui/js/tagsets.js", true);
+              embedJS("gui/js/tagsets/Tagset.js", true);
+              embedJS("gui/js/tagsets/TagsetFactory.js", true);
               embedJS("gui/js/file.js", true);
               embedJS("gui/js/edit/LineJumper.js", true);
               embedJS("gui/js/edit/TokenSearcher.js", true);

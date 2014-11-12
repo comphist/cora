@@ -998,7 +998,7 @@ cora.fileManager = {
                     this.openFile(fid);
                 }.bind(this));
             }.bind(this));
-            return false;
+            return;
         }
 
         // 1. Acquire the lock

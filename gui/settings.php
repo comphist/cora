@@ -22,7 +22,7 @@
           <p>
             <label for="contextLines">Überlappende Zeilen:</label>
             <input type="text" name="contextLines" value="<?php echo $_SESSION['contextLines'];?>" size="2" maxlength="2" data-number="" />
-          </p>		
+          </p>
           <p><input type="submit" value="Zeilen-Einstellungen übernehmen" /></p>
         </form>
       </div>
@@ -34,7 +34,8 @@
           <input type="checkbox" name="displayedColumns" id="eshc-tok_trans" value="tok_trans" checked="yes" /><label for="eshc-tok_trans">Token (Trans)</label>
           <input type="checkbox" name="displayedColumns" id="eshc-token" value="token" checked="yes" /><label for="eshc-token">Token (UTF)</label>
           <input type="checkbox" name="displayedColumns" id="eshc-norm" value="norm" checked="yes" /><label for="eshc-norm">Normalisierung</label>
-          <input type="checkbox" name="displayedColumns" id="eshc-mod" value="mod" checked="yes" /><label for="eshc-mod">Modernisierung</label>
+          <input type="checkbox" name="displayedColumns" id="eshc-norm_broad" value="mod" checked="yes" /><label for="eshc-norm_broad">Modernisierung</label>
+          <input type="checkbox" name="displayedColumns" id="eshc-norm_type" value="mod" checked="yes" /><label for="eshc-norm_type">Modernisierungstyp</label>
           <input type="checkbox" name="displayedColumns" id="eshc-pos" value="pos" checked="yes" /><label for="eshc-pos">POS-Tag</label>
           <input type="checkbox" name="displayedColumns" id="eshc-morph" value="morph" checked="yes" /><label for="eshc-morph">Morphologie-Tag</label>
           <input type="checkbox" name="displayedColumns" id="eshc-lemma" value="lemma" checked="yes" /><label for="eshc-lemma">Lemma</label>

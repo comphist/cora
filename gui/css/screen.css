@@ -14,7 +14,7 @@ html {
     font-family: 'Open Sans', Arial, sans-serif;
 }
 
-body { 
+body {
     overflow: auto;
 }
 
@@ -69,7 +69,7 @@ ol {
     clear: both;
 }
 
-.start-hidden, .templateHolder { 
+.start-hidden, .templateHolder {
     display: none;
 }
 
@@ -95,7 +95,7 @@ ol {
 
 /* Titlebar */
 
-#titlebar { 
+#titlebar {
     padding-left: 4em;
     height: 4em;
 }
@@ -172,11 +172,11 @@ ol {
     bottom: 0.5em;
 }
 
-#menuRight .when-file-open-only { 
+#menuRight .when-file-open-only {
     display: none;
 }
 
-#menuRight .when-file-open-only.file-open { 
+#menuRight .when-file-open-only.file-open {
     display: inline-block;
 }
 
@@ -228,11 +228,11 @@ p.clappable span {
     color: #86B3F7;
 }
 
-.clappable.clapp-modern { 
+.clappable.clapp-modern {
     padding: 0;
 }
 
-.clappable.clapp-modern h4 { 
+.clappable.clapp-modern h4 {
     color: #565656;
     font-size: 1.6em;
     font-weight: bold;
@@ -250,15 +250,15 @@ span.clapp-status-hidden, span.clapp-status-open {
     padding-right: 0.5em;
 }
 
-span.clapp-status-hidden { 
+span.clapp-status-hidden {
     display: none;
 }
 
-div.clappable.clapp-hidden span.clapp-status-open { 
+div.clappable.clapp-hidden span.clapp-status-open {
     display: none;
 }
 
-div.clappable.clapp-hidden span.clapp-status-hidden { 
+div.clappable.clapp-hidden span.clapp-status-hidden {
     display: inline;
 }
 
@@ -294,12 +294,12 @@ table.table-modern tbody tr:nth-child(odd) {
 }
 
 /* Sortable tables */
-/* largely a copy-paste from open-iconic.css, 
+/* largely a copy-paste from open-iconic.css,
    so we can use the <span> element that is inserted
    automatically by MooTools' HtmlTable.
 */
 .table-sortable th.table-th-sort .table-th-sort-span:before,
-.table-sortable th.table-th-sort-rev .table-th-sort-span:before { 
+.table-sortable th.table-th-sort-rev .table-th-sort-span:before {
   font-family: 'Icons';
   display: inline-block;
   speak: none;
@@ -314,15 +314,15 @@ table.table-modern tbody tr:nth-child(odd) {
   padding-right: 0.5em;
 }
 
-.table-sortable th.table-th-sort .table-th-sort-span:before { 
+.table-sortable th.table-th-sort .table-th-sort-span:before {
   content: '\e0bf';
 }
 
-.table-sortable th.table-th-sort-rev .table-th-sort-span:before { 
+.table-sortable th.table-th-sort-rev .table-th-sort-span:before {
   content: '\e0c0';
 }
 
-.table-sortable th.table-th-sort .table-th-sort-span:empty:before { 
+.table-sortable th.table-th-sort .table-th-sort-span:empty:before {
   width: 1em;
   text-align: center;
   box-sizing: content-box;
@@ -334,14 +334,14 @@ table.table-modern tbody tr:nth-child(odd) {
 
 .table-sortable th div {
     margin-top: 0;
-    padding-left: 0;                        
+    padding-left: 0;
 }
 
 /***************************************************************************/
 /***** TOOLBARS & BUTTONS **************************************************/
 /***************************************************************************/
 
-div.btn-toolbar { 
+div.btn-toolbar {
     padding-bottom: 6px;
     -moz-user-select: -moz-none;
     -khtml-user-select: none;
@@ -351,7 +351,7 @@ div.btn-toolbar {
 }
 
 /* inspired by mBox buttons ... */
-span.btn-toolbar-entry { 
+span.btn-toolbar-entry {
     display: inline-block;
     line-height: 2em;
     padding: 0 6px;
@@ -378,23 +378,23 @@ span.btn-toolbar-entry {
     vertical-align: middle;
 }
 
-span.btn-toolbar-entry span.gray { 
+span.btn-toolbar-entry span.gray {
     color: #aaa;
 }
 
-span.btn-toolbar-entry span.oi { 
+span.btn-toolbar-entry span.oi {
     font-size: 1.2em;
     vertical-align: middle;
 }
 
 span.btn-toolbar-entry a,
 span.btn-toolbar-entry a:hover,
-span.btn-toolbar-entry a:visited { 
+span.btn-toolbar-entry a:visited {
     color: #707070 !important;
     text-decoration: none !important;
 }
 
-span.btn-toolbar-entry:active { 
+span.btn-toolbar-entry:active {
     border:1px solid #a0a0a0;
     border-bottom:1px solid #cacaca;
     background:#e5e5e5;
@@ -403,14 +403,14 @@ span.btn-toolbar-entry:active {
     box-shadow:inset 0 1px 2px rgba(0, 0, 0, 0.26) !important;
 }
 
-span.btn-toolbar-entry:hover { 
+span.btn-toolbar-entry:hover {
     border:1px solid #b5b5b5;
     -webkit-box-shadow:inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 1px 1px rgba(0, 0, 0, 0.07);
     -moz-box-shadow:inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 1px 1px rgba(0, 0, 0, 0.07);
     box-shadow:inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 1px 1px rgba(0, 0, 0, 0.07);
 }
 
-span.btn-toolbar-entry.start-disabled { 
+span.btn-toolbar-entry.start-disabled {
     pointer-events: none !important;
     cursor:default !important;
     border:1px solid #d9d9d9 !important;
@@ -460,11 +460,11 @@ input.btn-page-to {
 
 /* Dark toolbar */
 
-.btn-toolbar-dark { 
+.btn-toolbar-dark {
     padding-bottom: 0 !important;
 }
 
-.btn-toolbar-dark span.btn-toolbar-entry { 
+.btn-toolbar-dark span.btn-toolbar-entry {
     border: 1px solid #2b6cad;
     border-bottom: 1px solid #245b91;
     color: #fff;
@@ -473,7 +473,7 @@ input.btn-page-to {
     font-weight: 600;
     text-shadow: none;
     -webkit-box-shadow: none;
-    -moz-box-shadow: none; 
+    -moz-box-shadow: none;
     box-shadow: none;
     background-color: #114477;
     background-image:-webkit-linear-gradient(top,#114272,#1b62a8);
@@ -486,13 +486,13 @@ input.btn-page-to {
     vertical-align: middle;
 }
 
-.btn-toolbar-dark span.btn-toolbar-entry span { 
+.btn-toolbar-dark span.btn-toolbar-entry span {
     position: relative;
     top: 1px;
     font-size: 1.1em;
 }
 
-.btn-toolbar-dark span.btn-toolbar-entry:hover { 
+.btn-toolbar-dark span.btn-toolbar-entry:hover {
     border:1px solid #245b91;
     -webkit-box-shadow:inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 1px 1px rgba(0, 0, 0, 0.07);
     -moz-box-shadow:inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 1px 1px rgba(0, 0, 0, 0.07);
@@ -501,7 +501,7 @@ input.btn-page-to {
 
 .btn-toolbar-dark span.btn-toolbar-entry a,
 .btn-toolbar-dark span.btn-toolbar-entry a:hover,
-.btn-toolbar-dark span.btn-toolbar-entry a:visited { 
+.btn-toolbar-dark span.btn-toolbar-entry a:visited {
     color: #efefef !important;
     text-decoration: none !important;
 }
@@ -509,7 +509,7 @@ input.btn-page-to {
 /* HTML Buttons */
 
 input[type=submit],
-button { 
+button {
     font-family: 'Open Sans', Arial, sans-serif;
 }
 
@@ -560,7 +560,7 @@ button {
 /***** FORMS ***************************************************************/
 /***************************************************************************/
 
-input[type=text] { 
+input[type=text] {
     word-break: normal !important;
 }
 
@@ -581,7 +581,7 @@ form#newFileImportForm label.ra,
 form#newFileImportTransForm label.ra
 {  width: 4.6em; }
 
-textarea.sans { 
+textarea.sans {
     font-family: 'Open Sans', Arial, sans-serif;
 }
 
@@ -607,7 +607,7 @@ div.limitedWidth-tiny p {
     color: red;
 }
 
-#loginDiv input { 
+#loginDiv input {
     width: 20em;
 }
 
@@ -620,43 +620,43 @@ span.projectname {
     text-decoration: underline;
 }
 
-table.fileList .ftr-sigle { 
+table.fileList .ftr-sigle {
     width: 3.6em;
     text-align: right;
     padding-right: 0;
 }
 
-table.fileList .ftr-filename { 
+table.fileList .ftr-filename {
     width: 17em;
     padding-left: 0.5em;
 }
 
 table.fileList th.ftr-changed,
-table.fileList th.ftr-created { 
+table.fileList th.ftr-created {
     text-align: center;
 }
 
 table.fileList .ftr-changed-at,
-table.fileList .ftr-created-at { 
+table.fileList .ftr-created-at {
     width: 9.4em;
     text-align: right;
 }
 
 table.fileList .ftr-changed-by,
-table.fileList .ftr-created-by { 
+table.fileList .ftr-created-by {
     width: 6em;
     text-align: right;
 }
 
-table.fileList .ftr-id { 
+table.fileList .ftr-id {
     width: 2.5em;
 }
 
-table.fileList .ftr-options a { 
+table.fileList .ftr-options a {
     margin-right: 8px;
 }
 
-table.fileList a.deleteFileLink.start-hidden { 
+table.fileList a.deleteFileLink.start-hidden {
     display: inline;
     visibility: hidden;
 }
@@ -667,7 +667,7 @@ tr.opened a.exportFileLink,
 tr.opened a.editTagsetAssocLink,
 tr.opened .ftr-changed-at, tr.opened .ftr-changed-by,
 tr.opened .ftr-created-at, tr.opened .ftr-created-by,
-tr.opened .ftr-id { 
+tr.opened .ftr-id {
     color: #999;
 }
 
@@ -677,7 +677,7 @@ tr.opened a.filenameOpenLink:hover {
 
 tr.opened a.deleteFileLink,
 tr.opened a.exportFileLink,
-tr.opened a.editTagsetAssocLink { 
+tr.opened a.editTagsetAssocLink {
     pointer-events: none;
 }
 
@@ -718,14 +718,14 @@ div#transImportSpinner td {
     font-size: 1.2em;
     padding-left: 4px;
 }
-div#transImportSpinner .oi-proc-success { 
+div#transImportSpinner .oi-proc-success {
     color: #00bd0d;
     position: relative;
     left: -3px;
     top: 2px;
     display: none;
 }
-div#transImportSpinner .oi-proc-error { 
+div#transImportSpinner .oi-proc-error {
     color: #f00;
     position: relative;
     left: -3px;
@@ -833,7 +833,7 @@ table#editTable td.editTable_norm input {
     width: 8em;
 }
 
-table#editTable td.editTable_mod input {
+table#editTable td.editTable_norm_broad input {
     width: 8em;
 }
 
@@ -902,7 +902,7 @@ div.editTableLemmaLink img {
 }
 
 /* Text preview */
-div#horizontalTextViewContainer { 
+div#horizontalTextViewContainer {
     position: fixed;
     left: 0;
     bottom: 0;
@@ -921,7 +921,7 @@ div#horizontalTextView {
     max-width: 60em;
 }
 
-div#horizontalTextView.text-preview-utf { 
+div#horizontalTextView.text-preview-utf {
     font-family: Junicode, Cardo, Alphabetum, "Palemonas MUFI",
                  "Andron Scriptor Web", LeedsUni, "Titus Cyberbit",
 		 "Times New Roman", Times, serif;
@@ -974,7 +974,7 @@ div#pagePanelBottom {
     margin-top: 1em;
 }
 
-div#aa_tagger_select { 
+div#aa_tagger_select {
     padding: .5em 1em 0 1.5em;
 }
 
@@ -1035,33 +1035,33 @@ table#editProjects td.adminProjectTagsetsCell {
     text-align: left;
 }
 
-table#editNotices td.adminNoticeTextCell { 
+table#editNotices td.adminNoticeTextCell {
     max-width: 35em;
     word-wrap: break-word;
     text-align: left;
 }
 
 tr.adminUserInfoRow .adminUserDelete,
-tr.adminUserInfoRow .adminUserAdminStatusTD { 
+tr.adminUserInfoRow .adminUserAdminStatusTD {
     cursor: pointer;
 }
 
-tr.adminUserInfoRow .adminUserAdminStatusTD span { 
+tr.adminUserInfoRow .adminUserAdminStatusTD span {
     display: none;
 }
 
-tr.adminUserInfoRow .adminUserAdminStatusTD:hover span { 
+tr.adminUserInfoRow .adminUserAdminStatusTD:hover span {
     display: block !important;
     opacity: 0.4;
 }
 
 tr.adminUserInfoRow .adminUserAdminStatusTD.adminUserIsAdmin span,
-tr.adminUserInfoRow .adminUserAdminStatusTD.adminUserIsAdmin:hover span { 
+tr.adminUserInfoRow .adminUserAdminStatusTD.adminUserIsAdmin:hover span {
     display: block !important;
     opacity: 1.0 !important;
 }
 
-tr.adminUserInfoRow .adminUserLastactiveCell { 
+tr.adminUserInfoRow .adminUserLastactiveCell {
     text-align: right;
 }
 
@@ -1073,7 +1073,7 @@ tr.adminUserInfoRow.userActive .adminUserLastactiveCell {
 
 tr.adminUserInfoRow .adminUserActivityCell,
 tr.adminUserInfoRow .adminUserCommentCell
-{ 
+{
     max-width: 20em;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -1092,43 +1092,43 @@ div.userChangeEditTable span {
     min-width: 6em;
 }
 
-div.projectEditForm { 
+div.projectEditForm {
     max-width: 35em;
 }
 
-div.projectEditForm p { 
+div.projectEditForm p {
     padding-left: 0;
     padding-right: 0;
 }
 
-div.projectEditForm p > label { 
+div.projectEditForm p > label {
     font-weight: bold;
 }
 
-div.annotatorEditForm { 
+div.annotatorEditForm {
     max-width: 42em;
 }
 
-div.annotatorEditForm p { 
+div.annotatorEditForm p {
     padding-left: 0;
     padding-right: 0;
 }
 
-div.annotatorEditForm input[type="text"] { 
+div.annotatorEditForm input[type="text"] {
     width: 25em;
 }
 
-div.annotatorEditForm input[type="checkbox"] { 
+div.annotatorEditForm input[type="checkbox"] {
     position: relative;
     top: -2px;
     margin-right: 6px;
 }
 
-div.annotatorEditForm input.annotatorOptKey { 
+div.annotatorEditForm input.annotatorOptKey {
     width: 8em !important;
 }
 
-div.annotatorEditForm input.annotatorOptValue { 
+div.annotatorEditForm input.annotatorOptValue {
     width: 22em !important;
 }
 
@@ -1138,7 +1138,7 @@ div.annotatorEditForm input.annotatorOptValue {
 
 /* Symbols from Open Iconic */
 
-span.oi-shadow { 
+span.oi-shadow {
     text-shadow: 1px 1px 4px rgba(150, 150, 150, 1);
 }
 
@@ -1146,16 +1146,16 @@ span.oi-green {
     color: green;
 }
 
-span.oi-adjust { 
+span.oi-adjust {
     position: relative;
     top: 2px;
 }
 
-a.deletion-link { 
+a.deletion-link {
     color: rgb(224, 0, 0);
 }
 
-a.deletion-link:hover { 
+a.deletion-link:hover {
     color: rgb(255, 64, 64);
 }
 

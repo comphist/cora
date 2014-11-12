@@ -24,17 +24,20 @@
         <th class="editTable_error">E</th>
         <th class="editTable_tok_trans">Token (Trans)</th>
         <th class="editTable_token">Token (UTF)</th>
-        <th class="editTable_norm">Normalisierung</th>
-        <th class="editTable_mod">Modernisierung</th>
-        <th class="editTable_pos">POS-Tag</th>
-        <th class="editTable_morph">Morphologie-Tag</th>
-        <th class="editTable_lemma">Lemma</th>
-        <th class="editTable_lemmapos">Lemma-Tag</th>
+        <th class="editTable_norm et-anno">Normalisierung</th>
+        <th class="editTable_norm_broad et-anno">Modernisierung</th>
+        <th class="editTable_norm_type et-anno"></th>
+        <th class="editTable_pos et-anno">POS-Tag</th>
+        <th class="editTable_morph et-anno">Morphologie-Tag</th>
+        <th class="editTable_lemma et-anno">Lemma</th>
+        <th class="editTable_lemmapos et-anno">Lemma-Tag</th>
         <th class="editTable_Comment">Kommentar</th>
         <th class="editTable_dropdown"></th>
       </tr>
     </thead>
     <tbody>
+      <!-- line template cannot be moved into the templateHolder
+           because it breaks column reordering -->
       <tr id="line_template">
         <td class="editTable_progress">
           <div class="editTableProgress"></div>
@@ -46,11 +49,13 @@
         </td>
         <td class="editTable_tok_trans"></td>
         <td class="editTable_token"></td>
-        <td class="editTable_norm">
+        <td class="editTable_norm et-anno">
           <input type="text" value="" />
         </td>
-        <td class="editTable_mod">
+        <td class="editTable_norm_broad et-anno">
           <input type="text" value="" />
+        </td>
+        <td class="editTable_norm_type et-anno">
           <select size="1" disabled="disabled">
             <option value=""></option>
             <option value="s">s</option>
@@ -58,22 +63,28 @@
             <option value="x">x</option>
           </select>
         </td>
-        <td class="editTable_pos"></td>
-        <td class="editTable_morph"></td>
-        <td class="editTable_lemma">
+        <td class="editTable_pos et-anno">
+          <select size="1"></select>
+        </td>
+        <td class="editTable_morph et-anno">
+          <select size="1"></select>
+        </td>
+        <td class="editTable_lemma et-anno">
           <div class="editTableLemma editTableCheckbox"></div>
           <input type="text" value="" />
           <div class="editTableLemmaLink">
-             <span class="oi oi-adjust oi-shadow" data-glyph="external-link" title="Externen Link öffnen" aria-hidden="true"></span>
+            <span class="oi oi-adjust oi-shadow" data-glyph="external-link" title="Externen Link öffnen" aria-hidden="true"></span>
           </div>
         </td>
-        <td class="editTable_lemmapos"></td>
+        <td class="editTable_lemmapos et-anno">
+          <select size="1"></select>
+        </td>
         <td class="editTable_Comment">
           <input type="text" value="" maxlength="255" />
         </td>
         <td class="editTable_dropdown">
           <div class="editTableDropdown">
-             <span class="oi oi-adjust oi-shadow oi-green editTableDropdownIcon" data-glyph="caret-bottom" title="Dropdown-Menü öffnen" aria-hidden="true"></span>
+            <span class="oi oi-adjust oi-shadow oi-green editTableDropdownIcon" data-glyph="caret-bottom" title="Dropdown-Menü öffnen" aria-hidden="true"></span>
           </div>
           <div class="editTableDropdownMenu">
             <ul>

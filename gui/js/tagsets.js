@@ -1,6 +1,9 @@
-// ***********************************************************************
-// ********** General tagset information *********************************
-// ***********************************************************************
+/* Array: cora.supportedTagsets
+
+   List of all tagset classes that are recognized by the GUI.
+ */
+cora.supportedTagsets = ["pos", "norm", "norm_broad", "norm_type",
+                         "lemma", "lemmapos", "lemma_sugg"];
 
 /* Class: cora.tagsets
 
@@ -206,11 +209,14 @@ cora.tagsets = {
        PHP-generated variable.  (HACK)
      */
     performUpdate: function(){
-        if(this.data.length < 1)
-            this.data = PHP_tagsets;
+        if(this.data.length < 1) {
+            Array.each(PHP_tagsets, function(tagset) {
+                this.data.push(cora.tagsetFactory.make(tagset));
+            }.bind(this));
+        }
         this.byID = {};
-        Array.each(this.data, function(prj, idx) {
-            this.byID[prj.id] = idx;
+        Array.each(this.data, function(ts, idx) {
+            this.byID[ts.id] = idx;
         }.bind(this));
         if(!this.initialized) {
             this.initialized = true;
@@ -221,11 +227,6 @@ cora.tagsets = {
         return this;
     }
 };
-
-// ***********************************************************************
-// ********** Specialized tagset information *****************************
-// ***********************************************************************
-
 
 // ***********************************************************************
 // ********** DOMREADY BINDINGS ******************************************
