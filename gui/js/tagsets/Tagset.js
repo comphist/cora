@@ -10,6 +10,8 @@ var Tagset = new Class({
     set_type: null,
     class: null,
     split_class: false,
+    tags: [],
+    processed: false,
 
     /* Constructor: Tagset
 
@@ -38,5 +40,56 @@ var Tagset = new Class({
      */
     isSplitClass: function() {
         return this.split_class;
+    },
+
+    /* Function: needsProcessing
+
+       Check whether this tagset class needs a call to processTags() with the
+       full taglist in order to work correctly.
+
+       Returns false if the tagset class doesn't need processing, or if
+       processing was already performed for this tagset instance.
+     */
+    needsProcessing: function() {
+        if(this.set_type == "open")
+            return false;
+        return !this.processed;
+    },
+
+    /* Function: processTags
+
+       Defines a list of tags for this tagset and preprocesses it, e.g.,
+       generating HTML elements for the tags, splitting them up, etc. -- the
+       implementation of this method is up to the individual subclasses.
+     */
+    processTags: function(tags) {
+        this.tags = Array.map(
+            Array.filter(tags,
+                         function(e){return (e.needs_revision == 0);}),
+            function(e) {return e.value;}
+        );
+        this.processed = true;
+    },
+
+    /* Function: generateOptgroupFor
+
+       Generates and returns an <optgroup> element containing all tags supplied
+       to this method.
+
+       Parameters:
+         tags - List of tags the <optgroup> should contain
+         label - Label for the <optgroup>, defaults to "Alle Tags"
+     */
+    generateOptgroupFor: function(tags, label) {
+        label = label || "Alle Tags";
+        var optgroup = new Element('optgroup', {label: label});
+        if(tags.length > 0) {
+            Array.each(tags, function(tag) {
+                optgroup.grab(new Element('option', {text: tag, value: tag}));
+            });
+        } else {
+            optgroup.grab(new Element('option', {text: '--', value: '--'}));
+        }
+        return optgroup;
     }
 });

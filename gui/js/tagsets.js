@@ -60,9 +60,7 @@ cora.tagsets = {
         var tagset = this.get(tid);
         if(!tagset)
             return false;
-        if(tagset.set_type == "closed" && tagset['class'] != "lemma_sugg")
-            return (typeof(tagset.tags) !== "undefined");
-        return true;
+        return tagset.needsProcessing();
     },
 
     /* Function: onInit
@@ -129,62 +127,7 @@ cora.tagsets = {
         if(typeof(data.tags) === "undefined" || data.tags.length < 1)
             return;
         var tagset = this.get(data.id);
-        tagset.tags = this._extractValidTags(data.tags);
-        if(tagset.isSplitClass()) {
-            tagset.tags_for = this._makeSplitTaglist(tagset.tags);
-            tagset.optgroup = this.generateOptgroup(Object.keys(tagset.tags_for));
-            tagset.optgroup_for = {};
-            Object.each(tagset.tags_for, function(subtags, tag) {
-                tagset.optgroup_for[tag] = this.generateOptgroup(subtags);
-                tagset.optgroup_for[tag].label = "Alle Tags für '" + tag + "'";
-            }.bind(this));
-        } else {
-            tagset.optgroup = this.generateOptgroup(tagset.tags);
-        }
-    },
-
-    /* Function: _extractValidTags
-     */
-    _extractValidTags: function(taglist) {
-        return Array.map(
-            Array.filter(taglist,
-                         function(e){return (e.needs_revision == 0);}),
-            function(e) {return e.value;}
-        );
-    },
-
-    /* Function: _makeSplitTaglist
-     */
-    _makeSplitTaglist: function(taglist) {
-        var tags = {};
-        var splitTag = function(tag) {
-            var idx = tag.indexOf('.');
-            if(idx<0 || idx==(tag.length-1))
-                return [tag, null];
-            return [tag.substr(0, idx), tag.substr(idx+1)];
-        };
-        Array.each(taglist, function(tag) {
-            var split = splitTag(tag);
-            if(typeof(tags[split[0]]) === "undefined")
-                tags[split[0]] = [];
-            if(split[1] !== null)
-                tags[split[0]].push(split[1]);
-        });
-        return tags;
-    },
-
-    /* Function: generateOptgroup
-     */
-    generateOptgroup: function(taglist) {
-        var optgroup = new Element('optgroup', {label: "Alle Tags"});
-        if(taglist.length > 0) {
-            Array.each(taglist, function(tag) {
-                optgroup.grab(new Element('option', {text: tag, value: tag}));
-            });
-        } else {
-            optgroup.grab(new Element('option', {text: '--', value: '--'}));
-        }
-        return optgroup;
+        tagset.processTags(data.tags);
     },
 
     /* Function: performUpdate
