@@ -9,6 +9,7 @@ var Tagset = new Class({
     longname: null,
     set_type: null,
     class: null,
+    split_class: false,
 
     /* Constructor: Tagset
 
@@ -28,5 +29,14 @@ var Tagset = new Class({
             this.set_type = data.set_type;
         if(typeof(data.class) !== "undefined")
             this.class = data.class;
+    },
+
+    /* Function: isSplitClass
+
+       Check whether this tagset class requires splitting up the tag values
+       (e.g., for POS+morph).
+     */
+    isSplitClass: function() {
+        return this.split_class;
     }
 });

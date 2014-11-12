@@ -83,6 +83,7 @@
               embedJS("gui/js/gui.js", true);
               embedJS("gui/js/tagsets.js", true);
               embedJS("gui/js/tagsets/Tagset.js", true);
+              embedJS("gui/js/tagsets/POS.js", true);
               embedJS("gui/js/tagsets/TagsetFactory.js", true);
               embedJS("gui/js/file.js", true);
               embedJS("gui/js/edit/LineJumper.js", true);

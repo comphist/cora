@@ -48,20 +48,6 @@ cora.tagsets = {
         return this.data;
     },
 
-    /* Function: isSplitClass
-
-       Check whether the supplied tagset class requires splitting up
-       the tag values (e.g., for POS+morph).
-
-       Parameters:
-        cls - Tagset class
-    */
-    isSplitClass: function(cls) {
-        if (cls == "pos")
-            return true;
-        return false;
-    },
-
     /* Function: isProcessed
 
        Check whether a given tagset has already been processed, or
@@ -144,7 +130,7 @@ cora.tagsets = {
             return;
         var tagset = this.get(data.id);
         tagset.tags = this._extractValidTags(data.tags);
-        if(this.isSplitClass(tagset['class'])) {
+        if(tagset.isSplitClass()) {
             tagset.tags_for = this._makeSplitTaglist(tagset.tags);
             tagset.optgroup = this.generateOptgroup(Object.keys(tagset.tags_for));
             tagset.optgroup_for = {};

@@ -16,6 +16,8 @@ cora.tagsetFactory = {
      */
     make: function(data, ts_class) {
         var cls = ts_class || data.class;
+        if(cls == "pos")
+            return new POSTagset(data);
         return new Tagset(data);
     }
 };
