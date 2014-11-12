@@ -1,10 +1,9 @@
-/* Class: POSTagset
+/* Class: LemmaPOSTagset
 
-   Class representing a POS tagset.
+   Class representing a LemmaPOS tagset.
  */
-var POSTagset = new Class({
+var LemmaPOSTagset = new Class({
     Extends: Tagset,
-    Implements: SplitClassTagset,
     optgroup: null,
 
     initialize: function(data) {
@@ -13,8 +12,7 @@ var POSTagset = new Class({
 
     processTags: function(tags) {
         this.parent(tags);
-        this.processSplitTags();
-        this.optgroup = this.generateOptgroupFor(Object.keys(this.tags_for));
+        this.optgroup = this.generateOptgroupFor(this.tags);
     },
 
     buildTemplate: function(td) {

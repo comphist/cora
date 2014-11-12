@@ -32,7 +32,9 @@ cora.tagsets = {
             }.bind(this));
             return data;
         }
-        else {
+        else if(pid instanceof Tagset) {
+            return pid;
+        } else {
             var idx = this.byID[pid];
             if(idx == undefined)
                 return Object();
@@ -46,21 +48,6 @@ cora.tagsets = {
     */
     getAll: function() {
         return this.data;
-    },
-
-    /* Function: isProcessed
-
-       Check whether a given tagset has already been processed, or
-       does not need any processing.
-
-       Parameters:
-        tid - Tagset ID
-     */
-    isProcessed: function(tid) {
-        var tagset = this.get(tid);
-        if(!tagset)
-            return false;
-        return tagset.needsProcessing();
     },
 
     /* Function: onInit

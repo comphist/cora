@@ -18,6 +18,8 @@ cora.tagsetFactory = {
         var cls = ts_class || data.class;
         if(cls == "pos")
             return new POSTagset(data);
+        if(cls == "lemmapos")
+            return new LemmaPOSTagset(data);
         return new Tagset(data);
     }
 };

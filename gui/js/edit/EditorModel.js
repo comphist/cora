@@ -59,22 +59,13 @@ var EditorModel = new Class({
             new HorizontalTextPreview(this, $('horizontalTextViewContainer'));
 
 	/* set up the line template */
-	elem = $('line_template');
-
-	spos = elem.getElement('td.editTable_pos select');
-        spos.empty();
-	spos.grab(cora.currentTagset("pos").optgroup.clone());
-
-	smorph = elem.getElement('td.editTable_morph select');
-        smorph.empty();
-
-	if(cora.currentHasTagset("lemmapos")) {
-	    slempos = elem.getElement('td.editTable_lemmapos select');
-            slempos.empty();
-	    slempos.grab(cora.currentTagset("lemmapos").optgroup.clone());
-	}
-
-	this.lineTemplate = elem;
+	this.lineTemplate = $('line_template');
+        Object.each(cora.current().tagsets, function(tagset, cls) {
+            var elem = this.lineTemplate.getElement('td.editTable_'+cls);
+            if(typeof(elem) !== "undefined") {
+                tagset.buildTemplate(elem);
+            }
+        }.bind(this));
 
 	/* clear out any previously generated lines */
 	et.getElements('tbody tr[id!=line_template]').destroy();

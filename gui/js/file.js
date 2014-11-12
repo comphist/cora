@@ -313,7 +313,7 @@ cora.files = {
             if(status.data && status.data.tagsets) {
                 this.tagsetsByID[fid] = {};
                 Object.each(status.data.tagsets, function(ts) {
-                    this.tagsetsByID[fid][ts['class']] = ts.id;
+                    this.tagsetsByID[fid][ts['class']] = cora.tagsets.get(ts.id);
                 }.bind(this));
             }
             // tagger assoc?
@@ -376,8 +376,8 @@ cora.files = {
     allTagsetsPrefetched: function(fid) {
         var tagsets = this.getTagsets(fid);
         if(tagsets) {
-            return Object.values(tagsets).every(function(tid) {
-                return cora.tagsets.isProcessed(tid);
+            return Object.values(tagsets).every(function(ts) {
+                return ts.needsProcessing();
             });
         }
         return false;
@@ -698,12 +698,12 @@ cora.fileImporter = {
 	    if(status_code == "begun")        { return "proc-running"; }
 	    else if(status_code == "success") { return "proc-success"; }
             else                              { return "proc-error";   }
-	}
+	};
         var update_status = function(status_code, elem) {
             if(status_code != null)
                 elem.getElement('td.proc').set('class', 'proc')
                     .addClass(get_css_code(status_code));
-        }
+        };
 
         try {
             process = JSON.decode(re_json);
@@ -1256,7 +1256,7 @@ cora.current = function() {
 };
 
 cora.currentTagset = function(cls) {
-    return cora.tagsets.get(cora.current().tagsets[cls]);
+    return cora.current().tagsets[cls];
 };
 
 cora.currentHasTagset = function(cls) {

@@ -91,5 +91,16 @@ var Tagset = new Class({
             optgroup.grab(new Element('option', {text: '--', value: '--'}));
         }
         return optgroup;
+    },
+
+    /* Function: buildTemplate
+
+       Update an editor line template for this tagset.
+
+       Parameters:
+         td - Table cell element to update
+     */
+    buildTemplate: function(td) {
+        return;
     }
 });
