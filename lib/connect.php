@@ -1475,13 +1475,10 @@
 	 $line['page_side'] = $row['page_side'] ? $row['page_side'] : "";
        }
 
-       // Error annotations
-       $errors = $this->getFlagsForModern($mid);
-       if(in_array('general error', $errors)) {
-	   $line['general_error'] = 1;
-       }
-       if(in_array('lemma verified', $errors)) {
-	   $line['lemma_verified'] = 1;
+       // Flags (formerly "error annotations")
+       foreach($this->getFlagsForModern($mid) as $flag) {
+         $flagname = 'flag_'.str_replace(' ', '_', $flag);
+         $line[$flagname] = 1;
        }
 
        // Annotations
@@ -1491,43 +1488,15 @@
        // probably faster than doing it on the client side
        $line['suggestions'] = array();
        while($row = $stmt_anno->fetch(PDO::FETCH_ASSOC)){
-	 if($row['class']=='norm' && $row['selected']=='1') {
-	   $line['anno_norm'] = $row['value'];
-	 }
-	 else if($row['class']=='norm_broad' && $row['selected']=='1') {
-	   $line['anno_norm_broad'] = $row['value'];
-	 }
-	 else if($row['class']=='norm_type' && $row['selected']=='1') {
-	   $line['anno_norm_type'] = $row['value'];
-	 }
-	 else if($row['class']=='lemma' && $row['selected']=='1') {
-	   $line['anno_lemma'] = $row['value'];
-	 }
-	 else if($row['class']=='lemmapos' && $row['selected']=='1') {
-	   $line['anno_lemmapos'] = $row['value'];
-	 }
-	 else if($row['class']=='pos') {
-	   $tag = $row['value'];
-	   if((substr($tag, -1)=='.') || (substr_count($tag, '.')==0)) {
-	     $pos = $tag;
-	     $morph = "--";
-	   }
-	   else {
-	     $attribs = explode('.',$tag,2);
-	     $pos = $attribs[0];
-	     $morph = $attribs[1];
-	   }
-
-	   if($row['selected']=='1') {
-	     $line['anno_pos'] = $pos;
-	     $line['anno_morph'] = $morph;
-	   }
-	   if($row['source']=='auto') {
-	     $line['suggestions'][] = array('pos' => $pos,
-					    'morph' => $morph,
-					    'score' => $row['score']);
-	   }
-	 }
+         if($row['selected'] == '1') {
+           $annoname = 'anno_'.$row['class'];
+           $line[$annoname] = $row['value'];
+         }
+         else if($row['class'] == 'pos' && $row['source'] == 'auto') {
+           // un-selected "auto" annotations are transmitted as "suggestions"
+           $line['suggestions'][] = array('value' => $row['value'],
+                                          'score' => $row['score']);
+         }
        }
      }
      unset($line);

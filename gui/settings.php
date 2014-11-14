@@ -34,13 +34,14 @@
           <input type="checkbox" name="displayedColumns" id="eshc-tok_trans" value="tok_trans" checked="yes" /><label for="eshc-tok_trans">Token (Trans)</label>
           <input type="checkbox" name="displayedColumns" id="eshc-token" value="token" checked="yes" /><label for="eshc-token">Token (UTF)</label>
           <input type="checkbox" name="displayedColumns" id="eshc-norm" value="norm" checked="yes" /><label for="eshc-norm">Normalisierung</label>
-          <input type="checkbox" name="displayedColumns" id="eshc-norm_broad" value="mod" checked="yes" /><label for="eshc-norm_broad">Modernisierung</label>
-          <input type="checkbox" name="displayedColumns" id="eshc-norm_type" value="mod" checked="yes" /><label for="eshc-norm_type">Modernisierungstyp</label>
+          <input type="checkbox" name="displayedColumns" id="eshc-norm_broad" value="norm_broad" checked="yes" /><label for="eshc-norm_broad">Modernisierung</label>
+          <input type="checkbox" name="displayedColumns" id="eshc-norm_type" value="norm_type" checked="yes" /><label for="eshc-norm_type">Modernisierungstyp</label>
           <input type="checkbox" name="displayedColumns" id="eshc-pos" value="pos" checked="yes" /><label for="eshc-pos">POS-Tag</label>
           <input type="checkbox" name="displayedColumns" id="eshc-morph" value="morph" checked="yes" /><label for="eshc-morph">Morphologie-Tag</label>
           <input type="checkbox" name="displayedColumns" id="eshc-lemma" value="lemma" checked="yes" /><label for="eshc-lemma">Lemma</label>
+          <input type="checkbox" name="displayedColumns" id="eshc-lemma_sugg" value="lemma_sugg" checked="yes" /><label for="eshc-lemma_sugg">Lemma-Link</label>
           <input type="checkbox" name="displayedColumns" id="eshc-lemmapos" value="lemmapos" checked="yes" /><label for="eshc-lemmapos">Lemma-Tag</label>
-          <input type="checkbox" name="displayedColumns" id="eshc-Comment" value="Comment" checked="yes" /><label for="eshc-Comment">Kommentar</label>
+          <input type="checkbox" name="displayedColumns" id="eshc-comment" value="comment" checked="yes" /><label for="eshc-comment">Kommentar</label>
         </p>
       </div>
 

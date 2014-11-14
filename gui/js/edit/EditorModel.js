@@ -18,11 +18,10 @@ var EditorModel = new Class({
     maximumTries: 20,     // max. number of load requests before giving up
     dynamicLoadPages: 5,  // min. number of pages in each direction to be pre-fetched
     dynamicLoadLines: 50, // min. number of lines in each direction to be pre-fetched
-    inputErrorClass: "",  // browser-dependent CSS styling for input errors
     dropdown: null,  // contains the currently opened dropdown menu, if any
-    useLemmaLookup: false,
     lineRequestInProgress: false,
     horizontalTextView: null,
+    flagHandler: null,
     onRenderOnceHandlers: [],
 
     /* Constructor: EditorModel
@@ -54,9 +53,13 @@ var EditorModel = new Class({
         /* General options */
 	this.editTable = $('editTable');
 	et = this.editTable;
-        this.inputErrorClass = (Browser.chrome) ? "input_error_chrome" : "input_error";
         this.horizontalTextView =
             new HorizontalTextPreview(this, $('horizontalTextViewContainer'));
+        this.updateShowInputErrors(true);
+        Object.each(cora.current().tagsets, function(tagset) {
+            tagset.setUpdateAnnotation(this.updateAnnotation.bind(this));
+        }.bind(this));
+        this.flagHandler = new FlagHandler(this.updateAnnotation.bind(this));
 
 	/* set up the line template */
 	this.lineTemplate = $('line_template');
@@ -87,11 +90,7 @@ var EditorModel = new Class({
 	    function(event, target) {
 		var new_value;
 		var this_id = ref.getRowNumberFromElement(target);
-		if(target.hasClass('editTableError')) {
-		    new_value = target.hasClass('editTableErrorChecked') ? 0 : 1;
-		    target.toggleClass('editTableErrorChecked');
-		    ref.updateData(this_id, 'general_error', new_value);
-		} else if(target.hasClass('editTableProgress')) {
+		if(target.hasClass('editTableProgress')) {
 		    new_value = target.hasClass('editTableProgressChecked') ? false : true;
 		    ref.updateProgress(this_id, new_value);
 		} else if(target.hasClass('editTableDropdown')) {
@@ -105,13 +104,7 @@ var EditorModel = new Class({
 		    }
 		    ref.dropdown = new_value;
 		    ref.dropdown.show();
-	    	} else if(target.hasClass('editTableLemma')) {
-		    new_value = target.hasClass('editTableLemmaChecked') ? 0 : 1;
-		    target.toggleClass('editTableLemmaChecked');
-		    ref.updateData(this_id, 'lemma_verified', new_value);
-		} else if(target.hasClass('editTableLemmaLink')) {
-		    cora_external_lemma_link(target.getSiblings("input")[0].get('value'));
-		}
+	    	}
 	    }
 	);
 	et.addEvent(
@@ -128,88 +121,29 @@ var EditorModel = new Class({
 	    }
 	);
 	et.addEvent(
-	    'change:relay(select)',
-	    function(event, target) {
-		var this_id = ref.getRowNumberFromElement(target);
-		var parent = target.getParent('td');
-		var new_value = target.getSelected()[0].get('value');
-                if (parent.hasClass("et-anno")) {
-                }
-		if (parent.hasClass("editTable_pos")) {
-		    ref.updateData(this_id, 'anno_pos', new_value);
-		    ref.renderMorphOptions(this_id, target.getParent('tr'), new_value);
-		    if (userdata.showInputErrors)
-			ref.updateInputError(target.getParent('tr'));
-		} else if (parent.hasClass("editTable_morph")) {
-		    ref.updateData(this_id, 'anno_morph', new_value);
-		    if (userdata.showInputErrors)
-			ref.updateInputError(target.getParent('tr'));
-		} else if (parent.hasClass("editTable_norm_type")) {
-		    ref.updateData(this_id, 'anno_norm_type', new_value);
-		    if (userdata.showInputErrors)
-			ref.updateInputError(target.getParent('tr'));
-		} else if (parent.hasClass("editTable_lemmapos")) {
-		    ref.updateData(this_id, 'anno_lemmapos', new_value);
-		    if (userdata.showInputErrors)
-			ref.updateInputError(target.getParent('tr'));
-		}
-
-		ref.updateProgress(this_id, true);
-	    }
-	);
-	et.addEvent(
-	    'change:relay(input)',
-	    function(event, target) {
-		var this_id = ref.getRowNumberFromElement(target);
+            'keyup:relay(input)',
+            function(event, target) {
+	        var this_id = ref.getRowNumberFromElement(target);
 		var parent = target.getParent('td');
 		var new_value = target.get('value');
-		if (parent.hasClass("editTable_norm")) {
-		    ref.updateData(this_id, 'anno_norm', new_value);
-		    parent.getSiblings("td.editTable_norm_broad input")[0].set('placeholder', new_value);
-		    ref.updateProgress(this_id, true);
-		} else if (parent.hasClass("editTable_norm_broad")) {
-		    ref.updateData(this_id, 'anno_norm_broad', new_value);
-		    //ref.updateModSelect(parent, new_value);
-		    if (userdata.showInputErrors)
-			ref.updateInputError(target.getParent('tr'));
-		    ref.updateProgress(this_id, true);
-		} else if (parent.hasClass("editTable_lemma")) {
-		    ref.updateData(this_id, 'anno_lemma', new_value);
-		    ref.updateProgress(this_id, true);
-		    // deselect "lemma verified" box after a change
-		    parent.getElement('div.editTableLemma').removeClass('editTableLemmaChecked');
-		    ref.updateData(this_id, 'lemma_verified', 0);
-		} else if (parent.hasClass("editTable_Comment")) {
-		    ref.updateData(this_id, 'comment', new_value);
-		}
-	    }
-	);
-	et.addEvent(
-	    'keyup:relay(input)',
-	    function(event, target) {
-		var parent = target.getParent('td');
-                var this_class = parent.get('class');
-		var new_value = target.get('value');
-		var new_row;
-		if (parent.hasClass("editTable_norm_broad")) {
-		    ref.updateModSelect(parent, new_value);
-		}
-                var shiftFocus = function(nr, tc) {
+		var this_class = ref.getRowClassFromElement(parent);
+                var new_row;
+                var shiftFocus = function(nr) {
                     if(nr == null) return;
-		    var new_target = nr.getElement('td.'+tc+' input');
+		    var new_target = nr.getElement('td.'+this_class+' input');
 		    if(new_target != null) {
 			new_target.focus();
 		    }
                 };
 		if (event.code == 40) { // down arrow
-		    if(event.control || this_class != "editTable_lemma") {
+		    if(event.control || !target.hasClass("editTable_lemma")) {
 			new_row = ref.getRowNumberFromElement(parent) + 1;
                         if (ref.getRowFromNumber(new_row) !== null) {
-                            shiftFocus(ref.getRowFromNumber(new_row), this_class);
+                            shiftFocus(ref.getRowFromNumber(new_row));
                         } else {
                             if (ref.pages.increment()) {
                                 ref.onRenderOnce(function() {
-                                    shiftFocus(ref.getRowFromNumber(new_row), this_class);
+                                    shiftFocus(ref.getRowFromNumber(new_row));
                                 });
                                 ref.pages.render();
                             }
@@ -217,14 +151,14 @@ var EditorModel = new Class({
 		    }
 		}
 		if (event.code == 38) { // up arrow
-		    if(event.control || this_class != "editTable_lemma") {
+		    if(event.control || !target.hasClass("editTable_lemma")) {
 			new_row = ref.getRowNumberFromElement(parent) - 1;
                         if (ref.getRowFromNumber(new_row) !== null) {
-                            shiftFocus(ref.getRowFromNumber(new_row), this_class);
+                            shiftFocus(ref.getRowFromNumber(new_row));
                         } else {
                             if (ref.pages.decrement()) {
                                 ref.onRenderOnce(function() {
-                                    shiftFocus(ref.getRowFromNumber(new_row), this_class);
+                                    shiftFocus(ref.getRowFromNumber(new_row));
                                 });
                                 ref.pages.render();
                             }
@@ -397,10 +331,6 @@ var EditorModel = new Class({
         });
 
         // HACKS we want to get rid of as well:
-        if(visibility["lemma_sugg"]) {
-            this.useLemmaLookup = true;
-            visibility["lemma_sugg"] = false;
-        }
         if(visibility["pos"])
             visibility["morph"] = true;
 
@@ -421,11 +351,6 @@ var EditorModel = new Class({
 		$('editTable').getElements(".editTable_"+value).hide();
 	    }
 	});
-	if(this.useLemmaLookup) {
-	    $('editTable').getElements(".editTableLemmaLink").show('inline');
-	} else {
-	    $('editTable').getElements(".editTableLemmaLink").hide();
-	}
     },
 
     /* Function: onRenderOnce
@@ -437,6 +362,30 @@ var EditorModel = new Class({
         if(typeof(fn) == "function")
             this.onRenderOnceHandlers.push(fn);
         return this;
+    },
+
+    /* Function: getRowClassFromElement
+
+       Gets the "editTable_*" class of the <td> cell.
+     */
+    getRowClassFromElement: function(td) {
+        for (var i = 0; i < td.classList.length; i++) {
+            var item = td.classList.item(i);
+            if(item.substr(0, 10) === "editTable_")
+                return item;
+        }
+        return "";
+    },
+
+    /* Function: getTagsetClassFromElement
+
+       Gets the tagset class of the <td> cell containing the supplied element.
+     */
+    getTagsetClassFromElement: function(elem) {
+        var parent = elem.getParent('td');
+        if(!parent.hasClass("et-anno"))  // not an annotation element
+            return "";
+        return this.getRowClassFromElement(parent).substr(10);
     },
 
     /* Function: getRowNumberFromElement
@@ -460,106 +409,16 @@ var EditorModel = new Class({
         return $('line_'+num);
     },
 
-    /* Function: isValidTagCombination
-
-       Check whether a given combination of POS and morph tag is valid
-       with regard to the currently loaded tagset.
-
-       Parameters:
-        pos - the POS tag
-	morph - the morphology tag
-     */
-    isValidTagCombination: function(pos, morph) {
-        var tag = (morph && morph !== "--") ? (pos+"."+morph) : pos;
-        return (cora.currentTagset("pos").tags.contains(tag));
-    },
-
-    /* Function: updateModSelect
-
-       Update status of the modernisation type select box.
-
-       Parameters:
-        td - current table data object
-	mod - current modernisation value
-    */
-    updateModSelect: function(td, mod) {
-        td = td.getSiblings("td.editTable_norm_type")[0];
-        if(!td)
-            return;
-	if(!mod || mod=="") {
-	    td.getElement("option[value='']").set('selected', 'selected');
-	    td.getElement("select").set('disabled', 'disabled');
-	} else {
-	    td.getElement("select").set('disabled', null);
-	}
-    },
-
-    /* Function: updateInputError
-
-       Visualize whether selected tags are legal values.
-
-       Checks legality of the selected tags in a given row with regard
-       to the currently loaded tagset (and, in case of morphology
-       tags, to the selected POS tag), then adds or removes the class
-       signalling an illegal input value.
-
-       Parameters:
-        tr - table row object to examine
-    */
-    updateInputError: function(tr) {
-	var iec = this.inputErrorClass;
-	var tselect, ttag, modval;
-	var pselect, ptag, mselect, mtag;
-	try {
-	    tselect = tr.getElement('td.editTable_norm_type select');
-	    ttag = tselect.getSelected()[0].get('value');
-	    modval = tr.getElement('td.editTable_norm_broad input').get('value');
-	} catch(err) {}
-	if(tselect) {
-	    if(modval!="" && ttag=="") {
-		tselect.addClass(iec);
-	    } else {
-		tselect.removeClass(iec);
-	    }
-	}
-
-	try {
-	    pselect = tr.getElement('td.editTable_pos select');
-	    ptag = pselect.getSelected()[0].get('value');
-	    mselect = tr.getElement('td.editTable_morph select');
-	    mtag = mselect.getSelected()[0].get('value');
-	} catch(err) {	// row doesn't have the select, or the select is empty
-	    return;
-	}
-	if(ptag!="") {
-            if(typeof(cora.currentTagset("pos").tags_for[ptag]) == "undefined") {
-		pselect.addClass(iec);
-	    } else {
-		pselect.removeClass(iec);
-	    }
-
-	    if(!this.isValidTagCombination(ptag,mtag)) {
-		mselect.addClass(iec);
-	    } else {
-		mselect.removeClass(iec);
-	    }
-	}
-    },
-
     /* Function: updateShowInputErrors
 
-       Show or hide input error visualization for each row in the
-       table.
-
-       Calls updateInputError() for each row in the table.  Used when
-       the corresponding user setting changes. */
-    updateShowInputErrors: function() {
-	if(userdata.showInputErrors) {
-	    $('editTable').getElements('tr').each(this.updateInputError.bind(this));
-	} else {
-	    $$('.editTable_pos select').removeClass(this.inputErrorClass);
-	    $$('.editTable_morph select').removeClass(this.inputErrorClass);
-	}
+       Show or hide input error visualization for each row in the table.  Used
+       when the corresponding user setting changes. */
+    updateShowInputErrors: function(no_redraw) {
+        Object.each(cora.current().tagsets, function(tagset) {
+            tagset.setShowInputErrors(userdata.showInputErrors);
+        });
+        if(!no_redraw)
+            this.forcePageRedraw();
     },
 
     /* Function: forcePageRedraw
@@ -573,88 +432,6 @@ var EditorModel = new Class({
     forcePageRedraw: function() {
 	$('editTable').getElements('tr[id^=line][id!=line_template]').destroy();
 	this.renderLines(this.displayedLinesStart, this.displayedLinesEnd+1);
-    },
-
-    /* Function: renderMorphOptions
-
-       Re-render the morphology tag drop-down box when POS tag
-       changes.
-
-       This function is only called when the POS tag changes.  The
-       functionality is replicated in displayPage() where it is used
-       during page rendering (but see below).
-
-       CAUTION: This function now also guarantees that only valid
-       morphology tags for the selected POS tag are displayed, and
-       auto-selects the first valid morphology tag if necessary.  This
-       is not desired during the initial page rendering, though, which
-       is another reason (besides performance) why this function
-       should not be called during page rendering!
-
-       Parameters:
-        id - line ID
-	tr - table row object of that line
-	postag - the new POS tag
-    */
-    renderMorphOptions: function(id, tr, postag) {
-	var morphopt, suggestions, line, isvalid;
-	var ref = this;
-	var mselect = tr.getElement('.editTable_morph select');
-
-	if (!postag) {
-	    mselect.empty();
-	    this.updateData(id, 'anno_morph', '');
-	    return;
-	}
-
-        morphopt = cora.currentTagset("pos").optgroup_for[postag];
-        if(typeof(morphopt) !== "undefined")
-            morphopt = morphopt.clone();
-        else
-            morphopt = cora.tagsets.generateOptgroup([]);
-	line = this.data[id];
-	if (line.suggestions) {
-	    suggestions = new Element('optgroup', {'label': 'Vorgeschlagene Tags', 'class': 'lineSuggestedTag'});
-	    line.suggestions.each(function(opt){
-		if(ref.isValidTagCombination(postag, opt.morph)) {
-		    suggestions.grab(new Element('option',{
-			text: opt.morph+" ("+opt.score+")",
-			value: opt.morph,
-			'class': 'lineSuggestedTag'
-		    }),'top');
-		}
-            });
-	    if(suggestions.getChildren().length == 0) {
-		suggestions = false;
-	    }
-	}
-
-	isvalid = this.isValidTagCombination(postag, line.anno_morph);
-	mselect.empty();
-	if(isvalid) {
-	    mselect.grab(new Element('option',{
-		text: line.anno_morph,
-		value: line.anno_morph,
-		selected: 'selected',
-		'class': 'lineSuggestedTag'
-	    }),'top');
-	}
-	if(suggestions) {
-	    mselect.grab(suggestions);
-	}
-	mselect.grab(morphopt);
-	if(!isvalid) {
-	    var newmorph;
-	    if(suggestions) {
-		newmorph = suggestions.getChildren()[0];
-	    } else {
-		newmorph = morphopt.getChildren()[0];
-	    }
-	    if(newmorph) {
-		this.updateData(id, 'anno_morph', newmorph.get('value'));
-		newmorph.set('selected', 'selected');
-	    }
-	}
     },
 
     /* Function: focusFirstElement
@@ -731,23 +508,32 @@ var EditorModel = new Class({
 	}
     },
 
-    /* Function: updateData
+    /* Function: updateAnnotation
 
-       Updates a field of data of a given line in memory.
+       Update the annotation of a particular tagset.  Calls update() triggers
+       for all tagsets.
 
        Parameters:
-         line_id - ID of the line to be modified
-	 data_type - Name of the field to be changed
-	 new_data - Data to be written to that field
+         target - The element on which the update triggered
+         this_id - ID of this element
+         cls - Tagset class to be updated
+         value - New value of the annotation
      */
-    updateData: function(line_id, data_type, new_data){
-	var line = this.data[line_id];
-	if (line != undefined) {
-	    line[data_type] = new_data;
-	    if(!this.changedLines.contains(line_id)) {
-		this.changedLines.push(line_id);
-	    }
-	}
+    updateAnnotation: function(target, this_id, cls, value) {
+        console.log("setting '"+cls+"' to '"+value+"'");
+        var tr = target.getParent('tr');
+        var data = this.data[this_id];
+        console.log(this_id);
+        console.log(data);
+        if (typeof(data) !== "undefined") {
+            Object.each(cora.current().tagsets, function(tagset) {
+                tagset.update(tr, data, cls, value);
+            });
+            this.flagHandler.update(tr, data, cls, value);
+            if (!this.changedLines.contains(this_id))
+                this.changedLines.push(this_id);
+            this.updateProgress(this_id, true);
+        }
     },
 
     /* Function: renderLines
@@ -770,12 +556,10 @@ var EditorModel = new Class({
          'true' if lines were rendered successfully.
      */
     renderLines: function(start, end){
-	var tr, line, posopt, morphopt, mselect, trs, j;
-	var optgroup, elem, lemma_input;
-	var dlr, dynstart, dynend;
-	var lineinfo;
-        var et_spinner;
-        var fn_callback, fn_onerror;
+        var et_spinner, fn_callback, fn_onerror;  // when lines are not loaded yet
+        var trs, j;  // for ensuring correct number of rows
+        var line, tr, lineinfo;  // for building lines
+        var dlr, dynstart, dynend;  // for dynamically loading context lines
 	var data = this.data;
 	var et = this.editTable;
 	var cl = userdata.contextLines;
@@ -795,7 +579,7 @@ var EditorModel = new Class({
 	        gui.showMsgDialog('error', e.message);
             };
             this.requestLines(start, end, fn_callback, fn_onerror);
-            return;
+            return false;
         }
 
 	/* hide the table */
@@ -808,15 +592,13 @@ var EditorModel = new Class({
 	   changes */
 	trs = et.getElements('tr[id!=line_template]');
 	j = 1;
-	while (trs[j] != undefined) {
-	    if (j>pl) { // remove superfluous lines
+	while (typeof(trs[j]) !== "undefined") {
+	    if (j>pl)  // remove superfluous lines
 		trs[j].destroy();
-	    }
 	    j++;
 	}
-	while (j<=pl) { // add missing lines
-	    tr_clone = this.lineTemplate.clone();
-	    et.getElement("tbody").adopt(tr_clone);
+	while (j<=pl) {  // add missing lines
+	    et.getElement("tbody").adopt(this.lineTemplate.clone());
 	    j++;
 	}
 
@@ -834,16 +616,6 @@ var EditorModel = new Class({
 	    } else {
 		tr.getElement('div.editTableProgress').removeClass('editTableProgressChecked');
 	    }
-	    if (line.general_error != null && line.general_error == 1) {
-		tr.getElement('div.editTableError').addClass('editTableErrorChecked');
-	    } else {
-		tr.getElement('div.editTableError').removeClass('editTableErrorChecked');
-	    }
-	    if (line.lemma_verified != null && line.lemma_verified == 1) {
-		tr.getElement('div.editTableLemma').addClass('editTableLemmaChecked');
-	    } else {
-		tr.getElement('div.editTableLemma').removeClass('editTableLemmaChecked');
-	    }
 	    if(line.page_name !== undefined) {
 		lineinfo = line.page_name + line.page_side + line.col_name + "," + line.line_name;
 	    }
@@ -854,106 +626,14 @@ var EditorModel = new Class({
 	    tr.getElement('.editTable_tok_trans').empty().appendText(line.trans);
 	    tr.getElement('.editTable_token').empty().appendText(line.utf);
 	    tr.getElement('.editTable_tokenid').empty().appendText(i+1);
-	    tr.getElement('.editTable_Comment input').set('value', line.comment);
 
 	    // build annotation elements
-	    var norm_tr = tr.getElement('.editTable_norm input');
-	    var mod_tr  = tr.getElement('.editTable_norm_broad input');
-	    var mod_trs = tr.getElement('.editTable_norm_type select');
-	    if(norm_tr != null && norm_tr != undefined) {
-		norm_tr.set('value', line.anno_norm);
-	    }
-	    if(mod_tr != null && mod_tr != undefined) {
-		mod_tr.set('value', line.anno_norm_broad);
-		mod_tr.set('placeholder', line.anno_norm);
-	    }
-	    if(mod_trs != null && mod_trs != undefined) {
-		if(line.anno_norm_broad != null && line.anno_norm_broad != undefined) {
-		    mod_trs.set('disabled', null);
-		} else {
-		    mod_trs.set('disabled', 'disabled');
-		}
-		mod_trs.getElement("option[value='']").set('selected', 'selected');
-		if(line.anno_norm_type != null && line.anno_norm_type != undefined) {
-		    mod_trs = mod_trs.getElement("option[value='" + line.anno_norm_type + "']");
-		    if(mod_trs != null) {
-			mod_trs.set('selected', 'selected');
-		    }
-		}
-	    }
+            Object.each(cora.current().tagsets, function(tagset) {
+                tagset.fill(tr, line);
+            }.bind(this));
 
-	    // Lemma auto-completion
-	    lemma_input = tr.getElement('.editTable_lemma input');
-	    lemma_input.removeEvents();
-	    lemma_input.set('value', line.anno_lemma);
-	    /* Auto-completion now returns more than just results from
-	     * a closed lemma tagset, so it should always be
-	     * instantiated regardless of this.useLemmaLookup */
-	    this.makeNewAutocomplete(lemma_input, line.num);
-
-	    // Lemma-POS
-	    var lemma_pos = tr.getElement('.editTable_lemmapos select');
-	    if(lemma_pos != null && lemma_pos != undefined) {
-		lemma_pos.getElements('.lineSuggestedTag').destroy();
-		lemma_pos.grab(new Element('option',{
-		    text: (line.anno_lemmapos == undefined) ? '' : line.anno_lemmapos,
-		    value: line.anno_lemmapos,
-		    selected: 'selected',
-		    'class': 'lineSuggestedTag'
-		}),'top');
-	    }
-
-            // POS
-	    posopt = tr.getElement('.editTable_pos select');
-	    posopt.getElements('.lineSuggestedTag').destroy();
-	    if(line.suggestions.length>0) {
-		optgroup = new Element('optgroup', {'label': 'Vorgeschlagene Tags', 'class': 'lineSuggestedTag'});
-		line.suggestions.each(function(opt){
-		    optgroup.grab(new Element('option',{
-			text: opt.pos+" ("+opt.score+")",
-			value: opt.pos,
-			'class': 'lineSuggestedTag'
-		    }),'top');
-		});
-		posopt.grab(optgroup, 'top');
-	    }
-	    posopt.grab(new Element('option',{
-		text: (line.anno_pos == undefined) ? '' : line.anno_pos,
-		value: line.anno_pos,
-		selected: 'selected',
-		'class': 'lineSuggestedTag'
-	    }),'top');
-
-            // Morph
-	    mselect = tr.getElement('.editTable_morph select');
-	    mselect.empty();
-	    mselect.grab(new Element('option',{
-                text: line.anno_morph,
-		value: line.anno_morph,
-		selected: 'selected',
-		'class': 'lineSuggestedTag'
-	    }));
-
-	    if (line.suggestions.length>0) {
-		optgroup = new Element('optgroup', {'label': 'Vorgeschlagene Tags', 'class': 'lineSuggestedTag'});
-		line.suggestions.each(function(opt){
-		    optgroup.grab(new Element('option',{
-			text: opt.morph+" ("+opt.score+")",
-			value: opt.morph,
-			'class': 'lineSuggestedTag'
-		    }),'top');
-		});
-		mselect.grab(optgroup);
-	    }
-
-            var m_optgroup = cora.currentTagset("pos").optgroup_for[line.anno_pos];
-	    if (typeof(m_optgroup) !== "undefined") {
-                mselect.grab(m_optgroup.clone());
-	    }
-
-	    if(userdata.showInputErrors) {
-		this.updateInputError(tr);
-	    }
+            // handle flags
+            this.flagHandler.fill(tr, line);
 	}
 
 	/* unhide the table */
@@ -977,7 +657,6 @@ var EditorModel = new Class({
             handler();
         });
         this.onRenderOnceHandlers = [];
-
 	return true;
     },
 
@@ -1108,34 +787,25 @@ var EditorModel = new Class({
        to the database.
      */
     saveData: function() {
-	var req, cl, data, save, line, tp, tm, ler;
+	var req, cl, data, save, save_obj, line, ler;
 	var ref = this;
 
 	cl = this.changedLines;
-	if (cl==null) { return true; }
+	if (cl==null) { return; }
 	data = this.data;
 	save = new Array();
 
 	for (var i=0, len=cl.length; i<len; i++) {
-	    line=data[cl[i]];
-	    tp = line.anno_pos==null ? "" : line.anno_pos;
-	    tm = line.anno_morph==null ? "" : line.anno_morph;
-	    save.push({
-		id: line.id,
-		general_error: line.general_error,
-		lemma_verified: line.lemma_verified,
-		anno_lemma: line.anno_lemma,
-		anno_lemmapos: line.anno_lemmapos,
-		anno_pos: tp, //.replace(/\s[\d\.]+/g,""),
-		anno_morph: tm, //.replace(/\s[\d\.]+/g,""),
-		anno_norm: line.anno_norm,
-		anno_norm_broad: line.anno_norm_broad,
-		anno_norm_type: line.anno_norm_type,
-		comment: line.comment
-	    });
+	    line = data[cl[i]];
+            save_obj = {id: line.id};
+            Object.each(cora.current().tagsets, function(tagset, cls) {
+                Object.append(save_obj, tagset.getValues(line));
+            });
+            Object.append(save_obj, this.flagHandler.getValues(line));
+            save.push(save_obj);
 	}
 
-	var ler = (!(this.lastEditedRow in data) ? this.lastEditedRow : data[this.lastEditedRow].id);
+	ler = (!(this.lastEditedRow in data) ? this.lastEditedRow : data[this.lastEditedRow].id);
 	req = new Request.JSON({
 	    url: 'request.php?do=saveData&lastEditedRow='+ler,
 	    onSuccess: function(status,xml) {
@@ -1344,7 +1014,7 @@ var EditorModel = new Class({
 		}
 	    }).get({'do': 'editToken', 'token_id': db_id, 'value': new_token});
 	    mbox.close();
-	}
+	};
 
 	$('editTokenBox').set('value', old_token);
 	if(this.changedLines.some(function(val) {return val >= tok_id;})) {
@@ -1460,76 +1130,6 @@ var EditorModel = new Class({
 	$('addTokenBox').addEvent('keyup', this._resizeTextarea);
         this._resizeTextarea({target: $('addTokenBox')});
 	addTokenBox.open();
-    },
-
-    /* Function: makeNewAutocomplete
-
-       Activates auto-complete functionality for an input text box.
-
-       Parameters:
-         inputfield - The element to be given auto-complete functionality
-	 linenum - The line number of the element, supplied to the AJAX query
-	           for auto-complete suggestions
-     */
-    makeNewAutocomplete: function(inputfield, linenum) {
-	var ref = this;
-	var splitExternalId = function(text) {
-	    var re = new RegExp("^(.*) \\[(.*)\\]$");
-	    var match = re.exec(text);
-	    return (match == null) ? [text, ""] : [match[1], match[2]];
-	};
-	linenum = this.data[linenum].id;
-	new Meio.Autocomplete(inputfield,
-			      'request.php?do=fetchLemmaSugg', {
-				  delay: 100,
-				  urlOptions: {
-				      extraParams: [
-					  {'name': 'linenum', 'value': linenum}
-				      ]
-				  },
-				  filter: {
-				      //type: 'startswith',
-				      //path: 'v',
-				      filter: function(text, data) {
-					  if(data.t=="s" || data.t=="c") {
-					      return true;
-					  }
-					  return text ? data.v.standardize().test(new RegExp("^" + text.standardize().escapeRegExp(), 'i')) : true;
-				      },
-				      formatMatch: function(text, data, i){
-					  //return splitExternalId(data.v)[0];
-					  return data.v;
-				      },
-				      formatItem: function(text, data){
-					  var sdata = splitExternalId(data.v);
-					  var item = (text && data.t=="q") ? ('<strong>'  + sdata[0].substr(0, text.length) + '</strong>' + sdata[0].substr(text.length)) : sdata[0];
-					  if(sdata[1]!="") {
-					      item = item + " <span class='ma-greyed'>[" + sdata[1] + "]</span>";
-					  }
-					  if(data.t=="c") {
-					      item = "<span class='ma-confirmed'>" + item + "</span>";
-					  }
-					  if(data.t=="s" || data.t=="c") {
-					      item = "<div class='ma-sugg'>" + item + "</div>";
-					  }
-					  return item;
-				      }
-				  }
-			      }).addEvent('select', function(e,v,text,index) {
-				  var parent = e.field.node.getParent("tr");
-				  var this_id = ref.getRowNumberFromElement(parent);
-				  var verified = (v.t=="c") ? 1 : 0;
-
-				  if (verified) {
-				      parent.getElement('div.editTableLemma').addClass('editTableLemmaChecked');
-				  } else {
-				      parent.getElement('div.editTableLemma').removeClass('editTableLemmaChecked');
-				  }
-
-				  ref.updateData(this_id, 'anno_lemma', text);
-				  ref.updateData(this_id, 'lemma_verified', verified);
-				  ref.updateProgress(this_id, true);
-			      });
     },
 
     /* Function: prepareAnnotationOptions

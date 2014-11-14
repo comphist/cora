@@ -7,6 +7,47 @@ var SplitClassTagset = new Class({
     tags_for: {},
     optgroup_for: {},
 
+    /* Function: splitTag
+
+       Splits a single tag.
+
+       Returns:
+         An array containing up to two elements of the tag.
+     */
+    splitTag: function(tag) {
+        if(typeof(tag) === "undefined")
+            return [null, null];
+        var idx = tag.indexOf('.');
+        if(idx < 0 || idx == (tag.length - 1))
+            return [tag, null];
+        return [tag.substr(0, idx), tag.substr(idx + 1)];
+    },
+
+    /* Function: joinTag
+
+       Joins two parts of a tag.
+
+       Returns:
+         A string containing the joined tag.
+     */
+    joinTag: function(a, b) {
+        if (typeof(b) === "undefined" || b === null || b == "")
+            return a;
+        return (a + "." + b);
+    },
+
+    /* Function: isValidTag
+
+       Check if a given combination of two components is a valid tag.
+
+       Parameters:
+         first - First component of the tag
+         second - Second component of the tag
+     */
+    isValidTag: function(first, second) {
+        return this.tags.contains(this.joinTag(first, second));
+    },
+
     /* Function: _makeSplitTaglist
 
        Takes a list of (combined) tags and splits them up.
@@ -16,19 +57,13 @@ var SplitClassTagset = new Class({
      */
     _makeSplitTaglist: function(taglist) {
         var tags = {};
-        var splitTag = function(tag) {
-            var idx = tag.indexOf('.');
-            if(idx<0 || idx==(tag.length-1))
-                return [tag, null];
-            return [tag.substr(0, idx), tag.substr(idx+1)];
-        };
         Array.each(taglist, function(tag) {
-            var split = splitTag(tag);
+            var split = this.splitTag(tag);
             if(typeof(tags[split[0]]) === "undefined")
                 tags[split[0]] = [];
             if(split[1] !== null)
                 tags[split[0]].push(split[1]);
-        });
+        }.bind(this));
         return tags;
     },
 

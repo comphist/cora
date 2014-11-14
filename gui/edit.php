@@ -30,6 +30,7 @@
         <th class="editTable_pos et-anno">POS-Tag</th>
         <th class="editTable_morph et-anno">Morphologie-Tag</th>
         <th class="editTable_lemma et-anno">Lemma</th>
+        <th class="editTable_lemma_sugg et-anno"></th>
         <th class="editTable_lemmapos et-anno">Lemma-Tag</th>
         <th class="editTable_Comment">Kommentar</th>
         <th class="editTable_dropdown"></th>
@@ -72,6 +73,8 @@
         <td class="editTable_lemma et-anno">
           <div class="editTableLemma editTableCheckbox"></div>
           <input type="text" value="" />
+        </td>
+        <td class="editTable_lemma_sugg et-anno">
           <div class="editTableLemmaLink">
             <span class="oi oi-adjust oi-shadow" data-glyph="external-link" title="Externen Link öffnen" aria-hidden="true"></span>
           </div>
@@ -79,7 +82,7 @@
         <td class="editTable_lemmapos et-anno">
           <select size="1"></select>
         </td>
-        <td class="editTable_Comment">
+        <td class="editTable_comment">
           <input type="text" value="" maxlength="255" />
         </td>
         <td class="editTable_dropdown">

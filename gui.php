@@ -85,9 +85,17 @@
               embedJS("gui/js/tagsets/Tagset.js", true);
               embedJS("gui/js/tagsets/SplitClassTagset.js", true);
               embedJS("gui/js/tagsets/POS.js", true);
+              embedJS("gui/js/tagsets/Norm.js", true);
+              embedJS("gui/js/tagsets/NormBroad.js", true);
+              embedJS("gui/js/tagsets/NormType.js", true);
+              embedJS("gui/js/tagsets/LemmaAutocomplete.js", true);
+              embedJS("gui/js/tagsets/Lemma.js", true);
+              embedJS("gui/js/tagsets/LemmaSugg.js", true);
               embedJS("gui/js/tagsets/LemmaPOS.js", true);
+              embedJS("gui/js/tagsets/Comment.js", true);
               embedJS("gui/js/tagsets/TagsetFactory.js", true);
               embedJS("gui/js/file.js", true);
+              embedJS("gui/js/edit/FlagHandler.js", true);
               embedJS("gui/js/edit/LineJumper.js", true);
               embedJS("gui/js/edit/TokenSearcher.js", true);
               embedJS("gui/js/edit/HorizontalTextPreview.js", true);

@@ -841,17 +841,12 @@ table#editTable td.editTable_lemma input {
     width: 13em;
 }
 
-table#editTable td.editTable_Comment input {
+table#editTable td.editTable_comment input {
     width: 15em;
 }
 
 table#editTable select.input_error {
     box-shadow: 0 0 4px 1px #FF0000, 0 0 2px rgba(0, 0, 0, 0.12) inset;
-}
-
-table#editTable select.input_error_chrome {
-    border: 1px solid #FF0000;
-    outline: 2px solid #FFA0A0;
 }
 
 table#editTable td.editTable_token {

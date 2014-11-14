@@ -20,6 +20,18 @@ cora.tagsetFactory = {
             return new POSTagset(data);
         if(cls == "lemmapos")
             return new LemmaPOSTagset(data);
+        if(cls == "norm")
+            return new NormTagset(data);
+        if(cls == "norm_broad")
+            return new NormBroadTagset(data);
+        if(cls == "norm_type")
+            return new NormTypeTagset(data);
+        if(cls == "lemma")
+            return new LemmaTagset(data);
+        if(cls == "lemma_sugg")
+            return new LemmaSuggTagset(data);
+        if(cls == "comment")
+            return new CommentTagset(data);
         return new Tagset(data);
     }
 };
