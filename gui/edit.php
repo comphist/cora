@@ -58,10 +58,6 @@
         </td>
         <td class="editTable_norm_type et-anno">
           <select size="1" disabled="disabled" class="et-select-norm_type">
-            <option value=""></option>
-            <option value="s">s</option>
-            <option value="f">f</option>
-            <option value="x">x</option>
           </select>
         </td>
         <td class="editTable_pos et-anno">

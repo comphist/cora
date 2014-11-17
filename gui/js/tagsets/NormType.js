@@ -17,6 +17,17 @@ var NormTypeTagset = new Class({
         this.parent(data);
     },
 
+    /* Function: processTags
+
+       Defines a list of tags for this tagset and preprocesses it, building
+       <optgroup> elements for all tags.
+     */
+    processTags: function(tags) {
+        this.parent(tags);
+        this.optgroup = this.generateOptgroupFor(this.tags, "");
+        this.optgroup.grab(new Element('option', {value: "", text: ""}), 'top');
+    },
+
     /* Function: buildTemplate
 
        Update an editor line template for this tagset.
@@ -25,6 +36,13 @@ var NormTypeTagset = new Class({
          td - Table cell element to update
      */
     buildTemplate: function(td) {
+        var elem = td.getElement('select');
+        if (elem !== null) {
+            elem.empty();
+            if(this.processed) {
+                this.optgroup.clone().getChildren().inject(elem);
+            }
+        }
     },
 
     /* Function: defineDelegatedEvents
@@ -50,7 +68,7 @@ var NormTypeTagset = new Class({
          data - An object possibly containing annotations ({anno_pos: ...} etc.)
      */
     fill: function(tr, data) {
-        var elem = tr.getElement('.editTable_norm_type select'),
+        var elem = tr.getElement('.et-select-norm_type'),
             select_value = '',
             disabled, opt,
             ref = this;
