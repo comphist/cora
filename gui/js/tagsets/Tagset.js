@@ -3,19 +3,33 @@
    Basic class that represents a tagset.  Should typically be extended by more
    specialized classes.
 
-   Specialized classes will minimally want to implement fill() and update(),
-   possibly buildTemplate(), and maybe even processTags() if they need to do
-   some special preprocessing with their list of tags.
+   The following functions could potentially be re-defined by more specialized
+   classes:
 
-   Right now, the process is:
-     - fill() fills the appropriate input fields according to the given data,
-           **and** adds the appropriate events for when the input changes;
-           these events should call this.updateAnnotation(), which is set
-           by the editor
-     - updateAnnotation() then (among other things) calls update() for each
-           registered tagset; here, tagsets can react to a change being made,
-           and store them (after possible modifications) in the provided
-           data object
+     - processTags() is called when pre-fetching tagsets (server request
+           "fetchTagsetsForFile").  This is typically only done for closed-
+           class tagsets that are not 'lemma_sugg'.  POS tagsets can use this
+           function to preprocess the tag list, splitting up composite tags,
+           pre-generating HTML elements, etc.
+
+     - buildTemplate() can be used to make changes to the line template.
+           Basic input elements do not need this, and can be defined directly
+           in the edit.php template, but if the input element requires
+           information only available at runtime, it can be modified here.
+           POS tagsets use this to insert pre-generated <select> elements.
+
+     - defineDelegatedEvents() registers events on the editor table that
+           delegate to the input element(s) specific to this tagset.  Event
+           handlers should call updateAnnotation() -- a function that is set
+           by cora.editor -- with the appropriate parameters.
+
+     - fill() fills this tagset's input elements according to the given data;
+           this is called during page rendering.
+
+     - update() is called on each tagset whenever updateAnnotation() was
+           invoked.  Here, tagsets can react to a change being made by the
+           user.  The tagset whose annotation is changed is also responsible
+           for storing the new value in the provided data object.
 
    CAVEAT: Right now, updateAnnotation() is not guaranteed to be called for
            every annotation change, but only for changes triggered by the
