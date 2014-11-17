@@ -51,13 +51,13 @@
         <td class="editTable_tok_trans"></td>
         <td class="editTable_token"></td>
         <td class="editTable_norm et-anno">
-          <input type="text" value="" />
+          <input type="text" value="" class="et-input-norm" />
         </td>
         <td class="editTable_norm_broad et-anno">
-          <input type="text" value="" />
+          <input type="text" value="" class="et-input-norm_broad" />
         </td>
         <td class="editTable_norm_type et-anno">
-          <select size="1" disabled="disabled">
+          <select size="1" disabled="disabled" class="et-select-norm_type">
             <option value=""></option>
             <option value="s">s</option>
             <option value="f">f</option>
@@ -65,14 +65,14 @@
           </select>
         </td>
         <td class="editTable_pos et-anno">
-          <select size="1"></select>
+          <select size="1" class="et-select-pos et-select-pos-main"></select>
         </td>
         <td class="editTable_morph et-anno">
-          <select size="1"></select>
+          <select size="1" class="et-select-pos et-select-morph"></select>
         </td>
         <td class="editTable_lemma et-anno">
           <div class="editTableLemma editTableCheckbox"></div>
-          <input type="text" value="" />
+          <input type="text" value="" class="et-input-lemma" />
         </td>
         <td class="editTable_lemma_sugg et-anno">
           <div class="editTableLemmaLink">
@@ -80,10 +80,10 @@
           </div>
         </td>
         <td class="editTable_lemmapos et-anno">
-          <select size="1"></select>
+          <select size="1" class="et-select-lemmapos"></select>
         </td>
         <td class="editTable_comment">
-          <input type="text" value="" maxlength="255" />
+          <input type="text" value="" maxlength="255" class="et-input-comment" />
         </td>
         <td class="editTable_dropdown">
           <div class="editTableDropdown">

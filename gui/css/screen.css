@@ -845,6 +845,10 @@ table#editTable td.editTable_comment input {
     width: 15em;
 }
 
+table#editTable td.editTable_lemma_sugg {
+    padding-left: 0 !important;
+}
+
 table#editTable select.input_error {
     box-shadow: 0 0 4px 1px #FF0000, 0 0 2px rgba(0, 0, 0, 0.12) inset;
 }

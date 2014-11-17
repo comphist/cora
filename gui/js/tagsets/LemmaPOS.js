@@ -45,6 +45,19 @@ var LemmaPOSTagset = new Class({
         }
     },
 
+    /* Function: defineDelegatedEvents
+
+       Define events on the appropriate elements to react to user input.
+
+       Parameters:
+         elem - Parent element to add events to
+     */
+    defineDelegatedEvents: function(elem) {
+        elem.addEvent('change:relay(select.et-select-lemmapos)', function(e, t) {
+            this.updateAnnotation(t, 'lemmapos', t.getSelected()[0].get('value'));
+        }.bind(this));
+    },
+
     /* Function: fill
 
        Fill the approriate elements in a <tr> with annotation from a token data
@@ -66,10 +79,6 @@ var LemmaPOSTagset = new Class({
                 selected: 'selected',
                 class: 'lineSuggestedTag'
             }), 'top');
-            pos.removeEvents().addEvent('change', function() {
-                ref.updateAnnotation(this, data.num, 'lemmapos',
-                                     this.getSelected()[0].get('value'));
-            });
         }
     },
 

@@ -21,8 +21,7 @@ var FlagHandler = new Class({
 
     /* Function: initialize
      */
-    initialize: function(fn) {
-        this.setUpdateAnnotation(fn);
+    initialize: function() {
     },
 
     /* Function: setUpdateAnnotation
@@ -32,6 +31,23 @@ var FlagHandler = new Class({
     setUpdateAnnotation: function(fn) {
         if(typeof(fn) === "function")
             this.updateAnnotation = fn;
+    },
+
+    /* Function: defineDelegatedEvents
+
+       Define events on the appropriate elements to react to user input.
+
+       Parameters:
+         elem - Parent element to add events to
+     */
+    defineDelegatedEvents: function(elem) {
+        var ref = this;
+        Object.each(this.flags, function(options, flag) {
+            elem.addEvent('click:relay('+options.elem+')', function(e, t) {
+                ref.updateAnnotation(t, flag,
+                                     t.hasClass(options.class) ? 0 : 1);
+            });
+        });
     },
 
     /* Function: getValues
@@ -49,7 +65,7 @@ var FlagHandler = new Class({
 
     /* Function: fill
 
-       Fill the approriate elements in a <tr> with annotation from a token data
+       Fill the appropriate elements in a <tr> with annotation from a token data
        object.
 
        Parameters:
@@ -62,10 +78,6 @@ var FlagHandler = new Class({
             var elem = tr.getElement(options.elem);
             if (elem !== null) {
                 ref._setFlag(elem, options.class, data[flag]);
-                elem.removeEvents().addEvent('click', function() {
-                    var value = this.hasClass(options.class) ? 0 : 1;
-                    ref.updateAnnotation(this, data.num, flag, value);
-                });
             }
         });
     },

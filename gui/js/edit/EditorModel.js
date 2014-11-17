@@ -53,13 +53,18 @@ var EditorModel = new Class({
         /* General options */
 	this.editTable = $('editTable');
 	et = this.editTable;
+	et.removeEvents();
+
         this.horizontalTextView =
             new HorizontalTextPreview(this, $('horizontalTextViewContainer'));
         this.updateShowInputErrors(true);
         Object.each(cora.current().tagsets, function(tagset) {
             tagset.setUpdateAnnotation(this.updateAnnotation.bind(this));
+            tagset.defineDelegatedEvents(et);
         }.bind(this));
-        this.flagHandler = new FlagHandler(this.updateAnnotation.bind(this));
+        this.flagHandler = new FlagHandler();
+        this.flagHandler.setUpdateAnnotation(this.updateAnnotation.bind(this));
+        this.flagHandler.defineDelegatedEvents(et);
 
 	/* set up the line template */
 	this.lineTemplate = $('line_template');
@@ -74,7 +79,6 @@ var EditorModel = new Class({
 	et.getElements('tbody tr[id!=line_template]').destroy();
 
 	/* define delegated events */
-	et.removeEvents();
 	$(document.body).addEvent(
 	    'click',
 	    function(event, target) {
@@ -515,16 +519,14 @@ var EditorModel = new Class({
 
        Parameters:
          target - The element on which the update triggered
-         this_id - ID of this element
          cls - Tagset class to be updated
          value - New value of the annotation
      */
-    updateAnnotation: function(target, this_id, cls, value) {
-        console.log("setting '"+cls+"' to '"+value+"'");
+    updateAnnotation: function(target, cls, value) {
         var tr = target.getParent('tr');
+        var this_id = this.getRowNumberFromElement(tr);
         var data = this.data[this_id];
-        console.log(this_id);
-        console.log(data);
+        console.log(this_id + ": changing '" + cls + "' to '" + value + "'");
         if (typeof(data) !== "undefined") {
             Object.each(cora.current().tagsets, function(tagset) {
                 tagset.update(tr, data, cls, value);
@@ -762,8 +764,10 @@ var EditorModel = new Class({
 	    async: true,
 	    onSuccess: function(status, text) {
                 this.lineRequestInProgress = false;
-		var lineArray = status['data'];
-		if (Object.getLength(lineArray)==0) {
+                var line,  // lineArray = status['data'],
+                    lineArrayLength = status['data'].length,
+                    data = this.data;
+		if (!lineArrayLength) {
                     if(typeof(onerror) === "function")
                         onerror({
 			    'name': 'EmptyRequest',
@@ -771,11 +775,11 @@ var EditorModel = new Class({
 		        });
                     return;
 		}
-		Object.each(lineArray, function(ln) {
-		    if (this.data[ln.num] == undefined) {
-			this.data[ln.num] = ln;
-		    }
-		}.bind(this));
+                for(var i = 0; i < lineArrayLength; i++) {
+                    line = status['data'][i];
+                    if (typeof(data[line.num]) === "undefined")
+                        data[line.num] = line;
+                }
 		this.requestLines(start, end, fn, onerror);
 	    }.bind(this)
 	}).get({'do': 'getLinesById', 'start_id': range[0], 'end_id': range[1]});

@@ -169,6 +169,17 @@ var Tagset = new Class({
         return;
     },
 
+    /* Function: defineDelegatedEvents
+
+       Define events on the appropriate elements to react to user input.
+
+       Parameters:
+         elem - Parent element to add events to
+     */
+    defineDelegatedEvents: function(elem) {
+        return;
+    },
+
     /* Function: fill
 
        Fill the approriate elements in a <tr> with annotation from a token data

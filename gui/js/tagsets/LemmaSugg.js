@@ -31,6 +31,21 @@ var LemmaSuggTagset = new Class({
     buildTemplate: function(td) {
     },
 
+    /* Function: defineDelegatedEvents
+
+       Define events on the appropriate elements to react to user input.
+
+       Parameters:
+         elem - Parent element to add events to
+     */
+    defineDelegatedEvents: function(elem) {
+        elem.addEvent('click:relay(div.editTableLemmaLink)', function(e, t) {
+            var input = t.getParent('tr').getElement('input.et-input-lemma');
+            if (input !== null)
+                this.openExternalLemmaLink(input.get('value'));
+        }.bind(this));
+    },
+
     /* Function: fill
 
        Fill the approriate elements in a <tr> with annotation from a token data
@@ -41,15 +56,6 @@ var LemmaSuggTagset = new Class({
          data - An object possibly containing annotations ({anno_pos: ...} etc.)
      */
     fill: function(tr, data) {
-        var ref = this;
-        var elem = tr.getElement('.editTable_lemma_sugg div');
-        if (elem !== null) {
-            elem.removeEvents().addEvent('click', function() {
-                var input = this.getParent('tr').getElement('.editTable_lemma input');
-                if (input !== null)
-                    ref.openExternalLemmaLink(input.get('value'));
-            });
-        }
     },
 
     /* Function: openExternalLemmaLink

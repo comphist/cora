@@ -26,6 +26,19 @@ var NormBroadTagset = new Class({
     buildTemplate: function(td) {
     },
 
+    /* Function: defineDelegatedEvents
+
+       Define events on the appropriate elements to react to user input.
+
+       Parameters:
+         elem - Parent element to add events to
+     */
+    defineDelegatedEvents: function(elem) {
+        elem.addEvent('input:relay(input.et-input-norm_broad)', function(e, t) {
+            this.updateAnnotation(t, 'norm_broad', t.get('value'));
+        }.bind(this));
+    },
+
     /* Function: fill
 
        Fill the approriate elements in a <tr> with annotation from a token data
@@ -41,9 +54,6 @@ var NormBroadTagset = new Class({
         if(elem !== null) {
             elem.set('value', data.anno_norm_broad);
             elem.set('placeholder', data.anno_norm);
-            elem.removeEvents().addEvent('input', function() {
-                ref.updateAnnotation(this, data.num, 'norm_broad', this.get('value'));
-            });
         }
     },
 

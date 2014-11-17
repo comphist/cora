@@ -41,6 +41,19 @@ var CommentTagset = new Class({
     buildTemplate: function(td) {
     },
 
+    /* Function: defineDelegatedEvents
+
+       Define events on the appropriate elements to react to user input.
+
+       Parameters:
+         elem - Parent element to add events to
+     */
+    defineDelegatedEvents: function(elem) {
+        elem.addEvent('input:relay(input.et-input-comment)', function(e, t) {
+            this.updateAnnotation(t, 'comment', t.get('value'));
+        }.bind(this));
+    },
+
     /* Function: fill
 
        Fill the approriate elements in a <tr> with annotation from a token data
@@ -55,9 +68,6 @@ var CommentTagset = new Class({
         var elem = tr.getElement('.editTable_comment input');
         if (elem !== null) {
             elem.set('value', data.comment);
-            elem.removeEvents().addEvent('input', function() {
-                ref.updateAnnotation(this, data.num, 'comment', this.get('value'));
-            });
         }
     },
 

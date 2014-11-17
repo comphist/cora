@@ -55,6 +55,20 @@ var POSTagset = new Class({
         }
     },
 
+    /* Function: defineDelegatedEvents
+
+       Define events on the appropriate elements to react to user input.
+
+       Parameters:
+         elem - Parent element to add events to
+     */
+    defineDelegatedEvents: function(elem) {
+        elem.addEvent('change:relay(select.et-select-pos)', function(e, t) {
+            var cls = t.hasClass("et-select-pos-main") ? 'pos' : 'morph';
+            this.updateAnnotation(t, cls, t.getSelected()[0].get('value'));
+        }.bind(this));
+    },
+
     /* Function: fill
 
        Fill the approriate elements in a <tr> with annotation from a token data
@@ -147,7 +161,7 @@ var POSTagset = new Class({
        Fill the POS <select> box.
      */
     fillPOS: function(tr, split, data) {
-        var select = tr.getElement('.editTable_pos select'),
+        var select = tr.getElement('.et-select-pos-main'),
             ref = this;
         if(select === null)
             return;
@@ -159,10 +173,6 @@ var POSTagset = new Class({
             selected: 'selected',
             class: 'lineSuggestedTag'
         }), 'top');
-        select.removeEvents().addEvent('change', function() {
-            ref.updateAnnotation(this, data.num, 'pos',
-                                 this.getSelected()[0].get('value'));
-        });
     },
 
     /* Function: fillMorph
@@ -171,7 +181,7 @@ var POSTagset = new Class({
      */
     fillMorph: function(tr, split, data) {
         var opt,
-            select = tr.getElement('.editTable_morph select'),
+            select = tr.getElement('.et-select-morph'),
             ref = this;
         if(select === null)
             return;
@@ -196,10 +206,6 @@ var POSTagset = new Class({
             selected: 'selected',
             class: 'lineSuggestedTag'
         }), 'top');
-        select.removeEvents().addEvent('change', function() {
-            ref.updateAnnotation(this, data.num, 'morph',
-                                 this.getSelected()[0].get('value'));
-        });
     },
 
     /* Function: _suggForDisplay

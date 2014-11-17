@@ -15,7 +15,10 @@ var LemmaAutocomplete = new Class({
          data - An object containing annotations
      */
     makeNewAutocomplete: function(elem, query, data) {
-        var meio = new Meio.Autocomplete(elem, 'request.php?do='+query,
+        var meio = elem.retrieve('meio');
+        if (meio != null)
+            meio.destroy();
+        meio = new Meio.Autocomplete(elem, 'request.php?do='+query,
                        {
                            delay: 100,
                            urlOptions: {
@@ -32,6 +35,7 @@ var LemmaAutocomplete = new Class({
         meio.addEvent('select', this._acOnSelect.bind({
             callback: this.updateAnnotation, num: data.num
         }));
+        elem.store('meio', meio);
     },
 
     _acFilter: function(text, data) {
@@ -70,7 +74,7 @@ var LemmaAutocomplete = new Class({
 
     _acOnSelect: function(e, v, text, index) {
         var flag = (v.t == "c") ? 1 : 0;
-        this.callback(e.field.node, this.num, 'lemma', text);
-        this.callback(e.field.node, this.num, 'flag_lemma_verified', flag);
+        this.callback(e.field.node, 'lemma', text);
+        this.callback(e.field.node, 'flag_lemma_verified', flag);
     }
 });

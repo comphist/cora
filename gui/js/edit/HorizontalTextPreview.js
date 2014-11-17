@@ -145,10 +145,11 @@ var HorizontalTextPreview = new Class({
 	    }
 	    start++;
 	    for (; end < end_bound; end++) {
-	        if(data[end]!==undefined && this.terminators.contains(data[end].trans))
+	        if(data[end]!==undefined && this.terminators.contains(data[end].trans)) {
+	            end++;
 		    break;
+                }
 	    }
-	    end++;
         } else {
             start = start_bound;
             end   = end_bound;

@@ -27,6 +27,19 @@ var NormTypeTagset = new Class({
     buildTemplate: function(td) {
     },
 
+    /* Function: defineDelegatedEvents
+
+       Define events on the appropriate elements to react to user input.
+
+       Parameters:
+         elem - Parent element to add events to
+     */
+    defineDelegatedEvents: function(elem) {
+        elem.addEvent('change:relay(select.et-select-norm_type)', function(e, t) {
+            this.updateAnnotation(t, 'norm_type', t.getSelected()[0].get('value'));
+        }.bind(this));
+    },
+
     /* Function: fill
 
        Fill the approriate elements in a <tr> with annotation from a token data
@@ -47,15 +60,10 @@ var NormTypeTagset = new Class({
             elem.set('disabled', disabled);
             if(typeof(data.anno_norm_type) !== "undefined")
                 select_value = data.anno_norm_type;
-            opt = elem.getElement("option[value='" + data.anno_norm_type + "']");
+            opt = elem.getElement("option[value='" + select_value + "']");
             if(opt !== null)
                 opt.set('selected', 'selected');
-            this.updateInputError(elem, disabled, data.anno_norm_type);
-
-            elem.removeEvents().addEvent('change', function() {
-                ref.updateAnnotation(this, data.num, 'norm_type',
-                                     this.getSelected()[0].get('value'));
-            });
+            this.updateInputError(elem, disabled, select_value);
         }
     },
 
