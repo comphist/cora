@@ -107,7 +107,7 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
      *
      * @param array $tokens An array of tokens
      *
-     * @return 1) A filtered sequence of tokens to be used of
+     * @return 1) A filtered sequence of tokens to be used for
      * training; and 2) an array of tokens to be used as an additional
      * lexicon.
      */
