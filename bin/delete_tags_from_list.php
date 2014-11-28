@@ -75,6 +75,7 @@ $total = count($taglist);
 try {
   foreach($taglist as $tag) {
     $done++;
+    show_status($done, $total);
     if(strlen($tag) < 1)
       continue;
     // find tag
@@ -97,7 +98,6 @@ try {
       if($execute)
         $stmt_del->execute(array(':id' => $tagid));
     }
-    show_status($done, $total);
   }
 }
 catch (PDOException $ex) {
@@ -109,6 +109,8 @@ catch (PDOException $ex) {
 
 if($execute)
   $dbo->commit();
+
+show_status($total, $total);
 
 // statistics
 echo("\n\n        Not found: {$notfound}\n");
