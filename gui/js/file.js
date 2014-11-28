@@ -668,15 +668,17 @@ cora.fileImporter = {
      */
     startImportProgressTimer: function(fn) {
         var ref = this;
+        var failures = 0;
 	$('tIS_upload').getElement('td.proc').set('class', 'proc proc-success');
 	$('tIS_check').getElement('td.proc').set('class', 'proc proc-running');
-	var import_update = new Request({
+	var import_update = new Request.JSON({
 	    method: 'get',
 	    url: 'request.php?do=getImportStatus',
 	    initialDelay: 1000,
 	    delay: 1000,
 	    limit: 5000,
-	    onComplete: function(response) {
+	    onSuccess: function(response) {
+                failures = 0;
 		var status = ref.updateImportProgress(response);
 		if(status.done != "running") {
 		    import_update.stopTimer();
@@ -684,7 +686,13 @@ cora.fileImporter = {
                     if(typeof(fn) == "function")
                         fn(status);
 		}
-	    }
+	    },
+            onFailure: function(xhr) {
+                if(failures++ > 3) {
+                    gui.showNotice('notice',
+                                   "Keine Verbindung zum Server.");
+                }
+            }
 	});
         import_update.startTimer();
     },
@@ -695,13 +703,12 @@ cora.fileImporter = {
        the server.
 
        Parameters:
-        re_json - The server response as a JSON string
+        process - The server response as an object
 
        Returns:
         A status object {done: ..., message: ..., output: ...}
      */
-    updateImportProgress: function(re_json) {
-        var process;
+    updateImportProgress: function(process) {
 	var status = {'done': 'running'};
 	var get_css_code = function(status_code) {
 	    if(status_code == "begun")        { return "proc-running"; }
@@ -714,16 +721,6 @@ cora.fileImporter = {
                     .addClass(get_css_code(status_code));
         };
 
-        try {
-            process = JSON.decode(re_json);
-        }
-        catch (err) {
-            status.done    = 'error';
-            status.message = "Der Server lieferte eine ungültige Antwort zurück.";
-            status.output  = "Fehler beim Interpretieren der Server-Antwort:\n\t"
-                             + err.message + "\n\nDer Server antwortete:\n" + re_json;
-            return status;
-        }
         update_status(process.status_CHECK,  $('tIS_check'));
         update_status(process.status_XML,    $('tIS_convert'));
         update_status(process.status_TAG,    $('tIS_tag'));

@@ -126,7 +126,7 @@ var gui = {
 
 	objects.each(function (clappable) {
             var clapper, content;
-	    
+
             // add toggle event
             clapper = clappable.getElement('.clapp');
             content = clappable.getElement('div');
@@ -170,7 +170,7 @@ var gui = {
 	    active: true,
 	    events: {
 		'ctrl+s': function(e) {
-		    e.stop(); 
+		    e.stop();
 		    if(cora.editor!==null) {
 			cora.editor.saveData();
 		    }
@@ -215,7 +215,7 @@ var gui = {
 	$('currentfile').set('text', text);
         return this;
     },
-    
+
     /* Function: processServerNotices
 
        Shows the next server notice in the queue, and only shows
@@ -284,7 +284,7 @@ var gui = {
 	for (i = 0; i < contentBox.length; i++) {
             contentBox[i].setStyle("display", "none");
 	}
-	
+
 	// select correct tab button
 	tabButton = $$(".tabButton");
 	for (i = 0; i < tabButton.length; i++) {
@@ -390,13 +390,13 @@ var gui = {
 
        Displays a "loading" spinner.
 
-       Parameters: 
+       Parameters:
         options - An object which may contain the following options:
 	           * message - Message to display (default: none)
                    * noFx    - Display without fade-in (default: false)
     */
-    showSpinner: function(options) {
-	var options = options || {};
+    showSpinner: function(myoptions) {
+	var options = myoptions || {};
 	var spinmsg = options.message || null;
 	var nofx    = options.noFx || false;
 
@@ -561,7 +561,7 @@ var gui = {
         format_string += ", %H:%M";
         return date.format(format_string);
     }
-}
+};
 
 /** Perform initialization. Adds JavaScript events to interactive
  * navigation elements, e.g.\ clappable div containers, and selects
