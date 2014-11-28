@@ -19,4 +19,7 @@ define( "DEFAULT_LANGUAGE",   "de"                        );
 
 define( "EXTERNAL_PARAM_DIR", "/var/lib/cora"             );
 
+/** Cost of the password-encryption algorithm. */
+define( "CORA_PASSWORD_COST", 12 );
+
 ?>

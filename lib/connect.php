@@ -45,7 +45,15 @@
 
    /** Return the hash of a given password string. */
    private function hashPassword($pw) {
-     return md5(sha1($pw));
+     return password_hash($pw, PASSWORD_DEFAULT, ['cost' => CORA_PASSWORD_COST]);
+   }
+
+   /** Verify password.
+    *
+    * Supports both the new password_verify() and the old legacy md5+sha1 method.
+    */
+   public function verifyPassword($pw, $hash) {
+     return password_verify($pw, $hash) || (md5(sha1($pw)) == $hash);
    }
 
    /** Look up username and password.
@@ -55,17 +63,24 @@
     *
     * @return An @em array containing the database entry for the given
     * user. If the username is not valid, or if the password is not
-    * correct, the query will fail, and an empty object is returned.
+    * correct, the query will fail, and false is returned.
     */
-   public function getUserData( $user, $pw ) {
-     $pw_hash = $this->hashPassword($pw);
-     $qs = "SELECT `id`, name, admin, lastactive FROM users"
-       . "  WHERE  name=:name AND password=:pw AND `id`!=1 LIMIT 1";
+   public function getUserData($user, $pw) {
+     $qs = "SELECT `id`, name, password, admin, lastactive FROM users"
+       . "  WHERE  name=:name AND `id`!=1 LIMIT 1";
      $stmt = $this->dbo->prepare($qs);
-     $stmt->bindValue(':name', $user, PDO::PARAM_STR);
-     $stmt->bindValue(':pw', $pw_hash, PDO::PARAM_STR);
-     $stmt->execute();
-     return $stmt->fetch(PDO::FETCH_ASSOC);
+     $stmt->execute(array(':name' => $user));
+     $data = $stmt->fetch(PDO::FETCH_ASSOC);
+     if($data && $this->verifyPassword($pw, $data['password'])) {
+       if (password_needs_rehash($data['password'],
+                                 PASSWORD_DEFAULT,
+                                 ['cost' => CORA_PASSWORD_COST])) {
+         $this->changePassword($data['id'], $pw);
+       }
+       return $data;
+     } else {
+       return false;
+     }
    }
 
    /** Get user info by id.
