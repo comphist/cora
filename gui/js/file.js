@@ -584,14 +584,22 @@ cora.fileImporter = {
 
         myform.getElement('input[type="submit"]')
               .addEvent('click', function(e) {
-                  var file = myform.getElement('input[name="'+fin+'"]')
+                  var input = myform.getElement('input[name="'+fin+'"]')
                       .get('value');
-                  if(!file || file.length === 0) {
+                  if(!input || input.length === 0) {
                       myform.getElements('p.error_text_import').show();
                       e.stop();
-                  }
-                  else {
+                  } else {
                       myform.getElements('p.error_text').hide();
+                  }
+                  if (trans) {
+                      input = myform.getElement('input[name="transName"]');
+                      if (!input.get('value')) {
+                          input.addClass("input_error");
+                          e.stop();
+                      } else {
+                          input.removeClass("input_error");
+                      }
                   }
               });
     },
@@ -723,7 +731,6 @@ cora.fileImporter = {
 
         update_status(process.status_CHECK,  $('tIS_check'));
         update_status(process.status_XML,    $('tIS_convert'));
-        update_status(process.status_TAG,    $('tIS_tag'));
         update_status(process.status_IMPORT, $('tIS_import'));
 	if(process.progress != null) {
 	    this.transImportProgressBar.set(process.progress * 100.0);
@@ -750,7 +757,6 @@ cora.fileImporter = {
 	$('tIS_upload').getElement('td.proc').set('class', 'proc proc-running');
 	$('tIS_check').getElement('td.proc').set('class', 'proc');
 	$('tIS_convert').getElement('td.proc').set('class', 'proc');
-	$('tIS_tag').getElement('td.proc').set('class', 'proc');
 	$('tIS_import').getElement('td.proc').set('class', 'proc');
 	$$('.tIS_cb').set('disabled', true);
 	this.transImportProgressBar.set(0);
@@ -967,7 +973,8 @@ cora.fileManager = {
         }
         // filename
         tr.getElement('td.ftr-id').set('text', file.id);
-        tr.getElement('td.ftr-sigle a').set('text', '['+file.sigle+']');
+        tr.getElement('td.ftr-sigle a').set('text',
+                                            file.sigle ? '['+file.sigle+']' : '');
         tr.getElement('td.ftr-filename a').set('text', file.fullname);
         // changer & creator info
         tr.getElement('td.ftr-changed-at')

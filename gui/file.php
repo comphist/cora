@@ -28,25 +28,21 @@
           </tr>
           <tr id="tIS_check">
             <td class="proc"><span class="oi oi-proc-success oi-shadow" data-glyph="check" aria-hidden="true"></span><span class="oi oi-proc-error oi-shadow" data-glyph="x" aria-hidden="true"></span></td>
-            <td>Transkription prüfen</td>
+            <td>Gültigkeit prüfen</td>
           </tr>
           <tr id="tIS_convert">
             <td class="proc"><span class="oi oi-proc-success oi-shadow" data-glyph="check" aria-hidden="true"></span><span class="oi oi-proc-error oi-shadow" data-glyph="x" aria-hidden="true"></span></td>
-            <td>Transkription analysieren</td>
-          </tr>
-          <tr id="tIS_tag">
-            <td class="proc"><span class="oi oi-proc-success oi-shadow" data-glyph="check" aria-hidden="true"></span><span class="oi oi-proc-error oi-shadow" data-glyph="x" aria-hidden="true"></span></td>
-            <td>Automatisch vorannotieren</td>
+            <td>Umwandeln in CorA-XML</td>
           </tr>
           <tr id="tIS_import">
             <td class="proc"><span class="oi oi-proc-success oi-shadow" data-glyph="check" aria-hidden="true"></span><span class="oi oi-proc-error oi-shadow" data-glyph="x" aria-hidden="true"></span></td>
-            <td>Importieren abschließen</td>
+            <td>Importieren</td>
           </tr>
         </table>
         <div id="tIS_progress"></div>
       </div>
     </div>
-   
+
     <div class="filegroup clappable clapp-modern" id="fileGroup">
       <h4 class="clapp"><span class="projectname">Projektname</span></h4>
         <div>
