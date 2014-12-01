@@ -457,9 +457,7 @@ button {
     cursor: pointer;
     padding-left: 6px; }
   .flexrow span.flexrow-add-btn {
-    color: green;
-    position: relative;
-    top: 4px; }
+    color: green; }
     .flexrow span.flexrow-add-btn:hover {
       color: #40c040; }
   .flexrow span.flexrow-del-btn {
@@ -757,6 +755,12 @@ div#pagePanelBottom {
 
 div#aa_tagger_select {
   padding: .5em 1em 0 1.5em; }
+
+/* Document search dialog */
+li.editSearchCriterion {
+  padding-bottom: 4px; }
+  li.editSearchCriterion select.editSearchMatch {
+    width: 9em; }
 
 /***************************************************************************/
 /***** SETTINGS PANEL ******************************************************/

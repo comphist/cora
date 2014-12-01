@@ -7,6 +7,8 @@ var LemmaSuggTagset = new Class({
     Extends: Tagset,
     Implements: LemmaAutocomplete,  // for splitting the external IDs
 
+    classname: 'Lemma-Vorschlag',
+    searchable: false,
     baseURL: "http://www.woerterbuchnetz.de/DWB",
     windowTarget: "coraExternalLemmaLink",
 

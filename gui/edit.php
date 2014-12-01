@@ -189,21 +189,10 @@
   </div>
 
   <ul>
-    <li id="editSearchCriterionTemplate">
-      <select class="editSearchField" size="1">
-        <option value="token_all">Token</option>
-        <option value="token_trans">Token (Trans)</option>
-        <option value="...">...</option>
-        // This is dependent on the linked tagsets...
-      </select>
-      <select class="editSearchMatch" size="1">
-        <option value="eq">ist gleich</option>
-        <option value="in">enthält</option>
-        <option value="regex">matcht RegEx</option>
-        <option value="...">...</option>
-        // This is dependent on the selection in "editSearchField"
-      </select>
-      <input type="text" name="editSearchText[]" class="editSearchText" />
+    <li id="editSearchCriterionTemplate" class="editSearchCriterion">
+      <select class="editSearchField" size="1"></select>
+      <select class="editSearchMatch" size="1"></select>
+      <input type="text" name="editSearchText" class="editSearchText" />
     </li>
   </ul>
 </div>

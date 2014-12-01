@@ -329,7 +329,7 @@ class CoraSessionHandler {
     fclose($logfile);
     return true;
   }
-  
+
   /** Wraps DBInterface::importTagList() */
   public function importTagList($taglist, $tagsetname){
     if(!$_SESSION['admin']) {
@@ -338,7 +338,7 @@ class CoraSessionHandler {
     return $this->db->importTagList($taglist, $tagsetname);
   }
 
-  /** Wraps DBInterface::deleteFile() */	
+  /** Wraps DBInterface::deleteFile() */
   public function deleteFile($fileid){
     if(!$_SESSION['admin'] && !$this->db->isAllowedToDeleteFile($fileid, $_SESSION['user'])) {
       return array("success" => false, "error_msg" => "Keine Berechtigung.");
@@ -352,7 +352,7 @@ class CoraSessionHandler {
     }
   }
 
-  /** Wraps DBInterface::lockFile() */	
+  /** Wraps DBInterface::lockFile() */
   public function lockFile( $fileid ) {
     if(!$_SESSION['admin'] && !$this->db->isAllowedToOpenFile($fileid, $_SESSION['user'])) {
       return array('success' => false);
@@ -361,7 +361,7 @@ class CoraSessionHandler {
     return $this->db->lockFile( $fileid , $_SESSION['user']);
   }
 
-  /** Wraps DBInterface::unlockFile(), unset the session data of the file */ 
+  /** Wraps DBInterface::unlockFile(), unset the session data of the file */
   public function unlockFile( $fileid ) {
     $force = (bool) $_SESSION["admin"]; // admins can unlock any file
     $ans = $this->db->unlockFile($fileid, $_SESSION['user'], $force);
@@ -391,7 +391,7 @@ class CoraSessionHandler {
    * @return The page number where the line appears, taking
    * 	   into consideration the current user settings,
    *	   or 0 if there is only one page at all
-   */  
+   */
   public function calculateEditorPage($line){
     $uniquelines = $_SESSION['noPageLines'] - $_SESSION['contextLines'];
     if($line>$uniquelines) // if there are more lines than fit on a single page ...
@@ -400,8 +400,8 @@ class CoraSessionHandler {
       $page = 0;
     return $page;
   }
-	  
-  /** Wraps DBInterface::openFile(), set the session data for the file */    
+
+  /** Wraps DBInterface::openFile(), set the session data for the file */
   public function openFile( $fileid ){
     if(!$_SESSION['admin'] && !$this->db->isAllowedToOpenFile($fileid, $_SESSION['user'])) {
       return array('success' => false);
@@ -414,8 +414,8 @@ class CoraSessionHandler {
       $lock['lastPage'] = $this->calculateEditorPage($lock['lastEditedRow']);
       $lock['maxLinesNo'] = $this->getMaxLinesNo();
     }
-    
-    return $lock;		
+
+    return $lock;
   }
 
   /** Wraps Exporter::export() */
@@ -433,7 +433,7 @@ class CoraSessionHandler {
     $this->exporter->export($fileid, $format, $output);
     return true;
   }
-	
+
   /** Wraps DBInterface::getProjectsAndFiles() */
   public function getProjectsAndFiles(){
     $this->db->releaseOldLocks($this->timeout);
@@ -518,11 +518,11 @@ class CoraSessionHandler {
   /** Wraps DBInterface::getLines(), calculating start line and limit first */
   public function getLines($page){
     if($page==0) $page++;
-    
+
     $end = $page*($_SESSION['noPageLines']-$_SESSION['contextLines'])+$_SESSION['contextLines'];
     $start = $end - $_SESSION['noPageLines'];
     $lim = $_SESSION['noPageLines'];
-    
+
     return $this->db->getLines($_SESSION['currentFileId'],$start,$lim);
   }
 
@@ -531,13 +531,17 @@ class CoraSessionHandler {
     $lim = $end - $start;
     return $this->db->getLines($_SESSION['currentFileId'],$start,$lim);
   }
-  
+
   /** Get the total number of lines for the currently open document. */
   public function getMaxLinesNo(){
-    $anz = $this->db->getMaxLinesNo($_SESSION['currentFileId']);
-    return $anz;
+    return $this->db->getMaxLinesNo($_SESSION['currentFileId']);
   }
-  
+
+  /** Perform a search query on the currently opened document. */
+  public function searchDocument($query) {
+    return $this->db->searchDocument($_SESSION['currentFileId'], $query);
+  }
+
   /** Save file data to the database.
    *
    * Calls DBInterface::saveLines().
@@ -815,7 +819,7 @@ class CoraSessionHandler {
    * @param string $user The username to be used for logging in
    * @param string $pw   The corresponding password
    */
-  public function login($user, $pw) {	
+  public function login($user, $pw) {
     $data = $this->db->getUserData($user, $pw);
     if ($data) {  // login successful
       $_SESSION["loggedIn"] = true;

@@ -4,6 +4,7 @@
  */
 var NormTypeTagset = new Class({
     Extends: Tagset,
+    classname: 'Modernisierungs-Typ',
     optgroup: null,
 
     /* Constructor: Tagset

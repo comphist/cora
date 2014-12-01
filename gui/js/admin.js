@@ -53,7 +53,7 @@ cora.users = {
     },
 
     /* Function: createUser
-       
+
        Sends a server request to create a new user.
 
        Parameters:
@@ -406,7 +406,7 @@ cora.userEditor = {
     /* Function: saveUserSettings
 
        Sends a server request to save settings for a user.
-       
+
        Parameters:
         uid - ID of the user
         div - Content <div> containing the settings
@@ -433,7 +433,7 @@ cora.userEditor = {
     /* Function: changePassword
 
        Displays a dialog to change the password for a user.
-       
+
        Parameters:
          uid - ID of the user
     */
@@ -476,9 +476,9 @@ cora.userEditor = {
                      ]
         }).open();
     },
-    
+
     /* Function: refreshUserTable
-       
+
        Renders the table containing the user data.
      */
     refreshUserTable: function() {
@@ -734,6 +734,8 @@ cora.annotatorEditor = {
             thisopt.getElement('input.annotatorOptValue').set('value', value);
             this.flexrow.grab(thisopt);
         }.bind(this));
+        if(this.flexrow.entries < 1)
+            this.flexrow.grabNewRow();
         /* dialog window */
         new mBox.Modal({
             title: "Optionen für Tagger "+tid,
@@ -1062,7 +1064,7 @@ cora.projectEditor = {
     },
 
     /* Function: refreshProjectTable
-       
+
        Renders the table containing the project data.
      */
     refreshProjectTable: function() {
@@ -1172,7 +1174,7 @@ cora.projectEditor = {
     /* Function: saveProjectSettings
 
        Sends a server request to save settings for a project.
-       
+
        Parameters:
         pid - ID of the project
         div - Content <div> containing the settings
@@ -1333,7 +1335,7 @@ cora.tagsetEditor = {
 		    textarea += err.message;
 		    error = true;
 		}
-		
+
 		if(error){
 		    title = "Tagset-Import fehlgeschlagen";
 		}
@@ -1350,8 +1352,8 @@ cora.tagsetEditor = {
 		    for(var i=0;i<response.errors.length;i++){
 			textarea += response.errors[i] + "\n";
 		    }
-		} 
-		else { 
+		}
+		else {
 		    title = "Tagset-Import erfolgreich";
 		    message = "Das Tagset wurde erfolgreich hinzugefügt.";
 		    if((typeof response.warnings !== "undefined") && response.warnings.length>0) {

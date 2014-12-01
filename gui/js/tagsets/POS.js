@@ -5,6 +5,7 @@
 var POSTagset = new Class({
     Extends: Tagset,
     Implements: SplitClassTagset,
+    classname: 'POS+Morphologie-Tag',
     optgroup: null,
 
     emptyElement: null,

@@ -250,6 +250,16 @@
      return $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
    }
 
+   /** Perform a search within a document.
+    *
+    * @param string $id ID of the file to search
+    * @param array $query Array of search criteria, in the form of
+    *                     {'field': ..., 'match': ..., 'value': ...}
+    */
+   public function searchDocument($id, $query) {
+     return $query;  // TODO
+   }
+
    /** Updates the "last active" timestamp for a user.
     *
     * @param string  $userid   ID of the user to be updated

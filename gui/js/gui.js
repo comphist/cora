@@ -13,7 +13,7 @@
 var FlexRowList = new Class({
     container: null,
     rowTemplate: null,
-    rowAdd: null,
+    entries: 0,
 
     /* Function: initialize
 
@@ -27,19 +27,8 @@ var FlexRowList = new Class({
         this.container = container.empty().addClass("flexrow");
         this.rowTemplate = template.clone().addClass("flexrow-content");
         this.rowTemplate.grab(this._makeDeleteButton());
-        this._makeAddRow();
+        this.rowTemplate.grab(this._makeAddButton());
         this._addContainerEvents();
-    },
-
-    _makeAddRow: function() {
-        var li = new Element('li', {'class': "flexrow-add"});
-        var span = new Element('span',
-                               {'class': "oi oi-shadow flexrow-add-btn",
-                                'data-glyph': "plus",
-                                'aria-hidden': "true"});
-        this.rowAdd = li.grab(span);
-        this.container.grab(this.rowAdd);
-        return this;
     },
 
     _addContainerEvents: function() {
@@ -50,17 +39,24 @@ var FlexRowList = new Class({
                 if(target.hasClass("flexrow-add-btn")) {
                     this.grabNewRow();
                 } else if(target.hasClass("flexrow-del-btn")) {
-                    target.getParent('li').destroy();
+                    this.destroy(target.getParent('li'));
                 }
             }.bind(this)
         );
         return this;
     },
 
+    _makeAddButton: function() {
+        return new Element('span',
+                           {'class': "oi oi-shadow flexrow-add-btn",
+                            'data-glyph': "plus",
+                            'aria-hidden': "true"});
+    },
+
     _makeDeleteButton: function() {
         return new Element('span',
                            {'class': "oi oi-shadow flexrow-del-btn",
-                            'data-glyph': "delete",
+                            'data-glyph': "minus",
                             'aria-hidden': "true"});
     },
 
@@ -69,7 +65,8 @@ var FlexRowList = new Class({
        Add a new row cloned from the row template to this element.
      */
     grabNewRow: function() {
-        this.rowTemplate.clone().inject(this.rowAdd, 'before');
+        this.rowTemplate.clone().inject(this.container, 'bottom');
+        this.entries++;
         return this;
     },
 
@@ -78,7 +75,8 @@ var FlexRowList = new Class({
        Add a specific row to the bottom of this container.
      */
     grab: function(li) {
-        li.addClass("flexrow-content").inject(this.rowAdd, 'before');
+        li.addClass("flexrow-content").inject(this.container, 'bottom');
+        this.entries++;
         return this;
     },
 
@@ -90,8 +88,21 @@ var FlexRowList = new Class({
         return this.container.getElements('li.flexrow-content');
     },
 
+    /* Function: destroy
+
+       Destroys a specific row in the container.  Checks if this is the last row
+       remaining, and inserts an empty row if necessary.
+     */
+    destroy: function(li) {
+        li.destroy();
+        this.entries--;
+        if(this.entries < 1)
+            this.grabNewRow();
+    },
+
     empty: function() {
         this.container.getElements('li.flexrow-content').destroy();
+        this.entries = 0;
         return this;
     }
 

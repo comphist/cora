@@ -4,6 +4,7 @@
  */
 var LemmaPOSTagset = new Class({
     Extends: Tagset,
+    classname: 'Lemma-Tag',
     optgroup: null,
 
     /* Constructor: Tagset

@@ -5,6 +5,7 @@
 var LemmaTagset = new Class({
     Extends: Tagset,
     Implements: LemmaAutocomplete,
+    classname: "Lemmatisierung",
 
     /* Constructor: Tagset
 

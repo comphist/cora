@@ -5,6 +5,7 @@
  */
 var CommentTagset = new Class({
     Extends: Tagset,
+    classname: 'Kommentar',
 
     /* Constructor: Tagset
 

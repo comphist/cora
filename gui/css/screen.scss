@@ -572,8 +572,6 @@ button {
     span.flexrow-add-btn {
         @extend %flexrow-btn;
         color: rgb(0, 128, 0);
-        position: relative;
-        top: 4px;
         &:hover {
             color: rgb(64, 192, 64);
         }
@@ -976,6 +974,16 @@ div#pagePanelBottom {
 
 div#aa_tagger_select {
     padding: .5em 1em 0 1.5em;
+}
+
+/* Document search dialog */
+
+li.editSearchCriterion {
+    padding-bottom: 4px;
+
+    select.editSearchMatch {
+        width: 9em;
+    }
 }
 
 /***************************************************************************/

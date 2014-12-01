@@ -48,7 +48,9 @@ var Tagset = new Class({
     longname: null,
     set_type: null,
     class: null,
-    split_class: false,
+    classname: 'Tagset',  /**< display name for this tagset class */
+    searchable: true,  /**< can user search for annotations in this tagset? */
+    split_class: false,  /**< is this tagset displayed as two? */
 
     tags: [],
     processed: false,

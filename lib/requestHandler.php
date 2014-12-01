@@ -111,7 +111,7 @@ class RequestHandler {
    */
   public function handleJSONRequest($get, $post) {
     // any request causes the user issuing it to be marked as active
-    $this->sh->updateLastactive(); 
+    $this->sh->updateLastactive();
 
     try {
       $status = $this->performJSONRequest($get, $post);
@@ -179,7 +179,7 @@ class RequestHandler {
 
       case "importTransFile":
 	return $this->importTranscription($post);
-	
+
       default:
 	return array("errors" => array("Unknown POST request."));
       }
@@ -190,7 +190,7 @@ class RequestHandler {
       switch($get["do"]) {
       case "keepalive":
         return $this->sh->keepalive();
-	
+
       case "getLinesById":
 	$data = $this->sh->getLinesById($get['start_id'], $get['end_id']);
 	return array('success' => true, 'data' => $data);
@@ -223,10 +223,10 @@ class RequestHandler {
 	return $this->sh->createUser($post["username"],
 				     $post["password"],
 				     false);
-	
+
       case "deleteUser":
 	return $this->sh->deleteUser($post["id"]);
-	
+
       case "toggleAdmin":
 	return $this->sh->toggleAdminStatus($post["id"]);
 
@@ -245,20 +245,20 @@ class RequestHandler {
 
       case "lockFile":
 	return $this->sh->lockFile($get["fileid"]);
-    
+
       case "unlockFile":
 	return $this->sh->unlockFile($get["fileid"]);
-	    
+
       case "openFile":
 	return $this->sh->openFile($get['fileid']);
-	    
+
       case "deleteFile":
 	return $this->sh->deleteFile($post["file_id"]);
 
       case "saveMetadata":
 	return $this->sh->saveMetadata($post);
 
-      case "createProject": 
+      case "createProject":
 	return $this->sh->createProject($get['project_name']);
 
       case "deleteProject":
@@ -267,21 +267,21 @@ class RequestHandler {
       case "saveData":
 	return $this->sh->saveData($get['lastEditedRow'],
 				   json_decode(file_get_contents("php://input"), true));
-      
+
       case "saveEditorUserSettings":
 	$status = $this->sh->setUserSettings($get['noPageLines'],$get['contextLines']);
 	return array('success' => $status);
-	
+
       case "setUserEditorSetting":
 	$status = $this->sh->setUserSetting($get['name'],$get['value']);
 	return array('success' => $status);
-	
+
       case "editToken":
 	return $this->sh->editToken($get['token_id'], $get['value']);
 
       case "deleteToken":
 	return $this->sh->deleteToken($get['token_id']);
-      
+
       case "addToken":
 	return $this->sh->addToken($get['token_id'], $get['value']);
 
@@ -291,7 +291,10 @@ class RequestHandler {
 
       case "performAnnotation":
 	return $this->sh->performAnnotation($get['tagger'], $get['action']);
-	
+
+      case "search":
+        return $this->sh->searchDocument($get);
+
       case "adminCreateNotice":
 	return $this->sh->createNotice($post);
 
@@ -317,7 +320,7 @@ class RequestHandler {
 	return array("errors" => array("Unknown GET request."));
       }
     }
-    
+
     return array("errors" => array("Unknown request."));
   }
 
@@ -382,7 +385,7 @@ class RequestHandler {
     $options['tagsets'] = $post['linktagsets'];
     $options['project'] = $post['project'];
     $options['logfile'] = $tmpfname;
-    
+
     try {
       $success = $this->sh->importTranscriptionFile($data,$options);
       if($success) {
@@ -397,7 +400,7 @@ class RequestHandler {
       fwrite($logfile, $e->getMessage() . "\n");
       fclose($logfile);
     }
-    
+
     @session_start();
     $_SESSION["importInProgress"] = false;
     exit(); // we don't return because there's no client connection left

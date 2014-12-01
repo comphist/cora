@@ -11,11 +11,13 @@ var FlagHandler = new Class({
     flags: {
         'flag_general_error': {
             elem: 'div.editTableError',
-            class: 'editTableErrorChecked'
+            class: 'editTableErrorChecked',
+            displayname: "Fehler-Markierung"
         },
         'flag_lemma_verified': {
             elem: 'div.editTableLemma',
-            class: 'editTableLemmaChecked'
+            class: 'editTableLemmaChecked',
+            displayname: "Lemma-Markierung"
         }
     },
 

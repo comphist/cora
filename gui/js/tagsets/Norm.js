@@ -4,6 +4,7 @@
  */
 var NormTagset = new Class({
     Extends: Tagset,
+    classname: 'Normalisierung',
 
     /* Constructor: Tagset
 

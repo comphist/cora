@@ -4,6 +4,7 @@
  */
 var NormBroadTagset = new Class({
     Extends: Tagset,
+    classname: 'Modernisierung',
 
     /* Constructor: Tagset
 
