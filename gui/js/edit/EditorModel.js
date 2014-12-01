@@ -527,7 +527,6 @@ var EditorModel = new Class({
         var tr = target.getParent('tr');
         var this_id = this.getRowNumberFromElement(tr);
         var data = this.data[this_id];
-        console.log(this_id + ": changing '" + cls + "' to '" + value + "'");
         if (typeof(data) !== "undefined") {
             Object.each(cora.current().tagsets, function(tagset) {
                 tagset.update(tr, data, cls, value);

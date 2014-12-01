@@ -163,7 +163,7 @@ var TokenSearcher = new Class({
             'url': 'request.php?do=search',
             'data': {'conditions': data, 'operator': operator},
             onSuccess: function(status, text) {
-                console.log(status);
+                // console.log(status);
             }
         }).get();
     }
