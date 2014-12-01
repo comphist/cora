@@ -314,6 +314,7 @@ var EditorModel = new Class({
                          sigle: sigle,
                          fullname: name}
                     ));
+                    this.header = header;
                     gui.showNotice("ok", "Metadaten erfolgreich geändert.");
                 } else {
                     gui.showNotice("error", "Metadaten konnten nicht geändert werden.");
