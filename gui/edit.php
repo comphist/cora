@@ -192,7 +192,7 @@
     <li id="editSearchCriterionTemplate" class="editSearchCriterion">
       <select class="editSearchField" size="1"></select>
       <select class="editSearchMatch" size="1"></select>
-      <input type="text" name="editSearchText" class="editSearchText" />
+      <input type="text" name="editSearchText" class="editSearchText" placeholder="(leer)" />
     </li>
   </ul>
 </div>

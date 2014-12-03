@@ -12,7 +12,7 @@ class DocumentAccessViolation extends Exception {
 
 /** Handles document access that is potentially used by several
  * operations (e.g., reading and writing).
- * 
+ *
  * More specialized classes will extend this class.
  */
 class DocumentAccessor {

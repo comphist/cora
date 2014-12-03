@@ -18,6 +18,7 @@
  require_once 'connect/DocumentWriter.php';
  require_once 'connect/DocumentCreator.php';
  require_once 'connect/ProjectAccessor.php';
+ require_once 'connect/SearchQuery.php';
 
  /** An interface for application-specific database requests.
   *
@@ -257,7 +258,17 @@
     *                     {'field': ..., 'match': ..., 'value': ...}
     */
    public function searchDocument($id, $query) {
-     return $query;  // TODO
+     $sq = new SearchQuery($this, $id);
+     $sq->setOperator($query['operator']);
+     foreach($query['conditions'] as $c) {
+       $sq->addCondition($c['field'], $c['match'], $c['value']);
+     }
+     if($stmt = $sq->execute($this->dbo)) {
+       // return array('query' => $sq->buildQueryString(),
+       //              'values' => $sq->condition_values,
+       //              'results' => $stmt->fetchAll(PDO::FETCH_COLUMN));
+       return array('results' => $stmt->fetchAll(PDO::FETCH_COLUMN));
+     }
    }
 
    /** Updates the "last active" timestamp for a user.

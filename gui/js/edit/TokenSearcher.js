@@ -75,6 +75,8 @@ var TokenSearcher = new Class({
             function(event, target) {
                 if(target.hasClass('editSearchField')) {
                     this._fillSearchMatcher(target);
+                } else if(target.hasClass('editSearchMatch')) {
+                    this._setInputField(target);
                 }
             }.bind(this)
         );
@@ -91,15 +93,18 @@ var TokenSearcher = new Class({
         };
         if(cls === 'flags') {
             return new Elements([
-                makeOption('isset', "ist gesetzt"),
-                makeOption('isnotset', "ist nicht gesetzt")
+                makeOption('set', "ist gesetzt"),
+                makeOption('nset', "ist nicht gesetzt")
             ]);
         }
         return new Elements([
-            makeOption('eq', "ist gleich"),
+            makeOption('eq', "ist"),
+            makeOption('neq', "ist nicht"),
+            makeOption('in', "enthält"),
+            makeOption('nin', "enthält nicht"),
             makeOption('bgn', "beginnt mit"),
             makeOption('end', "endet auf"),
-            makeOption('in', "enthält")
+            makeOption('regex', "matcht RegEx")
         ]);
     },
 
@@ -111,17 +116,28 @@ var TokenSearcher = new Class({
     _fillSearchMatcher: function(fieldSelector) {
         var parent = fieldSelector.getParent('li');
         var matchSelector = parent.getElement('select.editSearchMatch');
-        var textInput = parent.getElement('input.editSearchText');
         var selected = fieldSelector.getSelected()[0].get('value');
         var matchClass = 'default';
         if (selected.substr(0, 5) == "flag_")
             matchClass = 'flags';
         if(matchSelector.retrieve('matchClass') !== matchClass) {
             this._makeSearchOptions(matchClass).inject(matchSelector.empty());
+            this._setInputField(matchSelector);
             matchSelector.store('matchClass', matchClass);
-            textInput.setStyle('visibility',
-                               (matchClass === 'flags') ? 'hidden' : 'visible');
         }
+    },
+
+    /* Function: _setInputField
+
+       Shows/hides the text input depending on the selected match criterion.
+     */
+    _setInputField: function(matchSelector) {
+        var parent = matchSelector.getParent('li');
+        var textInput = parent.getElement('input.editSearchText');
+        var valueless = ['set', 'nset'];
+        var selected = matchSelector.getSelected()[0].get('value');
+        textInput.setStyle('visibility',
+                           (valueless.contains(selected)) ? 'hidden' : 'visible');
     },
 
     /* Function: open
@@ -159,11 +175,11 @@ var TokenSearcher = new Class({
                 'value': li.getElement('input.editSearchText').get('value')
             });
         });
-        new Request.JSON({
+        new Request({
             'url': 'request.php?do=search',
             'data': {'conditions': data, 'operator': operator},
             onSuccess: function(status, text) {
-                // console.log(status);
+                console.log(status);
             }
         }).get();
     }

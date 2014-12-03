@@ -304,7 +304,7 @@ class DocumentWriter extends DocumentAccessor {
   private function saveLinesToDatabase($lines) {
     foreach($lines as $line) {
       $this->temporary__renameLineKeys($line);
-      
+
       $id = $line['id'];
       $annotations = $this->getSelectedAnnotationsByClass($id);
       foreach($line as $property => $value) {
@@ -319,7 +319,7 @@ class DocumentWriter extends DocumentAccessor {
 	else if(substr($property, 0, 5) === "flag_") {
 	  $flagtype = str_replace("_", " ", substr($property, 5));
 	  $this->saveFlag($id, $flagtype, $value);
-	}	
+	}
 	// save comment
 	else if($property === "comment") {
 	  $this->saveComment($id, $value);
