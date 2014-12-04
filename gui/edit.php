@@ -125,7 +125,7 @@
           <option value="all">alle</option>
           <option value="any">mind. eine</option>
         </select>
-      diese(r) Bedingungen erfüllen:
+      <span class="eso-det-agr">diese</span> Bedingungen erfüllen:
       <ul class="flexrow-container"></ul>
     </p>
   </div>

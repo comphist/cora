@@ -16,7 +16,6 @@ var TokenSearcher = new Class({
         this.flexrow = new FlexRowList(content.getElement('.flexrow-container'),
                                        this.templateListElem);
         this.reset();
-        this._initializeEvents();
         this.mbox = new mBox.Modal({
 	    content: content,
 	    title: 'Suchen',
@@ -34,6 +33,7 @@ var TokenSearcher = new Class({
 		}
 	    ]
 	});
+        this._initializeEvents();
     },
 
     _initializeTemplate: function() {
@@ -79,6 +79,15 @@ var TokenSearcher = new Class({
                     this._setInputField(target);
                 }
             }.bind(this)
+        );
+        // silly agreement hack ...
+        this.mbox.content.addEvent(
+            'change:relay(select.editSearchOperator)',
+            function(event, target) {
+                var span = target.getParent('p').getElement('span.eso-det-agr');
+                var selected = target.getSelected()[0].get('value');
+                span.set('text', (selected === "any") ? 'dieser' : 'diese');
+            }
         );
     },
 

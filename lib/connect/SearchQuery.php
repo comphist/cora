@@ -40,14 +40,22 @@ class SearchQuery {
   }
 
   public function buildQueryString() {
-    $sqlstr = "SELECT modern.id FROM modern "
-            . "  LEFT JOIN token ON token.id=modern.tok_id ";
+    // select all moderns in correct order, joining other info if required
+    $innersql = "SELECT mn.* FROM modern mn"
+              . "  LEFT JOIN token ON token.id=mn.tok_id ";
     if($this->join_comment) {
-      $sqlstr .= "LEFT JOIN comment ON comment.subtok_id=modern.id "
-               . "                 AND comment.comment_type='C' ";
+      $innersql .= "LEFT JOIN comment ON comment.subtok_id=mn.id "
+                 . "                 AND comment.comment_type='C' ";
     }
-    $sqlstr .= "      WHERE token.text_id={$this->fileid} AND ("
-             . implode($this->operator, $this->condition_strings) . ")";
+    $innersql .= "      WHERE token.text_id={$this->fileid}"
+               . "   ORDER BY token.ordnr ASC, mn.id ASC";
+    // wrap in super-queries that assign row numbers to the moderns
+    $sqlstr = "SELECT m.id, m.num FROM "
+            . "  (SELECT q.*, @rownum := @rownum + 1 AS num FROM ({$innersql}) q"
+            . "     JOIN (SELECT @rownum := -1) r WHERE q.id IS NOT NULL"
+            . "  ) m";
+    // add conditions
+    $sqlstr .= " WHERE " . implode($this->operator, $this->condition_strings);
     return $sqlstr;
   }
 
@@ -58,6 +66,11 @@ class SearchQuery {
    * @param string $value The value to search for
    */
   public function addCondition($field, $match, $value) {
+    // empty value? -> existential query
+    if(strlen($value) === 0) {
+      $match = ($match === "eq") ? "nset" : "set";
+    }
+    // delegate
     if(substr($field, 0, 6) === "token_") {
       $this->addTokenCondition($field, $match, $value);
     } else if(substr($field, 0, 5) === "flag_") {
@@ -70,15 +83,18 @@ class SearchQuery {
   }
 
   protected function addTokenCondition($field, $match, $value) {
-    list($operand, $newvalue) = $this->getOperandAndValue($match, $value);
+    list($operand, $value) = $this->getOperandValue($match, $value);
     if($field === "token_trans") {
-      $this->condition_strings[] = "modern.trans{$operand}?";
-      $this->condition_values[] = $newvalue;
+      $this->condition_strings[] = "m.trans{$operand}?";
+      $this->condition_values[] = $value;
     } else if ($field === "token_all") {
-      $this->condition_strings[] = "(modern.trans{$operand}? "
-                                 . " OR modern.utf{$operand}? "
-                                 . " OR modern.ascii{$operand}?)";
-      array_push($this->condition_values, $newvalue, $newvalue, $newvalue);
+      // substr(...) matcht neq, nin, nset
+      $joiner = (substr($match, 0, 1) === "n") ? " AND " : " OR ";
+      $layers = array("(m.trans{$operand}?",
+                      "m.utf{$operand}?",
+                      "m.ascii{$operand}?)");
+      $this->condition_strings[] = implode($joiner, $layers);
+      array_push($this->condition_values, $value, $value, $value);
     }
   }
 
@@ -88,46 +104,83 @@ class SearchQuery {
       $errorid = $this->flags[$flagtype];
       $flagvalue = ($match === "set") ? 'EXISTS' : 'NOT EXISTS';
       $sqlstr = "{$flagvalue} (SELECT * FROM mod2error f WHERE"
-              . "              f.mod_id=modern.id AND f.error_id={$errorid})";
+              . "              f.mod_id=m.id AND f.error_id={$errorid})";
       $this->condition_strings[] = $sqlstr;
     }
   }
 
   protected function addCommentCondition($field, $match, $value) {
     $this->join_comment = true;
-    list($operand, $newvalue) = $this->getOperandAndValue($match, $value);
-    $this->condition_strings[] = "comment.value{$operand}?";
-    $this->condition_values[] = $newvalue;
+    if($match === "set") {
+      $this->condition_strings[] = "(comment.value IS NOT NULL AND comment.value!='')";
+    } else if($match === "nset") {
+      $this->condition_strings[] = "(comment.value IS NULL OR comment.value='')";
+    } else {
+      list($operand, $value) = $this->getOperandValue($match, $value);
+      $this->condition_strings[] = "comment.value{$operand}?";
+      $this->condition_values[] = $value;
+    }
   }
 
   protected function addTagsetCondition($field, $match, $value) {
     if(array_key_exists($field, $this->tagsets)) {
       $tagsetid = $this->tagsets[$field];
-      list($operand, $newvalue) = $this->getOperandAndValue($match, $value);
-      $sqlstr = "EXISTS (SELECT * FROM tag_suggestion ts "
-              . "        LEFT JOIN tag ON tag.id=ts.tag_id "
-              . "        WHERE ts.mod_id=modern.id AND ts.selected=1 "
-              . "          AND tag.tagset_id={$tagsetid} "
-              . "          AND tag.value{$operand}?)";
+      list($operand, $value, $ex) = $this->getOperandValueExists($match, $value);
+      $sqlstr = "{$ex} (SELECT * FROM tag_suggestion ts "
+              . "       LEFT JOIN tag ON tag.id=ts.tag_id "
+              . "       WHERE ts.mod_id=m.id AND ts.selected=1 "
+              . "         AND tag.tagset_id={$tagsetid} "
+              . "         AND tag.value{$operand}?)";
       $this->condition_strings[] = $sqlstr;
-      $this->condition_values[] = $newvalue;
+      $this->condition_values[] = $value;
     }
   }
 
   /** Translate match criterion + value into an SQL operand + value.
    */
-  protected function getOperandAndValue($match, $value) {
-    if($match === "eq") {
-      return array("=", $value);
-    } else if($match === "bgn") {
-      return array(" LIKE ", $value."%");
-    } else if($match === "end") {
-      return array(" LIKE ", "%".$value);
-    } else if($match === "in") {
-      return array(" LIKE ", "%".$value."%");
-    } else if($match === "regex") {
-      return array(" REGEX ", $value);
+  protected function getOperandValue($match, $value) {
+    switch ($match) {
+      case "eq":
+        return array("=", $value);
+      case "neq":
+        return array("!=", $value);
+      case "in":
+        return array(" LIKE ", "%".$this->escapeForLIKE($value)."%");
+      case "nin":
+        return array(" NOT LIKE ", "%".$this->escapeForLIKE($value)."%");
+      case "bgn":
+        return array(" LIKE ", $this->escapeForLIKE($value)."%");
+      case "end":
+        return array(" LIKE ", "%".$this->escapeForLIKE($value));
+      case "regex":
+        return array(" REGEX ", $value);
+      case "nset":
+        return array("=", "");
+      case "set":
+      default:
+        return array("!=", "");
     }
+  }
+
+  /** Translate match criterion + value into an SQL operand + value for
+   *  constructs using EXISTS + subquery.
+   */
+  protected function getOperandValueExists($match, $value) {
+    list($operand, $value) = $this->getOperandValue($match, $value);
+    switch ($match) {
+      case "neq":
+        return array("=", $value, "NOT EXISTS");
+      case "nset":
+        return array("!=", $value, "NOT EXISTS");
+      case "nin":
+        return array(" LIKE ", $value, "NOT EXISTS");
+      default:
+        return array($operand, $value, "EXISTS");
+    }
+  }
+
+  private function escapeForLIKE($value) {
+    return str_replace("_", "\_", str_replace("%", "\%", $value));
   }
 
   public function setOperator($op) {

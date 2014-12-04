@@ -254,8 +254,11 @@
    /** Perform a search within a document.
     *
     * @param string $id ID of the file to search
-    * @param array $query Array of search criteria, in the form of
-    *                     {'field': ..., 'match': ..., 'value': ...}
+    * @param array $query Search criteria, in the form of
+    *                     {'operator': 'any'|'all',
+    *                      'conditions':
+    *                        [{'field': ..., 'match': ..., 'value': ...}, ...]
+    *                     }
     */
    public function searchDocument($id, $query) {
      $sq = new SearchQuery($this, $id);
@@ -267,7 +270,8 @@
        // return array('query' => $sq->buildQueryString(),
        //              'values' => $sq->condition_values,
        //              'results' => $stmt->fetchAll(PDO::FETCH_COLUMN));
-       return array('results' => $stmt->fetchAll(PDO::FETCH_COLUMN));
+       return array('results' => $stmt->fetchAll(PDO::FETCH_ASSOC),
+                    'sql' => $sq->buildQueryString());
      }
    }
 
