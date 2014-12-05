@@ -100,7 +100,7 @@ function get_DBInterface_expected() {
 	    "header_fullfile" => array("header" => null,
 			  "fullfile" => null
 	    )
-				       
+
 
         ),
         "texts_extended" => array(
@@ -125,12 +125,10 @@ function get_DBInterface_expected() {
                             'full_trans' => '*{A*4}n$helm%9',
                             'num' => '0',
                             'suggestions' => array (
-                                array ( 'pos' => 'VVFIN',
-                                        'morph' => '3.Pl.Past.Konj',
+                                array ( 'pos' => 'VVFIN.3.Pl.Past.Konj',
                                         'score' => '0.97')
                             ),
-                            'anno_pos' => 'VVFIN',
-                            'anno_morph' => '3.Pl.Past.Konj',
+                            'anno_pos' => 'VVFIN.3.Pl.Past.Konj',
 			     'comment' => null,
 			     'page_name' => '1',
 			     'page_side' => 'r',
@@ -144,12 +142,10 @@ function get_DBInterface_expected() {
                             'full_trans'  => 'pi$t||u||s',
                             'num'         => '1',
                             'suggestions' => array(
-                                array( 'pos' => 'PPOSAT',
-                                       'morph' => 'Fem.Nom.Sg',
+                                array( 'pos' => 'PPOSAT.Fem.Nom.Sg',
                                        'score' => null)
                             ),
-                            'anno_pos'    => "PPOSAT",
-                            'anno_morph'  => "Fem.Nom.Sg",
+                            'anno_pos'    => "PPOSAT.Fem.Nom.Sg",
 			      'comment' => null,
 			     'page_name' => '1',
 			     'page_side' => 'r',
@@ -162,17 +158,16 @@ function get_DBInterface_expected() {
                             'tok_id'      => '2',
                             'full_trans'  => 'pi$t||u||s',
                             'num'         => '2',
-                            'general_error' => 1,
                             'suggestions' => array(array('pos' => 'VMINF',
-                                                   'morph' => '--',
                                                    'score' => null)),
                             'anno_pos' => 'VMINF',
-                            'anno_morph' => '--',
 			      'comment' => null,
 			     'page_name' => '1',
 			     'page_side' => 'r',
 			     'col_name' => '',
-			     'line_name' => '2'
+			     'line_name' => '2',
+                            'flag_general_error' => 1,
+                            'flag_inflection' => 1
                         ),
                         array('id'          => '4',
                             'trans'       => 's',
@@ -181,12 +176,10 @@ function get_DBInterface_expected() {
                             'full_trans'  => 'pi$t||u||s',
                             'num'         => '3',
                             'suggestions' => array(
-                                array('pos' => 'VVFIN',
-                                      'morph' => '3.Pl.Pres.Konj',
+                                array('pos' => 'VVFIN.3.Pl.Pres.Konj',
                                       'score' => null)
                             ),
-                            'anno_pos'    => 'VVFIN',
-                            'anno_morph'  => '3.Pl.Pres.Konj',
+                            'anno_pos'    => 'VVFIN.3.Pl.Pres.Konj',
 			      'comment' => null,
 			     'page_name' => '1',
 			     'page_side' => 'r',
@@ -200,8 +193,7 @@ function get_DBInterface_expected() {
                             'full_trans'  => 'aller#lieb$tev',
                             'num'         => '4',
                             'suggestions' => array(),
-                            'anno_pos'    => 'PDS',
-                            'anno_morph'  => '*.Gen.Pl',
+                            'anno_pos'    => 'PDS.*.Gen.Pl',
                             'anno_lemma'  => 'lemma',
 			      'comment' => 'cora comment',
 			     'page_name' => '1',
@@ -229,14 +221,14 @@ function get_DBInterface_expected() {
                             'tok_id' => '5',
                             'full_trans' => 'kunnen.(.)',
                             'num' => '6',
-                            'general_error' => 1,
                             'suggestions' => Array (),
                             'anno_lemma' => 'deletedlemma',
 			      'comment' => null,
 			     'page_name' => '1',
 			     'page_side' => 'r',
 			     'col_name' => '',
-			     'line_name' => '5'
+			     'line_name' => '5',
+                            'flag_general_error' => 1
                         ),
                         array('id' => '8',
                             'trans' => '.',
@@ -250,8 +242,7 @@ function get_DBInterface_expected() {
 			     'page_side' => 'r',
 			     'col_name' => '',
 			     'line_name' => '5',
-                             'anno_pos' => 'PDS',
-                             'anno_morph' => 'Fem.Nom.Sg'
+                             'anno_pos' => 'PDS.Fem.Nom.Sg',
                         ),
                         array('id' => '9',
                             'trans' => '(.)',
@@ -595,12 +586,10 @@ function get_XMLHandler_initial() {
                             'full_trans' => '*{A*4}n$helm%9',
                             'num' => '0',
                             'suggestions' => array (
-                                array ( 'pos' => 'VVFIN',
-                                        'morph' => '3.Pl.Past.Konj',
+                                array ( 'pos' => 'VVFIN.3.Pl.Past.Konj',
                                         'score' => '0.97')
                             ),
-                            'anno_pos' => 'VVFIN',
-                            'anno_morph' => '3.Pl.Past.Konj',
+                            'anno_pos' => 'VVFIN.3.Pl.Past.Konj',
                             'comment' => null
                         ),
                     ),
@@ -907,7 +896,7 @@ function get_AutomaticAnnotator_data() {
                                                                    "norm" => "giebel")
                                                    )
                                                ),
-                 
+
                  "taggerlist" => array('1' => array('name' => "Mock-Tagger",
                                                     'trainable' => true,
                                                     'class_name' => "RFTagger",

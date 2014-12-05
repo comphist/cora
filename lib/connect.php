@@ -1438,20 +1438,18 @@
     * @return an @em array containing the lines
     */
    public function getLines($fileid,$start,$lim){
-     $qs  = "SELECT x.* FROM ";
-     $qs .= "  (SELECT q.*, @rownum := @rownum + 1 AS num FROM ";
-     $qs .= "    (SELECT modern.id, modern.trans, modern.utf, ";
-     $qs .= "            modern.tok_id, token.trans AS full_trans, "; // full_trans is currently being overwritten later!
-     $qs .= "            c1.value AS comment "; // ,c2.value AS k_comment
-     $qs .= "     FROM   token ";
-     $qs .= "       LEFT JOIN modern  ON modern.tok_id=token.id ";
-     $qs .= "       LEFT JOIN comment c1 ON  c1.tok_id=token.id ";
-     $qs .= "             AND c1.subtok_id=modern.id AND c1.comment_type='C' ";
-     //$qs .= "       LEFT JOIN comment c2 ON  c2.tok_id=token.id ";
-     //$qs .= "                                        AND c2.comment_type='K' ";
-     $qs .= "     WHERE  token.text_id=:tid ";
-     $qs .= "     ORDER BY token.ordnr ASC, modern.id ASC) q ";
-     $qs .= "   JOIN (SELECT @rownum := -1) r WHERE q.id IS NOT NULL) x ";
+     $qs  = "SELECT modern.id, modern.trans, modern.utf, ";
+     $qs .= "       modern.tok_id, token.trans AS full_trans, "; // full_trans is currently being overwritten later!
+     $qs .= "       c1.value AS comment "; // ,c2.value AS k_comment
+     $qs .= "FROM   modern ";
+     $qs .= "  LEFT JOIN token   ON modern.tok_id=token.id ";
+     $qs .= "  LEFT JOIN comment c1 ON  c1.tok_id=token.id ";
+     $qs .= "        AND c1.subtok_id=modern.id AND c1.comment_type='C' ";
+     $qs .= "WHERE  token.text_id=:tid ";
+     $qs .= "ORDER BY token.ordnr ASC, modern.id ASC ";
+     if(!$start || $start === null) {
+       $start = 0;
+     }
      if($lim && $lim != null && $lim>0) {
        $qs .= "LIMIT {$start},{$lim}";
      }
@@ -1488,7 +1486,8 @@
 	the 1:1 relation between rows and modern tokens is no longer
 	guaranteed).  Change this only if performance becomes an issue.
       */
-     foreach($data as &$line) {
+     foreach($data as $linenum => &$line) {
+       $line['num'] = $linenum + $start;
        $mid = $line['id'];
 
        // Transcription including line breaks
@@ -1532,9 +1531,9 @@
            $annoname = 'anno_'.$row['class'];
            $line[$annoname] = $row['value'];
          }
-         else if($row['class'] == 'pos' && $row['source'] == 'auto') {
-           // un-selected "auto" annotations are transmitted as "suggestions"
-           $line['suggestions'][] = array('value' => $row['value'],
+         if($row['class'] == 'pos' && $row['source'] == 'auto') {
+           // all "auto" annotations are transmitted as "suggestions"
+           $line['suggestions'][] = array('pos' => $row['value'],
                                           'score' => $row['score']);
          }
        }
