@@ -515,6 +515,11 @@ class CoraSessionHandler {
     return array("success" => true);
   }
 
+  public function getAllModernIDs() {
+    $data = $this->db->getAllModernIDs($_SESSION['currentFileId']);
+    return array("success" => true, "data" => $data);
+  }
+
   /** Wraps DBInterface::getLines(), calculating start line and limit first */
   public function getLines($page){
     if($page==0) $page++;

@@ -267,11 +267,7 @@
        $sq->addCondition($c['field'], $c['match'], $c['value']);
      }
      if($stmt = $sq->execute($this->dbo)) {
-       // return array('query' => $sq->buildQueryString(),
-       //              'values' => $sq->condition_values,
-       //              'results' => $stmt->fetchAll(PDO::FETCH_COLUMN));
-       return array('results' => $stmt->fetchAll(PDO::FETCH_ASSOC),
-                    'sql' => $sq->buildQueryString());
+       return array('results' => $stmt->fetchAll(PDO::FETCH_COLUMN));
      }
    }
 
@@ -798,6 +794,7 @@
 
      $metadata['tagsets'] = $this->getTagsetsForFile($fileid);
      $metadata['taggers'] = $this->getTaggersForFile($fileid);
+     $metadata['idlist'] = $this->getAllModernIDs($fileid);
      $lock['data'] = $metadata;
      $lock['success'] = true;
      return $lock;
@@ -1272,6 +1269,20 @@
      $stmt = $this->dbo->prepare($qs);
      $stmt->execute(array(':tid' => $fileid));
      return $stmt->fetchAll(PDO::FETCH_ASSOC);
+   }
+
+   /** Retrieve all modern IDs from a file, in their logical order.
+    *
+    * @param string $fileid ID of the file
+    */
+   public function getAllModernIDs($fileid) {
+     $qs = "SELECT modern.id FROM modern "
+         . "  LEFT JOIN token ON token.id=modern.tok_id "
+         . " WHERE token.text_id=:tid "
+         . " ORDER BY token.ordnr ASC, modern.id ASC";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':tid' => $fileid));
+     return $stmt->fetchAll(PDO::FETCH_COLUMN);
    }
 
    /** Retrieves all moderns from a file, including annotations.

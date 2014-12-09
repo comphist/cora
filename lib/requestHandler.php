@@ -195,6 +195,9 @@ class RequestHandler {
 	$data = $this->sh->getLinesById($get['start_id'], $get['end_id']);
 	return array('success' => true, 'data' => $data);
 
+      case "getAllModernIDs":
+        return $this->sh->getAllModernIDs();
+
       case "getImportStatus":
 	return $this->sh->getImportStatus();
 

@@ -19,6 +19,7 @@ var EditorModel = new Class({
     dynamicLoadPages: 5,  // min. number of pages in each direction to be pre-fetched
     dynamicLoadLines: 50, // min. number of lines in each direction to be pre-fetched
     dropdown: null,  // contains the currently opened dropdown menu, if any
+    idlist: {},
     lineRequestInProgress: false,
     horizontalTextView: null,
     flagHandler: null,
@@ -49,6 +50,10 @@ var EditorModel = new Class({
 	this.changedLines = new Array();
 	this.fileId = fileid;
         this.header = options.data.header;
+
+        Array.each(options.data.idlist, function(item, idx) {
+            this.idlist[item] = idx;
+        }.bind(this));
 
         /* General options */
 	this.editTable = $('editTable');

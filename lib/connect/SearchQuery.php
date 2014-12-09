@@ -41,21 +41,15 @@ class SearchQuery {
 
   public function buildQueryString() {
     // select all moderns in correct order, joining other info if required
-    $innersql = "SELECT mn.* FROM modern mn"
-              . "  LEFT JOIN token ON token.id=mn.tok_id ";
+    $sqlstr = "SELECT m.id FROM modern m"
+              . "  LEFT JOIN token ON token.id=m.tok_id ";
     if($this->join_comment) {
-      $innersql .= "LEFT JOIN comment ON comment.subtok_id=mn.id "
+      $sqlstr .= "LEFT JOIN comment ON comment.subtok_id=m.id "
                  . "                 AND comment.comment_type='C' ";
     }
-    $innersql .= "      WHERE token.text_id={$this->fileid}"
-               . "   ORDER BY token.ordnr ASC, mn.id ASC";
-    // wrap in super-queries that assign row numbers to the moderns
-    $sqlstr = "SELECT m.id, m.num FROM "
-            . "  (SELECT q.*, @rownum := @rownum + 1 AS num FROM ({$innersql}) q"
-            . "     JOIN (SELECT @rownum := -1) r WHERE q.id IS NOT NULL"
-            . "  ) m";
-    // add conditions
-    $sqlstr .= " WHERE " . implode($this->operator, $this->condition_strings);
+    $sqlstr .= "      WHERE token.text_id={$this->fileid} AND ("
+               . implode($this->operator, $this->condition_strings)
+               . "    ) ORDER BY token.ordnr ASC, m.id ASC";
     return $sqlstr;
   }
 
@@ -67,7 +61,7 @@ class SearchQuery {
    */
   public function addCondition($field, $match, $value) {
     // empty value? -> existential query
-    if(strlen($value) === 0) {
+    if(strlen($value) === 0 && $match !== "nset" && $match !== "set") {
       $match = ($match === "eq") ? "nset" : "set";
     }
     // delegate
