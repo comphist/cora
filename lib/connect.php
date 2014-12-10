@@ -15,6 +15,7 @@
  require_once 'documentModel.php';
  require_once 'commandHandler.php';
  require_once 'connect/DocumentAccessor.php';
+ require_once 'connect/DocumentReader.php';
  require_once 'connect/DocumentWriter.php';
  require_once 'connect/DocumentCreator.php';
  require_once 'connect/ProjectAccessor.php';
@@ -1448,99 +1449,34 @@
     *
     * @return an @em array containing the lines
     */
-   public function getLines($fileid,$start,$lim){
-     $qs  = "SELECT modern.id, modern.trans, modern.utf, ";
-     $qs .= "       modern.tok_id, token.trans AS full_trans, "; // full_trans is currently being overwritten later!
-     $qs .= "       c1.value AS comment "; // ,c2.value AS k_comment
-     $qs .= "FROM   modern ";
-     $qs .= "  LEFT JOIN token   ON modern.tok_id=token.id ";
-     $qs .= "  LEFT JOIN comment c1 ON  c1.tok_id=token.id ";
-     $qs .= "        AND c1.subtok_id=modern.id AND c1.comment_type='C' ";
-     $qs .= "WHERE  token.text_id=:tid ";
-     $qs .= "ORDER BY token.ordnr ASC, modern.id ASC ";
-     if(!$start || $start === null) {
+   public function getLines($fileid, $start, $lim) {
+     if(!$start || $start === null)
        $start = 0;
-     }
-     if($lim && $lim != null && $lim>0) {
-       $qs .= "LIMIT {$start},{$lim}";
-     }
-     $stmt = $this->dbo->prepare($qs);
-     $stmt->execute(array(':tid' => $fileid));
-     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+     if(!$lim || $lim === null)
+       $lim = PHP_INT_MAX;
 
-     /* Prepare statements for loop */
-     $qs  = "SELECT `trans`, `line_id` FROM dipl ";
-     $qs .= " WHERE `tok_id`=:tokid ORDER BY `id` ASC";
-     $stmt_trans = $this->dbo->prepare($qs);
-     $qs  = "SELECT l.name AS line_name, c.name AS col_name, l.num AS line_num, ";
-     $qs .= "       p.name AS page_name, p.side AS page_side, p.num AS page_num  ";
-     $qs .= "FROM   dipl d ";
-     $qs .= "  LEFT JOIN line l ON l.id=d.line_id ";
-     $qs .= "  LEFT JOIN col  c ON c.id=l.col_id ";
-     $qs .= "  LEFT JOIN page p ON p.id=c.page_id ";
-     $qs .= "WHERE  d.tok_id=:tokid ";
-     $qs .= " ORDER BY d.id ASC LIMIT 1";
-     $stmt_layout = $this->dbo->prepare($qs);
-     $qs  = "SELECT tag.value, ts.score, ts.selected, ts.source, ";
-     $qs .= "       LOWER(tt.class) AS `class` ";
-     $qs .= "FROM   modern";
-     $qs .= "  LEFT JOIN (tag_suggestion ts, tag) ";
-     $qs .= "         ON (ts.tag_id=tag.id AND ts.mod_id=modern.id) ";
-     $qs .= "  LEFT JOIN tagset tt ON tag.tagset_id=tt.id ";
-     $qs .= "WHERE  modern.id=:modid ";
-     $stmt_anno = $this->dbo->prepare($qs);
+     $dr = new DocumentReader($this, $this->dbo, $fileid);
+     $data = $dr->getLinesByRange($start, $lim);
 
-     /* The following loop separately performs all queries on a
-	line-by-line basis that can potentially return more than one
-	result row.  Integrating this in the SELECT above might yield
-	better performance, but will be more complicated to process (as
-	the 1:1 relation between rows and modern tokens is no longer
-	guaranteed).  Change this only if performance becomes an issue.
-      */
      foreach($data as $linenum => &$line) {
-       $line['num'] = $linenum + $start;
-       $mid = $line['id'];
+       $line['num'] = $linenum + $start;  // can we drop this?
 
-       // Transcription including line breaks
-       $ttrans = "";
-       $lastline = null;
-       $stmt_trans->execute(array(':tokid' => $line['tok_id']));
-       while($row = $stmt_trans->fetch(PDO::FETCH_ASSOC)) {
-	 if($lastline!==null && $lastline!==$row['line_id']) {
-	   $ttrans .= "\n";
-	 }
-	 $ttrans .= $row['trans'];
-	 $lastline = $row['line_id'];
-       }
-       $line['full_trans'] = $ttrans;
-       unset($lastline);
-
-       // Layout info
-       $stmt_layout->execute(array(':tokid' => $line['tok_id']));
-       $row = $stmt_layout->fetch(PDO::FETCH_ASSOC);
-       if($row) {
-	 $line['line_name'] = $row['line_name'] ? $row['line_name'] : $row['line_num'];
-	 $line['col_name']  = $row['col_name']  ? $row['col_name']  : "";
-	 $line['page_name'] = $row['page_name'] ? $row['page_name'] : $row['page_num'];
-	 $line['page_side'] = $row['page_side'] ? $row['page_side'] : "";
-       }
+       // Token transcription & layout information
+       $line['full_trans'] = $dr->getTokTransWithLinebreaks($line['tok_id']);
+       $line = array_merge($line, $dr->getDiplLayoutInfo($line['tok_id']));
 
        // Flags (formerly "error annotations")
-       foreach($this->getFlagsForModern($mid) as $flag) {
+       foreach($this->getFlagsForModern($line['id']) as $flag) {
          $flagname = 'flag_'.str_replace(' ', '_', $flag);
          $line[$flagname] = 1;
        }
 
        // Annotations
-       $stmt_anno->execute(array(':modid' => $mid));
-
-       // prepare results for CorA---this is less flexible, but
-       // probably faster than doing it on the client side
        $line['suggestions'] = array();
-       while($row = $stmt_anno->fetch(PDO::FETCH_ASSOC)){
+       $annotations = $dr->getAllAnnotations($line['id']);
+       foreach($annotations as $row) {
          if($row['selected'] == '1') {
-           $annoname = 'anno_'.$row['class'];
-           $line[$annoname] = $row['value'];
+           $line['anno_'.$row['class']] = $row['value'];
          }
          if($row['class'] == 'pos' && $row['source'] == 'auto') {
            // all "auto" annotations are transmitted as "suggestions"

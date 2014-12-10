@@ -769,8 +769,8 @@ var EditorModel = new Class({
 	    async: true,
 	    onSuccess: function(status, text) {
                 this.lineRequestInProgress = false;
-                var line,  // lineArray = status['data'],
-                    lineArrayLength = status['data'].length,
+                var line,
+                    lineArrayLength = (status.success ? status['data'].length : false),
                     data = this.data;
 		if (!lineArrayLength) {
                     if(typeof(onerror) === "function")
