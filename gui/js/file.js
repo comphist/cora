@@ -1043,6 +1043,7 @@ cora.fileManager = {
             var response = status;
             if(response.success) {
                 this.currentFileId = fid;
+                history.pushState({"fid": fid}, "", "?fid="+fid);
                 gui.setHeader(cora.files.getDisplayName(fid));
                 cora.projects.performUpdate();
                 cora.files.prefetchTagsets(fid, function(status) {
@@ -1307,6 +1308,14 @@ window.addEvent('domready', function() {
         });
 
     cora.projects.performUpdate();
-    if(userdata.currentFileId)
-        cora.fileManager.openFile(userdata.currentFileId);
+
+    // Opens a file based on query string or server-side open file
+    var fid = null;
+    var uri = new URI();
+    if(uri.parsed && uri.parsed.query) {  // ?fid=... in query string?
+        fid = uri.parsed.query.parseQueryString()["fid"];
+    }
+    fid = fid || userdata.currentFileId;  // file open on server-side?
+    if(fid)
+        cora.fileManager.openFile(fid);
 });

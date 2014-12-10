@@ -119,6 +119,15 @@ echo <<<NOTLOGGEDIN
       var gui = {changeTab: function() {}};
       var onLoad = function() {
           $('loginTabButton').set('active', 'true');
+
+          var uri = new URI();
+          if(uri.parsed && uri.parsed.query) {
+              var fid = uri.parsed.query.parseQueryString()["fid"];
+              var form = document.getElement('#loginDiv form');
+              if(fid && form) {
+                  form.set('action', form.get('action') + "?fid=" + fid);
+              }
+          }
       };
     </script>
 NOTLOGGEDIN;
