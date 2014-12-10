@@ -973,9 +973,11 @@ cora.fileManager = {
         }
         // filename
         tr.getElement('td.ftr-id').set('text', file.id);
-        tr.getElement('td.ftr-sigle a').set('text',
-                                            file.sigle ? '['+file.sigle+']' : '');
-        tr.getElement('td.ftr-filename a').set('text', file.fullname);
+        tr.getElement('td.ftr-sigle a')
+            .set('text', file.sigle ? '['+file.sigle+']' : '')
+            .set('href', '?fid=' + file.id);
+        tr.getElement('td.ftr-filename a').set('text', file.fullname)
+                                          .set('href', '?fid=' + file.id);
         // changer & creator info
         tr.getElement('td.ftr-changed-at')
             .set('text', gui.formatDateString(file.changed));
