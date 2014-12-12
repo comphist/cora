@@ -95,6 +95,8 @@
               embedJS("gui/js/tagsets/Comment.js", true);
               embedJS("gui/js/tagsets/TagsetFactory.js", true);
               embedJS("gui/js/file.js", true);
+              embedJS("gui/js/edit/DataTableProgressBar.js", true);
+              embedJS("gui/js/edit/DataTableDropdownMenu.js", true);
               embedJS("gui/js/edit/DataTable.js", true);
               embedJS("gui/js/edit/FlagHandler.js", true);
               embedJS("gui/js/edit/LineJumper.js", true);

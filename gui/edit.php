@@ -185,13 +185,6 @@
           <div class="editTableDropdown">
             <span class="oi oi-adjust oi-shadow oi-green editTableDropdownIcon" data-glyph="caret-bottom" title="Dropdown-Menü öffnen" aria-hidden="true"></span>
           </div>
-          <div class="editTableDropdownMenu">
-            <ul>
-              <li><a class="editTableDdButtonEdit" href="#">Token bearbeiten...</a></li>
-              <li><a class="editTableDdButtonAdd" href="#">Token hinzufügen...</a></li>
-              <li><a class="editTableDdButtonDelete" href="#">Token löschen</a></li>
-            </ul>
-          </div>
         </td>
       </tr>
     </tbody>

@@ -18,7 +18,6 @@ var EditorModel = new Class({
     maximumTries: 20,     // max. number of load requests before giving up
     dynamicLoadPages: 5,  // min. number of pages in each direction to be pre-fetched
     dynamicLoadLines: 50, // min. number of lines in each direction to be pre-fetched
-    dropdown: null,  // contains the currently opened dropdown menu, if any
     dataTable: null,
     idlist: {},
     lineRequestInProgress: false,
@@ -58,14 +57,31 @@ var EditorModel = new Class({
 
         /* New data table */
         this.flagHandler = new FlagHandler();
-        this.dataTable = new DataTable(this,
-                                       cora.current().tagsets, this.flagHandler,
-                                       {onUpdate: this.update.bind(this),
-                                        onRender: this.onDataTableRender.bind(this)}
-                                      );
-        this.dataTable.setProgressBar(this.lastEditedRow);
+        this.dataTable =
+            new DataTable(this,
+                          cora.current().tagsets, this.flagHandler,
+                          {onUpdate: this.update.bind(this),
+                           onRender: this.onDataTableRender.bind(this),
+                           onUpdateProgress: function(n){
+                               this.lastEditedRow = n;
+                           }.bind(this)
+                          }
+                         );
+        this.dataTable.progressMarker = this.lastEditedRow;
         this.dataTable.table.replaces($('editTable'));
         this.dataTable.table.set('id', 'editTable');
+
+        this.dataTable.addDropdownEntries([
+            {name: 'Edit',
+             text: 'Token bearbeiten...',
+             action: this.editToken.bind(this)},
+            {name: 'Add',
+             text: 'Token hinzufügen...',
+             action: this.addToken.bind(this)},
+            {name: 'Delete',
+             text: 'Token löschen',
+             action: this.deleteToken.bind(this)}
+        ]);
 
         /* General options */
 
@@ -80,51 +96,6 @@ var EditorModel = new Class({
         this.updateShowInputErrors(true);
 
 	/* define delegated events */
-	$(document.body).addEvent(
-	    'click',
-	    function(event, target) {
-		if(ref.dropdown!==null &&
-		   (!event.target || !$(event.target).hasClass("editTableDropdownIcon"))) {
-		    ref.dropdown.hide();
-		    ref.dropdown = null;
-		}
-	    }
-	);
-	et.addEvent(
-	    'click:relay(div)',
-	    function(event, target) {
-		var new_value;
-		var this_id = ref.getRowNumberFromElement(target);
-		if(target.hasClass('editTableProgress')) {
-		    new_value = target.hasClass('editTableProgressChecked') ? false : true;
-		    ref.updateProgress(this_id, new_value);
-		} else if(target.hasClass('editTableDropdown')) {
-		    new_value = target.getSiblings('div.editTableDropdownMenu')[0];
-		    if(ref.dropdown!==null) {
-			ref.dropdown.hide();
-			if(ref.dropdown==new_value) {
-			    ref.dropdown = null;
-			    return;
-			}
-		    }
-		    ref.dropdown = new_value;
-		    ref.dropdown.show();
-	    	}
-	    }
-	);
-	et.addEvent(
-	    'click:relay(a)',
-	    function(event, target) {
-		var this_id = ref.getRowNumberFromElement(target);
-		if(target.hasClass('editTableDdButtonDelete')) {
-		    ref.deleteToken(this_id);
-		} else if(target.hasClass('editTableDdButtonEdit')) {
-		    ref.editToken(this_id);
-		} else if(target.hasClass('editTableDdButtonAdd')) {
-		    ref.addToken(this_id);
-		}
-	    }
-	);
 	et.addEvent(
             'keyup:relay(input)',
             function(event, target) {
@@ -246,7 +217,7 @@ var EditorModel = new Class({
 
     /* Function: _activateMetadataForm
 
-       Activates form the view/edit file metadata such as name and
+       Activates form to view/edit file metadata such as name and
        header.
     */
     _activateMetadataForm: function(div) {
@@ -470,24 +441,6 @@ var EditorModel = new Class({
                 }).start('#999', '#f8f8f8');
             }, 200);
         }
-    },
-
-    /* Function: updateProgress
-
-       Update information about editing progress and modify the
-       visual representation accordingly, if necessary.
-
-       Parameters:
-         line_id - The line number up to which progress should be
-	           marked, or from which on it should be unmarked
-         marked  - Whether to mark or unmark progress
-     */
-    updateProgress: function(line_id, marked) {
-        var id = Number.from(line_id);
-        if(!marked)
-            --id;
-        this.dataTable.setProgressBar(id);
-	this.lastEditedRow = id;
     },
 
     /* Function: get

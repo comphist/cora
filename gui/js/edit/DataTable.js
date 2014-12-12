@@ -3,9 +3,12 @@
    Table element for displaying annotated tokens.
  */
 var DataTable = new Class({
-    Implements: [Events, Options],
+    Implements: [Events, Options,
+                 DataTableDropdownMenu, DataTableProgressBar],
     options: {
-        template: 'data-table-template'
+        template: 'data-table-template',
+        progressBar: true,
+        dropdown: true
         // onUpdate: function(elem, data, cls, value) {}
         // onRender: function(data_array) {}
     },
@@ -19,7 +22,6 @@ var DataTable = new Class({
 
     displayedStart: -1,
     displayedEnd: -1,
-    progressMarker: -1,
 
     initialize: function(ds, tagsets, flags, options) {
         this.setOptions(options);
@@ -30,6 +32,10 @@ var DataTable = new Class({
         this.initializeTable();
         this.initializeTagsetSpecific();
         this.initializeEvents();
+        if(this.options.progressBar)
+            this.initializeProgressBar();
+        if(this.options.dropdown)
+            this.initializeDropdown();
     },
 
     initializeTable: function() {
@@ -54,12 +60,14 @@ var DataTable = new Class({
     },
 
     initializeEvents: function() {
-        this.addEvent('update', function(tr, data, cls, value) {
-            Object.each(this.tagsets, function(tagset) {
-                tagset.update(tr, data, cls, value);
-            });
-            this.flagHandler.update(tr, data, cls, value);
-        }.bind(this));
+        this.addEvent('update',
+                      function(tr, data, cls, value) {
+                          Object.each(this.tagsets, function(tagset) {
+                              tagset.update(tr, data, cls, value);
+                          });
+                          this.flagHandler.update(tr, data, cls, value);
+                      }.bind(this),
+                      true);
     },
 
     /* Function: getRowNumberFromElement
@@ -223,38 +231,5 @@ var DataTable = new Class({
             tagset.fill(row, data);
         });
         this.flagHandler.fill(row, data);
-    },
-
-    _fillProgress: function(row, num) {
-        var progress = row.getElement('div.editTableProgress');
-        if (this.progressMarker >= Number.from(num))
-            progress.addClass('editTableProgressChecked');
-        else
-            progress.removeClass('editTableProgressChecked');
-    },
-
-    /* Function: setProgressBar
-
-       Sets the progress marker to a specific row number.
-
-       All data points with a "num" attribute lesser or equal than the progress
-       marker will be shown with an activated progress bar.
-
-       HACK: Progress should really be a feature of the data itself,
-       as this function now requires access to stuff it should have no
-       business accessing.
-
-       Parameters:
-         num - Last row number with activated progress bar
-     */
-    setProgressBar: function(num) {
-        if (num == this.progressMarker)
-            return;
-        this.progressMarker = num;
-        var rows = this.table.getElements('tbody tr');
-        rows.each(function (row) {
-            var rownum = row.getElement('.editTable_tokenid').get('text');
-            this._fillProgress(row, rownum);
-        }.bind(this));
     }
 });

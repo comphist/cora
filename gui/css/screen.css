@@ -67,6 +67,9 @@ ol {
 .start-hidden, .templateHolder {
   display: none; }
 
+.bg-color-page {
+  background: #f8f8f8; }
+
 /***************************************************************************/
 /***** HEADER **************************************************************/
 /***************************************************************************/
@@ -741,6 +744,7 @@ div.editTableDropdownMenu {
   position: absolute;
   display: none;
   background-color: #d4d4d4;
+  font-size: 1.5em;
   padding: 5px;
   margin: 0 0 0;
   border: 1px solid #777777;
