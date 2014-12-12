@@ -7,6 +7,7 @@ var POSTagset = new Class({
     Implements: SplitClassTagset,
     classname: 'POS+Morphologie-Tag',
     optgroup: null,
+    eventString: 'change:relay(select.et-select-pos)',
 
     emptyElement: null,
 
@@ -56,18 +57,8 @@ var POSTagset = new Class({
         }
     },
 
-    /* Function: defineDelegatedEvents
-
-       Define events on the appropriate elements to react to user input.
-
-       Parameters:
-         elem - Parent element to add events to
-     */
-    defineDelegatedEvents: function(elem) {
-        elem.addEvent('change:relay(select.et-select-pos)', function(e, t) {
-            var cls = t.hasClass("et-select-pos-main") ? 'pos' : 'morph';
-            this.updateAnnotation(t, cls, t.getSelected()[0].get('value'));
-        }.bind(this));
+    handleEvent: function(event, target) {
+        return target.getSelected()[0].get('value');
     },
 
     /* Function: fill

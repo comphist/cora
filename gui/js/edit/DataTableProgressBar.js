@@ -10,6 +10,7 @@ var DataTableProgressBar = new Class({
        Adds events to the progress bar elements.
      */
     initializeProgressBar: function() {
+        this.progressMarker = this.options.progressMarker;
         this.table.addEvent(
             'click:relay(div.editTableProgress)',
             function(event, target) {
@@ -50,7 +51,7 @@ var DataTableProgressBar = new Class({
         this.progressMarker = num;
         var rows = this.table.getElements('tbody tr');
         rows.each(function (row) {
-            var rownum = row.getElement('.editTable_tokenid').get('text');
+            var rownum = this.getRowNumberFromElement(row);
             this._fillProgress(row, rownum);
         }.bind(this));
         console.log("DataTable: progressMarker set to '"+num+"'");

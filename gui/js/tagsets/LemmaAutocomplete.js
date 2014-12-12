@@ -32,9 +32,7 @@ var LemmaAutocomplete = new Class({
                                formatItem: this._acFormatItem.bind(this)
                            }
                        });
-        meio.addEvent('select', this._acOnSelect.bind({
-            callback: this.updateAnnotation, num: data.num
-        }));
+        meio.addEvent('select', this._acOnSelect.bind(this));
         elem.store('meio', meio);
     },
 
@@ -73,8 +71,20 @@ var LemmaAutocomplete = new Class({
     },
 
     _acOnSelect: function(e, v, text, index) {
-        var flag = (v.t == "c") ? 1 : 0;
-        this.callback(e.field.node, 'lemma', text);
-        this.callback(e.field.node, 'flag_lemma_verified', flag);
+        // This is one giant HACK at the moment :(
+        // ... tagset currently have no way of triggering updates themselves,
+        // as the event handlers are registered by the DataTable, and tagsets
+        // have to wait to get called ...
+        var flag = (v.t == "c") ? 1 : 0,
+            flagDiv = e.field.node.getParent('tr').getElement('div.editTableLemma');
+        e.field.node.getParent('table')
+            .fireEvent('input', {target: e.field.node});
+        if (flag == 0)
+            flagDiv.addClass('editTableLemmaChecked');
+        else
+            flagDiv.removeClass('editTableLemmaChecked');
+        e.field.node.getParent('table').fireEvent('click', {target: flagDiv});
+        //this.callback(e.field.node, 'lemma', text);
+        //this.callback(e.field.node, 'flag_lemma_verified', flag);
     }
 });

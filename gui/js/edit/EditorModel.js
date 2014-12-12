@@ -4,16 +4,10 @@
  */
 var EditorModel = new Class({
     fileId: 0,
-    lineTemplate: null,
     lastEditedRow: -1,
-    pages: null,
-    displayedLinesStart: 0,
-    displayedLinesEnd: 0,
-    lineCount: 0,
     data: {},
     header: "",
     changedLines: null,
-    editTable: null,
     tries: 0,
     maximumTries: 20,     // max. number of load requests before giving up
     dynamicLoadPages: 5,  // min. number of pages in each direction to be pre-fetched
@@ -23,7 +17,6 @@ var EditorModel = new Class({
     lineRequestInProgress: false,
     horizontalTextView: null,
     flagHandler: null,
-    onRenderOnceHandlers: [],
 
     /* Constructor: EditorModel
 
@@ -39,35 +32,39 @@ var EditorModel = new Class({
            * onInit - Callback function after successful initialization
     */
     initialize: function(fileid, options) {
-	var elem, td, spos, smorph, slempos, et, mr, btn, start_page;
-	var ref = this;
+        var mr, btn;
 
-        /* File-specific options */
-	this.lineCount = Number.from(options.maxLinesNo);
+        /* File-specific variables */
 	if(options.lastEditedRow !== null) {
 	    this.lastEditedRow = Number.from(options.lastEditedRow);
 	}
 	this.changedLines = new Array();
 	this.fileId = fileid;
         this.header = options.data.header;
-
         Array.each(options.data.idlist, function(item, idx) {
             this.idlist[item] = idx;
         }.bind(this));
-
-        /* New data table */
         this.flagHandler = new FlagHandler();
+
+        /* Data table */
         this.dataTable =
             new DataTable(this,
                           cora.current().tagsets, this.flagHandler,
-                          {onUpdate: this.update.bind(this),
+                          {lineCount: Number.from(options.maxLinesNo),
+                           progressMarker: this.lastEditedRow,
+                           pageModel: {
+                               panels: ['pagePanel', 'pagePanelBottom'],
+                               startPage: Number.from(options.lastPage)
+                           },
+                           onFocus: this.onDataTableFocus.bind(this),
                            onRender: this.onDataTableRender.bind(this),
+                           onUpdate: this.update.bind(this),
                            onUpdateProgress: function(n){
                                this.lastEditedRow = n;
                            }.bind(this)
                           }
                          );
-        this.dataTable.progressMarker = this.lastEditedRow;
+	this.initializeColumnVisibility();
         this.dataTable.table.replaces($('editTable'));
         this.dataTable.table.set('id', 'editTable');
 
@@ -82,71 +79,9 @@ var EditorModel = new Class({
              text: 'Token löschen',
              action: this.deleteToken.bind(this)}
         ]);
-
-        /* General options */
-
-        // HACKERINO
-	this.editTable = this.dataTable.table;
-	et = this.editTable;
-        this.lineTemplate = this.dataTable.lineTemplate;
-	//et.removeEvents();
-
-        this.horizontalTextView =
-            new HorizontalTextPreview(this, $('horizontalTextViewContainer'));
-        this.updateShowInputErrors(true);
-
-	/* define delegated events */
-	et.addEvent(
-            'keyup:relay(input)',
-            function(event, target) {
-	        var this_id = ref.getRowNumberFromElement(target);
-		var parent = target.getParent('td');
-		var new_value = target.get('value');
-		var this_class = ref.getRowClassFromElement(parent);
-                var new_row;
-                var shiftFocus = function(nr) {
-                    if(nr == null) return;
-		    var new_target = nr.getElement('td.'+this_class+' input');
-		    if(new_target != null) {
-			new_target.focus();
-		    }
-                };
-		if (event.code == 40) { // down arrow
-		    if(event.control || !target.hasClass("editTable_lemma")) {
-			new_row = ref.getRowNumberFromElement(parent) + 1;
-                        if (ref.getRowFromNumber(new_row) !== null) {
-                            shiftFocus(ref.getRowFromNumber(new_row));
-                        } else {
-                            if (ref.pages.increment()) {
-                                ref.onRenderOnce(function() {
-                                    shiftFocus(ref.getRowFromNumber(new_row));
-                                });
-                                ref.pages.render();
-                            }
-                        }
-		    }
-		}
-		if (event.code == 38) { // up arrow
-		    if(event.control || !target.hasClass("editTable_lemma")) {
-			new_row = ref.getRowNumberFromElement(parent) - 1;
-                        if (ref.getRowFromNumber(new_row) !== null) {
-                            shiftFocus(ref.getRowFromNumber(new_row));
-                        } else {
-                            if (ref.pages.decrement()) {
-                                ref.onRenderOnce(function() {
-                                    shiftFocus(ref.getRowFromNumber(new_row));
-                                });
-                                ref.pages.render();
-                            }
-                        }
-		    }
-		}
-	    }
-	);
-	et.addEvent(
-	    'dblclick:relay(td)',
-	    function(event, target) {
-		var this_id = ref.getRowNumberFromElement(target);
+	this.dataTable.addEvent(
+	    'dblclick',  // triggers on <td> elements
+	    function(target, id) {
 		if (target.hasClass("editTable_token") ||
 		    target.hasClass("editTable_tok_trans")) {
 		    // we don't want text to get selected here:
@@ -154,22 +89,21 @@ var EditorModel = new Class({
 			window.getSelection().removeAllRanges();
 		    else if (document.selection)
 			document.selection.empty();
-		    ref.editToken(this_id);
+		    this.editToken(id);
 		}
-	    }
+	    }.bind(this)
 	);
-	et.addEvent(
-	    'focus:relay(input,select)',
-	    function(event, target) {
-                // highlight in text preview
-		var this_id = ref.getRowNumberFromElement(target);
-		ref.horizontalTextView.highlight(this_id);
-                // is hidden behind header?
+	this.dataTable.addEvent(
+	    'focus',  // triggers on contained <input> and <select> elements
+	    function(target, id) {
+                // Highlight target in text preview
+		this.horizontalTextView.highlight(id);
+                // Is target hidden behind header?
                 var scrolltop_min = target.getTop() - $('header').getHeight() - 10;
                 if(window.getScrollTop() > scrolltop_min) {
                     window.scrollTo(0, scrolltop_min);
                 }
-                // is hidden behind horizontal text view?
+                // Is target hidden behind text preview?
                 var scrolltop_max = target.getTop()
                     - window.getHeight()
                     + $('horizontalTextViewContainer').getHeight()
@@ -177,24 +111,30 @@ var EditorModel = new Class({
                 if(scrolltop_max > window.getScrollTop()) {
                     window.scrollTo(0, scrolltop_max);
                 }
-	    }
+	    }.bind(this)
 	);
 
-	/* activate extra menu bar */
+        /* Child objects */
+        this.horizontalTextView =
+            new HorizontalTextPreview(this, $('horizontalTextViewContainer'));
+        this.updateShowInputErrors(true);
+
+	/* Activate extra menu bar */
 	mr = $('menuRight');
 	btn = mr.getElement('#saveButton');
 	btn.removeEvents();
 	btn.addEvent('click', function(e) {
 	    e.stop();
-	    ref.saveData();
-	});
+	    this.saveData();
+	}.bind(this));
 	btn = mr.getElement('#closeButton');
 	btn.removeEvents();
 	btn.addEvent('click', function(e) {
 	    e.stop();
-	    cora.fileManager.closeFile(ref.fileId);
-	});
-	/* prepare automatic annotation dialog */
+	    cora.fileManager.closeFile(this.fileId);
+	}.bind(this));
+
+	/* Prepare automatic annotation dialog */
 	btn = mr.getElement('#tagButton');
 	if(btn && btn !== undefined) {
 	    btn.removeEvents();
@@ -203,16 +143,13 @@ var EditorModel = new Class({
 	}
 	mr.getElements('.when-file-open-only').addClass('file-open');
 
-	this.initializeColumnVisibility();
+        /* Activate "edit metadata" form */
         this._activateMetadataForm($('pagePanel'));
 
-	/* render pages panel and set start page */
-	start_page = Number.from(options.lastPage);
-        this.pages = new PageModel(this);
-        this.pages.addPanel($('pagePanel')).addPanel($('pagePanelBottom'));
+	/* render start page */
         if(options.onInit)
-            this.onRenderOnce(options.onInit);
-        this.pages.set(start_page).render();
+            this.dataTable.addEvent('render:once', options.onInit);
+        this.dataTable.render();
     },
 
     /* Function: _activateMetadataForm
@@ -262,7 +199,7 @@ var EditorModel = new Class({
        Clean-up when closing the editor.
      */
     destruct: function() {
-        this.editTable.hide();
+        this.dataTable.hide();
         $$('div#menuRight .when-file-open-only').removeClass('file-open');
     },
 
@@ -337,110 +274,17 @@ var EditorModel = new Class({
         this.dataTable.setVisibility(name, visible);
     },
 
-    /* Function: onRenderOnce
-
-       Registers a callback function to invoke after the next
-       successful line rendering.
-     */
-    onRenderOnce: function(fn) {
-        if(typeof(fn) == "function")
-            this.onRenderOnceHandlers.push(fn);
-        return this;
-    },
-
-    /* Function: getRowClassFromElement
-
-       Gets the "editTable_*" class of the <td> cell.
-     */
-    getRowClassFromElement: function(td) {
-        for (var i = 0; i < td.classList.length; i++) {
-            var item = td.classList.item(i);
-            if(item.substr(0, 10) === "editTable_")
-                return item;
-        }
-        return "";
-    },
-
-    /* Function: getTagsetClassFromElement
-
-       Gets the tagset class of the <td> cell containing the supplied element.
-     */
-    getTagsetClassFromElement: function(elem) {
-        var parent = elem.getParent('td');
-        if(!parent.hasClass("et-anno"))  // not an annotation element
-            return "";
-        return this.getRowClassFromElement(parent).substr(10);
-    },
-
-    /* Function: getRowNumberFromElement
-
-       Gets the number of the row (used in '#' column and the <tr
-       id=...> attribute) containing the supplied element.
-     */
-    getRowNumberFromElement: function(elem) {
-        var id = elem.get('id');
-        if(id === null || id.substr(0, 5) !== "line_") {
-            id = elem.getParent('tr').get('id');
-        }
-        return Number.from(id.substr(5));
-    },
-
-    /* Function: getRowFromNumber
-
-       Gets the <tr> element corresponding to a given row number.
-     */
-    getRowFromNumber: function(num) {
-        return $('line_'+num);
-    },
-
     /* Function: updateShowInputErrors
 
        Show or hide input error visualization for each row in the table.  Used
-       when the corresponding user setting changes. */
+       when the corresponding user setting changes.
+     */
     updateShowInputErrors: function(no_redraw) {
         Object.each(cora.current().tagsets, function(tagset) {
             tagset.setShowInputErrors(userdata.showInputErrors);
         });
         if(!no_redraw)
-            this.dataTable.forceRedraw();
-    },
-
-    /* Function: focusFirstElement
-
-       Sets focus on the first editable element (input or select) in
-       the editor table.
-    */
-    focusFirstElement: function() {
-	var visible = this.editTable.getElements("input,select").filter(function(elem) {
-	    return elem.isVisible();
-	});
-	if(visible!==null && visible.length) {
-	    visible[0].focus();
-	}
-    },
-
-    /* Function: highlightRow
-
-       Visually highlights a certain row in the editor table, and
-       positions it in the middle of the screen if possible.
-
-       Parameters:
-         number - Number of the row to highlight
-     */
-    highlightRow: function(number) {
-        var row = this.getRowFromNumber(number);
-        if (row != null) {
-            /* scroll to element */
-            window.scrollTo(0, (row.getTop() - (window.getHeight() / 2)));
-            /* tween background color */
-            row.setStyle('background-color', '#999');
-            setTimeout(function() {
-                new Fx.Tween(row, {
-                    duration: 'long',
-                    property: 'background-color'
-                }).start('#999', '#f8f8f8');
-            }, 200);
-        }
+            this.dataTable.empty().render();
     },
 
     /* Function: get
@@ -514,7 +358,32 @@ var EditorModel = new Class({
     update: function(elem, data, cls, value) {
         if(!this.changedLines.contains(data.num))
             this.changedLines.push(data.num);
-        this.updateProgress(data.num, true);
+        if (data.num > this.lastEditedRow)
+            this.dataTable.updateProgressBar(data.num);
+    },
+
+    /* Function: onDataTableFocus
+
+       Whenever focus in the data table changes, highlight the respective token
+       in the text preview and make sure the focussed element is not hidden
+       behind other UI elements.
+     */
+    onDataTableFocus: function(target, id) {
+        // Highlight target in text preview
+	this.horizontalTextView.highlight(id);
+        // Is target hidden behind header?
+        var scrolltop_min = target.getTop() - $('header').getHeight() - 10;
+        if(window.getScrollTop() > scrolltop_min) {
+            window.scrollTo(0, scrolltop_min);
+        }
+        // Is target hidden behind text preview?
+        var scrolltop_max = target.getTop()
+                - window.getHeight()
+                + $('horizontalTextViewContainer').getHeight()
+                + target.getHeight() + 10;
+        if(scrolltop_max > window.getScrollTop()) {
+            window.scrollTo(0, scrolltop_max);
+        }
     },
 
     /* Function: onDataTableRender
@@ -531,15 +400,6 @@ var EditorModel = new Class({
 	this.horizontalTextView.update(start, end);
         this.requestLines(start - dlr, end + dlr);  // dynamic pre-fetching
 	this.tries = 0;
-
-        // LEGACY -- to be removed:
-	this.displayedLinesStart = start;
-	this.displayedLinesEnd = end - 1;
-
-        Array.each(this.onRenderOnceHandlers, function(handler) {
-            handler();
-        });
-        this.onRenderOnceHandlers = [];
     },
 
     /* Function: renderLines
@@ -570,7 +430,7 @@ var EditorModel = new Class({
 	var brk  = false;
 
 	if (start<0) { start = 0; }
-	if (end>this.lineCount) { end = this.lineCount; }
+	if (end>this.dataTable.lineCount) { end = this.dataTable.lineCount; }
 
 	for (var j=start; j<end; j++) {
 	    if (!keys.contains(String.from(j))) {
@@ -777,8 +637,7 @@ var EditorModel = new Class({
 	    return val < tok_id;
 	});
 	// update line count and re-load page
-	this.lineCount = this.lineCount + lcdiff;
-	this.pages.update().render();
+        this.dataTable.setLineCount(this.dataTable.lineCount + lcdiff).render();
     },
 
 

@@ -268,6 +268,17 @@ var PageModel = new Class({
 	return (line % y) ? Math.ceil(line/y) : (line/y);
     },
 
+    /* Function: setPageByLine
+
+       Sets the current page to the one that contains a given line number.
+
+       Parameters:
+         line - Number of the line
+     */
+    setPageByLine: function(line) {
+        return this.set(this.getPageByLine(line));
+    },
+
     /* Function: isValidLine
 
        Checks if a given line number is valid.

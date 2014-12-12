@@ -8,6 +8,7 @@ var LemmaSuggTagset = new Class({
     Implements: LemmaAutocomplete,  // for splitting the external IDs
 
     classname: 'Lemma-Vorschlag',
+    eventString: 'click:relay(div.editTableLemmaLink)',
     searchable: false,
     baseURL: "http://www.woerterbuchnetz.de/DWB",
     windowTarget: "coraExternalLemmaLink",
@@ -33,19 +34,11 @@ var LemmaSuggTagset = new Class({
     buildTemplate: function(td) {
     },
 
-    /* Function: defineDelegatedEvents
-
-       Define events on the appropriate elements to react to user input.
-
-       Parameters:
-         elem - Parent element to add events to
-     */
-    defineDelegatedEvents: function(elem) {
-        elem.addEvent('click:relay(div.editTableLemmaLink)', function(e, t) {
-            var input = t.getParent('tr').getElement('input.et-input-lemma');
-            if (input !== null)
-                this.openExternalLemmaLink(input.get('value'));
-        }.bind(this));
+    handleEvent: function(event, target) {
+        var input = target.getParent('tr').getElement('input.et-input-lemma');
+        if (input !== null)
+            this.openExternalLemmaLink(input.get('value'));
+        return false;
     },
 
     /* Function: fill

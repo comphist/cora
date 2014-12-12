@@ -4,13 +4,22 @@
  */
 var DataTable = new Class({
     Implements: [Events, Options,
+                 DataTableNavigation,
                  DataTableDropdownMenu, DataTableProgressBar],
     options: {
-        template: 'data-table-template',
-        progressBar: true,
-        dropdown: true
-        // onUpdate: function(elem, data, cls, value) {}
+        lineCount: 0,
+        template: 'data-table-template',  /**< Line template */
+        progressBar: true,  /**< Use ProgressBar extension? */
+        progressMarker: 0,
+        dropdown: true,  /**< Use DropdownMenu extension? */
+        pageModel: {
+            panels: [],
+            startPage: null
+        }
+        // onFocus: function(target, id) {}
         // onRender: function(data_array) {}
+        // onUpdate: function(elem, data, cls, value) {}
+        // onUpdateProgress: function(num) {}
     },
 
     dataSource: null,
@@ -19,25 +28,47 @@ var DataTable = new Class({
 
     table: null,  // The content <table> element
     lineTemplate: null,  // Template <tr> element
+    pages: null,  // A PageModel object
 
+    lineCount: null,
     displayedStart: -1,
     displayedEnd: -1,
 
+    /* Constructor: DataTable
+
+       Parameters:
+         ds - Data source for the table content; this must be an object
+              supporting .get() and .getRange() functions to retrieve
+              the data
+         tagsets - An object mapping tagset classes to tagset objects;
+                   this parameter represents which tagset classes will
+                   be shown in the table
+         flags - A flag handler object that handles flags within the table
+         options - An array containing further options
+     */
     initialize: function(ds, tagsets, flags, options) {
         this.setOptions(options);
         this.dataSource = ds;
         this.tagsets = tagsets;
         this.flagHandler = flags;
+        this.lineCount = this.options.lineCount;
         // other initializers
         this.initializeTable();
         this.initializeTagsetSpecific();
         this.initializeEvents();
+        // extensions
         if(this.options.progressBar)
             this.initializeProgressBar();
         if(this.options.dropdown)
             this.initializeDropdown();
+        this.initializePageModel();
+        this.initializeNavigation();
     },
 
+    /* Function: initializeTable
+
+       Initializes the table & line template objects.
+     */
     initializeTable: function() {
         var template = $(this.options.template);
         this.table = new Element('table');
@@ -47,27 +78,69 @@ var DataTable = new Class({
         this.table.grab(new Element('tbody'));
     },
 
+    /* Function: initializeTagsetSpecific
+     */
     initializeTagsetSpecific: function() {
+        var event_type;
         Object.each(this.tagsets, function(tagset, cls) {
             var elem = this.lineTemplate.getElement('td.editTable_'+cls);
             if(typeof(elem) !== "undefined")
                 tagset.buildTemplate(elem);
-            tagset.setUpdateAnnotation(this.update.bind(this));
-            tagset.defineDelegatedEvents(this.table);
+            event_type = tagset.getEventString();
+            if(event_type) {
+                this.table.addEvent(event_type,
+                                    this.handleUpdateEvent.bind(this));
+            }
         }.bind(this));
-        this.flagHandler.setUpdateAnnotation(this.update.bind(this));
-        this.flagHandler.defineDelegatedEvents(this.table);
+        Array.each(this.flagHandler.getEventStrings(), function(ev_type) {
+            this.table.addEvent(ev_type, this.handleFlagEvent.bind(this));
+        }.bind(this));
     },
 
+    /* Function: initializePageModel
+
+       Initializes the page model, which takes care of page navigation,
+       navigation toolbar, etc.
+     */
+    initializePageModel: function() {
+        this.pages = new PageModel(this);
+        Array.each(this.options.pageModel.panels, function(panel) {
+            this.pages.addPanel($(panel));
+        }.bind(this));
+        if (this.options.pageModel.startPage !== null) {
+            this.pages.set(this.options.pageModel.startPage);
+        }
+    },
+
+    /* Function: initializeEvents
+
+       Add events that are generally required.
+     */
     initializeEvents: function() {
-        this.addEvent('update',
-                      function(tr, data, cls, value) {
-                          Object.each(this.tagsets, function(tagset) {
-                              tagset.update(tr, data, cls, value);
-                          });
-                          this.flagHandler.update(tr, data, cls, value);
-                      }.bind(this),
-                      true);
+        // Provide the 'render:once' event:
+        this.addEvent(
+            'render',
+            function(data) {
+                this.fireEvent('render:once', [data]);
+                this.removeEvents('render:once');
+            }.bind(this),
+            true
+        );
+        // Expose a few <table> events:
+        this.table.addEvent(
+            'focus:relay(input,select)',
+            function(event, target) {
+                var id = this.getRowNumberFromElement(target);
+                this.fireEvent('focus', [target, id]);
+            }.bind(this)
+        );
+        this.table.addEvent(
+            'dblclick:relay(td)',
+            function(event, target) {
+                var id = this.getRowNumberFromElement(target);
+                this.fireEvent('dblclick', [target, id]);
+            }.bind(this)
+        );
     },
 
     /* Function: getRowNumberFromElement
@@ -83,6 +156,14 @@ var DataTable = new Class({
         return Number.from(id.substr(5));
     },
 
+    /* Function: getRowFromNumber
+
+       Gets the <tr> element corresponding to a given row number.
+     */
+    getRowFromNumber: function(num) {
+        return $('line_'+num);
+    },
+
     /* Function: getRowClassFromElement
 
        Gets the "editTable_*" class of the <td> cell.
@@ -94,6 +175,16 @@ var DataTable = new Class({
                 return item;
         }
         return "";
+    },
+
+    /* Function: setLineCount
+
+       Sets the total number of lines in the data source.
+     */
+    setLineCount: function(num) {
+        this.lineCount = num;
+        this.pages.update();
+        return this;
     },
 
     /* Function: setVisibility
@@ -116,6 +207,24 @@ var DataTable = new Class({
         }
     },
 
+    handleUpdateEvent: function(event, target) {
+        var value,
+            cls = this.getRowClassFromElement(target.getParent('td')).substr(10);
+        if(cls in this.tagsets) {
+            value = this.tagsets[cls].handleEvent(event, target);
+            if(value) {
+                this.update(target, cls, value);
+            }
+        }
+    },
+
+    handleFlagEvent: function(event, target) {
+        var f = this.flagHandler.handleEvent(event, target);
+        if(f) {
+            this.update(target, f.cls, f.value);
+        }
+    },
+
     /* Function: update
 
        Updates an annotation with a new value.
@@ -131,6 +240,10 @@ var DataTable = new Class({
         var tr = elem.getParent('tr');
         var data = this.dataSource.get(this.getRowNumberFromElement(tr));
         console.log("DataTable: "+data.num+": set '"+cls+"' to '"+value+"'");
+        Object.each(this.tagsets, function(tagset) {
+            tagset.update(tr, data, cls, value);
+        });
+        this.flagHandler.update(tr, data, cls, value);
         this.fireEvent('update', [tr, data, cls, value]);
     },
 
@@ -143,12 +256,30 @@ var DataTable = new Class({
         return this;
     },
 
-    /* Function: forceRedraw
+    /* Function: show
 
-       Forces a redraw of the data table.
+       Un-hides the data table.
      */
-    forceRedraw: function() {
-        this.empty().renderLines(this.displayedStart, this.displayedEnd);
+    show: function() {
+        this.table.show();
+        return this;
+    },
+
+    /* Function: hide
+
+       Hides the data table.
+     */
+    hide: function() {
+        this.table.hide();
+        return this;
+    },
+
+    /* Function: render
+
+       Displays the current page or range of lines.
+     */
+    render: function() {
+        this.pages.render();
         return this;
     },
 
@@ -223,7 +354,7 @@ var DataTable = new Class({
 
         this._fillProgress(row, data.num);
         row.set('id', 'line_'+data.num);
-        row.getElement('.editTable_tokenid').set('text', data.num);
+        row.getElement('.editTable_tokenid').set('text', data.num + 1);
         row.getElement('.editTable_line').set('text', lineinfo);
         row.getElement('.editTable_token').set('text', data.utf);
         row.getElement('.editTable_tok_trans').set('text', data.trans);
@@ -231,5 +362,29 @@ var DataTable = new Class({
             tagset.fill(row, data);
         });
         this.flagHandler.fill(row, data);
+    },
+
+    /* Function: highlightRow
+
+       Visually highlights a certain row in the editor table, and
+       positions it in the middle of the screen if possible.
+
+       Parameters:
+         number - Number of the row to highlight
+     */
+    highlightRow: function(number) {
+        var row = this.getRowFromNumber(number);
+        if (row != null) {
+            /* scroll to element */
+            window.scrollTo(0, (row.getTop() - (window.getHeight() / 2)));
+            /* tween background color */
+            row.setStyle('background-color', '#999');
+            setTimeout(function() {
+                new Fx.Tween(row, {
+                    duration: 'long',
+                    property: 'background-color'
+                }).start('#999', '#f8f8f8');
+            }, 200);
+        }
     }
 });

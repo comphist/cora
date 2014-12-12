@@ -14,7 +14,7 @@ window.addEvent('domready', function() {
 		var cl, pl, em, range;
 		em = cora.editor;
                 if (em !== null)
-                    range = em.pages.getRange(em.pages.activePage);
+                    range = em.dataTable.pages.getRange(em.dataTable.pages.activePage);
 		cl = eus.getElement('input[name="contextLines"]').get('value').toInt();
 		pl = eus.getElement('input[name="noPageLines"]').get('value').toInt();
 		userdata.contextLines = cl;
@@ -25,8 +25,8 @@ window.addEvent('domready', function() {
 		     * calculate page which contains the line that was
 		     * the first displayed line before the change,
 		     * then navigate to that one */
-                    em.pages.update()
-                        .set(em.pages.getPageByLine(range.from))
+                    em.dataTable.pages.update()
+                        .setPageByLine(range.from)
                         .render();
 		    gui.changeTab('edit');
 		}

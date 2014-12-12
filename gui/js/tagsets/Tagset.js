@@ -18,29 +18,27 @@
            information only available at runtime, it can be modified here.
            POS tagsets use this to insert pre-generated <select> elements.
 
-     - defineDelegatedEvents() registers events on the editor table that
-           delegate to the input element(s) specific to this tagset.  Event
-           handlers should call updateAnnotation() -- a function that is set
-           by cora.editor -- with the appropriate parameters.
+     - handleEvent() extracts the new annotation value from an element,
+           which should be the element the event in this.eventString relays to.
 
      - fill() fills this tagset's input elements according to the given data;
            this is called during page rendering.
 
-     - update() is called on each tagset whenever updateAnnotation() was
-           invoked.  Here, tagsets can react to a change being made by the
-           user.  The tagset whose annotation is changed is also responsible
-           for storing the new value in the provided data object.
+     - update() is called on each tagset whenever the event defined by
+           this.eventString happens.  Here, tagsets can react to a change
+           being made by the user.  The tagset whose annotation is changed is
+           also responsible for storing the new value in the provided data object.
 
-   CAVEAT: Right now, updateAnnotation() is not guaranteed to be called for
+   CAVEAT: Right now, update() is not guaranteed to be called for
            every annotation change, but only for changes triggered by the
            user.  If a tagset's update() routine makes further changes to
-           the data, there is no corresponding updateAnnotation() call.
+           the data, there are no further corresponding update() calls.
 
            As a consequence, tagsets cannot react to changes that have been
            made by other tagset classes as part of their update() call.
            This is not required ATM, but for clarity's sake, this process
            should probably be refactored to make **every** change go via
-           updateAnnotation().
+           update().
  */
 var Tagset = new Class({
     id: null,
@@ -55,9 +53,9 @@ var Tagset = new Class({
     tags: [],
     processed: false,
 
-    updateAnnotation: null,  // callback function
     showInputErrors: false,
     inputErrorClass: 'input_error',
+    eventString: '',
 
     /* Constructor: Tagset
 
@@ -85,15 +83,6 @@ var Tagset = new Class({
      */
     setShowInputErrors: function(value) {
         this.showInputErrors = value;
-    },
-
-    /* Function: setUpdateAnnotation
-
-       Sets the callback function to invoke whenever an annotation changes.
-     */
-    setUpdateAnnotation: function(fn) {
-        if(typeof(fn) === "function")
-            this.updateAnnotation = fn;
     },
 
     /* Function: isSplitClass
@@ -185,14 +174,11 @@ var Tagset = new Class({
         return;
     },
 
-    /* Function: defineDelegatedEvents
+    getEventString: function() {
+        return this.eventString;
+    },
 
-       Define events on the appropriate elements to react to user input.
-
-       Parameters:
-         elem - Parent element to add events to
-     */
-    defineDelegatedEvents: function(elem) {
+    handleEvent: function(event, target) {
         return;
     },
 

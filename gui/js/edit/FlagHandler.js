@@ -7,17 +7,18 @@
    to all texts without needing to be linked to them.
  */
 var FlagHandler = new Class({
-    updateAnnotation: null,
     flags: {
         'flag_general_error': {
             elem: 'div.editTableError',
             class: 'editTableErrorChecked',
-            displayname: "Fehler-Markierung"
+            displayname: "Fehler-Markierung",
+            eventString: 'click:relay(div.editTableError)'
         },
         'flag_lemma_verified': {
             elem: 'div.editTableLemma',
             class: 'editTableLemmaChecked',
-            displayname: "Lemma-Markierung"
+            displayname: "Lemma-Markierung",
+            eventString: 'click:relay(div.editTableLemma)'
         }
     },
 
@@ -26,30 +27,23 @@ var FlagHandler = new Class({
     initialize: function() {
     },
 
-    /* Function: setUpdateAnnotation
-
-       Sets the callback function to invoke whenever an annotation changes.
-     */
-    setUpdateAnnotation: function(fn) {
-        if(typeof(fn) === "function")
-            this.updateAnnotation = fn;
+    getEventStrings: function() {
+        var strings = [];
+        Object.each(this.flags, function(options, flag) {
+            strings.push(options.eventString);
+        });
+        return strings;
     },
 
-    /* Function: defineDelegatedEvents
-
-       Define events on the appropriate elements to react to user input.
-
-       Parameters:
-         elem - Parent element to add events to
-     */
-    defineDelegatedEvents: function(elem) {
-        var ref = this;
+    handleEvent: function(event, target) {
+        var result = null;
         Object.each(this.flags, function(options, flag) {
-            elem.addEvent('click:relay('+options.elem+')', function(e, t) {
-                ref.updateAnnotation(t, flag,
-                                     t.hasClass(options.class) ? 0 : 1);
-            });
+            if(target.match(options.elem)) {
+                var value = (target.hasClass(options.class) ? 0 : 1);
+                result = {cls: flag, value: value};
+            }
         });
+        return result;
     },
 
     /* Function: getValues

@@ -4,6 +4,7 @@
  */
 var LineJumper = new Class({
     parent: null,
+    parentTable: null,
     mbox: null,
 
     /* Constructor: LineJumper
@@ -11,12 +12,13 @@ var LineJumper = new Class({
        Make a new LineJumper element.
 
        Parameters:
-         parent - The parent EditorModel, used to perform the jumps
+         parent - The parent PageModel, used to perform the jumps
          content - Content of the dialog window
      */
     initialize: function(parent, content) {
         var ref = this;
         this.parent = parent;
+        this.parentTable = parent.parent;
         this.mbox = new mBox.Modal({
 	    content: content,
 	    title: 'Springe zu Zeile',
@@ -61,9 +63,12 @@ var LineJumper = new Class({
         } else if (!this.parent.isValidLine(value)) {
 	    gui.showNotice('error', 'Zeilennummer existiert nicht.');
         } else {
-            this.parent.parent.onRenderOnce(function() {
-                this.highlightRow(value - 1);
-            }.bind(this.parent.parent));
+            this.parentTable.addEvent(
+                'render:once',
+                function() {
+                    this.highlightRow(value - 1);
+                }.bind(this.parentTable)
+            );
             this.parent.set(this.parent.getPageByLine(value)).render();
             this.mbox.close();
         }

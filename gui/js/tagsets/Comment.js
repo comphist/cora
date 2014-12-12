@@ -6,6 +6,7 @@
 var CommentTagset = new Class({
     Extends: Tagset,
     classname: 'Kommentar',
+    eventString: 'input:relay(input.et-input-comment)',
 
     /* Constructor: Tagset
 
@@ -42,17 +43,8 @@ var CommentTagset = new Class({
     buildTemplate: function(td) {
     },
 
-    /* Function: defineDelegatedEvents
-
-       Define events on the appropriate elements to react to user input.
-
-       Parameters:
-         elem - Parent element to add events to
-     */
-    defineDelegatedEvents: function(elem) {
-        elem.addEvent('input:relay(input.et-input-comment)', function(e, t) {
-            this.updateAnnotation(t, 'comment', t.get('value'));
-        }.bind(this));
+    handleEvent: function(event, target) {
+        return target.get('value');
     },
 
     /* Function: fill

@@ -5,6 +5,7 @@
 var NormTypeTagset = new Class({
     Extends: Tagset,
     classname: 'Modernisierungs-Typ',
+    eventString: 'change:relay(select.et-select-norm_type)',
     optgroup: null,
 
     /* Constructor: Tagset
@@ -46,17 +47,8 @@ var NormTypeTagset = new Class({
         }
     },
 
-    /* Function: defineDelegatedEvents
-
-       Define events on the appropriate elements to react to user input.
-
-       Parameters:
-         elem - Parent element to add events to
-     */
-    defineDelegatedEvents: function(elem) {
-        elem.addEvent('change:relay(select.et-select-norm_type)', function(e, t) {
-            this.updateAnnotation(t, 'norm_type', t.getSelected()[0].get('value'));
-        }.bind(this));
+    handleEvent: function(event, target) {
+        return target.getSelected()[0].get('value');
     },
 
     /* Function: fill

@@ -6,6 +6,7 @@ var LemmaTagset = new Class({
     Extends: Tagset,
     Implements: LemmaAutocomplete,
     classname: "Lemmatisierung",
+    eventString: 'input:relay(input.et-input-lemma)',
 
     /* Constructor: Tagset
 
@@ -28,17 +29,8 @@ var LemmaTagset = new Class({
     buildTemplate: function(td) {
     },
 
-    /* Function: defineDelegatedEvents
-
-       Define events on the appropriate elements to react to user input.
-
-       Parameters:
-         elem - Parent element to add events to
-     */
-    defineDelegatedEvents: function(elem) {
-        elem.addEvent('input:relay(input.et-input-lemma)', function(e, t) {
-            this.updateAnnotation(t, 'lemma', t.get('value'));
-        }.bind(this));
+    handleEvent: function(event, target) {
+        return target.get('value');
     },
 
     /* Function: fill

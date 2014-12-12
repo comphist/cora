@@ -6,6 +6,7 @@ var LemmaPOSTagset = new Class({
     Extends: Tagset,
     classname: 'Lemma-Tag',
     optgroup: null,
+    eventString: 'change:relay(select.et-select-lemmapos)',
 
     /* Constructor: Tagset
 
@@ -46,17 +47,8 @@ var LemmaPOSTagset = new Class({
         }
     },
 
-    /* Function: defineDelegatedEvents
-
-       Define events on the appropriate elements to react to user input.
-
-       Parameters:
-         elem - Parent element to add events to
-     */
-    defineDelegatedEvents: function(elem) {
-        elem.addEvent('change:relay(select.et-select-lemmapos)', function(e, t) {
-            this.updateAnnotation(t, 'lemmapos', t.getSelected()[0].get('value'));
-        }.bind(this));
+    handleEvent: function(event, target) {
+        return target.getSelected()[0].get('value');
     },
 
     /* Function: fill

@@ -5,6 +5,7 @@
 var NormBroadTagset = new Class({
     Extends: Tagset,
     classname: 'Modernisierung',
+    eventString: 'input:relay(input.et-input-norm_broad)',
 
     /* Constructor: Tagset
 
@@ -27,17 +28,8 @@ var NormBroadTagset = new Class({
     buildTemplate: function(td) {
     },
 
-    /* Function: defineDelegatedEvents
-
-       Define events on the appropriate elements to react to user input.
-
-       Parameters:
-         elem - Parent element to add events to
-     */
-    defineDelegatedEvents: function(elem) {
-        elem.addEvent('input:relay(input.et-input-norm_broad)', function(e, t) {
-            this.updateAnnotation(t, 'norm_broad', t.get('value'));
-        }.bind(this));
+    handleEvent: function(event, target) {
+        return target.get('value');
     },
 
     /* Function: fill
