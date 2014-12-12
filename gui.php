@@ -77,7 +77,7 @@
               embedJS("gui/js/MultiSelect.js", true);
               embedJS("gui/js/baseBox.js", true);
               embedJS("gui/js/ProgressBar.js", true);
-              embedJS("gui/js/dragtable_hack.js", true);
+              // embedJS("gui/js/dragtable_hack.js", true);
               embedJS("gui/js/iFrameFormRequest.js", true);
               embedJS("gui/js/Meio.Autocomplete.js", true);
               embedJS("gui/js/gui.js", true);
@@ -95,6 +95,7 @@
               embedJS("gui/js/tagsets/Comment.js", true);
               embedJS("gui/js/tagsets/TagsetFactory.js", true);
               embedJS("gui/js/file.js", true);
+              embedJS("gui/js/edit/DataTable.js", true);
               embedJS("gui/js/edit/FlagHandler.js", true);
               embedJS("gui/js/edit/LineJumper.js", true);
               embedJS("gui/js/edit/TokenSearcher.js", true);

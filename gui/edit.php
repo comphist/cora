@@ -15,86 +15,7 @@
     <span class="btn-toolbar-entry btn-text-info"><span class="oi" data-glyph="info" aria-hidden="true"></span> Metadaten</span>
   </div>
 
-  <table id="editTable" border="0" class="draggable">
-    <thead>
-      <tr class="editHeadLine" id="editHeadline">
-        <th class="editTable_progress">P</th>
-        <th class="editTable_tokenid">#</th>
-        <th class="editTable_line">Zeile</th>
-        <th class="editTable_error">E</th>
-        <th class="editTable_tok_trans">Token (Trans)</th>
-        <th class="editTable_token">Token (UTF)</th>
-        <th class="editTable_norm et-anno">Normalisierung</th>
-        <th class="editTable_norm_broad et-anno">Modernisierung</th>
-        <th class="editTable_norm_type et-anno"></th>
-        <th class="editTable_pos et-anno">POS-Tag</th>
-        <th class="editTable_morph et-anno">Morphologie-Tag</th>
-        <th class="editTable_lemma et-anno">Lemma</th>
-        <th class="editTable_lemma_sugg et-anno"></th>
-        <th class="editTable_lemmapos et-anno">Lemma-Tag</th>
-        <th class="editTable_Comment">Kommentar</th>
-        <th class="editTable_dropdown"></th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- line template cannot be moved into the templateHolder
-           because it breaks column reordering -->
-      <tr id="line_template">
-        <td class="editTable_progress">
-          <div class="editTableProgress"></div>
-        </td>
-        <td class="editTable_tokenid"></td>
-        <td class="editTable_line"></td>
-        <td class="editTable_error">
-          <div class="editTableError editTableCheckbox"></div>
-        </td>
-        <td class="editTable_tok_trans"></td>
-        <td class="editTable_token"></td>
-        <td class="editTable_norm et-anno">
-          <input type="text" value="" class="et-input-norm" />
-        </td>
-        <td class="editTable_norm_broad et-anno">
-          <input type="text" value="" class="et-input-norm_broad" />
-        </td>
-        <td class="editTable_norm_type et-anno">
-          <select size="1" disabled="disabled" class="et-select-norm_type">
-          </select>
-        </td>
-        <td class="editTable_pos et-anno">
-          <select size="1" class="et-select-pos et-select-pos-main"></select>
-        </td>
-        <td class="editTable_morph et-anno">
-          <select size="1" class="et-select-pos et-select-morph"></select>
-        </td>
-        <td class="editTable_lemma et-anno">
-          <div class="editTableLemma editTableCheckbox"></div>
-          <input type="text" value="" class="et-input-lemma" />
-        </td>
-        <td class="editTable_lemma_sugg et-anno">
-          <div class="editTableLemmaLink">
-            <span class="oi oi-adjust oi-shadow" data-glyph="external-link" title="Externen Link öffnen" aria-hidden="true"></span>
-          </div>
-        </td>
-        <td class="editTable_lemmapos et-anno">
-          <select size="1" class="et-select-lemmapos"></select>
-        </td>
-        <td class="editTable_comment">
-          <input type="text" value="" maxlength="255" class="et-input-comment" />
-        </td>
-        <td class="editTable_dropdown">
-          <div class="editTableDropdown">
-            <span class="oi oi-adjust oi-shadow oi-green editTableDropdownIcon" data-glyph="caret-bottom" title="Dropdown-Menü öffnen" aria-hidden="true"></span>
-          </div>
-          <div class="editTableDropdownMenu">
-            <ul>
-              <li><a class="editTableDdButtonEdit" href="#">Token bearbeiten...</a></li>
-              <li><a class="editTableDdButtonAdd" href="#">Token hinzufügen...</a></li>
-              <li><a class="editTableDdButtonDelete" href="#">Token löschen</a></li>
-            </ul>
-          </div>
-        </td>
-      </tr>
-    </tbody>
+  <table id="editTable" border="0">
   </table>
 
   <div id="horizontalTextViewContainer">
@@ -195,5 +116,86 @@
       <input type="text" name="editSearchText" class="editSearchText" placeholder="(leer)" />
     </li>
   </ul>
+
+  <table id="data-table-template">
+    <thead>
+      <tr class="editHeadLine">
+        <th class="editTable_progress">P</th>
+        <th class="editTable_tokenid">#</th>
+        <th class="editTable_line">Zeile</th>
+        <th class="editTable_error">E</th>
+        <th class="editTable_tok_trans">Token (Trans)</th>
+        <th class="editTable_token">Token (UTF)</th>
+        <th class="editTable_norm et-anno">Normalisierung</th>
+        <th class="editTable_norm_broad et-anno">Modernisierung</th>
+        <th class="editTable_norm_type et-anno"></th>
+        <th class="editTable_pos et-anno">POS-Tag</th>
+        <th class="editTable_morph et-anno">Morphologie-Tag</th>
+        <th class="editTable_lemma et-anno">Lemma</th>
+        <th class="editTable_lemma_sugg et-anno"></th>
+        <th class="editTable_lemmapos et-anno">Lemma-Tag</th>
+        <th class="editTable_comment et-anno">Kommentar</th>
+        <th class="editTable_dropdown"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="editTable_progress">
+          <div class="editTableProgress"></div>
+        </td>
+        <td class="editTable_tokenid"></td>
+        <td class="editTable_line"></td>
+        <td class="editTable_error">
+          <div class="editTableError editTableCheckbox"></div>
+        </td>
+        <td class="editTable_tok_trans"></td>
+        <td class="editTable_token"></td>
+        <td class="editTable_norm et-anno">
+          <input type="text" value="" class="et-input-norm" />
+        </td>
+        <td class="editTable_norm_broad et-anno">
+          <input type="text" value="" class="et-input-norm_broad" />
+        </td>
+        <td class="editTable_norm_type et-anno">
+          <select size="1" disabled="disabled" class="et-select-norm_type">
+          </select>
+        </td>
+        <td class="editTable_pos et-anno">
+          <select size="1" class="et-select-pos et-select-pos-main"></select>
+        </td>
+        <td class="editTable_morph et-anno">
+          <select size="1" class="et-select-pos et-select-morph"></select>
+        </td>
+        <td class="editTable_lemma et-anno">
+          <div class="editTableLemma editTableCheckbox"></div>
+          <input type="text" value="" class="et-input-lemma" />
+        </td>
+        <td class="editTable_lemma_sugg et-anno">
+          <div class="editTableLemmaLink">
+            <span class="oi oi-adjust oi-shadow" data-glyph="external-link" title="Externen Link öffnen" aria-hidden="true"></span>
+          </div>
+        </td>
+        <td class="editTable_lemmapos et-anno">
+          <select size="1" class="et-select-lemmapos"></select>
+        </td>
+        <td class="editTable_comment et-anno">
+          <input type="text" value="" maxlength="255" class="et-input-comment" />
+        </td>
+        <td class="editTable_dropdown">
+          <div class="editTableDropdown">
+            <span class="oi oi-adjust oi-shadow oi-green editTableDropdownIcon" data-glyph="caret-bottom" title="Dropdown-Menü öffnen" aria-hidden="true"></span>
+          </div>
+          <div class="editTableDropdownMenu">
+            <ul>
+              <li><a class="editTableDdButtonEdit" href="#">Token bearbeiten...</a></li>
+              <li><a class="editTableDdButtonAdd" href="#">Token hinzufügen...</a></li>
+              <li><a class="editTableDdButtonDelete" href="#">Token löschen</a></li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
 </div>
 </div>

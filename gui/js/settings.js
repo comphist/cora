@@ -80,7 +80,7 @@ window.addEvent('domready', function() {
 		if (checked) {
 		    $('editTable').getElements(".editTable_"+value).show();
 		    if(cora.editor !== null) {
-			cora.editor.forcePageRedraw();
+			cora.editor.setColumnVisibility(value, checked);
 		    }
 		    userdata.hiddenColumns = userdata.hiddenColumns.replace(value+",","");
 		} else {

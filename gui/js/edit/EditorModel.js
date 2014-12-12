@@ -19,6 +19,7 @@ var EditorModel = new Class({
     dynamicLoadPages: 5,  // min. number of pages in each direction to be pre-fetched
     dynamicLoadLines: 50, // min. number of lines in each direction to be pre-fetched
     dropdown: null,  // contains the currently opened dropdown menu, if any
+    dataTable: null,
     idlist: {},
     lineRequestInProgress: false,
     horizontalTextView: null,
@@ -55,33 +56,28 @@ var EditorModel = new Class({
             this.idlist[item] = idx;
         }.bind(this));
 
+        /* New data table */
+        this.flagHandler = new FlagHandler();
+        this.dataTable = new DataTable(this,
+                                       cora.current().tagsets, this.flagHandler,
+                                       {onUpdate: this.update.bind(this),
+                                        onRender: this.onDataTableRender.bind(this)}
+                                      );
+        this.dataTable.setProgressBar(this.lastEditedRow);
+        this.dataTable.table.replaces($('editTable'));
+        this.dataTable.table.set('id', 'editTable');
+
         /* General options */
-	this.editTable = $('editTable');
+
+        // HACKERINO
+	this.editTable = this.dataTable.table;
 	et = this.editTable;
-	et.removeEvents();
+        this.lineTemplate = this.dataTable.lineTemplate;
+	//et.removeEvents();
 
         this.horizontalTextView =
             new HorizontalTextPreview(this, $('horizontalTextViewContainer'));
         this.updateShowInputErrors(true);
-        Object.each(cora.current().tagsets, function(tagset) {
-            tagset.setUpdateAnnotation(this.updateAnnotation.bind(this));
-            tagset.defineDelegatedEvents(et);
-        }.bind(this));
-        this.flagHandler = new FlagHandler();
-        this.flagHandler.setUpdateAnnotation(this.updateAnnotation.bind(this));
-        this.flagHandler.defineDelegatedEvents(et);
-
-	/* set up the line template */
-	this.lineTemplate = $('line_template');
-        Object.each(cora.current().tagsets, function(tagset, cls) {
-            var elem = this.lineTemplate.getElement('td.editTable_'+cls);
-            if(typeof(elem) !== "undefined") {
-                tagset.buildTemplate(elem);
-            }
-        }.bind(this));
-
-	/* clear out any previously generated lines */
-	et.getElements('tbody tr[id!=line_template]').destroy();
 
 	/* define delegated events */
 	$(document.body).addEvent(
@@ -335,32 +331,39 @@ var EditorModel = new Class({
        associated with the currently opened file.
     */
     initializeColumnVisibility: function() {
+        // first, determine visibility
         var visibility = {};
+	var eshc = $('editorSettingsHiddenColumns');
+        var isSetToVisible = function(value) {
+            return eshc.getElement('input#eshc-'+value).get('checked');
+        };
         Array.each(cora.supportedTagsets, function(ts) {
-            visibility[ts] = cora.currentHasTagset(ts);
+            visibility[ts] = cora.currentHasTagset(ts) && isSetToVisible(ts);
         });
 
-        // HACKS we want to get rid of as well:
-        if(visibility["pos"])
-            visibility["morph"] = true;
-
-	/* Show/hide columns and settings checkboxes */
-	var eshc = $('editorSettingsHiddenColumns');
+	// Show/hide columns and settings checkboxes
 	Object.each(visibility, function(visible, value) {
-	    if(visible) {
+            this.dataTable.setVisibility(value, visible);
+	    if(cora.currentHasTagset(value)) {
 		eshc.getElements('input#eshc-'+value+']').show();
 		eshc.getElements('label[for="eshc-'+value+'"]').show();
-		if(eshc.getElement('input#eshc-'+value+']').get('checked')) {
-		    $('editTable').getElements(".editTable_"+value).show('table-cell');
-		} else {
-		    $('editTable').getElements(".editTable_"+value).hide();
-		}
 	    } else {
 		eshc.getElements('input#eshc-'+value+']').hide();
 		eshc.getElements('label[for="eshc-'+value+'"]').hide();
-		$('editTable').getElements(".editTable_"+value).hide();
 	    }
-	});
+	}.bind(this));
+    },
+
+    /* Function: setColumnVisibility
+
+       Sets visibility of an annotation column.
+
+       Parameters:
+         name - Column name (e.g., "pos")
+         visible - Whether the column should be visible
+     */
+    setColumnVisibility: function(name, visible) {
+        this.dataTable.setVisibility(name, visible);
     },
 
     /* Function: onRenderOnce
@@ -428,20 +431,7 @@ var EditorModel = new Class({
             tagset.setShowInputErrors(userdata.showInputErrors);
         });
         if(!no_redraw)
-            this.forcePageRedraw();
-    },
-
-    /* Function: forcePageRedraw
-
-       Deletes all rows in the editor table and recreates them.
-
-       This operation is purely cosmetic and should be used after
-       significant changes to the table row content (e.g., displaying
-       previously hidden columns).
-    */
-    forcePageRedraw: function() {
-	$('editTable').getElements('tr[id^=line][id!=line_template]').destroy();
-	this.renderLines(this.displayedLinesStart, this.displayedLinesEnd+1);
+            this.dataTable.forceRedraw();
     },
 
     /* Function: focusFirstElement
@@ -493,178 +483,118 @@ var EditorModel = new Class({
          marked  - Whether to mark or unmark progress
      */
     updateProgress: function(line_id, marked) {
-	var pl = userdata.noPageLines;
-	var id = parseInt(line_id);
-	var end = this.displayedLinesEnd;
-	var start = this.displayedLinesStart;
-	var et = this.editTable;
-	if (id <= this.lastEditedRow) {
-	    if (!marked) {
-		if (id>=start) {
-		    for (var j=id;j<=end;j++) {
-			et.getElement('tr#line_'+j+' div.editTableProgress').removeClass("editTableProgressChecked");
-		    }
-		}
-		this.lastEditedRow = id - 1;
-	    }
-	} else {
-	    if (marked) {
-		var k = (id<=end) ? id : end;
-		for (var j=start;j<=k;j++) {
-		    et.getElement('tr#line_'+j+' div.editTableProgress').addClass("editTableProgressChecked");
-		}
-		this.lastEditedRow = id;
-	    }
-	}
+        var id = Number.from(line_id);
+        if(!marked)
+            --id;
+        this.dataTable.setProgressBar(id);
+	this.lastEditedRow = id;
     },
 
-    /* Function: updateAnnotation
+    /* Function: get
 
-       Update the annotation of a particular tagset.  Calls update() triggers
-       for all tagsets.
-
-       Parameters:
-         target - The element on which the update triggered
-         cls - Tagset class to be updated
-         value - New value of the annotation
-     */
-    updateAnnotation: function(target, cls, value) {
-        var tr = target.getParent('tr');
-        var this_id = this.getRowNumberFromElement(tr);
-        var data = this.data[this_id];
-        if (typeof(data) !== "undefined") {
-            Object.each(cora.current().tagsets, function(tagset) {
-                tagset.update(tr, data, cls, value);
-            });
-            this.flagHandler.update(tr, data, cls, value);
-            if (!this.changedLines.contains(this_id))
-                this.changedLines.push(this_id);
-            this.updateProgress(this_id, true);
-        }
-    },
-
-    /* Function: renderLines
-
-       Render a given range of lines.
-
-       If lines are not in memory, they are dynamically fetched from
-       the server. Lines in the editor are constructed by hiding the
-       editor table, modifying the existing HTML table rows in place
-       by filling them with the new data, then showing the editor
-       table again. If there are not enough lines (e.g.  on first
-       load, or because editor settings have changed), new lines are
-       constructed from the class's line template.
+       Retrieves a data entry by its index.
 
        Parameters:
-         start - First line to be rendered
-         end   - Last line to be rendered
+         num - Index of the data entry
 
        Returns:
-         'true' if lines were rendered successfully.
+         The respective data entry; if it does not exist or has not been
+         fetched from the server yet, undefined is returned instead.
      */
-    renderLines: function(start, end){
-        var et_spinner, fn_callback, fn_onerror;  // when lines are not loaded yet
-        var trs, j;  // for ensuring correct number of rows
-        var line, tr, lineinfo;  // for building lines
-        var dlr, dynstart, dynend;  // for dynamically loading context lines
-	var data = this.data;
-	var et = this.editTable;
-	var cl = userdata.contextLines;
-        var pl = end - start;
-	var ler = this.lastEditedRow;
+    get: function(num) {
+        return this.data[num];
+    },
 
-	/* ensure all lines are in memory */
-        if(!this.isRangeLoaded(start, end)) {
-            et_spinner = new Spinner(et, {style: {'background': '#f8f8f8'}});
-            et_spinner.show();
-            fn_callback = function() {
-                et_spinner.hide().destroy();
-                this.renderLines(start, end);
-            }.bind(this);
-            fn_onerror = function(e) {
-                gui.showNotice('error', "Problem beim Laden des Dokuments.");
-	        gui.showMsgDialog('error', e.message);
+    /* Function: getRange
+
+       Retrieves a set of data entries in a given range.
+
+       Parameters:
+         start - Index of the first data entry to be retrieved
+         end   - Index right *after* the last data entry to be retrieved
+         callback - Callback function to invoke, with the set of data entries
+                    as the first argument
+
+       Returns:
+         False if the data does not exist or an asynchronous server call has
+         to be made first; true if the data was already loaded.  Use the
+         callback parameter to actually get to and process the data.
+     */
+    getRange: function(start, end, callback) {
+        var spinner,
+            slice = function(x, a, b) {
+                var arr = [];
+                for(var j=a; j<b; ++j) {
+                    arr.push(x[j]);
+                }
+                return arr;
             };
-            this.requestLines(start, end, fn_callback, fn_onerror);
-            return false;
+
+        if(this.isRangeLoaded(start, end)) {
+            if (typeof(callback) === "function")
+                callback(slice(this.data, start, end));
+            return true;
         }
 
-	/* hide the table */
-	et.hide();
+        spinner = new Spinner(this.dataTable.table, {class: 'bg-color-page'});
+        spinner.show();
+        this.requestLines(start, end,
+                          function() {  // onSuccess
+                              spinner.hide().destroy();
+                              callback(slice(this.data, start, end));
+                          }.bind(this),
+                          function(e) {  // onError
+                              spinner.hide().destroy();
+                              gui.showNotice('error',
+                                             "Problem beim Laden des Dokuments.");
+                              gui.showMsgDialog('error', e.message);
+                          }
+                         );
+        return false;
+    },
 
-	/* ensure the correct number of rows; needed for first page
-	   load, and whenever the lines-per-page setting changes --
-	   this could be solved more efficiently, but it takes almost
-	   no computing time anyway (0-3ms) as long as nothing
-	   changes */
-	trs = et.getElements('tr[id!=line_template]');
-	j = 1;
-	while (typeof(trs[j]) !== "undefined") {
-	    if (j>pl)  // remove superfluous lines
-		trs[j].destroy();
-	    j++;
-	}
-	while (j<=pl) {  // add missing lines
-	    et.getElement("tbody").adopt(this.lineTemplate.clone());
-	    j++;
-	}
+    /* Function: update
 
-	/* build lines */
-	trs = et.getElements('tr[id!=line_template]');
-	j = 0;
-	for (var i=start; i<end; i++) {
-	    line = data[i];
-	    j++;
-	    tr = trs[j];
+       Callback function of DataTable that is invoked whenever an annotation
+       changes.
+     */
+    update: function(elem, data, cls, value) {
+        if(!this.changedLines.contains(data.num))
+            this.changedLines.push(data.num);
+        this.updateProgress(data.num, true);
+    },
 
-	    tr.set('id', 'line_'+line.num);
-	    if (parseInt(line.num)<=ler) {
-		tr.getElement('div.editTableProgress').addClass('editTableProgressChecked');
-	    } else {
-		tr.getElement('div.editTableProgress').removeClass('editTableProgressChecked');
-	    }
-	    if(line.page_name !== undefined) {
-		lineinfo = line.page_name + line.page_side + line.col_name + "," + line.line_name;
-	    }
-	    else {
-		lineinfo = "";
-	    }
-	    tr.getElement('.editTable_line').empty().appendText(lineinfo);
-	    tr.getElement('.editTable_tok_trans').empty().appendText(line.trans);
-	    tr.getElement('.editTable_token').empty().appendText(line.utf);
-	    tr.getElement('.editTable_tokenid').empty().appendText(i+1);
+    /* Function: onDataTableRender
 
-	    // build annotation elements
-            Object.each(cora.current().tagsets, function(tagset) {
-                tagset.fill(tr, line);
-            }.bind(this));
+       Callback function that is invoked whenever the data table is re-rendered.
+     */
+    onDataTableRender: function(data) {
+        var start = data[0].num,
+            end = data[data.length-1].num,
+            dlr = Math.max(this.dynamicLoadPages *
+                           (userdata.noPageLines - userdata.contextLines),
+                           this.dynamicLoadLines);
 
-            // handle flags
-            this.flagHandler.fill(tr, line);
-	}
-
-	/* unhide the table */
-	et.show();
-
-	/* horizontal text view */
 	this.horizontalTextView.update(start, end);
+        this.requestLines(start - dlr, end + dlr);  // dynamic pre-fetching
+	this.tries = 0;
 
-	/* dynamically load context lines */
-	dlr  = Math.max(this.dynamicLoadPages * (userdata.noPageLines - cl),
-                        this.dynamicLoadLines);
-	dynstart = start - dlr;
-	dynend   = end   + dlr;
-	this.requestLines(dynstart, dynend);
-
+        // LEGACY -- to be removed:
 	this.displayedLinesStart = start;
 	this.displayedLinesEnd = end - 1;
-	this.tries = 0;
 
         Array.each(this.onRenderOnceHandlers, function(handler) {
             handler();
         });
         this.onRenderOnceHandlers = [];
-	return true;
+    },
+
+    /* Function: renderLines
+
+       LEGACY code -- to be removed after PageModel is integrated in DataTable
+     */
+    renderLines: function(start, end){
+        this.dataTable.renderLines(start, end);
     },
 
     /* Function: getMinimumLineRange
