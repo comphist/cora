@@ -27,23 +27,27 @@ var FlagHandler = new Class({
     initialize: function() {
     },
 
-    getEventStrings: function() {
-        var strings = [];
-        Object.each(this.flags, function(options, flag) {
-            strings.push(options.eventString);
-        });
-        return strings;
-    },
+    /* Function: getEventData
 
-    handleEvent: function(event, target) {
-        var result = null;
+       Return event types and event handlers for all flags.
+
+       Returns:
+         An array of objects with the following properties:
+           type - An event type that should be registered by a DataTable
+                  containing flags.
+           handler - A function that handles this event for the respective flag.
+     */
+    getEventData: function() {
+        var data = [];
         Object.each(this.flags, function(options, flag) {
-            if(target.match(options.elem)) {
+            var event = {type: options.eventString};
+            event.handler = function(event, target) {
                 var value = (target.hasClass(options.class) ? 0 : 1);
-                result = {cls: flag, value: value};
-            }
+                return {cls: flag, value: value};
+            };
+            data.push(event);
         });
-        return result;
+        return data;
     },
 
     /* Function: getValues

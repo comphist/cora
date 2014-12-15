@@ -34,11 +34,29 @@ var LemmaSuggTagset = new Class({
     buildTemplate: function(td) {
     },
 
+    /* Function: getEventData
+
+       This is a copy of the default event handler in Tagset.js; it is
+       re-implemented here to override the new getEventData() provided by
+       LemmaAutocomplete, which is not wanted here.
+     */
+    getEventData: function() {
+        return [{type: this.eventString, handler: this.handleEvent.bind(this)}];
+    },
+
+    /* Function: handleEvent
+
+       Extracts the lemma value and opens an external link.
+
+       Returns:
+         Null.  The action of opening the external link should not modify
+         any annotations.
+     */
     handleEvent: function(event, target) {
         var input = target.getParent('tr').getElement('input.et-input-lemma');
         if (input !== null)
             this.openExternalLemmaLink(input.get('value'));
-        return false;
+        return null;
     },
 
     /* Function: fill

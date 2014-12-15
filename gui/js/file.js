@@ -324,10 +324,6 @@ cora.files = {
                 Object.each(status.data.tagsets, function(ts) {
                     this.tagsetsByID[fid][ts['class']] = cora.tagsets.get(ts.id);
                 }.bind(this));
-                // HACK
-                if(typeof(this.tagsetsByID[fid]["pos"]) !== "undefined") {
-                    this.tagsetsByID[fid]["morph"] = this.tagsetsByID[fid]["pos"];
-                }
             }
             // tagger assoc?
             if(status.data && status.data.taggers) {

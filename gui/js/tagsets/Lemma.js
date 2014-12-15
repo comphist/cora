@@ -29,10 +29,6 @@ var LemmaTagset = new Class({
     buildTemplate: function(td) {
     },
 
-    handleEvent: function(event, target) {
-        return target.get('value');
-    },
-
     /* Function: fill
 
        Fill the approriate elements in a <tr> with annotation from a token data
@@ -67,6 +63,15 @@ var LemmaTagset = new Class({
             if (data.anno_lemma !== value) {
                 data.anno_lemma = value;
                 data.flag_lemma_verified = 0;
+                tr.getElement('div.editTableLemma').removeClass('editTableLemmaChecked');
+            }
+        }
+        else if (cls === "lemma_ac") {
+            data.anno_lemma = value.lemma;
+            data.flag_lemma_verified = value.lemma_verified;
+            if(value.lemma_verified === 1) {
+                tr.getElement('div.editTableLemma').addClass('editTableLemmaChecked');
+            } else {
                 tr.getElement('div.editTableLemma').removeClass('editTableLemmaChecked');
             }
         }

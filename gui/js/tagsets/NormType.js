@@ -47,8 +47,13 @@ var NormTypeTagset = new Class({
         }
     },
 
+    /* Function: handleEvent
+
+       A specialization of the default handler that works with <select>
+       elements.
+     */
     handleEvent: function(event, target) {
-        return target.getSelected()[0].get('value');
+        return {cls: this.class, value: target.getSelected()[0].get('value')};
     },
 
     /* Function: fill

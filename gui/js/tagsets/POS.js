@@ -7,7 +7,8 @@ var POSTagset = new Class({
     Implements: SplitClassTagset,
     classname: 'POS+Morphologie-Tag',
     optgroup: null,
-    eventString: 'change:relay(select.et-select-pos)',
+    eventStringPOS: 'change:relay(select.et-select-pos-main)',
+    eventStringMorph: 'change:relay(select.et-select-morph)',
 
     emptyElement: null,
 
@@ -57,8 +58,33 @@ var POSTagset = new Class({
         }
     },
 
-    handleEvent: function(event, target) {
-        return target.getSelected()[0].get('value');
+    /* Function: getEventData
+
+       Return event types and event handlers for this tagset.
+     */
+    getEventData: function() {
+        return [{type: this.eventStringPOS,
+                 handler: this.handleEventPOS.bind(this)},
+                {type: this.eventStringMorph,
+                 handler: this.handleEventMorph.bind(this)}];
+    },
+
+    /* Function: handleEventPOS
+
+       A specialization of the default handler that works with <select>
+       elements.
+     */
+    handleEventPOS: function(event, target) {
+        return {cls: 'pos', value: target.getSelected()[0].get('value')};
+    },
+
+    /* Function: handleEventMorph
+
+       A specialization of the default handler that works with <select>
+       elements.
+     */
+    handleEventMorph: function(event, target) {
+        return {cls: 'morph', value: target.getSelected()[0].get('value')};
     },
 
     /* Function: fill

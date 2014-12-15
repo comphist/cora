@@ -43,10 +43,6 @@ var CommentTagset = new Class({
     buildTemplate: function(td) {
     },
 
-    handleEvent: function(event, target) {
-        return target.get('value');
-    },
-
     /* Function: fill
 
        Fill the approriate elements in a <tr> with annotation from a token data

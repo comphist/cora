@@ -174,12 +174,42 @@ var Tagset = new Class({
         return;
     },
 
-    getEventString: function() {
-        return this.eventString;
+    /* Function: getEventData
+
+       Return event types and event handlers for this tagset.
+
+       This function only needs to be re-implemented by individual tagsets if
+       more than one event type & handler is required.
+
+       Returns:
+         An array of objects with the following properties:
+           type - An event type that should be registered by a DataTable
+                  containing this element.
+           handler - A function that handles this event for this tagset.
+     */
+    getEventData: function() {
+        return [{type: this.eventString, handler: this.handleEvent.bind(this)}];
     },
 
+    /* Function: handleEvent
+
+       Event handler that is returned by getEventData() by default.
+
+       This default event handler is set up to work with <input> elements, and
+       returns target.get('value') as the annotation value.  If a tagset uses
+       another type of element, this function needs to be re-implemented.
+
+       Parameters:
+         event - The event object
+         target - The element that triggered the event
+
+       Returns:
+         An object with the following properties:
+           cls - Class of the annotation that is being changed
+           value - New value of that annotation
+     */
     handleEvent: function(event, target) {
-        return;
+        return {cls: this.class, value: target.get('value')};
     },
 
     /* Function: fill

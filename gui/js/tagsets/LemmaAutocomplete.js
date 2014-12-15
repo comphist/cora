@@ -4,6 +4,7 @@
  */
 var LemmaAutocomplete = new Class({
     _acSplitRe: new RegExp("^(.*) \\[(.*)\\]$"),
+    acEventString: "LemmaAutocompleteSelect",
 
     /* Function: makeNewAutocomplete
 
@@ -34,6 +35,22 @@ var LemmaAutocomplete = new Class({
                        });
         meio.addEvent('select', this._acOnSelect.bind(this));
         elem.store('meio', meio);
+    },
+
+    /* Function: getEventData
+
+       As lemma autocompletion does not trigger 'input' or 'change' events on
+       the lemma field, we use an artificial 'LemmaAutocompleteSelect' event to
+       trigger and handle these changes.  Therefore we need to return two
+       separate events for lemma tagsets implementing LemmaAutocomplete.
+     */
+    getEventData: function() {
+        return [{type: this.eventString, handler: this.handleEvent.bind(this)},
+                {type: this.acEventString, handler: this.acHandleEvent.bind(this)}];
+    },
+
+    acHandleEvent: function(event, target) {
+        return {cls: 'lemma_ac', value: event};
     },
 
     _acFilter: function(text, data) {
@@ -71,19 +88,11 @@ var LemmaAutocomplete = new Class({
     },
 
     _acOnSelect: function(e, v, text, index) {
-        // This is one giant HACK at the moment :(
-        // ... tagset currently have no way of triggering updates themselves,
-        // as the event handlers are registered by the DataTable, and tagsets
-        // have to wait to get called ...
         var flag = (v.t == "c") ? 1 : 0,
             flagDiv = e.field.node.getParent('tr').getElement('div.editTableLemma');
         e.field.node.getParent('table')
-            .fireEvent('input', {target: e.field.node});
-        if (flag == 0)
-            flagDiv.addClass('editTableLemmaChecked');
-        else
-            flagDiv.removeClass('editTableLemmaChecked');
-        e.field.node.getParent('table').fireEvent('click', {target: flagDiv});
+            .fireEvent("LemmaAutocompleteSelect",
+                       [{lemma: text, lemma_verified: flag}, e.field.node]);
         //this.callback(e.field.node, 'lemma', text);
         //this.callback(e.field.node, 'flag_lemma_verified', flag);
     }

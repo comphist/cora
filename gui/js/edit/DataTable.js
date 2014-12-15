@@ -81,19 +81,18 @@ var DataTable = new Class({
     /* Function: initializeTagsetSpecific
      */
     initializeTagsetSpecific: function() {
-        var event_type;
         Object.each(this.tagsets, function(tagset, cls) {
-            var elem = this.lineTemplate.getElement('td.editTable_'+cls);
+            var event_data,
+                elem = this.lineTemplate.getElement('td.editTable_'+cls);
             if(typeof(elem) !== "undefined")
                 tagset.buildTemplate(elem);
-            event_type = tagset.getEventString();
-            if(event_type) {
-                this.table.addEvent(event_type,
-                                    this.handleUpdateEvent.bind(this));
-            }
+            event_data = tagset.getEventData();
+            event_data.each(function(ev) {
+                this.table.addEvent(ev.type, this.makeUpdateHandler(ev.handler));
+            }.bind(this));
         }.bind(this));
-        Array.each(this.flagHandler.getEventStrings(), function(ev_type) {
-            this.table.addEvent(ev_type, this.handleFlagEvent.bind(this));
+        Array.each(this.flagHandler.getEventData(), function(ev) {
+            this.table.addEvent(ev.type, this.makeUpdateHandler(ev.handler));
         }.bind(this));
     },
 
@@ -141,6 +140,28 @@ var DataTable = new Class({
                 this.fireEvent('dblclick', [target, id]);
             }.bind(this)
         );
+    },
+
+    /* Function: makeUpdateHandler
+
+       Wraps an event handler in a function that also informs all other tagsets
+       about the triggered event (i.e., annotation update).
+
+       Parameters:
+         tagset_handler - Event handler function to invoke.
+
+       Returns:
+         An event handler that calls the specified event handler to extract
+         annotation data, then calls each tagset in this class with the
+         extracted data.
+     */
+    makeUpdateHandler: function(tagset_handler) {
+        var handler = function(event, target) {
+            var parsed = tagset_handler(event, target);
+            if(parsed)
+                this.update(target, parsed.cls, parsed.value);
+        };
+        return handler.bind(this);
     },
 
     /* Function: getRowNumberFromElement
@@ -204,24 +225,6 @@ var DataTable = new Class({
         } else {
             elems.hide();
             temps.hide();
-        }
-    },
-
-    handleUpdateEvent: function(event, target) {
-        var value,
-            cls = this.getRowClassFromElement(target.getParent('td')).substr(10);
-        if(cls in this.tagsets) {
-            value = this.tagsets[cls].handleEvent(event, target);
-            if(value) {
-                this.update(target, cls, value);
-            }
-        }
-    },
-
-    handleFlagEvent: function(event, target) {
-        var f = this.flagHandler.handleEvent(event, target);
-        if(f) {
-            this.update(target, f.cls, f.value);
         }
     },
 
