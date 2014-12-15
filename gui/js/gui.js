@@ -595,15 +595,3 @@ function onBeforeUnload() {
 	}
     }
 }
-
-/* Make browser back/forward buttons usable (somewhat). */
-window.onpopstate = function(event) {
-    if (event.state === null && cora.fileManager !== null
-        && cora.fileManager.isFileOpened()) {
-        cora.fileManager.closeFile(cora.fileManager.currentFileId);
-    }
-    if (event.state !== null && cora.fileManager !== null &&
-        event.state['fid'] != cora.fileManager.currentFileId) {
-        cora.fileManager.openFile(event.state['fid']);
-    }
-};

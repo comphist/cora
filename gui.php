@@ -126,10 +126,12 @@ echo <<<NOTLOGGEDIN
 
           var uri = new URI();
           if(uri.parsed && uri.parsed.query) {
-              var fid = uri.parsed.query.parseQueryString()["fid"];
+              var fid = uri.parsed.query.parseQueryString()["f"];
               var form = document.getElement('#loginDiv form');
               if(fid && form) {
-                  form.set('action', form.get('action') + "?fid=" + fid);
+                  form.set('action', form.get('action') + "?f=" + fid);
+              } else {
+                  history.replaceState({}, "", "/");
               }
           }
       };

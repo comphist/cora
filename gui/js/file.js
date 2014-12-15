@@ -975,9 +975,9 @@ cora.fileManager = {
         tr.getElement('td.ftr-id').set('text', file.id);
         tr.getElement('td.ftr-sigle a')
             .set('text', file.sigle ? '['+file.sigle+']' : '')
-            .set('href', '?fid=' + file.id);
+            .set('href', '?f=' + file.id);
         tr.getElement('td.ftr-filename a').set('text', file.fullname)
-                                          .set('href', '?fid=' + file.id);
+                                          .set('href', '?f=' + file.id);
         // changer & creator info
         tr.getElement('td.ftr-changed-at')
             .set('text', gui.formatDateString(file.changed));
@@ -1045,7 +1045,8 @@ cora.fileManager = {
             var response = status;
             if(response.success) {
                 this.currentFileId = fid;
-                history.pushState({"fid": fid}, "", "?fid="+fid);
+                if(history.state !== null && typeof(history.state.f) === "undefined")
+                    history.pushState({"f": fid}, "", "?f="+fid);
                 gui.setHeader(cora.files.getDisplayName(fid));
                 cora.projects.performUpdate();
                 cora.files.prefetchTagsets(fid, function(status) {
@@ -1121,6 +1122,8 @@ cora.fileManager = {
                 cora.editor = null;
                 cora.projects.performUpdate();
                 gui.setHeader("").hideTab('edit').changeTab('file').unlock();
+                if(history.state !== null && typeof(history.state.f) !== "undefined")
+                    history.pushState({}, "", "/");
                 if(typeof(fn) == "function")
                     fn();
             }.bind(this));
@@ -1314,10 +1317,25 @@ window.addEvent('domready', function() {
     // Opens a file based on query string or server-side open file
     var fid = null;
     var uri = new URI();
-    if(uri.parsed && uri.parsed.query) {  // ?fid=... in query string?
-        fid = uri.parsed.query.parseQueryString()["fid"];
+    if(uri.parsed && uri.parsed.query) {  // ?f=... in query string?
+        fid = uri.parsed.query.parseQueryString()["f"];
     }
     fid = fid || userdata.currentFileId;  // file open on server-side?
+    history.replaceState({}, "", "/");
     if(fid)
         cora.fileManager.openFile(fid);
 });
+
+/* Make browser back/forward buttons usable (somewhat). */
+window.onpopstate = function(event) {
+    if(cora.fileManager !== null) {
+        var eventStateHasFileID = (event.state !== null
+                                   && typeof(event.state['f']) !== "undefined"),
+            fid = cora.fileManager.currentFileId;
+        if (!eventStateHasFileID && cora.fileManager.isFileOpened()) {
+            cora.fileManager.closeFile(fid);
+        } else if (eventStateHasFileID && event.state['f'] != fid) {
+            cora.fileManager.openFile(event.state['f']);
+        }
+    }
+};
