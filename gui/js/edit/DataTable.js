@@ -33,6 +33,7 @@ var DataTable = new Class({
     lineCount: null,
     displayedStart: -1,
     displayedEnd: -1,
+    rowsByNum: {},
 
     /* Constructor: DataTable
 
@@ -166,15 +167,14 @@ var DataTable = new Class({
 
     /* Function: getRowNumberFromElement
 
-       Gets the number of the row (used in '#' column and the <tr
-       id=...> attribute) containing the supplied element.
+       Gets the number of the row containing the supplied element.
      */
     getRowNumberFromElement: function(elem) {
-        var id = elem.get('id');
-        if(id === null || id.substr(0, 5) !== "line_") {
-            id = elem.getParent('tr').get('id');
+        var num = elem.retrieve('num');
+        if(num === null) {
+            num = elem.getParent('tr').retrieve('num');
         }
-        return Number.from(id.substr(5));
+        return num;
     },
 
     /* Function: getRowFromNumber
@@ -182,7 +182,10 @@ var DataTable = new Class({
        Gets the <tr> element corresponding to a given row number.
      */
     getRowFromNumber: function(num) {
-        return $('line_'+num);
+        if(num in this.rowsByNum)
+            return this.rowsByNum[num];
+        else
+            return null;
     },
 
     /* Function: getRowClassFromElement
@@ -256,6 +259,7 @@ var DataTable = new Class({
      */
     empty: function() {
         this.table.getElement('tbody').empty();
+        this.rowsByNum = {};
         return this;
     },
 
@@ -313,6 +317,7 @@ var DataTable = new Class({
     renderData: function(data) {
         var rows;
         this.table.hide();
+        this.rowsByNum = {};
         this.setRowCount(data.length);
         rows = this.table.getElements('tbody tr');
         for (var i=0; i<data.length; ++i) {
@@ -356,7 +361,8 @@ var DataTable = new Class({
                 + "," + data.line_name;
 
         this._fillProgress(row, data.num);
-        row.set('id', 'line_'+data.num);
+        this.rowsByNum[data.num] = row;
+        row.store('num', Number.from(data.num));
         row.getElement('.editTable_tokenid').set('text', data.num + 1);
         row.getElement('.editTable_line').set('text', lineinfo);
         row.getElement('.editTable_token').set('text', data.utf);

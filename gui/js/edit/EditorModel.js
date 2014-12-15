@@ -5,13 +5,13 @@
 var EditorModel = new Class({
     fileId: 0,
     lastEditedRow: -1,
-    data: {},
     header: "",
     changedLines: null,
     tries: 0,
     maximumTries: 20,     // max. number of load requests before giving up
     dynamicLoadPages: 5,  // min. number of pages in each direction to be pre-fetched
     dynamicLoadLines: 50, // min. number of lines in each direction to be pre-fetched
+    data: {},
     dataTable: null,
     idlist: {},
     lineRequestInProgress: false,

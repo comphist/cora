@@ -124,7 +124,8 @@ var HorizontalTextPreview = new Class({
 
         // fetch lines
 	start_bound = Math.max(0, start - this.maxContextLength);
-	end_bound   = Math.min(this.parent.lineCount, end + this.maxContextLength);
+	end_bound   = Math.min(this.parent.dataTable.lineCount,
+                               end + this.maxContextLength);
         if(!this.parent.isRangeLoaded(start_bound, end_bound)) {
             if(this.spinner.hidden)
                 this.spinner.show();
