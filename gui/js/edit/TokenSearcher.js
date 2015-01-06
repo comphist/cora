@@ -3,16 +3,26 @@
    GUI element to perform a search within a document.
  */
 var TokenSearcher = new Class({
+    Implements: [Options],
+
     parent: null,
+    tagsets: null,
+    flagHandler: null,
+
     mbox: null,
     flexrow: null,
     templateListElem: null,
 
-    initialize: function(parent, content) {
-        var ref = this;
+    initialize: function(parent, tagsets, flags, options) {
+        var content, ref = this;
+        this.setOptions(options);
         this.parent = parent;
-        this.templateListElem = $('editSearchCriterionTemplate');
+        this.tagsets = tagsets;
+        this.flagHandler = flags;
+        this.templateListElem = $(this.options.template);
+
         this._initializeTemplate();
+        content = $(this.options.content);
         this.flexrow = new FlexRowList(content.getElement('.flexrow-container'),
                                        this.templateListElem);
         this.reset();
@@ -34,6 +44,23 @@ var TokenSearcher = new Class({
 	    ]
 	});
         this._initializeEvents();
+        if(this.options.panels) {
+            Array.each(this.options.panels, this._activateSearch.bind(this));
+        }
+    },
+
+    /* Function: _activateSearch
+
+       Activates button that allows searching within the text.
+     */
+    _activateSearch: function(div) {
+        var elem = $(div).getElement('span.btn-text-search');
+        if (elem != null) {
+            elem.removeEvents('click');
+            elem.addEvent('click', function() {
+                this.open();
+            }.bind(this));
+        }
     },
 
     _initializeTemplate: function() {
@@ -53,14 +80,14 @@ var TokenSearcher = new Class({
         fieldSelector.grab(makeOption('token_trans', "Token (Transkription)"));
         // Annotation layers
         optgroup = new Element('optgroup', {'label': "Annotationsebenen"});
-        Object.each(cora.current().tagsets, function(tagset) {
+        Object.each(this.tagsets, function(tagset) {
             if(tagset.searchable)
                 optgroup.grab(makeOption(tagset.class, tagset.classname));
         });
         fieldSelector.grab(optgroup);
         // Flags
         optgroup = new Element('optgroup', {'label': "Markierungen"});
-        Object.each(this.parent.parent.flagHandler.flags,
+        Object.each(this.flagHandler.flags,
                     function(flag, flagname) {
                         optgroup.grab(makeOption(flagname, flag.displayname));
                     });
@@ -174,9 +201,9 @@ var TokenSearcher = new Class({
         var operator = mbox.content.getElement('select.editSearchOperator')
                 .getSelected()[0].get('value');
         var crits = mbox.content.getElements('.editSearchCriterion');
-        var data = [];
+        var conditions = [], data = {};
         Array.each(crits, function(li) {
-            data.push({
+            conditions.push({
                 'field': li.getElement('select.editSearchField')
                            .getSelected()[0].get('value'),
                 'match': li.getElement('select.editSearchMatch')
@@ -184,12 +211,13 @@ var TokenSearcher = new Class({
                 'value': li.getElement('input.editSearchText').get('value')
             });
         });
+        data = {'conditions': conditions, 'operator': operator};
         new Request({
             'url': 'request.php?do=search',
-            'data': {'conditions': data, 'operator': operator},
+            'data': data,
             onSuccess: function(status, text) {
-                console.log(status);
-            }
+                this.parent.onSearchSuccess(data, status);
+            }.bind(this)
         }).get();
     }
 });

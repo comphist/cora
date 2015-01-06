@@ -253,7 +253,7 @@ var gui = {
        Parameters:
         tabName - Internal name of the tab to be shown
      */
-    showTab: function(tabName) {
+    showTabButton: function(tabName) {
         var tabButton = $(tabName+"TabButton");
         if (tabButton) {
             tabButton.show();
@@ -261,14 +261,14 @@ var gui = {
         return this;
     },
 
-    /* Function: showTab
+    /* Function: hideTab
 
        Hides a tab in the menu.
 
        Parameters:
         tabName - Internal name of the tab to be hidden
      */
-    hideTab: function(tabName) {
+    hideTabButton: function(tabName) {
         var tabButton = $(tabName+"TabButton");
         if (tabButton) {
             tabButton.hide();

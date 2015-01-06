@@ -13,6 +13,7 @@ var EditorModel = new Class({
     dynamicLoadLines: 50, // min. number of lines in each direction to be pre-fetched
     data: {},
     dataTable: null,
+    searchResults: null,
     idlist: {},
     lineRequestInProgress: false,
     horizontalTextView: null,
@@ -45,6 +46,15 @@ var EditorModel = new Class({
             this.idlist[item] = idx;
         }.bind(this));
         this.flagHandler = new FlagHandler();
+
+        /* Search function */
+        this.tokenSearcher =
+            new TokenSearcher(this,
+                              cora.current().tagsets, this.flagHandler,
+                              {content: 'searchTokenForm',
+                               template: 'editSearchCriterionTemplate',
+                               panels: ['pagePanel']
+                              });
 
         /* Data table */
         this.dataTable =
@@ -402,12 +412,31 @@ var EditorModel = new Class({
 	this.tries = 0;
     },
 
-    /* Function: renderLines
+    /* Function: onSearchSuccess
 
-       LEGACY code -- to be removed after PageModel is integrated in DataTable
+       Callback function that is invoked whenever a search query successfully
+       returns results.
      */
-    renderLines: function(start, end){
-        this.dataTable.renderLines(start, end);
+    onSearchSuccess: function(criteria, status) {
+        console.log(criteria);
+        console.log(status);
+
+        if(this.searchResults !== null) {
+            this.searchResults.destroy();
+        }
+        this.searchResults = new SearchResults(criteria, status);
+
+        /* Here, we need to...
+
+           - Show the "search" tab
+           - Create a new DataTable and wrap the search results in it
+           - Add button to go back/forward in search results, linking them
+             to the DataTable object
+
+         -> Create a new SearchResults class for this task?
+         -> Also, maybe start by making TokenSearcher call this function
+            on a successful request :)
+         */
     },
 
     /* Function: getMinimumLineRange

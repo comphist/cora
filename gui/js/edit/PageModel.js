@@ -8,7 +8,6 @@
 var PageModel = new Class({
     parent: null,
     lineJumper: null,
-    tokenSearcher: null,
     panels: [],
     maxPage: 0,
     activePage: 0,
@@ -17,7 +16,6 @@ var PageModel = new Class({
         this.parent = parent;
         this._calculateMaxPage();
         this.lineJumper = new LineJumper(this, $('jumpToLineForm'));
-        this.tokenSearcher = new TokenSearcher(this, $('searchTokenForm'));
     },
 
     /* Function: _calculateMaxPage
@@ -57,7 +55,6 @@ var PageModel = new Class({
     addPanel: function(div) {
         this._activatePageBackForward(div)
             ._activateJumpToLine(div)
-            ._activateSearch(div)
             ._activateJumpToPage(div);
         this.panels.push(div);
         return this;
@@ -98,21 +95,6 @@ var PageModel = new Class({
             elem.removeEvents('click');
             elem.addEvent('click', function() {
                 this.lineJumper.open();
-            }.bind(this));
-        }
-        return this;
-    },
-
-    /* Function: _activateSearch
-
-       Activates button that allows searching within the text.
-     */
-    _activateSearch: function(div) {
-        var elem = div.getElement('span.btn-text-search');
-        if (elem != null && userdata.admin) {  // HACK while this is in development
-            elem.removeEvents('click');
-            elem.addEvent('click', function() {
-                this.tokenSearcher.open();
             }.bind(this));
         }
         return this;

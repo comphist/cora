@@ -1065,9 +1065,8 @@ cora.fileManager = {
 
         // 4. Show the editor tab and clean up
         onInitSuccess = function() {
-            $('editTabButton').show();
             default_tab = 'edit';
-            gui.changeTab('edit');
+            gui.showTabButton('edit').changeTab('edit');
             gui.hideSpinner();
         };
 
@@ -1121,7 +1120,7 @@ cora.fileManager = {
                 cora.editor.destruct();
                 cora.editor = null;
                 cora.projects.performUpdate();
-                gui.setHeader("").hideTab('edit').changeTab('file').unlock();
+                gui.setHeader("").hideTabButton('edit').changeTab('file').unlock();
                 if(history.state !== null && typeof(history.state.f) !== "undefined")
                     history.pushState({}, "", "/");
                 if(typeof(fn) == "function")

@@ -113,7 +113,7 @@ class AutomaticAnnotationWrapper {
       }
 
       $is_valid_annotation = function ($elem) use (&$valid_id_list) {
-          return !empty($elem) 
+          return !empty($elem)
               && isset($valid_id_list[$elem['id']])
               && $this->containsOnlyValidAnnotations($elem);
       };

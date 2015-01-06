@@ -102,6 +102,7 @@
               embedJS("gui/js/edit/FlagHandler.js", true);
               embedJS("gui/js/edit/LineJumper.js", true);
               embedJS("gui/js/edit/TokenSearcher.js", true);
+              embedJS("gui/js/edit/SearchResults.js", true);
               embedJS("gui/js/edit/HorizontalTextPreview.js", true);
               embedJS("gui/js/edit/PageModel.js", true);
               embedJS("gui/js/edit/EditorModel.js", true);
