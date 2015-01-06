@@ -16,10 +16,10 @@ cat css/screen.css css/baseBox.css js/mbox/assets/mBoxCore.css js/mbox/assets/mB
 
 echo "Minifying JavaScript..."
 cd js
-java -jar $CLOSURE_COMPILER --js_output_file=mbox.min.js mbox/mBox.Core.js mbox/mBox.Modal.js mbox/mBox.Notice.js mbox/mBox.Modal.Confirm.js mbox/mBox.Tooltip.js mbox/mForm.Core.js mbox/mForm.Submit.js mbox/mForm.Element.js mbox/mForm.Element.Select.js
+java -jar $CLOSURE_COMPILER --js_output_file=mbox.min.js --create_source_map=%outname%.map mbox/mBox.Core.js mbox/mBox.Modal.js mbox/mBox.Notice.js mbox/mBox.Modal.Confirm.js mbox/mBox.Tooltip.js mbox/mForm.Core.js mbox/mForm.Submit.js mbox/mForm.Element.js mbox/mForm.Element.Select.js
 
-java -jar $CLOSURE_COMPILER --js_output_file=master.min.js baseBox.js ProgressBar.js iFrameFormRequest.js Meio.Autocomplete.js gui.js tagsets.js tagsets/Tagset.js tagsets/SplitClassTagset.js tagsets/POS.js tagsets/Norm.js tagsets/NormBroad.js tagsets/NormType.js tagsets/LemmaAutocomplete.js tagsets/LemmaSugg.js tagsets/Lemma.js tagsets/LemmaPOS.js tagsets/Comment.js tagsets/TagsetFactory.js file.js edit/DataTableNavigation.js edit/DataTableProgressBar.js edit/DataTableDropdownMenu.js edit/DataTable.js edit/FlagHandler.js edit/LineJumper.js edit/TokenSearcher.js edit/SearchResults.js edit/HorizontalTextPreview.js edit/PageModel.js edit/EditorModel.js edit.js settings.js MultiSelect.js
+java -jar $CLOSURE_COMPILER --js_output_file=master.min.js --create_source_map=%outname%.map baseBox.js ProgressBar.js iFrameFormRequest.js Meio.Autocomplete.js gui.js tagsets.js tagsets/Tagset.js tagsets/SplitClassTagset.js tagsets/POS.js tagsets/Norm.js tagsets/NormBroad.js tagsets/NormType.js tagsets/LemmaAutocomplete.js tagsets/LemmaSugg.js tagsets/Lemma.js tagsets/LemmaPOS.js tagsets/Comment.js tagsets/TagsetFactory.js file.js edit/DataTableNavigation.js edit/DataTableProgressBar.js edit/DataTableDropdownMenu.js edit/DataTable.js edit/FlagHandler.js edit/LineJumper.js edit/TokenSearcher.js edit/SearchResults.js edit/HorizontalTextPreview.js edit/PageModel.js edit/EditorModel.js edit.js settings.js MultiSelect.js
 
-java -jar $CLOSURE_COMPILER --js_output_file=admin.min.js datepicker.js admin.js
+java -jar $CLOSURE_COMPILER --js_output_file=admin.min.js --create_source_map=%outname%.map datepicker.js admin.js
 
 echo "Done!"
