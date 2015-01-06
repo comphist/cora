@@ -1,0 +1,8 @@
+.sass-cache
+FirePHPCore
+pqp
+*.min.js
+*.min.js.map
+*.min.css
+*.css.map
+*.bak
