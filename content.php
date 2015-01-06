@@ -21,9 +21,10 @@ require_once( "lib/contentModel.php" );
 /** @copybrief index.php::$menu */
 $menu = new Menu();
 if( $_SESSION["loggedIn"] === true ) {
-  $menu->addMenuItem( "file", "gui/file.php", "gui/js/file.js", "Datei", "Dokumente öffnen oder hinzufügen" );
-  $menu->addMenuItem( "edit", "gui/edit.php", "gui/js/edit.js", "Editor", "Geöffnetes Dokument bearbeiten" );
-  $menu->addMenuItem( "settings", "gui/settings.php", "gui/js/settings.js", "Einstellungen", "Einstellungen von CorA ändern" );
+  $menu->addMenuItem( "file", "gui/file.php", "", "Datei", "Dokumente öffnen oder hinzufügen" );
+  $menu->addMenuItem( "edit", "gui/edit.php", "", "Editor", "Geöffnetes Dokument bearbeiten" );
+  $menu->addMenuItem( "search", "gui/search.php", "", "Suchen", "Aktuelle Suchergebnisse anzeigen" );
+  $menu->addMenuItem( "settings", "gui/settings.php", "", "Einstellungen", "Einstellungen von CorA ändern" );
   if ( $_SESSION["admin"] ) {
     $menu->addMenuItem( "admin", "gui/admin.php", "", "Administration", "Benutzer und Projekte verwalten" );
   }

@@ -9,5 +9,6 @@
 cora.editor = null;
 
 window.addEvent('domready',function(){
-    $('editTabButton').hide();
+    gui.hideTabButton('edit');
+    gui.hideTabButton('search');
 });
