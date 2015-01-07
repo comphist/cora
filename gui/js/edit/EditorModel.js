@@ -209,6 +209,8 @@ var EditorModel = new Class({
        Clean-up when closing the editor.
      */
     destruct: function() {
+        if (this.searchResults !== null)
+            this.searchResults.destroy();
         this.dataTable.hide();
         $$('div#menuRight .when-file-open-only').removeClass('file-open');
     },
@@ -418,13 +420,18 @@ var EditorModel = new Class({
        returns results.
      */
     onSearchSuccess: function(criteria, status) {
-        console.log(criteria);
-        console.log(status);
+        if(!status['success']) {
+            gui.showNotice('error', "Suchanfrage fehlgeschlagen.");
+            return;
+        }
+
+        Array.each(status['results'], this.setLineFromServer.bind(this));
 
         if(this.searchResults !== null) {
             this.searchResults.destroy();
         }
         this.searchResults = new SearchResults(criteria, status);
+        gui.changeTab('search');
 
         /* Here, we need to...
 
@@ -498,6 +505,19 @@ var EditorModel = new Class({
 	return (this.getMinimumLineRange(start, end).length === 0);
     },
 
+    /* Function: setLineFromServer
+
+     */
+    setLineFromServer: function(line) {
+        var num = line.num;
+        if (num === null || typeof(num) === "undefined") {
+            num = this.idlist[line.id];
+            line.num = num;
+        }
+        if (typeof(num) !== "undefined" && typeof(this.data[num]) === "undefined")
+            this.data[num] = line;
+    },
+
     /* Function: requestLines
 
        Ensures that lines in a given range are loaded in memory, and
@@ -541,9 +561,7 @@ var EditorModel = new Class({
 	    async: true,
 	    onSuccess: function(status, text) {
                 this.lineRequestInProgress = false;
-                var line,
-                    lineArrayLength = (status.success ? status['data'].length : false),
-                    data = this.data;
+                var lineArrayLength = (status.success ? status['data'].length : false);
 		if (!lineArrayLength) {
                     if(typeof(onerror) === "function")
                         onerror({
@@ -553,9 +571,7 @@ var EditorModel = new Class({
                     return;
 		}
                 for(var i = 0; i < lineArrayLength; i++) {
-                    line = status['data'][i];
-                    if (typeof(data[line.num]) === "undefined")
-                        data[line.num] = line;
+                    this.setLineFromServer(status['data'][i]);
                 }
 		this.requestLines(start, end, fn, onerror);
 	    }.bind(this)

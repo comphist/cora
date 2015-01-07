@@ -212,7 +212,7 @@ var TokenSearcher = new Class({
             });
         });
         data = {'conditions': conditions, 'operator': operator};
-        new Request({
+        new Request.JSON({
             'url': 'request.php?do=search',
             'data': data,
             onSuccess: function(status, text) {

@@ -17,6 +17,7 @@ class DocumentReader extends DocumentAccessor {
 
   // SQL statements
   private $stmt_getLinesByRange = null;
+  private $stmt_getLinesByID = null;
   private $stmt_getDiplTrans = null;
   private $stmt_getDiplLayoutInfo = null;
   private $stmt_getAllAnnotations = null;
@@ -38,16 +39,24 @@ class DocumentReader extends DocumentAccessor {
    **********************************************/
 
   private function prepareReaderStatements() {
-     $stmt = "SELECT modern.id, modern.trans, modern.utf, "
-           . "       modern.tok_id, c1.value AS comment "
-           . "FROM   modern "
-           . "  LEFT JOIN token   ON modern.tok_id=token.id "
-           . "  LEFT JOIN comment c1 ON  c1.tok_id=token.id "
-           . "        AND c1.subtok_id=modern.id AND c1.comment_type='C' "
-           . "WHERE  token.text_id=:tid "
-           . "ORDER BY token.ordnr ASC, modern.id ASC "
-           . "LIMIT  :offset, :count";
+    $stmt = "SELECT modern.id, modern.trans, modern.utf, "
+          . "       modern.tok_id, c1.value AS comment "
+          . "FROM   modern "
+          . "  LEFT JOIN token   ON modern.tok_id=token.id "
+          . "  LEFT JOIN comment c1 ON  c1.tok_id=token.id "
+          . "        AND c1.subtok_id=modern.id AND c1.comment_type='C' "
+          . "WHERE  token.text_id=:tid "
+          . "ORDER BY token.ordnr ASC, modern.id ASC "
+          . "LIMIT  :offset, :count";
     $this->stmt_getLinesByRange = $this->dbo->prepare($stmt);
+    $stmt = "SELECT modern.id, modern.trans, modern.utf, "
+          . "       modern.tok_id, c1.value AS comment "
+          . "FROM   modern "
+          . "  LEFT JOIN token   ON modern.tok_id=token.id "
+          . "  LEFT JOIN comment c1 ON  c1.tok_id=token.id "
+          . "        AND c1.subtok_id=modern.id AND c1.comment_type='C' "
+          . "WHERE  token.text_id=:tid AND modern.id=:mid";
+    $this->stmt_getLinesByID = $this->dbo->prepare($stmt);
     $stmt = "SELECT d.trans, d.line_id FROM dipl d "
           . " WHERE d.tok_id=:tokid ORDER BY d.id ASC";
     $this->stmt_getDiplTrans = $this->dbo->prepare($stmt);
@@ -87,6 +96,25 @@ class DocumentReader extends DocumentAccessor {
     $this->stmt_getLinesByRange->bindValue(':count', (int)$count, PDO::PARAM_INT);
     $this->stmt_getLinesByRange->execute();
     return $this->stmt_getLinesByRange->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  /** Retrieve lines with given modern IDs.
+   *
+   * @param array $idlist List of modern IDs
+   *
+   * @return an @em array of mods, with ID and trans/utf fields
+   */
+  public function getLinesByID($idlist) {
+    $mid = 0;
+    $results = array();
+    $this->stmt_getLinesByID->bindValue(':tid', $this->fileid, PDO::PARAM_INT);
+    $this->stmt_getLinesByID->bindParam(':mid', $mid, PDO::PARAM_INT);
+    foreach($idlist as $mid) {
+      $this->stmt_getLinesByID->execute();
+      if($res = $this->stmt_getLinesByID->fetch(PDO::FETCH_ASSOC))
+        $results[] = $res;
+    }
+    return $results;
   }
 
   /** Return the transcription of a full token including line breaks.

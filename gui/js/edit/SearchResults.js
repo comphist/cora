@@ -17,6 +17,8 @@ var SearchResults = new Class({
      */
     initialize: function(criteria, status) {
         this.data = status['results'];
+        // ...
+        gui.showTabButton('search');
     },
 
     /* Function: destroy
@@ -24,5 +26,6 @@ var SearchResults = new Class({
        Destroys all objects associated with this instance.
      */
     destroy: function() {
+        gui.hideTabButton('search');
     }
 });

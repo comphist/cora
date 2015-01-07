@@ -268,7 +268,11 @@
        $sq->addCondition($c['field'], $c['match'], $c['value']);
      }
      if($stmt = $sq->execute($this->dbo)) {
-       return array('results' => $stmt->fetchAll(PDO::FETCH_COLUMN));
+       $idlist = $stmt->fetchAll(PDO::FETCH_COLUMN);
+       $dr = new DocumentReader($this, $this->dbo, $id);
+       $data = $dr->getLinesByID($idlist);
+       $this->prepareLinesForClient($data, $dr);
+       return array('results' => $data, 'success' => true);
      }
    }
 
@@ -1457,10 +1461,13 @@
 
      $dr = new DocumentReader($this, $this->dbo, $fileid);
      $data = $dr->getLinesByRange($start, $lim);
+     $this->prepareLinesForClient($data, $dr);
 
+     return $data;
+   }
+
+   private function prepareLinesForClient(&$data, $dr) {
      foreach($data as $linenum => &$line) {
-       $line['num'] = $linenum + $start;  // can we drop this?
-
        // Token transcription & layout information
        $line['full_trans'] = $dr->getTokTransWithLinebreaks($line['tok_id']);
        $line = array_merge($line, $dr->getDiplLayoutInfo($line['tok_id']));
@@ -1486,8 +1493,6 @@
        }
      }
      unset($line);
-
-     return $data;
    }
 
    /** Retrieves error types and indexes them by name. */
