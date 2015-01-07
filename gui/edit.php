@@ -15,7 +15,7 @@
     <span class="btn-toolbar-entry btn-text-info"><span class="oi" data-glyph="info" aria-hidden="true"></span> Metadaten</span>
   </div>
 
-  <table id="editTable" border="0">
+  <table id="editTable">
   </table>
 
   <div id="horizontalTextViewContainer">
@@ -24,7 +24,7 @@
     </div>
   </div>
 
-  <div class="btn-toolbar" id="pagePanelBottom">
+  <div class="btn-toolbar btn-toolbar-bottom" id="pagePanelBottom">
     <span class="btn-toolbar-entry btn-page-count"><span class="oi" aria-hidden="true"></span>Seite <input type="text" class="btn-page-to" size="2" /><span class="page-active"></span>/<span class="page-max"></span></span>
     <span class="btn-toolbar-entry btn-page-back" title="Seite zurück"><span class="oi" data-glyph="arrow-thick-left" aria-hidden="true"></span></span>
     <span class="btn-toolbar-entry btn-page-forward" title="Seite vor"><span class="oi" data-glyph="arrow-thick-right" aria-hidden="true"></span></span>

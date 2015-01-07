@@ -367,6 +367,9 @@ div.btn-toolbar {
       background-image: linear-gradient(top, #f9f9f9, #e4e4e4) !important;
       filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=#f9f9f9,EndColorStr=#e4e4e4) !important; }
 
+div.btn-toolbar-bottom {
+  padding-top: 1em; }
+
 /* Styles specific to edit-panel toolbar */
 span.btn-page-count {
   color: #aaaaaa; }
@@ -636,42 +639,42 @@ div#transImportSpinner .proc {
 /***** EDITOR PANEL ********************************************************/
 /***************************************************************************/
 /* Edit-Table */
-table#editTable {
+table.editTable {
   background-color: #f8f8f8;
   border-spacing: 0px;
   font-size: 1.5em;
   padding-top: 6px; }
-  table#editTable th {
+  table.editTable th {
     border-bottom: 1px solid #666;
     padding: 0px 6px 4px 6px; }
-    table#editTable th.editTable_tokenid {
+    table.editTable th.editTable_tokenid {
       text-align: right; }
-  table#editTable td {
+  table.editTable td {
     border-bottom: 1px solid #BBB;
     padding: 0px 6px;
     white-space: nowrap; }
-    table#editTable td.editTable_token {
+    table.editTable td.editTable_token {
       font-family: Junicode, Cardo, Alphabetum, "Palemonas MUFI", "Andron Scriptor Web", LeedsUni, "Titus Cyberbit", "Times New Roman", Times, serif;
       font-size: 110%; }
-    table#editTable td.editTable_tokenid {
+    table.editTable td.editTable_tokenid {
       font-size: 80%;
       font-weight: bold;
       text-align: right; }
-    table#editTable td.editTable_pos select {
+    table.editTable td.editTable_pos select {
       width: 8em; }
-    table#editTable td.editTable_morph select {
+    table.editTable td.editTable_morph select {
       width: 12em; }
-    table#editTable td.editTable_norm input {
+    table.editTable td.editTable_norm input {
       width: 8em; }
-    table#editTable td.editTable_norm_broad input {
+    table.editTable td.editTable_norm_broad input {
       width: 8em; }
-    table#editTable td.editTable_lemma input {
+    table.editTable td.editTable_lemma input {
       width: 13em; }
-    table#editTable td.editTable_comment input {
+    table.editTable td.editTable_comment input {
       width: 15em; }
-    table#editTable td.editTable_lemma_sugg {
+    table.editTable td.editTable_lemma_sugg {
       padding-left: 0 !important; }
-    table#editTable td select.input_error {
+    table.editTable td select.input_error {
       box-shadow: 0 0 4px 1px #ff0000, 0 0 2px rgba(0, 0, 0, 0.12) inset; }
 
 tr.editHeadLine {
@@ -753,9 +756,6 @@ div.editTableDropdownMenu {
     list-style-type: none;
     padding: 0;
     margin: 0; }
-
-div#pagePanelBottom {
-  margin-top: 1em; }
 
 div#aa_tagger_select {
   padding: .5em 1em 0 1.5em; }

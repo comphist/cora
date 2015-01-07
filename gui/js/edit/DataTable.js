@@ -72,7 +72,7 @@ var DataTable = new Class({
      */
     initializeTable: function() {
         var template = $(this.options.template);
-        this.table = new Element('table');
+        this.table = new Element('table', {class: 'editTable'});
         this.lineTemplate = template.getElement('tbody')
                                     .getElement('tr').clone();
         this.table.grab(template.getElement('thead').clone());

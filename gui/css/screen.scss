@@ -477,6 +477,10 @@ div.btn-toolbar {
     }
 }
 
+div.btn-toolbar-bottom {
+    padding-top: 1em;
+}
+
 /* Styles specific to edit-panel toolbar */
 
 span.btn-page-count {
@@ -817,7 +821,7 @@ div#transImportSpinner {
 /***************************************************************************/
 
 /* Edit-Table */
-table#editTable{
+table.editTable{
     background-color: $page-background-color;
     border-spacing: 0px;
     font-size: 1.5em;
@@ -971,10 +975,6 @@ div.editTableDropdownMenu {
         padding: 0;
         margin: 0;
     }
-}
-
-div#pagePanelBottom {
-    margin-top: 1em;
 }
 
 div#aa_tagger_select {

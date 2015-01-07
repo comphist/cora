@@ -19,6 +19,8 @@ var EditorModel = new Class({
     horizontalTextView: null,
     flagHandler: null,
 
+    visibility: {},  // column visibility -- to be refactored soon
+
     /* Constructor: EditorModel
 
        Initialize the editor model.
@@ -252,17 +254,17 @@ var EditorModel = new Class({
     */
     initializeColumnVisibility: function() {
         // first, determine visibility
-        var visibility = {};
+        this.visibility = {};
 	var eshc = $('editorSettingsHiddenColumns');
         var isSetToVisible = function(value) {
             return eshc.getElement('input#eshc-'+value).get('checked');
         };
         Array.each(cora.supportedTagsets, function(ts) {
-            visibility[ts] = cora.currentHasTagset(ts) && isSetToVisible(ts);
-        });
+            this.visibility[ts] = cora.currentHasTagset(ts) && isSetToVisible(ts);
+        }.bind(this));
 
 	// Show/hide columns and settings checkboxes
-	Object.each(visibility, function(visible, value) {
+	Object.each(this.visibility, function(visible, value) {
             this.dataTable.setVisibility(value, visible);
 	    if(cora.currentHasTagset(value)) {
 		eshc.getElements('input#eshc-'+value+']').show();
@@ -283,7 +285,10 @@ var EditorModel = new Class({
          visible - Whether the column should be visible
      */
     setColumnVisibility: function(name, visible) {
+        this.visibility[name] = visible;
         this.dataTable.setVisibility(name, visible);
+        if (this.searchResults !== null)
+            this.searchResults.dataTable.setVisibility(name, visible);
     },
 
     /* Function: updateShowInputErrors
@@ -301,7 +306,7 @@ var EditorModel = new Class({
 
     /* Function: get
 
-       Retrieves a data entry by its index.
+       Retrieves a data entry by its num attribute.
 
        Parameters:
          num - Index of the data entry
@@ -367,11 +372,13 @@ var EditorModel = new Class({
        Callback function of DataTable that is invoked whenever an annotation
        changes.
      */
-    update: function(elem, data, cls, value) {
+    update: function(elem, data, cls, value, fromSearch) {
         if(!this.changedLines.contains(data.num))
             this.changedLines.push(data.num);
         if (data.num > this.lastEditedRow)
             this.dataTable.updateProgressBar(data.num);
+        if (!fromSearch && this.searchResults !== null)
+            this.searchResults.dataTable.render();
     },
 
     /* Function: onDataTableFocus
@@ -420,29 +427,29 @@ var EditorModel = new Class({
        returns results.
      */
     onSearchSuccess: function(criteria, status) {
+        var data;
+
         if(!status['success']) {
             gui.showNotice('error', "Suchanfrage fehlgeschlagen.");
             return;
         }
 
         Array.each(status['results'], this.setLineFromServer.bind(this));
+        data = status['results'].map(function(line) {
+            return this.get(line.num);
+        }.bind(this));
 
         if(this.searchResults !== null) {
             this.searchResults.destroy();
         }
-        this.searchResults = new SearchResults(criteria, status);
+        this.searchResults = new SearchResults(this, criteria, data);
+
         gui.changeTab('search');
 
         /* Here, we need to...
 
-           - Show the "search" tab
-           - Create a new DataTable and wrap the search results in it
            - Add button to go back/forward in search results, linking them
              to the DataTable object
-
-         -> Create a new SearchResults class for this task?
-         -> Also, maybe start by making TokenSearcher call this function
-            on a successful request :)
          */
     },
 
