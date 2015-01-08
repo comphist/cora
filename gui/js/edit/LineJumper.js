@@ -20,7 +20,7 @@ var LineJumper = new Class({
         this.parent = parent;
         this.parentTable = parent.parent;
         this.mbox = new mBox.Modal({
-	    content: content,
+	    content: content.clone(),
 	    title: 'Springe zu Zeile',
 	    buttons: [
 		{title: 'Abbrechen', addClass: 'mform'},

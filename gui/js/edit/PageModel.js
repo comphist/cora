@@ -8,6 +8,7 @@
 var PageModel = new Class({
     parent: null,
     lineJumper: null,
+    lineJumperForm: 'jumpToLineForm',
     panels: [],
     maxPage: 0,
     activePage: 0,
@@ -15,7 +16,7 @@ var PageModel = new Class({
     initialize: function(parent) {
         this.parent = parent;
         this._calculateMaxPage();
-        this.lineJumper = new LineJumper(this, $('jumpToLineForm'));
+        this.lineJumper = new LineJumper(this, $(this.lineJumperForm));
     },
 
     /* Function: _calculateMaxPage
@@ -29,6 +30,7 @@ var PageModel = new Class({
         var x = (this.parent.lineCount - lines_context);
         var y = (lines_per_page - lines_context);
         this.maxPage = (x % y) ? Math.ceil(x/y) : (x/y);
+        this.maxPage = Math.max(this.maxPage, 1);
         return this;
     },
 
