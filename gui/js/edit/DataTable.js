@@ -15,7 +15,8 @@ var DataTable = new Class({
         pageModel: {
             panels: [],
             startPage: null
-        }
+        },
+        clickableText: false  /**< Make line number & tokens clickable links */
         // onFocus: function(target, id) {}
         // onRender: function(data_array) {}
         // onUpdate: function(elem, data, cls, value) {}
@@ -75,6 +76,11 @@ var DataTable = new Class({
         this.table = new Element('table', {class: 'editTable'});
         this.lineTemplate = template.getElement('tbody')
                                     .getElement('tr').clone();
+        if(this.options.clickableText) {
+            this.lineTemplate.getElements('.editTable_tokenid').addClass('data-table-clickable');
+            this.lineTemplate.getElements('.editTable_token').addClass('data-table-clickable');
+            this.lineTemplate.getElements('.editTable_tok_trans').addClass('data-table-clickable');
+        }
         this.table.grab(template.getElement('thead').clone());
         this.table.grab(new Element('tbody'));
     },
@@ -141,6 +147,15 @@ var DataTable = new Class({
                 this.fireEvent('dblclick', [target, id]);
             }.bind(this)
         );
+        if(this.options.clickableText) {
+            this.table.addEvent(
+                'click:relay(td.data-table-clickable)',
+                function(event, target) {
+                    var id = this.getRowNumberFromElement(target);
+                    this.fireEvent('click', [target, id]);
+                }.bind(this)
+            );
+        }
     },
 
     /* Function: makeUpdateHandler

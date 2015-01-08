@@ -63,13 +63,7 @@ var LineJumper = new Class({
         } else if (!this.parent.isValidLine(value)) {
 	    gui.showNotice('error', 'Zeilennummer existiert nicht.');
         } else {
-            this.parentTable.addEvent(
-                'render:once',
-                function() {
-                    this.highlightRow(value - 1);
-                }.bind(this.parentTable)
-            );
-            this.parent.set(this.parent.getPageByLine(value)).render();
+            this.parent.setPageByLine(value, true);
             this.mbox.close();
         }
     }

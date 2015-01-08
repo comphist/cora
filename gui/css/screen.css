@@ -674,6 +674,11 @@ table.editTable {
       width: 15em; }
     table.editTable td.editTable_lemma_sugg {
       padding-left: 0 !important; }
+    table.editTable td.data-table-clickable {
+      color: #437fda;
+      cursor: pointer; }
+      table.editTable td.data-table-clickable:hover {
+        color: #86b3f7; }
     table.editTable td select.input_error {
       box-shadow: 0 0 4px 1px #ff0000, 0 0 2px rgba(0, 0, 0, 0.12) inset; }
 
@@ -740,6 +745,9 @@ tr#line_template {
   display: none; }
 
 /* Dropdown Menu */
+th.editTable_dropdown, td.editTable_dropdown {
+  display: none; }
+
 .editTableDropdownIcon {
   cursor: pointer; }
 
@@ -782,6 +790,9 @@ div.srl-criteria {
     font-weight: 600; }
   div.srl-criteria .srl-condition-list, div.srl-criteria p {
     padding-top: 0; }
+
+table#searchTable td {
+  border-bottom: 3px solid white; }
 
 /***************************************************************************/
 /***** SETTINGS PANEL ******************************************************/

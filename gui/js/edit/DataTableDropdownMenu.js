@@ -73,6 +73,7 @@ var DataTableDropdownMenu = new Class({
             }
         }));
         this.dropdownList.grab(li);
+        this.setVisibility('dropdown', true);
     },
 
     /* Function: addDropdownEntries

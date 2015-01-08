@@ -256,9 +256,18 @@ var PageModel = new Class({
 
        Parameters:
          line - Number of the line
+         highlight - If true, re-renders the table and highlights the line
      */
-    setPageByLine: function(line) {
-        return this.set(this.getPageByLine(line));
+    setPageByLine: function(line, highlight) {
+        this.set(this.getPageByLine(line));
+        if(highlight) {
+            this.parent.addEvent(
+                'render:once',
+                function() { this.highlightRow(line - 1); }.bind(this.parent)
+            );
+            this.render();
+        }
+        return this;
     },
 
     /* Function: isValidLine

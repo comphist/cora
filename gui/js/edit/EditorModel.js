@@ -55,7 +55,9 @@ var EditorModel = new Class({
                               cora.current().tagsets, this.flagHandler,
                               {content: 'searchTokenForm',
                                template: 'editSearchCriterionTemplate',
-                               panels: ['pagePanel']
+                               panels: ['pagePanel', 'searchPagePanel'],
+                               onSearchRequest: this.onSearchRequest.bind(this),
+                               onSearchSuccess: this.onSearchSuccess.bind(this)
                               });
 
         /* Data table */
@@ -432,6 +434,13 @@ var EditorModel = new Class({
 	this.tries = 0;
     },
 
+    /* Function: onSearchRequest
+
+       Callback function that is invoked whenever a search query is started.
+     */
+    onSearchRequest: function() {
+    },
+
     /* Function: onSearchSuccess
 
        Callback function that is invoked whenever a search query successfully
@@ -456,12 +465,6 @@ var EditorModel = new Class({
         this.searchResults = new SearchResults(this, criteria, data);
 
         gui.changeTab('search');
-
-        /* Here, we need to...
-
-           - Add button to go back/forward in search results, linking them
-             to the DataTable object
-         */
     },
 
     /* Function: getMinimumLineRange

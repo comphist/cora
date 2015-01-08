@@ -871,6 +871,14 @@ table.editTable{
             padding-left: 0 !important;
         }
 
+        &.data-table-clickable {
+            color: $link-color;
+            cursor: pointer;
+            &:hover {
+                color: $link-hover-color;
+            }
+        }
+
         select.input_error {
             box-shadow: 0 0 4px 1px #ff0000, 0 0 2px rgba(0, 0, 0, 0.12) inset;
         }
@@ -956,6 +964,10 @@ tr#line_template {
 
 /* Dropdown Menu */
 
+th.editTable_dropdown, td.editTable_dropdown {
+    display: none;
+}
+
 .editTableDropdownIcon {
     cursor: pointer;
 }
@@ -1012,6 +1024,12 @@ div.srl-criteria {
 
     .srl-condition-list, p {
         padding-top: 0;
+    }
+}
+
+table#searchTable {
+    td {
+        border-bottom: 3px solid white;
     }
 }
 

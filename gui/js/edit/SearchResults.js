@@ -40,6 +40,8 @@ var SearchResults = new Class({
                           cora.current().tagsets, parent.flagHandler,
                           {lineCount: this.data.length,
                            progressMarker: parent.lastEditedRow,
+                           dropdown: false,
+                           clickableText: true,
                            pageModel: {
                                panels: ['searchPagePanel', 'searchPagePanelBottom'],
                                startPage: 1
@@ -53,6 +55,14 @@ var SearchResults = new Class({
         }.bind(this));
         this.dataTable.table.replaces($(this.dataTableHtmlId));
         this.dataTable.table.set('id', this.dataTableHtmlId);
+        this.dataTable.addEvent(
+            'click',  // triggers on line number & token <td> elements
+            function(target, id) {
+                this.dataTable.pages.setPageByLine(id + 1, true);
+                gui.changeTab('edit');
+            }.bind(parent)  //!! this is the main editTable, not the searchTable
+        );
+
         this.dataTable.render();
     },
 
@@ -79,12 +89,14 @@ var SearchResults = new Class({
             text += cora.strings.search_condition.match[condition.match] + " ";
             li.set('text', text);
             if (condition.match !== "set" && condition.match !== "nset") {
-                li.grab(new Element('span', {
-                    'class': 'srl-condition-value',
-                    'text': condition.value
-                }));
-            } else if (condition.value === "") {
-                li.set('text', text + " leer");
+                if (condition.value === "") {
+                    li.set('text', text + " leer");
+                } else {
+                    li.grab(new Element('span', {
+                        'class': 'srl-condition-value',
+                        'text': condition.value
+                    }));
+                }
             }
             ul.grab(li);
         });
@@ -141,6 +153,7 @@ var SearchResults = new Class({
        Destroys all objects associated with this instance.
      */
     destroy: function() {
+        this.dataTable.empty();
         gui.hideTabButton('search');
     }
 });

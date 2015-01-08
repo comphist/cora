@@ -25,7 +25,7 @@ cora.strings.search_condition = {
    GUI element to perform a search within a document.
  */
 var TokenSearcher = new Class({
-    Implements: [Options],
+    Implements: [Events, Options],
 
     parent: null,
     tagsets: null,
@@ -58,10 +58,7 @@ var TokenSearcher = new Class({
                 },
 		{title: 'Abbrechen', addClass: 'mform'},
 		{title: 'Suchen', addClass: 'mform button_green',
-		 event: function() {
-		     ref.requestSearch(this);
-                     this.close();
-		 }
+		 event: function() { ref.requestSearch(this); }
 		}
 	    ]
 	});
@@ -228,6 +225,7 @@ var TokenSearcher = new Class({
         var operator = mbox.content.getElement('select.editSearchOperator')
                 .getSelected()[0].get('value');
         var crits = mbox.content.getElements('.editSearchCriterion');
+        var spinner = new Spinner(mbox.container);
         var conditions = [], data = {};
         Array.each(crits, function(li) {
             conditions.push({
@@ -239,11 +237,15 @@ var TokenSearcher = new Class({
             });
         });
         data = {'conditions': conditions, 'operator': operator};
+        this.fireEvent('searchRequest', [data]);
+        spinner.show();
         new Request.JSON({
             'url': 'request.php?do=search',
             'data': data,
             onSuccess: function(status, text) {
-                this.parent.onSearchSuccess(data, status);
+                spinner.hide();
+                mbox.close();
+                this.fireEvent('searchSuccess', [data, status]);
             }.bind(this)
         }).get();
     }
