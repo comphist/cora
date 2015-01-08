@@ -27,7 +27,7 @@
     /********************** JavaScript **********************/
     ?>
     <script type="text/javascript">
-        var cora = {};
+        var cora = {strings: {}};
         var default_tab = "<?php echo $menu->getDefaultItem(); ?>";
         <?php
           if($_SESSION['loggedIn']) {

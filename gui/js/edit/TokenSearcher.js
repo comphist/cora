@@ -1,3 +1,25 @@
+cora.strings.search_condition = {
+    'field': {
+        'token_all': "Token",
+        'token_trans': "Token (Transkription)"
+    },
+    'operator': {
+        'all': "alle",
+        'any': "mindestens eine"
+    },
+    'match': {
+        'set': "ist gesetzt",
+        'nset': "ist nicht gesetzt",
+        'eq': "ist",
+        'neq': "ist nicht",
+        'in': "enthält",
+        'nin': "enthält nicht",
+        'bgn': "beginnt mit",
+        'end': "endet auf",
+        'regex': "matcht RegEx"
+    }
+};
+
 /* Class: TokenSearcher
 
    GUI element to perform a search within a document.
@@ -76,13 +98,17 @@ var TokenSearcher = new Class({
         };
         fieldSelector.empty();
         // Fixed elements
-        fieldSelector.grab(makeOption('token_all', "Token"));
-        fieldSelector.grab(makeOption('token_trans', "Token (Transkription)"));
+        fieldSelector.grab(makeOption('token_all',
+                                      cora.strings.search_condition.field['token_all']));
+        fieldSelector.grab(makeOption('token_trans',
+                                      cora.strings.search_condition.field['token_trans']));
         // Annotation layers
         optgroup = new Element('optgroup', {'label': "Annotationsebenen"});
         Object.each(this.tagsets, function(tagset) {
-            if(tagset.searchable)
+            if(tagset.searchable) {
                 optgroup.grab(makeOption(tagset.class, tagset.classname));
+                cora.strings.search_condition.field[tagset.class] = tagset.classname;
+            }
         });
         fieldSelector.grab(optgroup);
         // Flags
@@ -90,6 +116,7 @@ var TokenSearcher = new Class({
         Object.each(this.flagHandler.flags,
                     function(flag, flagname) {
                         optgroup.grab(makeOption(flagname, flag.displayname));
+                        cora.strings.search_condition.field[flagname] = flag.displayname;
                     });
         fieldSelector.grab(optgroup);
         // Set matcher
@@ -129,18 +156,18 @@ var TokenSearcher = new Class({
         };
         if(cls === 'flags') {
             return new Elements([
-                makeOption('set', "ist gesetzt"),
-                makeOption('nset', "ist nicht gesetzt")
+                makeOption('set', cora.strings.search_condition.match['set']),
+                makeOption('nset', cora.strings.search_condition.match['nset'])
             ]);
         }
         return new Elements([
-            makeOption('eq', "ist"),
-            makeOption('neq', "ist nicht"),
-            makeOption('in', "enthält"),
-            makeOption('nin', "enthält nicht"),
-            makeOption('bgn', "beginnt mit"),
-            makeOption('end', "endet auf"),
-            makeOption('regex', "matcht RegEx")
+            makeOption('eq', cora.strings.search_condition.match['eq']),
+            makeOption('neq', cora.strings.search_condition.match['neq']),
+            makeOption('in', cora.strings.search_condition.match['in']),
+            makeOption('nin', cora.strings.search_condition.match['nin']),
+            makeOption('bgn', cora.strings.search_condition.match['bgn']),
+            makeOption('end', cora.strings.search_condition.match['end']),
+            makeOption('regex', cora.strings.search_condition.match['regex'])
         ]);
     },
 

@@ -367,7 +367,7 @@ div.btn-toolbar {
       background-image: linear-gradient(top, #f9f9f9, #e4e4e4) !important;
       filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=#f9f9f9,EndColorStr=#e4e4e4) !important; }
 
-div.btn-toolbar-bottom {
+div.btn-toolbar-notop {
   padding-top: 1em; }
 
 /* Styles specific to edit-panel toolbar */
@@ -733,7 +733,7 @@ div#horizontalTextView {
     font-size: 1.6em;
     line-height: 1.3em; }
   div#horizontalTextView span.highlighted {
-    background-color: yellow;
+    background-color: wheat;
     color: black; }
 
 tr#line_template {
@@ -760,11 +760,28 @@ div.editTableDropdownMenu {
 div#aa_tagger_select {
   padding: .5em 1em 0 1.5em; }
 
+/***************************************************************************/
+/***** SEARCH PANEL ********************************************************/
+/***************************************************************************/
 /* Document search dialog */
 li.editSearchCriterion {
   padding-bottom: 4px; }
   li.editSearchCriterion select.editSearchMatch {
     width: 9em; }
+
+div.srl-criteria {
+  font-size: 1.25em;
+  background-color: wheat;
+  border: 1px solid #999999;
+  border-radius: 4px;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em; }
+  div.srl-criteria .srl-count, div.srl-criteria .srl-operator {
+    font-weight: 600; }
+  div.srl-criteria .srl-condition-value {
+    font-weight: 600; }
+  div.srl-criteria .srl-condition-list, div.srl-criteria p {
+    padding-top: 0; }
 
 /***************************************************************************/
 /***** SETTINGS PANEL ******************************************************/

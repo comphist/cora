@@ -6,7 +6,10 @@
 var SearchResults = new Class({
     parent: null,
     criteria: {},
+    criteriaHtmlId: 'searchResultsCriteria',
+    data: [],
     dataTable: null,
+    dataTableHtmlId: 'searchTable',
 
     /* Constructor: SearchResults
 
@@ -21,7 +24,17 @@ var SearchResults = new Class({
         this.parent = parent;
         this.criteria = criteria;
         this.data = data;
+        this._initializeDataTable();
+        this.renderSearchCriteria();
+        gui.showTabButton('search');
+    },
 
+    /* Function: _initializeDataTable
+
+       All initialization stuff related to the data table.
+     */
+    _initializeDataTable: function() {
+        var parent = this.parent;
         this.dataTable =
             new DataTable(this,
                           cora.current().tagsets, parent.flagHandler,
@@ -40,11 +53,43 @@ var SearchResults = new Class({
 	Object.each(parent.visibility, function(visible, value) {
             this.dataTable.setVisibility(value, visible);
         }.bind(this));
-        this.dataTable.table.replaces($('searchTable'));
-        this.dataTable.table.set('id', 'searchTable');
+        this.dataTable.table.replaces($(this.dataTableHtmlId));
+        this.dataTable.table.set('id', this.dataTableHtmlId);
         this.dataTable.render();
+    },
 
-        gui.showTabButton('search');
+    /* Function: renderSearchCriteria
+
+       Displays the search criteria in a human-readable <div>.
+     */
+    renderSearchCriteria: function() {
+        var text, ul, div = $(this.criteriaHtmlId);
+        if (div === null || typeof(div) === "undefined")
+            return;
+        div.getElement('.srl-count').set('text', this.data.length);
+        text = (this.data.length == 1) ? "Ergebnis" : "Ergebnisse";
+        div.getElement('.srl-agr-count').set('text', text);
+        text = cora.strings.search_condition.operator[this.criteria.operator];
+        div.getElement('.srl-operator').set('text', text);
+        text = (this.criteria.operator === "all") ? "diese" : "dieser";
+        div.getElement('.srl-agr-operator').set('text', text);
+        ul = div.getElement('.srl-condition-list');
+        ul.empty();
+        this.criteria.conditions.each(function(condition) {
+            var li = new Element('li');
+            text  = cora.strings.search_condition.field[condition.field] + " ";
+            text += cora.strings.search_condition.match[condition.match] + " ";
+            li.set('text', text);
+            if (condition.match !== "set" && condition.match !== "nset") {
+                li.grab(new Element('span', {
+                    'class': 'srl-condition-value',
+                    'text': condition.value
+                }));
+            } else if (condition.value === "") {
+                li.set('text', text + " leer");
+            }
+            ul.grab(li);
+        });
     },
 
     /* Function: get

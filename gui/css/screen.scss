@@ -477,7 +477,7 @@ div.btn-toolbar {
     }
 }
 
-div.btn-toolbar-bottom {
+div.btn-toolbar-notop {
     padding-top: 1em;
 }
 
@@ -945,7 +945,7 @@ div#horizontalTextView {
         line-height: 1.3em;
     }
     span.highlighted {
-        background-color: yellow;
+        background-color: wheat;
         color: black;
     }
 }
@@ -981,13 +981,37 @@ div#aa_tagger_select {
     padding: .5em 1em 0 1.5em;
 }
 
-/* Document search dialog */
+/***************************************************************************/
+/***** SEARCH PANEL ********************************************************/
+/***************************************************************************/
 
+/* Document search dialog */
 li.editSearchCriterion {
     padding-bottom: 4px;
 
     select.editSearchMatch {
         width: 9em;
+    }
+}
+
+div.srl-criteria {
+    font-size: 1.25em;
+    background-color: wheat;
+    border: 1px solid $table-border-color;
+    border-radius: 4px;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+
+    .srl-count, .srl-operator {
+        font-weight: 600;
+    }
+
+    .srl-condition-value {
+        font-weight: 600;
+    }
+
+    .srl-condition-list, p {
+        padding-top: 0;
     }
 }
 
