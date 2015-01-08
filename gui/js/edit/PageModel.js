@@ -25,8 +25,8 @@ var PageModel = new Class({
        settings.
      */
     _calculateMaxPage: function() {
-        var lines_per_page = userdata.noPageLines;
-        var lines_context  = userdata.contextLines;
+        var lines_per_page = cora.settings.get('noPageLines');
+        var lines_context  = cora.settings.get('contextLines');
         var x = (this.parent.lineCount - lines_context);
         var y = (lines_per_page - lines_context);
         this.maxPage = (x % y) ? Math.ceil(x/y) : (x/y);
@@ -221,8 +221,8 @@ var PageModel = new Class({
      */
     getRange: function(page) {
         var start, end;
-	var cl = userdata.contextLines;
-	var pl = userdata.noPageLines;
+	var cl = cora.settings.get('contextLines');
+	var pl = cora.settings.get('noPageLines');
 	if (page === null || page < 1) {
             page = 1;
         } else if (page > this.maxPage) {
@@ -248,7 +248,7 @@ var PageModel = new Class({
 	if (line > this.parent.lineCount) {
 	    line = this.parent.lineCount;
 	}
-	var y = (userdata.noPageLines - userdata.contextLines);
+	var y = (cora.settings.get('noPageLines') - cora.settings.get('contextLines'));
 	return (line % y) ? Math.ceil(line/y) : (line/y);
     },
 

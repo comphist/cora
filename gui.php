@@ -39,7 +39,6 @@
                              'admin' => true,
                              'currentFileId' => true,
                              'currentName' => true,
-                             'showTooltips' => false,
                              'showInputErrors' => false
                              );
               embedSessionVars($svars);
@@ -74,6 +73,7 @@
           if(file_exists(dirname(__FILE__) . "/gui/js/master.min.js")) {
               embedJS("gui/js/master.min.js", true);
           } else {
+              embedJS("gui/js/settings.js", true);
               embedJS("gui/js/MultiSelect.js", true);
               embedJS("gui/js/baseBox.js", true);
               embedJS("gui/js/ProgressBar.js", true);
@@ -107,7 +107,6 @@
               embedJS("gui/js/edit/PageModel.js", true);
               embedJS("gui/js/edit/EditorModel.js", true);
               embedJS("gui/js/edit.js", true);
-              embedJS("gui/js/settings.js", true);
           }
 
           if($_SESSION['admin']) {

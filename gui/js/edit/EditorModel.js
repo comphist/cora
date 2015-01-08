@@ -253,26 +253,23 @@ var EditorModel = new Class({
        associated with the currently opened file.
     */
     initializeColumnVisibility: function() {
-        // first, determine visibility
-        this.visibility = {};
-	var eshc = $('editorSettingsHiddenColumns');
-        var isSetToVisible = function(value) {
-            return eshc.getElement('input#eshc-'+value).get('checked');
+        // Determine visibility
+        this.visibility = {
+            'tokenid': cora.settings.isColumnVisible('tokenid'),
+            'token': cora.settings.isColumnVisible('token'),
+            'tok_trans': cora.settings.isColumnVisible('tok_trans')
         };
+
+        // Check all tagsets
         Array.each(cora.supportedTagsets, function(ts) {
-            this.visibility[ts] = cora.currentHasTagset(ts) && isSetToVisible(ts);
+            this.visibility[ts] = cora.currentHasTagset(ts)
+                                  && cora.settings.isColumnVisible(ts);
+            cora.settings.setColumnActive(ts, cora.currentHasTagset(ts));
         }.bind(this));
 
-	// Show/hide columns and settings checkboxes
+	// Show/hide columns
 	Object.each(this.visibility, function(visible, value) {
             this.dataTable.setVisibility(value, visible);
-	    if(cora.currentHasTagset(value)) {
-		eshc.getElements('input#eshc-'+value+']').show();
-		eshc.getElements('label[for="eshc-'+value+'"]').show();
-	    } else {
-		eshc.getElements('input#eshc-'+value+']').hide();
-		eshc.getElements('label[for="eshc-'+value+'"]').hide();
-	    }
 	}.bind(this));
     },
 
@@ -298,7 +295,7 @@ var EditorModel = new Class({
      */
     updateShowInputErrors: function(no_redraw) {
         Object.each(cora.current().tagsets, function(tagset) {
-            tagset.setShowInputErrors(userdata.showInputErrors);
+            tagset.setShowInputErrors(cora.settings.get('showInputErrors'));
         });
         if(!no_redraw)
             this.dataTable.empty().render();
@@ -426,7 +423,8 @@ var EditorModel = new Class({
         var start = data[0].num,
             end = data[data.length-1].num,
             dlr = Math.max(this.dynamicLoadPages *
-                           (userdata.noPageLines - userdata.contextLines),
+                           (cora.settings.get('noPageLines')
+                            - cora.settings.get('contextLines')),
                            this.dynamicLoadLines);
 
 	this.horizontalTextView.update(start, end);

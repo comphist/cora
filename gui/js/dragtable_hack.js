@@ -385,7 +385,7 @@ dragtable = {
   rememberDrag: function(id, a, b) {
       // var cookieName = "dragtable-" + id;
       // var prev = dragtable.readCookie(cookieName);
-      var prev = userdata.editTableDragHistory;
+      var prev = cora.settings.get('editTableDragHistory');
       var new_val = "";
       if (prev && prev.length>0) new_val = prev + ",";
       new_val += a + "/" + b;
@@ -404,7 +404,7 @@ dragtable = {
 	  'name': 'columns_order',
 	  'value': new_val
       });
-      userdata.editTableDragHistory = new_val;
+      cora.settings.set('editTableDragHistory', new_val);
   },
 
     optimizeHistoryString: function(dragstr) {
@@ -443,7 +443,7 @@ dragtable = {
     replayDrags: function(table) {
 	// if (!dragtable.cookiesEnabled()) return;
 	// var dragstr = dragtable.readCookie("dragtable-" + table.id);
-	var dragstr = userdata.editTableDragHistory;
+	var dragstr = cora.settings.get('editTableDragHistory');
 	if (!dragstr || dragstr.length<1) return;
 	var drags = dragstr.split(',');
 	for (var i = 0; i < drags.length; i++) {
@@ -455,7 +455,7 @@ dragtable = {
 	    dragtable.moveColumn(table, a, b);
 	}
     },
-    
+
   // Cookie functions based on http://www.quirksmode.org/js/cookies.html
   // Cookies won't work for local files.
   cookiesEnabled: function() {

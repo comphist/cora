@@ -205,7 +205,7 @@ var gui = {
        window without logging out).
     */
     _activateKeepalive: function() {
-	if(userdata.name != undefined) {
+	if(cora.settings != undefined && cora.settings.get('name') != undefined) {
 	    this.keepaliveRequest = new Request.JSON({
 		url: 'request.php?do=keepalive',
 		method: 'get',

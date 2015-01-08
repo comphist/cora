@@ -29,7 +29,7 @@ var HorizontalTextPreview = new Class({
         this.view = this.container.getElement('div');
 	this.view.empty().set('text', "Text-Vorschau wird geladen...");
         this.spinner = new Spinner(this.container);
-        this.setPreviewType(userdata.textPreview);
+        this.setPreviewType(cora.settings.get('textPreview'));
     },
 
     /* Function: setPreviewType

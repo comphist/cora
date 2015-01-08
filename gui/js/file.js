@@ -260,7 +260,7 @@ cora.files = {
         var file = this.get(fid);
         if (file == null)
             return false;
-        return (userdata.admin || (file.creator_name == userdata.name));
+        return (cora.isAdmin() || (file.creator_name == cora.settings.get('name')));
     },
 
     /* Function: deleteFile
@@ -919,7 +919,7 @@ cora.fileManager = {
                 prj_div.set('id', div_id);
                 prj_div.getElement('.projectname')
                     .empty().appendText(project.name);
-                if(userdata.admin) {
+                if(cora.isAdmin()) {
                     prj_div.getElement('.projectname')
                         .appendText(' (id: '+project.id+')');
                     prj_div.getElements('.admin-only').removeClass('start-hidden');
@@ -986,11 +986,11 @@ cora.fileManager = {
             .set('text', gui.formatDateString(file.created));
         tr.getElement('td.ftr-created-by').set('text', file.creator_name);
         // close button
-        if(file.opened && (userdata.admin || (file.opened == userdata.name))) {
+        if(file.opened && (cora.isAdmin() || (file.opened == cora.settings.get('name')))) {
             tr.getElement('a.closeFileLink').removeClass('start-hidden');
         }
         // admin stuff
-        if(userdata.admin)
+        if(cora.isAdmin())
             tr.getElements('.admin-only').removeClass('start-hidden');
         // done!
         return tr;
@@ -1087,7 +1087,7 @@ cora.fileManager = {
             cora.editor.confirmClose(this.closeCurrentlyOpened.bind(this));
         } else {
             // if we're admin, we can close any file
-            if(!userdata.admin) {
+            if(!cora.isAdmin()) {
                 gui.showMsgDialog('error',
                            "Sie haben keine Berechtigung, diese Datei zu schließen.");
             } else {
@@ -1319,7 +1319,7 @@ window.addEvent('domready', function() {
     if(uri.parsed && uri.parsed.query) {  // ?f=... in query string?
         fid = uri.parsed.query.parseQueryString()["f"];
     }
-    fid = fid || userdata.currentFileId;  // file open on server-side?
+    fid = fid || cora.settings.get('currentFileId');  // file open on server-side?
     history.replaceState({}, "", "/");
     if(fid)
         cora.fileManager.openFile(fid);

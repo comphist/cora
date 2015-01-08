@@ -68,20 +68,28 @@ class CoraSessionHandler {
   }
 
   public function setUserSettings($lpp,$cl){
-	if($this->db->setUserSettings($_SESSION['user'],$lpp,$cl)){
-		$_SESSION['noPageLines'] = $lpp;
-		$_SESSION['contextLines'] = $cl;
-		return true;
-	}
-	return false;
+    if($this->db->setUserSettings($_SESSION['user'],$lpp,$cl)){
+      $_SESSION['noPageLines'] = $lpp;
+      $_SESSION['contextLines'] = $cl;
+      return true;
+    }
+    return false;
   }
 
   public function setUserSetting($name,$value) {
-  	 if($this->db->setUserSetting($_SESSION['user'],$name,$value)){
-		$_SESSION[$name] = $value;
-		return true;
-	}
-	return false;
+    $mapToSVAR = array("columns_hidden" => "hiddenColumns",
+                       "text_preview" => "textPreview",
+                       "show_error" => "showInputErrors",
+                       "columns_order" => "editTableDragHistory");
+    if($this->db->setUserSetting($_SESSION['user'],$name,$value)){
+      if(array_key_exists($name, $mapToSVAR)) {
+        $_SESSION[$mapToSVAR[$name]] = $value;
+      } else {
+        $_SESSION[$name] = $value;
+      }
+      return true;
+    }
+    return false;
   }
 
   /** Wraps DBInterface::getTagsets(). */
@@ -849,7 +857,6 @@ class CoraSessionHandler {
 		$_SESSION['editTableDragHistory'] = (isset($data['columns_order']))? $data['columns_order'] : '';
 		$_SESSION['hiddenColumns'] = (isset($data['columns_hidden']))? $data['columns_hidden'] : '';
 		$_SESSION['textPreview'] = (isset($data['text_preview']))? $data['text_preview'] : 'off';
-		$_SESSION['showTooltips'] = 'true';
 		$_SESSION['showInputErrors'] = (isset($data['show_error']))? ($data['show_error']==1 ? 'true' : 'false') : 'true';
 	  } else {
 		$_SESSION['noPageLines'] = '30';
@@ -857,7 +864,6 @@ class CoraSessionHandler {
 		$_SESSION['editTableDragHistory'] = '';
 		$_SESSION['textPreview'] = 'off';
 		$_SESSION['hiddenColumns'] = '';
-		$_SESSION['showTooltips'] = 'true';
 		$_SESSION['showInputErrors'] = 'true';
 	  }
     } else {      // login failed

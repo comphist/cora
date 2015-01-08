@@ -14,7 +14,7 @@
     <div>
       <div id="editorSettingsNumberOfLines">
         <h4>Zeilenanzahl</h4>
-        <form action="request.php" id="editUserSettings" method="get" accept-charset="utf-8">
+        <form action="request.php" id="editLineSettings" method="get" accept-charset="utf-8">
           <p>
             <label for="noPageLines">Zeilen pro Seite:</label>
             <input type="text" name="noPageLines" value="<?php echo $_SESSION['noPageLines'];?>" size="2" maxlength="3" data-number="" />
@@ -58,13 +58,6 @@
         <h4>Editierhilfen</h4>
         <p>
           <input type="checkbox" name="show_error" value="show_error" checked="yes" id="esia-showerror" /><label for="esia-showerror">Fehlerhafte Tags hervorheben</label>
-        </p>
-      </div>
-
-      <div id="generalSettings" style="display: none;">
-        <h4>Allgemeine Einstellungen</h4>
-        <p style="display: none;">
-          <input type="checkbox" name="showTooltips" value="showTooltips" checked="yes" /> Tooltips anzeigen
         </p>
       </div>
     </div>

@@ -1,13 +1,55 @@
-// ***********************************************************************
-// ********** DOMREADY BINDINGS ******************************************
-// ***********************************************************************
+/* File: settings.js
 
-window.addEvent('domready', function() {
-    var eus = $('editUserSettings');
+   Defines the global cora.settings variable, which manages user-specific
+   settings and controls the "settings" tab.
+*/
+cora.settings = {
+    lineSettingsDiv: 'editLineSettings',
+    columnVisibilityDiv: 'editorSettingsHiddenColumns',
+    textPreviewDiv: 'editorSettingsTextPreview',
+    inputAidsDiv: 'editorSettingsInputAids',
 
-    if(eus!==null) {
-	/* Initialize editor settings tab */
-	new Form.Request($('editUserSettings'),'',{
+    initialize: function() {
+        this._activateLineSettingsDiv();
+        this._activateColumnVisibilityDiv();
+        this._activateTextPreviewDiv();
+        this._activateInputAidsDiv();
+    },
+
+    /* Function: _activateLineSettingsDiv
+
+       Activates the form request for the line number/context lines setting in
+       the settings tab.
+     */
+    _activateLineSettingsDiv: function() {
+        var div = $(this.lineSettingsDiv);
+        if (div === null || typeof(div) === "undefined")
+            return;
+
+	// validate input
+	div.getElement("input[type='submit']").addEvent(
+	    'click',
+	    function(e) {
+		var cl = div.getElement('input[name="contextLines"]').get('value').toInt();
+		var pl = div.getElement('input[name="noPageLines"]').get('value').toInt();
+		if (isNaN(cl) || isNaN(pl)) {
+                    gui.showNotice('error', "Bitte nur Zahlen eingeben!");
+		    e.stop(); return;
+		}
+		if (cl >= pl) {
+                    gui.showNotice('error', "Anzahl überlappender Zeilen muss kleiner sein als Anzahl der Zeilen pro Seite.");
+		    e.stop(); return;
+		}
+		if (pl > 50) {
+                    // TODO: change to gui.confirm --- but doesn't work with Form.Request
+		    var doit = confirm("Warnung: Eine hohe Anzahl an Zeilen pro Seite kann zur Folge haben, dass der Seitenaufbau sehr langsam wird bzw. der Browser für längere Zeit nicht mehr reagiert.");
+		    if (!doit) { e.stop(); return; }
+		}
+	    }
+	);
+
+        // request
+        new Form.Request(div, '', {
             resetForm: false,
             extraData: {'do': 'saveEditorUserSettings'},
             onSuccess: function(){
@@ -15,96 +57,64 @@ window.addEvent('domready', function() {
 		em = cora.editor;
                 if (em !== null)
                     range = em.dataTable.pages.getRange(em.dataTable.pages.activePage);
-		cl = eus.getElement('input[name="contextLines"]').get('value').toInt();
-		pl = eus.getElement('input[name="noPageLines"]').get('value').toInt();
-		userdata.contextLines = cl;
-		userdata.noPageLines = pl;
+		cl = div.getElement('input[name="contextLines"]').get('value').toInt();
+		pl = div.getElement('input[name="noPageLines"]').get('value').toInt();
+                this.set('contextLines', cl).set('noPageLines', pl);
 		if (em !== null) {
-		    /* re-render page navigation panel, because page
-		     * numbers will likely have changed; also,
-		     * calculate page which contains the line that was
-		     * the first displayed line before the change,
-		     * then navigate to that one */
-                    em.dataTable.pages.update()
-                        .setPageByLine(range.from)
-                        .render();
+                    em.dataTable.pages.update().setPageByLine(range.from).render();
 		    gui.changeTab('edit');
 		}
-		new mBox.Notice({
-		    type: 'ok',
-		    content: 'Änderungen übernommen.',
-		    position: { x: 'right' }
-		});
-            },
+                gui.showNotice('ok', 'Änderungen übernommen.');
+            }.bind(this),
             onFailure: function(){
-		alert('Error occured while saving');
+                gui.showNotice('error', 'Änderungen nicht übernommen.');
             }
 	});
+    },
 
-
-	// validate input -- change to MooTools's Form.Validator some day?
-	eus.getElement("input[type='submit']").addEvent(
-	    'click',
-	    function(e) {
-		var new_cl = Number.from(eus.getElement('input[name="contextLines"]').get('value'));
-		var new_pl = Number.from(eus.getElement('input[name="noPageLines"]').get('value'));
-		if (new_cl==null || new_pl==null) {
-		    alert("Fehler: Es dürfen nur Zahlen eingegeben werden.");
-		    e.stop();
-		    return;
-		}
-		if (new_cl>=new_pl) {
-		    alert("Fehler: Anzahl überlappender Zeilen muss kleiner sein als Anzahl der Zeilen pro Seite.");
-		    e.stop();
-		    return;
-		}
-		if (new_pl>50) {
-		    var doit = confirm("Warnung: Eine hohe Anzahl an Zeilen pro Seite kann zur Folge haben, dass der Seitenaufbau sehr langsam wird bzw. der Browser für längere Zeit nicht mehr reagiert.");
-		    if (!doit) { e.stop(); return; }
-		}
-	    }
-	);
-
-	/* Hiding columns */
-	var eshc = $('editorSettingsHiddenColumns');
-	userdata.hiddenColumns.split(",").each(function(value){
-	    eshc.getElements('input[value="'+value+'"]').set('checked', false);
-	    $('editTable').getElements(".editTable_"+value).hide();
+    /* Function: _activateColumnVisibilityDiv
+     */
+    _activateColumnVisibilityDiv: function() {
+	var div = $(this.columnVisibilityDiv);
+	this.get('hiddenColumns').split(",").each(function(value) {
+	    div.getElements('input[value="'+value+'"]').set('checked', false);
 	});
-
-	eshc.addEvent(
+	div.addEvent(
 	    'change:relay(input)',
 	    function(event, target) {
 		var checked = target.get('checked');
 		var value = target.get('value');
+                var setting = this.get('hiddenColumns');
+		if(cora.editor !== null) {
+		    cora.editor.setColumnVisibility(value, checked);
+		}
 		if (checked) {
-		    $('editTable').getElements(".editTable_"+value).show();
-		    if(cora.editor !== null) {
-			cora.editor.setColumnVisibility(value, checked);
-		    }
-		    userdata.hiddenColumns = userdata.hiddenColumns.replace(value+",","");
+                    this.set('hiddenColumns', setting.replace(value+",",""));
 		} else {
-		    $('editTable').getElements(".editTable_"+value).hide();
-		    userdata.hiddenColumns += value + ",";
+		    this.set('hiddenColumns', setting + value + ",");
 		}
 		new Request({url: 'request.php'}).get(
 		    {'do': 'setUserEditorSetting',
 		     'name': 'columns_hidden',
-		     'value': userdata.hiddenColumns}
+		     'value': this.get('hiddenColumns')}
 		);
-	    }
+	    }.bind(this)
 	);
+    },
 
-        var estp = $('editorSettingsTextPreview');
-        var estp_active = estp.getElement('input[value="'+userdata.textPreview+'"]');
-        if(estp_active !== null) {
-            estp_active.set('checked', 'yes');
+    /* Function: _activateTextPreviewDiv
+     */
+    _activateTextPreviewDiv: function() {
+        var elem, div = $(this.textPreviewDiv);
+        elem = div.getElement('input[value="'+this.get('textPreview')+'"]');
+        if(elem !== null) {
+            elem.set('checked', 'yes');
         }
-        estp.addEvent(
+        div.addEvent(
             'change:relay(input)',
             function(event, target) {
-                var value = estp.getElement('input:checked').get('value');
-                userdata.textPreview = value;
+                var value = div.getElement('input:checked').get('value');
+                this.set('textPreview', value);
                 if (cora.editor !== null) {
                     cora.editor.horizontalTextView
                         .setPreviewType(value)
@@ -113,51 +123,93 @@ window.addEvent('domready', function() {
 		new Request({url: 'request.php'}).get(
 		    {'do': 'setUserEditorSetting',
 		     'name': 'text_preview',
-		     'value': userdata.textPreview}
+		     'value': value}
 		);
-            }
+            }.bind(this)
         );
+    },
 
-	var esia = $('editorSettingsInputAids');
-	esia.getElement('input[name="show_error"]').set('checked', userdata.showInputErrors);
-	esia.addEvent(
+    /* Function: _activateInputAidsDiv
+     */
+    _activateInputAidsDiv: function() {
+	var div = $(this.inputAidsDiv);
+	div.getElement('input[name="show_error"]')
+            .set('checked', this.get('showInputErrors'));
+	div.addEvent(
 	    'change:relay(input)',
 	    function(event, target) {
 		var checked = target.get('checked');
 		var value = target.get('value');
-		userdata[value] = checked;
-		if(value=="show_error") {
-		    userdata.showInputErrors = checked;
-		    if (cora.editor !== null) {
+                this.set(value, checked);
+		if(value == "show_error") {
+                    this.set('showInputErrors', checked);
+		    if (cora.editor !== null)
 			cora.editor.updateShowInputErrors();
-		    }
 		}
 		new Request({url: 'request.php'}).get(
 		    {'do': 'setUserEditorSetting',
 		     'name': value,
 		     'value': checked ? 1 : 0}
 		);
-	    }
+	    }.bind(this)
 	);
+    },
+
+    /* Function: get
+
+       Retrieve value of a specific user setting.
+     */
+    get: function(name) {
+        return userdata[name];
+    },
+
+    /* Function: set
+
+       Set value of a specific user setting.
+     */
+    set: function(name, value) {
+        userdata[name] = value;
+        return this;
+    },
+
+    /* Function: isColumnVisible
+
+       Checks whether a given column is set to be visible in the settings tab.
+     */
+    isColumnVisible: function(name) {
+        var elem = $(this.columnVisibilityDiv).getElement('input#eshc-'+name);
+        if (elem != null)
+            return elem.get('checked');
+        return true;
+    },
+
+    /* Function: setColumnActive
+
+       Sets a given column to active or inactive, determining whether it is
+       shown in the settings tab or not.
+     */
+    setColumnActive: function(name, active) {
+        var div = $(this.columnVisibilityDiv);
+        if(active) {
+            div.getElements('input#eshc-'+name).show();
+            div.getElements('label[for="eshc-'+name+'"]').show();
+        } else {
+            div.getElements('input#eshc-'+name).hide();
+            div.getElements('label[for="eshc-'+name+'"]').hide();
+        }
     }
+};
 
-    /* Showing tooltips */
-    var general = $('generalSettings');
-    general.getElement('input[name="showTooltips"]').set('checked', userdata.showTooltips);
+cora.isAdmin = function() {
+    return cora.settings.get('admin');
+};
 
-    general.addEvent(
-	'change:relay(input)',
-	function(event, target) {
-	    var checked = target.get('checked');
-	    var value = target.get('value');
-	    userdata[value] = checked;
-	    new Request({url: 'request.php'}).get(
-		{'do': 'setUserEditorSetting',
-		 'name': value,
-		 'value': checked ? 1 : 0}
-	    );
-	}
-    );
+// ***********************************************************************
+// ********** DOMREADY BINDINGS ******************************************
+// ***********************************************************************
+
+window.addEvent('domready', function() {
+    cora.settings.initialize();
 
     /* Change password */
     var pwch = new mBox.Modal({
