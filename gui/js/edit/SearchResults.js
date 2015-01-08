@@ -45,9 +45,7 @@ var SearchResults = new Class({
                                startPage: 1
                            },
                            onUpdate: this.update.bind(this),
-                           onUpdateProgress: function(n){
-                               this.lastEditedRow = n;
-                           }.bind(parent)
+                           onUpdateProgress: this.updateProgress.bind(this)
                           }
                          );
 	Object.each(parent.visibility, function(visible, value) {
@@ -124,6 +122,17 @@ var SearchResults = new Class({
      */
     update: function(elem, data, cls, value) {
         this.parent.update(elem, data, cls, value, true);
+        this.parent.dataTable.render();
+    },
+
+    /* Function: updateProgress
+
+       Callback function of DataTable that is invoked whenever the progress bar
+       updates.
+     */
+    updateProgress: function(num) {
+        this.parent.updateProgress(num, true);
+        this.parent.dataTable.progressMarker = num;
         this.parent.dataTable.render();
     },
 

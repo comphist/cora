@@ -71,9 +71,7 @@ var EditorModel = new Class({
                            onFocus: this.onDataTableFocus.bind(this),
                            onRender: this.onDataTableRender.bind(this),
                            onUpdate: this.update.bind(this),
-                           onUpdateProgress: function(n){
-                               this.lastEditedRow = n;
-                           }.bind(this)
+                           onUpdateProgress: this.updateProgress.bind(this)
                           }
                          );
 	this.initializeColumnVisibility();
@@ -379,6 +377,19 @@ var EditorModel = new Class({
             this.dataTable.updateProgressBar(data.num);
         if (!fromSearch && this.searchResults !== null)
             this.searchResults.dataTable.render();
+    },
+
+    /* Function: updateProgress
+
+       Callback function of DataTable that is invoked whenever the progress bar
+       updates.
+     */
+    updateProgress: function(num, fromSearch) {
+        this.lastEditedRow = num;
+        if (!fromSearch && this.searchResults !== null) {
+            this.searchResults.dataTable.progressMarker = num;
+            this.searchResults.dataTable.render();
+        }
     },
 
     /* Function: onDataTableFocus
