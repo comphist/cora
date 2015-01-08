@@ -10,6 +10,12 @@ var SearchResults = new Class({
     data: [],
     dataTable: null,
     dataTableHtmlId: 'searchTable',
+    currentSearchIdx: 0,
+    searchIdxByNum: {},
+
+    panel: null,
+    buttonBack: null,
+    buttonForward: null,
 
     /* Constructor: SearchResults
 
@@ -19,12 +25,20 @@ var SearchResults = new Class({
          parent - The parent EditorModel
          criteria - Object containing the search criteria
          data - Array of lines representing the search results
+         panel - Panel in which to activate back/forward buttons
      */
-    initialize: function(parent, criteria, data) {
+    initialize: function(parent, criteria, data, panel) {
         this.parent = parent;
         this.criteria = criteria;
         this.data = data;
+        this.panel = panel;
+
+        Array.each(this.data, function(line, idx) {
+            this.searchIdxByNum[line.num] = idx;
+        }.bind(this));
+
         this._initializeDataTable();
+        this._initializeButtons();
         this.renderSearchCriteria();
         gui.showTabButton('search');
     },
@@ -58,12 +72,69 @@ var SearchResults = new Class({
         this.dataTable.addEvent(
             'click',  // triggers on line number & token <td> elements
             function(target, id) {
-                this.dataTable.pages.setPageByLine(id + 1, true);
                 gui.changeTab('edit');
-            }.bind(parent)  //!! this is the main editTable, not the searchTable
+                this.gotoSearchResult(this.searchIdxByNum[id], id);
+            }.bind(this)
         );
 
         this.dataTable.render();
+    },
+
+    /* Function: _initializeButtons
+
+       Activate buttons to step backwards/forwards within the search results.
+     */
+    _initializeButtons: function() {
+        var elem, panel = $(this.panel);
+        if(panel === null || typeof(panel) === "undefined")
+            return;
+        elem = panel.getElement('span.btn-search-back');
+        if (elem != null) {
+            elem.removeEvents('click');
+            elem.addEvent('click', function() {
+                this.gotoSearchResult(this.currentSearchIdx - 1);
+            }.bind(this));
+            this.buttonBack = elem;
+        }
+        elem = panel.getElement('span.btn-search-forward');
+        if (elem != null) {
+            elem.removeEvents('click');
+            elem.addEvent('click', function() {
+                this.gotoSearchResult(this.currentSearchIdx + 1);
+            }.bind(this));
+            if (this.data.length > 1)
+                elem.removeClass('start-disabled');
+            this.buttonForward = elem;
+        }
+    },
+
+    /* Function: gotoSearchResult
+
+       Makes the editor table jump to a specific search entry.
+
+       Parameters:
+         idx - Index of the search results (e.g., 0 for first result)
+         num - (optional) Number of the corresponding token
+     */
+    gotoSearchResult: function(idx, num) {
+        if(num === null || typeof(num) === "undefined") {
+            num = this.data[idx].num;
+        }
+        this.currentSearchIdx = idx;
+        this.parent.dataTable.pages.setPageByLine(num + 1, true);
+
+        if(this.buttonBack !== null) {
+            if (idx == 0)
+                this.buttonBack.addClass('start-disabled');
+            else
+                this.buttonBack.removeClass('start-disabled');
+        }
+        if(this.buttonForward !== null) {
+            if (idx == (this.data.length - 1))
+                this.buttonForward.addClass('start-disabled');
+            else
+                this.buttonForward.removeClass('start-disabled');
+        }
     },
 
     /* Function: renderSearchCriteria
@@ -154,6 +225,10 @@ var SearchResults = new Class({
      */
     destroy: function() {
         this.dataTable.empty();
+        if(this.buttonBack !== null)
+            this.buttonBack.addClass('start-disabled');
+        if(this.buttonForward !== null)
+            this.buttonForward.addClass('start-disabled');
         gui.hideTabButton('search');
     }
 });

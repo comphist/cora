@@ -27,7 +27,6 @@ MENUITEM;
 <?php if($_SESSION["loggedIn"]): ?>
 <div id="menuRight">
   <div class="btn-toolbar-dark">
-    <span class="btn-toolbar-entry when-file-open-only" id="tagButton"><span class="oi" data-glyph="excerpt" aria-hidden="true"></span> Automatisch annotieren</span>
     <span class="btn-toolbar-entry when-file-open-only" id="saveButton"><span class="oi" data-glyph="file" aria-hidden="true"></span> Datei speichern</span>
     <span class="btn-toolbar-entry when-file-open-only" id="closeButton"><span class="oi" aria-hidden="true"></span>Datei schließen</span>
     <a href="index.php?do=logout" id="logoutLink"><span class="btn-toolbar-entry"><span class="oi" data-glyph="account-logout" aria-hidden="true"></span> Logout</span></a>

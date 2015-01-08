@@ -290,6 +290,9 @@ div.btn-toolbar {
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none; }
+  div.btn-toolbar span.btn-toolbar-separator {
+    margin-left: 1em;
+    margin-right: 1em; }
   div.btn-toolbar span.btn-toolbar-entry {
     margin: 0 4px;
     font-size: 1.2em;

@@ -11,7 +11,16 @@
     <span class="btn-toolbar-entry btn-page-back" title="Seite zurück"><span class="oi" data-glyph="arrow-thick-left" aria-hidden="true"></span></span>
     <span class="btn-toolbar-entry btn-page-forward" title="Seite vor"><span class="oi" data-glyph="arrow-thick-right" aria-hidden="true"></span></span>
     <span class="btn-toolbar-entry btn-jump-to"><span class="oi" data-glyph="book" aria-hidden="true"></span> Springe zu Zeile</span>
+    <span class="btn-toolbar-entry btn-undo start-disabled" title="Rückgängig"><span class="oi" data-glyph="action-undo" aria-hidden="true"></span></span>
+    <span class="btn-toolbar-entry btn-redo start-disabled" title="Wiederherstellen"><span class="oi" data-glyph="action-redo" aria-hidden="true"></span></span>
+
+    <span class="btn-toolbar-separator"></span>
     <span class="btn-toolbar-entry btn-text-search"><span class="oi" data-glyph="magnifying-glass" aria-hidden="true"></span> Suchen</span>
+    <span class="btn-toolbar-entry btn-search-back start-disabled" title="Vorheriges Suchergebnis"><span class="oi" data-glyph="arrow-left" aria-hidden="true"></span>&nbsp;<span class="oi" data-glyph="magnifying-glass" aria-hidden="true"></span></span>
+    <span class="btn-toolbar-entry btn-search-forward start-disabled" title="Nächstes Suchergebnis"><span class="oi" data-glyph="magnifying-glass" aria-hidden="true"></span>&nbsp;<span class="oi" data-glyph="arrow-right" aria-hidden="true"></span></span>
+
+    <span class="btn-toolbar-separator"></span>
+    <span class="btn-toolbar-entry btn-text-annotate"><span class="oi" data-glyph="excerpt" aria-hidden="true"></span> Automatisch annotieren</span>
     <span class="btn-toolbar-entry btn-text-info"><span class="oi" data-glyph="info" aria-hidden="true"></span> Metadaten</span>
   </div>
 

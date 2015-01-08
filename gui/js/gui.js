@@ -185,6 +185,13 @@ var gui = {
 		    if(cora.editor!==null) {
 			cora.editor.saveData();
 		    }
+		},
+		'ctrl+f': function(e) {
+		    if(cora.editor != null
+                       && cora.editor.tokenSearcher != null) {
+		        e.stop();
+			cora.editor.tokenSearcher.open();
+		    }
 		}
 	    }
 	});

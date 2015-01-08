@@ -147,7 +147,7 @@ var EditorModel = new Class({
 	}.bind(this));
 
 	/* Prepare automatic annotation dialog */
-	btn = mr.getElement('#tagButton');
+	btn = $('pagePanel').getElement('.btn-text-annotate');
 	if(btn && btn !== undefined) {
 	    btn.removeEvents();
 	    this.activateAnnotationDialog(btn);
@@ -462,7 +462,7 @@ var EditorModel = new Class({
         if(this.searchResults !== null) {
             this.searchResults.destroy();
         }
-        this.searchResults = new SearchResults(this, criteria, data);
+        this.searchResults = new SearchResults(this, criteria, data, 'pagePanel');
 
         gui.changeTab('search');
     },
