@@ -147,7 +147,7 @@ class SearchQuery {
       case "end":
         return array(" LIKE ", "%".$this->escapeForLIKE($value));
       case "regex":
-        return array(" REGEX ", $value);
+        return array(" REGEXP ", $value);
       case "nset":
         return array("=", "");
       case "set":
