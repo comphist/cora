@@ -91,7 +91,7 @@ var LemmaAutocomplete = new Class({
         var flag = (v.t == "c") ? 1 : 0,
             flagDiv = e.field.node.getParent('tr').getElement('div.editTableLemma');
         e.field.node.getParent('table')
-            .fireEvent("LemmaAutocompleteSelect",
+            .fireEvent(this.acEventString,
                        [{lemma: text, lemma_verified: flag}, e.field.node]);
         //this.callback(e.field.node, 'lemma', text);
         //this.callback(e.field.node, 'flag_lemma_verified', flag);

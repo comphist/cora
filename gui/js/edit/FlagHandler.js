@@ -108,7 +108,7 @@ var FlagHandler = new Class({
             if (flagvalue !== null) {
                 elem = tr.getElement(options.elem);
                 if (elem !== null)
-                    ref._setFlag(elem, options.class, value);
+                    ref._setFlag(elem, options.class, flagvalue);
             }
         });
     },
