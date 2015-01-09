@@ -106,6 +106,7 @@
               embedJS("gui/js/edit/SearchResults.js", true);
               embedJS("gui/js/edit/HorizontalTextPreview.js", true);
               embedJS("gui/js/edit/PageModel.js", true);
+              embedJS("gui/js/edit/EditorModelUndo.js", true);
               embedJS("gui/js/edit/EditorModel.js", true);
               embedJS("gui/js/edit.js", true);
           }

@@ -266,8 +266,8 @@ var DataTable = new Class({
             tagset.update(tr, data, changes, cls, value);
         });
         this.flagHandler.update(tr, data, changes, cls, value);
-        this.dataSource.applyChanges(data, changes);
         this.fireEvent('update', [tr, data, changes, cls, value]);
+        this.dataSource.applyChanges(data, changes);
     },
 
     /* Function: empty

@@ -3,7 +3,7 @@
    Main class representing an instance of the CorA editor.
  */
 var EditorModel = new Class({
-    Implements: [DataSource],
+    Implements: [DataSource, EditorModelUndo],
 
     fileId: 0,
     lastEditedRow: -1,
@@ -156,6 +156,9 @@ var EditorModel = new Class({
 	    this.prepareAnnotationOptions();
 	}
 	mr.getElements('.when-file-open-only').addClass('file-open');
+
+        /* Prepare undo/redo functionality */
+        this.activateUndoButtons(['pagePanel']);
 
         /* Activate "edit metadata" form */
         this._activateMetadataForm($('pagePanel'));
@@ -386,6 +389,7 @@ var EditorModel = new Class({
        changes.
      */
     update: function(elem, data, changes, cls, value) {
+        this.logUndoInformation(data, changes);
         if(!this.changedLines.contains(data.num))
             this.changedLines.push(data.num);
         if (data.num > this.lastEditedRow)
@@ -718,6 +722,8 @@ var EditorModel = new Class({
 	this.changedLines = this.changedLines.filter(function(val) {
 	    return val < tok_id;
 	});
+        // clear undo/redo information
+        this.clearUndoStack().clearRedoStack();
 	// update line count and re-load page
         this.dataTable.setLineCount(this.dataTable.lineCount + lcdiff).render();
     },

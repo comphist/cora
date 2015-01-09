@@ -418,8 +418,8 @@ div.btn-toolbar {
     @include no-select();
 
     span.btn-toolbar-separator {
-        margin-left: 1em;
-        margin-right: 1em;
+        margin-left: .75em;
+        margin-right: .75em;
     }
 
     span.btn-toolbar-entry {
