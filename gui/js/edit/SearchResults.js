@@ -4,6 +4,8 @@
    results tab and navigation within the results.
  */
 var SearchResults = new Class({
+    Implements: [DataSource],
+
     parent: null,
     criteria: {},
     criteriaHtmlId: 'searchResultsCriteria',
@@ -186,16 +188,8 @@ var SearchResults = new Class({
        Retrieves a set of data entries in a given range.
      */
     getRange: function(start, end, callback) {
-        var slice = function(x, a, b) {
-            var arr = [];
-            for(var j=a; j<b; ++j) {
-                arr.push(x[j]);
-            }
-            return arr;
-        };
-
         if (typeof(callback) === "function")
-            callback(slice(this.data, start, end));
+            callback(this._slice(this.data, start, end));
     },
 
     /* Function: update

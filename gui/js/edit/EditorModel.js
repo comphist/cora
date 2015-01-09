@@ -3,6 +3,8 @@
    Main class representing an instance of the CorA editor.
  */
 var EditorModel = new Class({
+    Implements: [DataSource],
+
     fileId: 0,
     lastEditedRow: -1,
     header: "",
@@ -11,7 +13,7 @@ var EditorModel = new Class({
     maximumTries: 20,     // max. number of load requests before giving up
     dynamicLoadPages: 5,  // min. number of pages in each direction to be pre-fetched
     dynamicLoadLines: 50, // min. number of lines in each direction to be pre-fetched
-    data: {},
+    data: [],
     dataTable: null,
     searchResults: null,
     idlist: {},
@@ -332,18 +334,11 @@ var EditorModel = new Class({
          callback parameter to actually get to and process the data.
      */
     getRange: function(start, end, callback) {
-        var spinner,
-            slice = function(x, a, b) {
-                var arr = [];
-                for(var j=a; j<b; ++j) {
-                    arr.push(x[j]);
-                }
-                return arr;
-            };
+        var spinner;
 
         if(this.isRangeLoaded(start, end)) {
             if (typeof(callback) === "function")
-                callback(slice(this.data, start, end));
+                callback(this._slice(this.data, start, end));
             return true;
         }
 
@@ -352,7 +347,8 @@ var EditorModel = new Class({
         this.requestLines(start, end,
                           function() {  // onSuccess
                               spinner.hide().destroy();
-                              callback(slice(this.data, start, end));
+                              if (typeof(callback) === "function")
+                                  callback(this._slice(this.data, start, end));
                           }.bind(this),
                           function(e) {  // onError
                               spinner.hide().destroy();

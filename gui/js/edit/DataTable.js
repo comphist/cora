@@ -260,12 +260,14 @@ var DataTable = new Class({
     update: function(elem, cls, value) {
         var tr = elem.getParent('tr');
         var data = this.dataSource.get(this.getRowNumberFromElement(tr));
-        console.log("DataTable: "+data.num+": set '"+cls+"' to '"+value+"'");
+        var changes = {};
+        console.log("DataTable: "+data.num+": user changed '"+cls+"' to '"+value+"'");
         Object.each(this.tagsets, function(tagset) {
             tagset.update(tr, data, cls, value);
         });
         this.flagHandler.update(tr, data, cls, value);
         this.fireEvent('update', [tr, data, cls, value]);
+        this.dataSource.applyChanges(data, changes);
     },
 
     /* Function: empty
