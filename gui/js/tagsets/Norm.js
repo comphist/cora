@@ -53,11 +53,12 @@ var NormTagset = new Class({
          tr - Table row where the change happened
          data - An object possibly containing annotations ({anno_pos: ...}),
                 in the state *before* the update
+         changes - An object containing any changed values *after* the update
          cls - Tagset class of the annotation
          value - New value of the annotation
      */
-    update: function(tr, data, cls, value) {
+    update: function(tr, data, changes, cls, value) {
         if (cls === "norm")
-            data.anno_norm = value;
+            changes.anno_norm = value;
     }
 });

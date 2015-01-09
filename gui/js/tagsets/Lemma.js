@@ -55,25 +55,21 @@ var LemmaTagset = new Class({
          tr - Table row where the change happened
          data - An object possibly containing annotations ({anno_pos: ...}),
                 in the state *before* the update
+         changes - An object containing any changed values *after* the update
          cls - Tagset class of the annotation
          value - New value of the annotation
      */
-    update: function(tr, data, cls, value) {
+    update: function(tr, data, changes, cls, value) {
         if (cls === "lemma") {
             if (data.anno_lemma !== value) {
-                data.anno_lemma = value;
-                data.flag_lemma_verified = 0;
-                tr.getElement('div.editTableLemma').removeClass('editTableLemmaChecked');
+                changes.anno_lemma = value;
+                if (data.flag_lemma_verified != 0)
+                    changes.flag_lemma_verified = 0;
             }
         }
         else if (cls === "lemma_ac") {
-            data.anno_lemma = value.lemma;
-            data.flag_lemma_verified = value.lemma_verified;
-            if(value.lemma_verified === 1) {
-                tr.getElement('div.editTableLemma').addClass('editTableLemmaChecked');
-            } else {
-                tr.getElement('div.editTableLemma').removeClass('editTableLemmaChecked');
-            }
+            changes.anno_lemma = value.lemma;
+            changes.flag_lemma_verified = value.lemma_verified;
         }
     }
 });

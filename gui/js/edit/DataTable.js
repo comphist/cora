@@ -263,11 +263,11 @@ var DataTable = new Class({
         var changes = {};
         console.log("DataTable: "+data.num+": user changed '"+cls+"' to '"+value+"'");
         Object.each(this.tagsets, function(tagset) {
-            tagset.update(tr, data, cls, value);
+            tagset.update(tr, data, changes, cls, value);
         });
-        this.flagHandler.update(tr, data, cls, value);
-        this.fireEvent('update', [tr, data, cls, value]);
+        this.flagHandler.update(tr, data, changes, cls, value);
         this.dataSource.applyChanges(data, changes);
+        this.fireEvent('update', [tr, data, changes, cls, value]);
     },
 
     /* Function: empty

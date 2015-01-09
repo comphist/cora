@@ -91,15 +91,21 @@ var FlagHandler = new Class({
          tr - Table row where the change happened
          data - An object possibly containing annotations ({anno_pos: ...}),
                 in the state *before* the update
+         changes - An object containing any changed values *after* the update
          cls - Tagset class of the annotation
          value - New value of the annotation
      */
-    update: function(tr, data, cls, value) {
+    update: function(tr, data, changes, cls, value) {
         var ref = this;
         Object.each(this.flags, function(options, flag) {
-            var elem;
+            var elem, flagvalue = null;
             if (cls === flag) {
-                data[flag] = value;
+                flagvalue = value;
+                changes[flag] = flagvalue;
+            } else if (flag in changes) {
+                flagvalue = changes[flag];
+            }
+            if (flagvalue !== null) {
                 elem = tr.getElement(options.elem);
                 if (elem !== null)
                     ref._setFlag(elem, options.class, value);

@@ -91,29 +91,32 @@ var NormTypeTagset = new Class({
          tr - Table row where the change happened
          data - An object possibly containing annotations ({anno_pos: ...}),
                 in the state *before* the update
+         changes - An object containing any changed values *after* the update
          cls - Tagset class of the annotation
          value - New value of the annotation
      */
-    update: function(tr, data, cls, value) {
-        var elem, opt, disabled = null;
+    update: function(tr, data, changes, cls, value) {
+        var elem, opt, disabled = null, normtype = null;
         if (cls === "norm_type") {
-            data.anno_norm_type = value;
-            this.updateInputErrorAlt(tr, data, value);
+            changes.anno_norm_type = value;
+            this.updateInputErrorAlt(tr, data.anno_norm_broad, value);
         }
         if (cls === "norm_broad") {
             elem = tr.getElement('.editTable_norm_type select');
             if(elem !== null) {
+                normtype = data.anno_norm_type;
                 if (value.length < 1) {
                     disabled = 'disabled';
-                    if(data.anno_norm_type != "") {
-                        data.anno_norm_type = "";
+                    if(normtype != "") {
+                        normtype = "";
+                        changes.anno_norm_type = "";
                         opt = elem.getElement("option[value='']");
                         if(opt !== null)
                             opt.set('selected', 'selected');
                     }
                 }
                 elem.set('disabled', disabled);
-                this.updateInputError(elem, disabled, data.anno_norm_type);
+                this.updateInputError(elem, disabled, normtype);
             }
         }
     },
@@ -138,12 +141,12 @@ var NormTypeTagset = new Class({
        Alternative version of updateInputError, called when 'elem' and
        'norm_broad_empty' have not yet been retrieved.
      */
-    updateInputErrorAlt: function(tr, data, value) {
+    updateInputErrorAlt: function(tr, norm_broad, value) {
         if(!this.showInputErrors)
             return;
         var disabled, elem = tr.getElement('.editTable_norm_type select');
-        if(typeof(data.anno_norm_broad) === "undefined"
-           || data.anno_norm_broad.length < 1)
+        if(typeof(norm_broad) === "undefined"
+           || norm_broad.length < 1)
             disabled = 'disabled';
         this.updateInputError(elem, disabled, value);
     }

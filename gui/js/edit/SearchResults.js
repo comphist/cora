@@ -62,7 +62,7 @@ var SearchResults = new Class({
                                panels: ['searchPagePanel', 'searchPagePanelBottom'],
                                startPage: 1
                            },
-                           onUpdate: this.update.bind(this),
+                           onUpdate: this.parent.update.bind(parent),
                            onUpdateProgress: this.updateProgress.bind(this)
                           }
                          );
@@ -192,14 +192,12 @@ var SearchResults = new Class({
             callback(this._slice(this.data, start, end));
     },
 
-    /* Function: update
+    /* Function: applyChanges
 
-       Callback function of DataTable that is invoked whenever an annotation
-       changes.
+       Apply a set of changes to a data object.
      */
-    update: function(elem, data, cls, value) {
-        this.parent.update(elem, data, cls, value, true);
-        this.parent.dataTable.render();
+    applyChanges: function(data, changes) {
+        this.parent.applyChanges(data, changes, true);
     },
 
     /* Function: updateProgress
@@ -209,8 +207,6 @@ var SearchResults = new Class({
      */
     updateProgress: function(num) {
         this.parent.updateProgress(num, true);
-        this.parent.dataTable.progressMarker = num;
-        this.parent.dataTable.render();
     },
 
     /* Function: destroy

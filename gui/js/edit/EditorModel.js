@@ -360,18 +360,36 @@ var EditorModel = new Class({
         return false;
     },
 
+    /* Function: applyChanges
+
+       Apply a set of changes to a data object.
+
+       Parameters:
+         data - The original data object
+         changes - A set of changes to apply
+         fromSearch - Set to true if function is called from SearchResults
+     */
+    applyChanges: function(data, changes, fromSearch) {
+        Object.each(changes, function(value, key) {
+            console.log("DataSource: "+data.num+": set '"+key+"' to '"+value+"'");
+            data[key] = value;
+        });
+        if (fromSearch)
+            this.dataTable.render();
+        else if (this.searchResults !== null)
+            this.searchResults.dataTable.render();
+    },
+
     /* Function: update
 
        Callback function of DataTable that is invoked whenever an annotation
        changes.
      */
-    update: function(elem, data, cls, value, fromSearch) {
+    update: function(elem, data, changes, cls, value) {
         if(!this.changedLines.contains(data.num))
             this.changedLines.push(data.num);
         if (data.num > this.lastEditedRow)
             this.dataTable.updateProgressBar(data.num);
-        if (!fromSearch && this.searchResults !== null)
-            this.searchResults.dataTable.render();
     },
 
     /* Function: updateProgress
@@ -381,7 +399,11 @@ var EditorModel = new Class({
      */
     updateProgress: function(num, fromSearch) {
         this.lastEditedRow = num;
-        if (!fromSearch && this.searchResults !== null) {
+        if (fromSearch) {
+            this.dataTable.progressMarker = num;
+            this.dataTable.render();
+        }
+        else if (this.searchResults !== null) {
             this.searchResults.dataTable.progressMarker = num;
             this.searchResults.dataTable.render();
         }

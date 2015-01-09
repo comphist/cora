@@ -54,13 +54,14 @@ var NormBroadTagset = new Class({
          tr - Table row where the change happened
          data - An object possibly containing annotations ({anno_pos: ...}),
                 in the state *before* the update
+         changes - An object containing any changed values *after* the update
          cls - Tagset class of the annotation
          value - New value of the annotation
      */
-    update: function(tr, data, cls, value) {
+    update: function(tr, data, changes, cls, value) {
         var elem;
         if (cls === "norm_broad")
-            data.anno_norm_broad = value;
+            changes.anno_norm_broad = value;
         if (cls === "norm") {
             elem = tr.getElement('.editTable_norm_broad input');
             if(elem !== null)

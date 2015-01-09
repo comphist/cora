@@ -60,9 +60,5 @@ var DataSource = new Class({
          changes - A set of changes to apply
      */
     applyChanges: function(data, changes) {
-        Object.each(changes, function(value, key) {
-            console.log("DataSource: "+data.num+": set '"+key+"' to '"+value+"'");
-            data[key] = value;
-        });
     }
 });

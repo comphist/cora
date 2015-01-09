@@ -115,23 +115,24 @@ var POSTagset = new Class({
          tr - Table row where the change happened
          data - An object possibly containing annotations ({anno_pos: ...}),
                 in the state *before* the update
+         changes - An object containing any changed values *after* the update
          cls - Tagset class of the annotation
          value - New value of the annotation
      */
-    update: function(tr, data, cls, value) {
+    update: function(tr, data, changes, cls, value) {
         var pos, morph, current_split;
         if (cls === "pos") {
             current_split = this.splitTag(data.anno_pos);
             pos = value, morph = current_split[1];
             if (!this.isValidTag(pos, morph))
                 morph = this.getValidMorph(pos, morph);
-            data.anno_pos = this.joinTag(pos, morph);
+            changes.anno_pos = this.joinTag(pos, morph);
             this.fillMorph(tr, [pos, morph], data);
             this.updateInputError(tr, [pos, morph]);
         } else if (cls === "morph") {
             current_split = this.splitTag(data.anno_pos);
             pos = current_split[0], morph = value;
-            data.anno_pos = this.joinTag(pos, morph);
+            changes.anno_pos = this.joinTag(pos, morph);
             this.updateInputError(tr, [pos, morph]);
         }
     },
