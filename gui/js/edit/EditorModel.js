@@ -377,6 +377,8 @@ var EditorModel = new Class({
             console.log("DataSource: "+data.num+": set '"+key+"' to '"+value+"'");
             data[key] = value;
         });
+        if(!this.changedLines.contains(data.num))
+            this.changedLines.push(data.num);
         if (typeof(caller) !== "undefined")
             this.dataTable.redrawRow(data.num, data);
         if (caller !== 'search' && this.searchResults !== null)
@@ -390,8 +392,6 @@ var EditorModel = new Class({
      */
     update: function(elem, data, changes, cls, value) {
         this.logUndoInformation(data, changes);
-        if(!this.changedLines.contains(data.num))
-            this.changedLines.push(data.num);
         if (data.num > this.lastEditedRow)
             this.dataTable.updateProgressBar(data.num);
     },

@@ -27,8 +27,10 @@ var EditorModelUndo = new Class({
         }.bind(this));
 
         // add events
+        this.buttonsUndo.addClass('start-disabled');
         this.buttonsUndo.removeEvents('click');
         this.buttonsUndo.addEvent('click', this.performUndo.bind(this));
+        this.buttonsRedo.addClass('start-disabled');
         this.buttonsRedo.removeEvents('click');
         this.buttonsRedo.addEvent('click', this.performRedo.bind(this));
     },
