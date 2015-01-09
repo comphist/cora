@@ -370,17 +370,17 @@ var EditorModel = new Class({
        Parameters:
          data - The original data object
          changes - A set of changes to apply
-         fromSearch - Set to true if function is called from SearchResults
+         caller - (optional) Source of the call, if not triggered by user change
      */
-    applyChanges: function(data, changes, fromSearch) {
+    applyChanges: function(data, changes, caller) {
         Object.each(changes, function(value, key) {
             console.log("DataSource: "+data.num+": set '"+key+"' to '"+value+"'");
             data[key] = value;
         });
-        if (fromSearch)
-            this.dataTable.render();
-        else if (this.searchResults !== null)
-            this.searchResults.dataTable.render();
+        if (typeof(caller) !== "undefined")
+            this.dataTable.redrawRow(data.num, data);
+        if (caller !== 'search' && this.searchResults !== null)
+            this.searchResults.dataTable.redrawRow(data.num, data);
     },
 
     /* Function: update

@@ -97,7 +97,7 @@ var EditorModelUndo = new Class({
         var operation = this.popUndo();
         if(operation === null)
             return;
-        this.applyChanges(this.get(operation.num), operation.from);
+        this.applyChanges(this.get(operation.num), operation.from, 'undo');
     },
 
     /* Function: performRedo
@@ -108,7 +108,7 @@ var EditorModelUndo = new Class({
         var operation = this.popRedo();
         if(operation === null)
             return;
-        this.applyChanges(this.get(operation.num), operation.to);
+        this.applyChanges(this.get(operation.num), operation.to, 'redo');
     },
 
     /* Function: clearUndoStack

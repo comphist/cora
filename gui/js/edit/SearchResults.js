@@ -197,7 +197,7 @@ var SearchResults = new Class({
        Apply a set of changes to a data object.
      */
     applyChanges: function(data, changes) {
-        this.parent.applyChanges(data, changes, true);
+        this.parent.applyChanges(data, changes, 'search');
     },
 
     /* Function: updateProgress

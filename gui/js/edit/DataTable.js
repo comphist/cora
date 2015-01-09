@@ -365,6 +365,23 @@ var DataTable = new Class({
         }
     },
 
+    /* Function: redrawRow
+
+       Re-renders a single row.
+
+       If the respective row is not currently displayed, nothing happens.
+
+       Parameters:
+         num - Number of the row to redraw
+         data - Data object for this row
+     */
+    redrawRow: function(num, data) {
+        var row = this.getRowFromNumber(num);
+        if(row === null)
+            return;
+        this._fillRow(data, row);
+    },
+
     /* Function: _fillRow
 
        Fills a row in the table with data.
