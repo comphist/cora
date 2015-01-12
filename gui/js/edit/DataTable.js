@@ -123,15 +123,6 @@ var DataTable = new Class({
        Add events that are generally required.
      */
     initializeEvents: function() {
-        // Provide the 'render:once' event:
-        this.addEvent(
-            'render',
-            function(data) {
-                this.fireEvent('render:once', [data]);
-                this.removeEvents('render:once');
-            }.bind(this),
-            true
-        );
         // Expose a few <table> events:
         this.table.addEvent(
             'focus:relay(input,select)',

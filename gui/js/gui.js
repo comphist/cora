@@ -186,6 +186,18 @@ var gui = {
 			cora.editor.saveData();
 		    }
 		},
+		'ctrl+z': function(e) {
+		    if(cora.editor!==null) {
+		        e.stop();
+			cora.editor.performUndo();
+		    }
+		},
+		'ctrl+y': function(e) {
+		    if(cora.editor!==null) {
+		        e.stop();
+			cora.editor.performRedo();
+		    }
+		},
 		'ctrl+f': function(e) {
 		    if(cora.editor != null
                        && cora.editor.tokenSearcher != null) {

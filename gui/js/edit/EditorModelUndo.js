@@ -40,11 +40,35 @@ var EditorModelUndo = new Class({
        Logs a change made by the user and stores it in the undo stack.
      */
     logUndoInformation: function(data, changes) {
-        var before = {};
+        var before = {}, this_undo = {};
         Object.each(changes, function(value, key) {
             before[key] = data[key];
         });
-        this.pushUndo({num: data.num, from: before, to: changes});
+        this_undo = {num: data.num, from: before, to: changes};
+        if(!this.mergeWithLastUndo(this_undo))
+            this.pushUndo(this_undo);
+    },
+
+    /* Function: mergeWithLastUndo
+
+       Tests if an undo operation can be merged with the last undo operation on
+       the stack, and performs the merge if possible.
+
+       Parameters:
+         operation - The new undo operation
+
+       Returns:
+         True if the operations were merged, false otherwise
+     */
+    mergeWithLastUndo: function(operation) {
+        var merged, last = this.undoStack.getLast();
+        if (last !== null && last.num === operation.num
+            && JSON.encode(last.to) === JSON.encode(operation.from)) {
+            this.undoStack.pop();
+            this.undoStack.push({num: last.num, from: last.from, to: operation.to});
+            return true;
+        }
+        return false;
     },
 
     /* Function: pushUndo

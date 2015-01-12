@@ -28,7 +28,7 @@ var HorizontalTextPreview = new Class({
         this.container = container;
         this.view = this.container.getElement('div');
 	this.view.empty().set('text', "Text-Vorschau wird geladen...");
-        this.spinner = new Spinner(this.container);
+        //this.spinner = new Spinner(this.container);
         this.setPreviewType(cora.settings.get('textPreview'));
     },
 
@@ -127,8 +127,8 @@ var HorizontalTextPreview = new Class({
 	end_bound   = Math.min(this.parent.dataTable.lineCount,
                                end + this.maxContextLength);
         if(!this.parent.isRangeLoaded(start_bound, end_bound)) {
-            if(this.spinner.hidden)
-                this.spinner.show();
+            //if(this.spinner.hidden)
+            //    this.spinner.show();
             this.parent.requestLines(start_bound, end_bound,
                                 function(){ this.update(start, end); }.bind(this),
                                 function(){ gui.showNotice('error',
@@ -159,7 +159,7 @@ var HorizontalTextPreview = new Class({
         this.currentStart = start;
         this.currentEnd   = end;
         this.redraw();
-        this.spinner.hide();
+        //this.spinner.hide();
         return this;
     },
 
