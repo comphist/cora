@@ -205,8 +205,8 @@ var SearchResults = new Class({
        Callback function of DataTable that is invoked whenever the progress bar
        updates.
      */
-    updateProgress: function(num) {
-        this.parent.updateProgress(num, true);
+    updateProgress: function(num, changes) {
+        this.parent.updateProgress(num, changes);
     },
 
     /* Function: destroy

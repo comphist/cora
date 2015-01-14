@@ -1511,6 +1511,15 @@
      $this->dbo->exec($qs);
    }
 
+  /** Saves changed data.
+   *
+   * Wraps @c saveLines() with different argument structure.
+   */
+  public function saveData($fileid, $data, $uname) {
+    $ler = (isset($data['ler']) ? $data['ler'] : null);
+    return $this->saveLines($fileid, $ler, $data['lines'], $uname);
+  }
+
    /** Saves changed lines.
     *
     * This function is called from the session handler during the
@@ -1538,7 +1547,9 @@
      }
 
      $warnings = $this->performSaveLines($fileid,$lines);
-     $this->markLastPosition($fileid,$lasteditedrow);
+     if($lasteditedrow !== null) {
+       $this->markLastPosition($fileid,$lasteditedrow);
+     }
      $userid = $this->getUserIDFromName($uname);
      $this->updateChangedTimestamp($fileid,$userid);
 

@@ -201,7 +201,8 @@ cora.settings = {
 };
 
 cora.isAdmin = function() {
-    return cora.settings.get('admin');
+    var admin = cora.settings.get('admin');
+    return (Boolean(admin) && admin !== '0');
 };
 
 // ***********************************************************************

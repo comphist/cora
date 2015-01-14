@@ -1387,7 +1387,29 @@ cora.tagsetEditor = {
 	});
 
     }
-}
+};
+
+cora.initAdminLogging = function(editor) {
+    editor.saveRequest.addEvent('processed', function(success, status, xhr) {
+        console.log("Save" + (success ? " " : " NOT ") + "successful.");
+        if(!success) {
+            console.log(status);
+            console.log(xhr);
+        }
+    });
+    editor.addEvent('applyChanges', function(data, changes, caller) {
+        var num = (data && typeof(data.num) !== "undefined") ? data.num : "--";
+        Object.each(changes, function(value, key) {
+            console.log("EditorModel: "+num+": set '"+key+"' to '"+value+"'");
+        });
+    });
+    editor.dataTable.addEvent('update', function(tr, data, changes, cls, value) {
+        console.log("DataTable: "+data.num+": user changed '"+cls+"' to '"+value+"'");
+    });
+    editor.dataTable.addEvent('updateProgress', function(num, changes) {
+        console.log("DataTable: user set progress marker to '"+num+"'");
+    });
+};
 
 // ***********************************************************************
 // ********** DOMREADY BINDINGS ******************************************

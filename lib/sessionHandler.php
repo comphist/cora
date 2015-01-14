@@ -557,16 +557,14 @@ class CoraSessionHandler {
 
   /** Save file data to the database.
    *
-   * Calls DBInterface::saveLines().
+   * Calls DBInterface::saveData().
    *
-   * @param string $lasteditedrow Line number of the last edited row
-   * @param array  $data		Array of lines to be saved
+   * @param array $data Data to be saved
    */
-  public function saveData($lasteditedrow,$data){
-    $status = $this->db->saveLines($_SESSION['currentFileId'],
-				   $lasteditedrow,
-				   $data,
-				   $_SESSION['user']);
+  public function saveData($data){
+    $status = $this->db->saveData($_SESSION['currentFileId'],
+				  $data,
+				  $_SESSION['user']);
 
     if($status) {
       return array("success"=>false, "errors"=>array($status));

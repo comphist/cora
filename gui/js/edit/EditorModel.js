@@ -3,12 +3,11 @@
    Main class representing an instance of the CorA editor.
  */
 var EditorModel = new Class({
-    Implements: [DataSource, EditorModelUndo],
+    Implements: [Events, DataSource, EditorModelUndo],
 
     fileId: 0,
     lastEditedRow: -1,
     header: "",
-    changedLines: null,
     tries: 0,
     maximumTries: 20,     // max. number of load requests before giving up
     dynamicLoadPages: 5,  // min. number of pages in each direction to be pre-fetched
@@ -20,6 +19,13 @@ var EditorModel = new Class({
     lineRequestInProgress: false,
     horizontalTextView: null,
     flagHandler: null,
+
+    currentChanges: null,
+    pendingChanges: null,
+    saveRequest: null,
+    saveFailures: 0,
+    autosaveInterval: 60,  // in seconds
+    autosaveTimerId: null,
 
     visibility: {},  // column visibility -- to be refactored soon
 
@@ -43,7 +49,6 @@ var EditorModel = new Class({
 	if(options.lastEditedRow !== null) {
 	    this.lastEditedRow = Number.from(options.lastEditedRow);
 	}
-	this.changedLines = new Array();
 	this.fileId = fileid;
         this.header = options.data.header;
         Array.each(options.data.idlist, function(item, idx) {
@@ -133,14 +138,11 @@ var EditorModel = new Class({
             new HorizontalTextPreview(this, $('horizontalTextViewContainer'));
         this.updateShowInputErrors(true);
 
+        /* Save functionality */
+        this._activateSaveFunctionality();
+
 	/* Activate extra menu bar */
 	mr = $('menuRight');
-	btn = mr.getElement('#saveButton');
-	btn.removeEvents();
-	btn.addEvent('click', function(e) {
-	    e.stop();
-	    this.saveData();
-	}.bind(this));
 	btn = mr.getElement('#closeButton');
 	btn.removeEvents();
 	btn.addEvent('click', function(e) {
@@ -163,10 +165,60 @@ var EditorModel = new Class({
         /* Activate "edit metadata" form */
         this._activateMetadataForm($('pagePanel'));
 
+        if(typeof(cora.initAdminLogging) === "function")
+            cora.initAdminLogging(this);
+
 	/* render start page */
         if(options.onInit)
             this.dataTable.addEvent('render:once', options.onInit);
         this.dataTable.render();
+    },
+
+    /* Function: _activateSaveFunctionality
+
+       All initialization code related to saving of documents.
+     */
+    _activateSaveFunctionality: function() {
+        var ref = this;
+        this.currentChanges = new DataChangeSet();
+        this.pendingChanges = null;
+        this.saveRequest = new Request.JSON({
+            url: 'request.php?do=saveData',
+            method: 'post',
+            onSuccess: function(status, statusText) {
+                var success;
+                if (status != null && status.success) {  // successful save!
+                    success = true;
+                    ref.saveFailures = 0;
+                } else {
+                    // error signalled by PHP backend -- this type of error
+                    // should only be caused by a bug and is unlikely to resolve
+                    // itself, so we warn the user immediately
+                    success = false;
+                    ref.saveFailures = 100;
+                    ref.currentChanges.merge(ref.pendingChanges);
+                    gui.showTextDialog("Kritischer Fehler",
+                        "Beim Speichern des Dokuments ist ein server-seitiger "
+                        + "Fehler aufgetreten.  Um Datenverluste zu vermeiden, "
+                        + "bearbeiten Sie das Dokument bitte nicht weiter und "
+                        + "melden diesen Fehler einem Administrator.  "
+                        + "Der Server antwortete:",
+                        ((status != null && status.errors != null) ?
+                          status.errors.join("\n") : statusText));
+                }
+                ref.pendingChanges = null;
+                this.fireEvent('processed', [success, status]);
+            },
+            onFailure: function(xhr) {
+                // failure due to server error or timeout
+                ref.saveFailures++;
+                ref.currentChanges.merge(ref.pendingChanges);
+                ref.pendingChanges = null;
+                this.fireEvent('processed', [false, null, xhr]);
+            }
+        });
+        this.autosaveTimerId = setInterval(this.save.bind(this),
+                                           this.autosaveInterval * 1000);
     },
 
     /* Function: _activateMetadataForm
@@ -216,6 +268,8 @@ var EditorModel = new Class({
        Clean-up when closing the editor.
      */
     destruct: function() {
+        if (this.autosaveTimerId !== null)
+            clearInterval(this.autosaveTimerId);
         if (this.searchResults !== null)
             this.searchResults.destroy();
         this.dataTable.hide();
@@ -373,16 +427,33 @@ var EditorModel = new Class({
          caller - (optional) Source of the call, if not triggered by user change
      */
     applyChanges: function(data, changes, caller) {
-        Object.each(changes, function(value, key) {
-            console.log("DataSource: "+data.num+": set '"+key+"' to '"+value+"'");
-            data[key] = value;
-        });
-        if(!this.changedLines.contains(data.num))
-            this.changedLines.push(data.num);
-        if (typeof(caller) !== "undefined")
-            this.dataTable.redrawRow(data.num, data);
-        if (caller !== 'search' && this.searchResults !== null)
-            this.searchResults.dataTable.redrawRow(data.num, data);
+        var changedData, id;
+        // handle lastEditedRow
+        if(typeof(changes['lastEditedRow']) !== "undefined") {
+            this.lastEditedRow = changes['lastEditedRow'];
+            id = (this.lastEditedRow < 0) ? -1 : this.get(this.lastEditedRow).id;
+            this.currentChanges.lastEditedRow = id;
+            this.dataTable.redrawProgressMarker(this.lastEditedRow);
+            if (this.searchResults !== null)
+                this.searchResults.dataTable.redrawProgressMarker(this.lastEditedRow);
+        }
+        // all token data
+        if(data && typeof(data.num) !== "undefined") {
+            changedData = this.currentChanges.at(data.num);
+            changedData['id'] = data.id;
+            Object.each(changes, function(value, key) {
+                if(key === "lastEditedRow")
+                    return;
+                data[key] = value;
+                changedData[key] = value;
+            }.bind(this));
+            if (typeof(caller) !== "undefined")
+                this.dataTable.redrawRow(data.num, data);
+            if (caller !== 'search' && this.searchResults !== null)
+                this.searchResults.dataTable.redrawRow(data.num, data);
+        }
+        // fire event, e.g. for logging
+        this.fireEvent('applyChanges', [data, changes, caller]);
     },
 
     /* Function: update
@@ -391,26 +462,21 @@ var EditorModel = new Class({
        changes.
      */
     update: function(elem, data, changes, cls, value) {
-        this.logUndoInformation(data, changes);
         if (data.num > this.lastEditedRow)
-            this.dataTable.updateProgressBar(data.num);
+            changes['lastEditedRow'] = data.num;
+        this.logUndoInformation(data, changes, this.lastEditedRow);
     },
 
     /* Function: updateProgress
 
        Callback function of DataTable that is invoked whenever the progress bar
        updates.
+
+       Currently ONLY called on progress change triggered by user!!!
      */
-    updateProgress: function(num, fromSearch) {
-        this.lastEditedRow = num;
-        if (fromSearch) {
-            this.dataTable.progressMarker = num;
-            this.dataTable.render();
-        }
-        else if (this.searchResults !== null) {
-            this.searchResults.dataTable.progressMarker = num;
-            this.searchResults.dataTable.render();
-        }
+    updateProgress: function(num, changes) {
+        changes['lastEditedRow'] = num;
+        this.logUndoInformation({}, changes, this.lastEditedRow);
     },
 
     /* Function: onDataTableFocus
@@ -619,85 +685,85 @@ var EditorModel = new Class({
 	}).get({'do': 'getLinesById', 'start_id': range[0], 'end_id': range[1]});
     },
 
-    /* Function: saveData
+    /* Function: hasUnsavedChanges
 
-       Send a server request to save the modified lines
-       to the database.
+       Whether there are any unsaved changes.
      */
-    saveData: function() {
-	var req, cl, data, save, save_obj, line, ler;
-	var ref = this;
+    hasUnsavedChanges: function() {
+        return !(this.currentChanges.isEmpty() && this.pendingChanges === null);
+    },
 
-	cl = this.changedLines;
-	if (cl==null) { return; }
-	data = this.data;
-	save = new Array();
+    /* Function: save
 
-	for (var i=0, len=cl.length; i<len; i++) {
-	    line = data[cl[i]];
-            save_obj = {id: line.id};
-            Object.each(cora.current().tagsets, function(tagset, cls) {
-                Object.append(save_obj, tagset.getValues(line));
-            });
-            Object.append(save_obj, this.flagHandler.getValues(line));
-            save.push(save_obj);
-	}
+       Send a server request to save the modified lines to the database.
 
-	ler = (!(this.lastEditedRow in data) ? this.lastEditedRow : data[this.lastEditedRow].id);
-	req = new Request.JSON({
-	    url: 'request.php?do=saveData&lastEditedRow='+ler,
-	    onSuccess: function(status,xml) {
-		var title="", message="", textarea="";
+       NOTE: When a server request to save data is already running, this
+       function simply returns.  This means that calling save() does NOT
+       guarantee that all data will be saved afterwards; use whenSaved() for
+       that.
+     */
+    save: function() {
+        if(!this.hasUnsavedChanges() || this.pendingChanges !== null)
+            return false;
 
-		if (status!=null && status.success) {
-		    ref.changedLines = new Array(); // reset "changed lines" array
-		    gui.showNotice('ok', 'Speichern erfolgreich.');
-		}
-		else {
-		    if (status==null) {
-			message = 'Beim Speichern der Datei ist ein unbekannter Fehler aufgetreten.';
-		    }
-		    else {
-			message = 'Beim Speichern der Datei ist leider ein Fehler aufgetreten.  Bitte melden Sie die folgende Fehlermeldung ggf. einem Administrator.';
-			for(var i=0;i<status.errors.length;i++){
-			    textarea += status.errors[i] + "\n";
-			}
-		    }
+        this.pendingChanges = this.currentChanges;
+        this.currentChanges = new DataChangeSet();
+        this.saveRequest.send(this.pendingChanges.json());
+        return true;
+    },
 
-		    gui.showTextDialog('Speichern fehlgeschlagen', message, textarea);
-		}
-		gui.hideSpinner();
-	    },
-	    onFailure: function(xhr) {
-		var message = 'Das Speichern der Datei war nicht erfolgreich! Server lieferte folgende Antwort:';
-		gui.showTextDialog('Speichern fehlgeschlagen', message,
-				   xhr.responseText+' ('+xhr.statusText+')');
-		gui.hideSpinner();
-	    }
-	});
-	gui.showSpinner({message: 'Speichere...'});
-	req.post(JSON.encode(save));
+    /* Function: whenSaved
+
+       Saves any remaining changes to the current document, and calls a supplied
+       function when and only when all changes have been saved.
+
+       Parameters:
+         fn - Function to call after successful saving
+         spinnerOptions - When given, shows a spinner while waiting for changes
+                          to be saved
+         fail - Function to call when saving fails
+     */
+    whenSaved: function(fn, spinnerOptions, fail) {
+        if (!this.hasUnsavedChanges()) {
+            if (spinnerOptions)
+                gui.hideSpinner();
+            fn();
+            return;
+        }
+
+        if (spinnerOptions)
+            gui.showSpinner(spinnerOptions);
+        this.saveRequest.addEvent('processed:once', function(success, status, xhr) {
+            if (success || this.saveFailures < 3) {
+                this.whenSaved(fn, spinnerOptions, fail);
+            } else {
+                gui.showMsgDialog('error',
+                    "Das Dokument kann derzeit nicht gespeichert werden; der "
+                    + "aktuelle Vorgang wird daher abgebrochen.  Überprüfen Sie "
+                    + "Ihre Internetverbindung und versuchen Sie es ggf. erneut.");
+                if (spinnerOptions)
+                    gui.hideSpinner();
+                if (typeof(fail) === "function")
+                    fail();
+            }
+        }.bind(this));
+
+        this.save();
     },
 
     /* Function: confirmClose
 
-       If any changes have been made, prompt for confirmation
-       to close the currently opened file.
+       Makes sure that all unsaved changes have been saved before allowing the
+       file to be closed.
 
        Note that the actual closing of the file is not implemented
        in this class, but in file.js.
 
        Parameters:
-         fn - Callback function if closing is confirmed
+         fn - Function to call when closing is safe
     */
     confirmClose: function(fn) {
-	var chl = this.changedLines.length;
-	if (chl>0) {
-	    var zeile = (chl>1) ? "Zeilen" : "Zeile";
-            gui.confirm("Warnung: Im geöffneten Dokument gibt es noch ungespeicherte Änderungen in "+chl+" "+zeile+", die verloren gehen, wenn Sie fortfahren.  Wirklich fortfahren?", fn);
-	} else {
-            fn();
-	}
+        this.whenSaved(fn, {message: "Bitte warten..."});
     },
 
     /* Function: updateDataArray
@@ -718,9 +784,6 @@ var EditorModel = new Class({
 	// delete all lines after the changed line from memory
 	this.data = Object.filter(this.data, function(item, index) {
 	    return index < tok_id;
-	});
-	this.changedLines = this.changedLines.filter(function(val) {
-	    return val < tok_id;
 	});
         // clear undo/redo information
         this.clearUndoStack().clearRedoStack();
@@ -755,34 +818,55 @@ var EditorModel = new Class({
 		 event: function() {
 		     confirmbox.close();
 		     gui.showSpinner({message: 'Bitte warten...'});
-		     new Request.JSON({
-			 url: 'request.php',
-			 async: true,
-			 onSuccess: function(status, text) {
-			     if (status!=null && status.success) {
-				 gui.showNotice('ok', 'Token gelöscht.');
-				 ref.updateDataArray(tok_id, -Number.from(status.oldmodcount));
-			     }
-			     else {
-				 var rows = (status!=null ? status.errors : ["Ein unbekannter Fehler ist aufgetreten."]);
-				 gui.showTextDialog("Löschen fehlgeschlagen", "Das Löschen des Tokens war nicht erfolgreich.", rows);
-			     }
-			     gui.hideSpinner();
-			 },
-			 onFailure: function(xhr) {
-			     new mBox.Modal({
-				 title: 'Bearbeiten fehlgeschlagen',
-				 content: 'Ein interner Fehler ist aufgetreten. Server lieferte folgende Antwort: "'+xhr.responseText+'" ('+xhr.statusText+').'
-			     }).open();
-			     gui.hideSpinner();
-			 }
-		     }).get({'do': 'deleteToken', 'token_id': db_id});
-		 }
+                     this.whenSaved(
+                         function() {
+                             this.sendDeleteTokenRequest(tok_id, db_id);
+                         }.bind(this),
+                         null,
+                         function() { gui.hideSpinner(); }
+                     );
+		 }.bind(this)
 		}
 	    ],
 	    closeOnBodyClick: false
 	});
+        this.save();
 	confirmbox.open();
+    },
+
+    /* Function: sendDeleteTokenRequest
+
+       Sends a delete token request.
+
+       Is invoked by deleteToken(); do not call directly.
+     */
+    sendDeleteTokenRequest: function(tok_id, db_id) {
+	new Request.JSON({
+	    url: 'request.php',
+	    async: true,
+	    onSuccess: function(status, text) {
+		if (status!=null && status.success) {
+		    gui.showNotice('ok', 'Token gelöscht.');
+		    this.updateDataArray(tok_id, -Number.from(status.oldmodcount));
+		}
+		else {
+		    var rows = ((status != null && status.errors != null)
+                                ? status.errors
+                                : ["Ein unbekannter Fehler ist aufgetreten."]);
+		    gui.showTextDialog("Löschen fehlgeschlagen",
+                                       "Das Löschen des Tokens war nicht erfolgreich:",
+                                       rows);
+		}
+		gui.hideSpinner();
+	    }.bind(this),
+	    onFailure: function(xhr) {
+		new mBox.Modal({
+		    title: 'Bearbeiten fehlgeschlagen',
+		    content: 'Ein interner Fehler ist aufgetreten: "'+xhr.responseText+'" ('+xhr.statusText+').'
+		}).open();
+		gui.hideSpinner();
+	    }
+	}).get({'do': 'deleteToken', 'token_id': db_id});
     },
 
     /* Function: _resizeTextarea
@@ -813,55 +897,7 @@ var EditorModel = new Class({
 	    tok_id = tok_id - 1;
 	}
 
-	var performEdit = function(mbox) {
-	    var new_token = $('editTokenBox').get('value').trim();
-	    if(new_token == old_token) {
-		mbox.close();
-		return false;
-	    }
-	    if(!new_token) {
-		gui.showNotice('error', "Transkription darf nicht leer sein!");
-		return false;
-	    }
-	    performEditRequest(mbox, new_token);
-	}
-
-	var performEditRequest = function(mbox, new_token) {
-	    gui.showSpinner({message: 'Bitte warten...'});
-	    new Request.JSON({
-		url: 'request.php',
-		async: true,
-		onSuccess: function(status, text) {
-		    mbox.close();
-		    if (status!=null && status.success) {
-			gui.showNotice('ok', 'Transkription erfolgreich geändert.');
-			// update data array if number of mods has changed
-			ref.updateDataArray(tok_id, Number.from(status.newmodcount)-Number.from(status.oldmodcount));
-		    }
-		    else {
-			var rows = (status!=null ? status.errors : ["Ein unbekannter Fehler ist aufgetreten."]);
-			gui.showTextDialog("Bearbeiten fehlgeschlagen", "Das Ändern der Transkription war nicht erfolgreich.", rows);
-		    }
-		    gui.hideSpinner();
-		},
-		onFailure: function(xhr) {
-		    new mBox.Modal({
-			title: 'Bearbeiten fehlgeschlagen',
-			content: 'Ein interner Fehler ist aufgetreten. Server lieferte folgende Antwort: "'+xhr.responseText+'" ('+xhr.statusText+').'
-		    }).open();
-		    gui.hideSpinner();
-		}
-	    }).get({'do': 'editToken', 'token_id': db_id, 'value': new_token});
-	    mbox.close();
-	};
-
 	$('editTokenBox').set('value', old_token);
-	if(this.changedLines.some(function(val) {return val >= tok_id;})) {
-	    $('editTokenWarning').show();
-	}
-	else {
-	    $('editTokenWarning').hide();
-	}
 	var editTokenBox = new mBox.Modal({
 	    title: 'Transkription bearbeiten',
 	    content: 'editTokenForm',
@@ -869,7 +905,20 @@ var EditorModel = new Class({
 		{title: 'Abbrechen', addClass: 'mform'},
 		{title: 'Speichern', addClass: 'mform button_green',
 		 event: function() {
-		     performEdit(this);
+	             var new_token = $('editTokenBox').get('value').trim();
+                     if (!new_token) {
+                         gui.showNotice('error', "Transkription darf nicht leer sein!");
+                     } else if (new_token != old_token) {
+		         gui.showSpinner({message: 'Bitte warten...'});
+                         ref.whenSaved(
+                             function() {
+                                 ref.sendEditTokenRequest(tok_id, db_id, new_token);
+                             },
+                             null,
+                             function() { gui.hideSpinner(); }
+                         );
+                     }
+                     this.close();
 		 }
 		}
 	    ],
@@ -881,7 +930,42 @@ var EditorModel = new Class({
 	$('editTokenBox').removeEvents('keyup');
 	$('editTokenBox').addEvent('keyup', this._resizeTextarea);
         this._resizeTextarea({target: $('editTokenBox')});
+        this.save();
 	editTokenBox.open();
+    },
+
+    /* Function: sendEditTokenRequest
+     */
+    sendEditTokenRequest: function(tok_id, db_id, new_token) {
+	new Request.JSON({
+	    url: 'request.php',
+	    async: true,
+	    onSuccess: function(status, text) {
+		if (status!=null && status.success) {
+		    gui.showNotice('ok', 'Transkription erfolgreich geändert.');
+		    // update data array if number of mods has changed
+		    this.updateDataArray(tok_id,
+                                         Number.from(status.newmodcount)
+                                         -Number.from(status.oldmodcount));
+		}
+		else {
+		    var rows = ((status != null && status.errors != null)
+                                ? status.errors
+                                : ["Ein unbekannter Fehler ist aufgetreten."]);
+		    gui.showTextDialog("Bearbeiten fehlgeschlagen",
+                        "Das Ändern der Transkription war nicht erfolgreich.",
+                        rows);
+		}
+		gui.hideSpinner();
+	    }.bind(this),
+	    onFailure: function(xhr) {
+		new mBox.Modal({
+		    title: 'Bearbeiten fehlgeschlagen',
+		    content: 'Ein interner Fehler ist aufgetreten: "'+xhr.responseText+'" ('+xhr.statusText+').'
+		}).open();
+		gui.hideSpinner();
+	    }
+	}).get({'do': 'editToken', 'token_id': db_id, 'value': new_token});
     },
 
     /* Function: addToken
@@ -906,49 +990,9 @@ var EditorModel = new Class({
 		+ this.data[tok_id]['col_name'] + "," + this.data[tok_id]['line_name'];
 	}
 
-	var performAdd = function(mbox) {
-	    var new_token = $('addTokenBox').get('value').trim();
-	    if(!new_token) {
-		gui.showNotice('error', "Transkription darf nicht leer sein!");
-		return false;
-	    }
-	    gui.showSpinner({message: 'Bitte warten...'});
-	    new Request.JSON({
-		url: 'request.php',
-		async: true,
-		onSuccess: function(status, text) {
-		    mbox.close();
-		    if (status!=null && status.success) {
-			gui.showNotice('ok', 'Transkription erfolgreich hinzugefügt.');
-			ref.updateDataArray(tok_id, Number.from(status.newmodcount));
-		    }
-		    else {
-			var rows = (status!=null ? status.errors : ["Ein unbekannter Fehler ist aufgetreten."]);
-			gui.showTextDialog("Hinzufügen fehlgeschlagen", "Das Hinzufügen der Transkription war nicht erfolgreich.", rows);
-		    }
-		    gui.hideSpinner();
-		},
-		onFailure: function(xhr) {
-		    new mBox.Modal({
-			title: 'Hinzufügen fehlgeschlagen',
-			content: 'Ein interner Fehler ist aufgetreten. Server lieferte folgende Antwort: "'+xhr.responseText+'" ('+xhr.statusText+').'
-		    }).open();
-		    gui.hideSpinner();
-		}
-	    }).get({'do': 'addToken', 'token_id': db_id, 'value': new_token});
-	    mbox.close();
-            return true;
-	};
-
 	$('addTokenBox').set('value', '');
 	$('addTokenBefore').empty().appendText(old_token);
 	$('addTokenLineinfo').empty().appendText(lineinfo);
-	if(this.changedLines.some(function(val) {return val >= tok_id;})) {
-	    $('addTokenWarning').show();
-	}
-	else {
-	    $('addTokenWarning').hide();
-	}
 	var addTokenBox = new mBox.Modal({
 	    title: 'Transkription hinzufügen',
 	    content: 'addTokenForm',
@@ -956,7 +1000,20 @@ var EditorModel = new Class({
 		{title: 'Abbrechen', addClass: 'mform'},
 		{title: 'Speichern', addClass: 'mform button_green',
 		 event: function() {
-		     performAdd(this);
+	             var new_token = $('addTokenBox').get('value').trim();
+	             if(!new_token) {
+		         gui.showNotice('error', "Transkription darf nicht leer sein!");
+	             } else {
+	                 this.close();
+	                 gui.showSpinner({message: 'Bitte warten...'});
+                         ref.whenSaved(
+                             function() {
+                                 ref.sendAddTokenRequest(tok_id, db_id, new_token);
+                             },
+                             null,
+                             function() { gui.hideSpinner(); }
+                         );
+                     }
 		 }
 		}
 	    ],
@@ -968,7 +1025,39 @@ var EditorModel = new Class({
 	$('addTokenBox').removeEvents('keyup');
 	$('addTokenBox').addEvent('keyup', this._resizeTextarea);
         this._resizeTextarea({target: $('addTokenBox')});
+        this.save();
 	addTokenBox.open();
+    },
+
+    /* Function: sendAddTokenRequest
+     */
+    sendAddTokenRequest: function(tok_id, db_id, new_token) {
+	new Request.JSON({
+	    url: 'request.php',
+	    async: true,
+	    onSuccess: function(status, text) {
+		if (status!=null && status.success) {
+		    gui.showNotice('ok', 'Transkription erfolgreich hinzugefügt.');
+		    this.updateDataArray(tok_id, Number.from(status.newmodcount));
+		}
+		else {
+		    var rows = ((status != null && status.errors != null)
+                                ? status.errors
+                                : ["Ein unbekannter Fehler ist aufgetreten."]);
+		    gui.showTextDialog("Hinzufügen fehlgeschlagen",
+                        "Das Hinzufügen der Transkription war nicht erfolgreich.",
+                        rows);
+		}
+		gui.hideSpinner();
+	    }.bind(this),
+	    onFailure: function(xhr) {
+		new mBox.Modal({
+		    title: 'Hinzufügen fehlgeschlagen',
+		    content: 'Ein interner Fehler ist aufgetreten: "'+xhr.responseText+'" ('+xhr.statusText+').'
+		}).open();
+		gui.hideSpinner();
+	    }
+	}).get({'do': 'addToken', 'token_id': db_id, 'value': new_token});
     },
 
     /* Function: prepareAnnotationOptions
@@ -1032,7 +1121,6 @@ var EditorModel = new Class({
 	var content = $('automaticAnnotationForm');
 	var performAnnotation = function(action) {
 	    var taggerID = $('automaticAnnotationForm').getElement('input[name="aa_tagger_select"]:checked').get('value');
-	    gui.showSpinner({message: 'Bitte warten...'});
 	    new Request.JSON({
 		url: 'request.php',
 		async: true,
@@ -1077,14 +1165,29 @@ var EditorModel = new Class({
 	    title: 'Automatisch neu annotieren',
 	    content: 'automaticAnnotationForm',
 	    attach: button,
+            onOpen: function() { ref.save(); },
 	    buttons: [ {title: "Neu trainieren", addClass: "mform button_left button_yellow",
                         id: "trainStartButton",
-                        event: function() { this.close();
-                                            performAnnotation("train"); }},
+                        event: function() {
+                            this.close();
+	                    gui.showSpinner({message: 'Bitte warten...'});
+                            ref.whenSaved(
+                                function() { performAnnotation("train"); },
+                                null,
+                                function() { gui.hideSpinner(); }
+                            );
+                        }},
                        {title: "Annotieren", addClass: "mform button_green",
 			id: "annoStartButton",
-			event: function() { this.close();
-					    performAnnotation("anno"); }},
+			event: function() {
+                            this.close();
+	                    gui.showSpinner({message: 'Bitte warten...'});
+                            ref.whenSaved(
+                                function() { performAnnotation("anno"); },
+                                null,
+                                function() { gui.hideSpinner(); }
+                            );
+                        }},
 		       {title: "Abbrechen", addClass: "mform",
 			event: function() { this.close(); }}
 		     ]

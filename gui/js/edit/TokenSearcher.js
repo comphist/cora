@@ -58,7 +58,17 @@ var TokenSearcher = new Class({
                 },
 		{title: 'Abbrechen', addClass: 'mform'},
 		{title: 'Suchen', addClass: 'mform button_green',
-		 event: function() { ref.requestSearch(this); }
+		 event: function() {
+                     var spinner = new Spinner(this.mbox.container);
+                     spinner.show();
+                     this.parent.whenSaved(
+                         function() {
+                             this.requestSearch(this.mbox, spinner);
+                         }.bind(this),
+                         null,
+                         function() { spinner.hide(); }
+                     );
+                 }.bind(this)
 		}
 	    ]
 	});
@@ -205,6 +215,8 @@ var TokenSearcher = new Class({
        Open the search dialog.
      */
     open: function() {
+        if(typeof(this.parent.save) === "function")
+            this.parent.save();
         this.mbox.open();
     },
 
@@ -221,11 +233,10 @@ var TokenSearcher = new Class({
        Perform a server-side document search, using the query values in the
        search dialog.
      */
-    requestSearch: function(mbox) {
+    requestSearch: function(mbox, spinner) {
         var operator = mbox.content.getElement('select.editSearchOperator')
                 .getSelected()[0].get('value');
         var crits = mbox.content.getElements('.editSearchCriterion');
-        var spinner = new Spinner(mbox.container);
         var conditions = [], data = {};
         Array.each(crits, function(li) {
             conditions.push({
@@ -238,12 +249,12 @@ var TokenSearcher = new Class({
         });
         data = {'conditions': conditions, 'operator': operator};
         this.fireEvent('searchRequest', [data]);
-        spinner.show();
         new Request.JSON({
             'url': 'request.php?do=search',
             'data': data,
             onSuccess: function(status, text) {
-                spinner.hide();
+                if(spinner)
+                    spinner.hide();
                 mbox.close();
                 this.fireEvent('searchSuccess', [data, status]);
             }.bind(this)

@@ -68,7 +68,7 @@
   </div>
 
   <div id="editTokenForm" class="limitedWidth-tiny">
-    <p id="editTokenWarning" class="error_text"><strong>Achtung!</strong> Es gibt in diesem Dokument noch ungespeicherte Änderungen, die beim Editieren dieser Transkription verloren gehen werden!</p>
+    <p class="important_text"><strong>Achtung!</strong> Diese Aktion kann nicht rückgängig gemacht werden!</p>
     <p>
       <label for="editToken">Transkription: </label>
       <textarea id="editTokenBox" name="editToken" rows="1" cols="30" class="auto-resize mform"></textarea>
@@ -76,7 +76,7 @@
   </div>
 
   <div id="addTokenForm" class="limitedWidth-tiny">
-    <p id="addTokenWarning" class="error_text"><strong>Achtung!</strong> Es gibt in diesem Dokument noch ungespeicherte Änderungen, die beim Hinzufügen dieser Transkription verloren gehen werden!</p>
+    <p class="important_text"><strong>Achtung!</strong> Diese Aktion kann nicht rückgängig gemacht werden!</p>
     <form>
       <p>
         <label for="addToken">Transkription: </label>

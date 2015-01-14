@@ -46,15 +46,24 @@ var DataTableProgressBar = new Class({
          num - Last row number with activated progress bar
      */
     updateProgressBar: function(num) {
+        var changes = {};
         if (num == this.progressMarker)
             return;
+        this.redrawProgressMarker(num);
+        this.fireEvent('updateProgress', [num, changes]);
+        this.dataSource.applyChanges({}, changes);
+    },
+
+    /* Function: redrawProgressMarker
+
+       Re-renders the progress marker for all rows.
+     */
+    redrawProgressMarker: function(num) {
         this.progressMarker = num;
         var rows = this.table.getElements('tbody tr');
         rows.each(function (row) {
             var rownum = this.getRowNumberFromElement(row);
             this._fillProgress(row, rownum);
         }.bind(this));
-        console.log("DataTable: progressMarker set to '"+num+"'");
-        this.fireEvent('updateProgress', [num]);
     }
 });

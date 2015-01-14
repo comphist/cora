@@ -121,6 +121,11 @@ var gui = {
 	this.addToggleEvents($$('.clappable'));
 	this._activateKeepalive();
         this._defineDateParsers();
+
+        var btn = $('logoutButton');
+        if (btn) {
+            btn.addEvent('click', this.logout.bind(this));
+        }
     },
 
     /* Function: addToggleEvents
@@ -182,8 +187,8 @@ var gui = {
 	    events: {
 		'ctrl+s': function(e) {
 		    e.stop();
-		    if(cora.editor!==null) {
-			cora.editor.saveData();
+		    if(cora.editor!==null && cora.editor.hasUnsavedChanges()) {
+			cora.editor.save();
 		    }
 		},
 		'ctrl+z': function(e) {
@@ -430,6 +435,11 @@ var gui = {
 	var spinmsg = options.message || null;
 	var nofx    = options.noFx || false;
 
+        if(this.activeSpinner !== null) {
+            if(!this.activeSpinner.hidden)  // don't replace an active spinner
+                return this;
+            this.activeSpinner.destroy();
+        }
         this.disableScrolling();
         this.lock();
 	$('spin-overlay').show();
@@ -590,6 +600,18 @@ var gui = {
             format_string += date_strings[date.diff(now)];
         format_string += ", %H:%M";
         return date.format(format_string);
+    },
+
+    /* Function: logout
+
+       Performs a logout for the current user.
+     */
+    logout: function() {
+        if (cora.editor !== null && cora.editor.hasUnsavedChanges()) {
+            cora.editor.confirmClose(this.logout.bind(this));
+        } else {
+            window.location.href = '../index.php?do=logout';
+        }
     }
 };
 
@@ -606,11 +628,8 @@ function onLoad() {
 }
 
 function onBeforeUnload() {
-    if (cora.editor !== null) {
-	var chl = cora.editor.changedLines.length;
-	if (chl>0) {
-	    var zeile = (chl>1) ? "Zeilen" : "Zeile";
-	    return ("Im geöffneten Dokument gibt es noch ungespeicherte Änderungen in "+chl+" "+zeile+", die verloren gehen, wenn Sie fortfahren.");
-	}
+    if (cora.editor !== null && cora.editor.hasUnsavedChanges()) {
+        cora.editor.save();
+	return ("Es gibt noch ungespeicherte Änderungen, die verloren gehen, wenn Sie fortfahren!");
     }
 }

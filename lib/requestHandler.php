@@ -268,8 +268,7 @@ class RequestHandler {
 	return $this->sh->deleteProject($get['project_id']);
 
       case "saveData":
-	return $this->sh->saveData($get['lastEditedRow'],
-				   json_decode(file_get_contents("php://input"), true));
+	return $this->sh->saveData(json_decode(file_get_contents("php://input"), true));
 
       case "saveEditorUserSettings":
 	$status = $this->sh->setUserSettings($get['noPageLines'],$get['contextLines']);

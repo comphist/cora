@@ -252,7 +252,6 @@ var DataTable = new Class({
         var tr = elem.getParent('tr');
         var data = this.dataSource.get(this.getRowNumberFromElement(tr));
         var changes = {};
-        console.log("DataTable: "+data.num+": user changed '"+cls+"' to '"+value+"'");
         Object.each(this.tagsets, function(tagset) {
             tagset.update(tr, data, changes, cls, value);
         });

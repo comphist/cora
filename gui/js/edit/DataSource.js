@@ -1,3 +1,70 @@
+/* Class: DataChangeSet
+
+   Convenience wrapper that stores an array of data changes.
+ */
+var DataChangeSet = new Class({
+    data: [],
+    index: {},
+    lastEditedRow: null,
+
+    /* Function: at
+
+       Get the data object for a specific index.  If it doesn't exist yet, it
+       will be created.
+     */
+    at: function(idx) {
+        var data;
+        if (typeof(this.index[idx]) !== "undefined") {
+            data = this.data[this.index[idx]];
+        } else {
+            data = {};
+            this.index[idx] = this.data.length;
+            this.data.push(data);
+        }
+        return data;
+    },
+
+    /* Function: merge
+
+       Merges this change-set with another one.
+
+       Typically used when a save operation fails.  If two values conflict, this
+       change-set takes precedence over the one supplied as an argument.
+     */
+    merge: function(changeset) {
+        Object.each(changeset.index, function(pos, idx) {
+            var data = this.at(idx);
+            Object.each(changeset.data[pos], function(value, key) {
+                if(typeof(data[key]) === "undefined")
+                    data[key] = value;
+            }.bind(this));
+        }.bind(this));
+        if(this.lastEditedRow === null) {
+            this.lastEditedRow = changeset.lastEditedRow;
+        }
+    },
+
+    /* Function: isEmpty
+
+       Whether any changes have been recorded in this change-set.
+     */
+    isEmpty: function() {
+        return (this.data.length === 0 && this.lastEditedRow === null);
+    },
+
+    /* Function: json
+
+       Returns a JSON representation of this object suitable for
+       DBInterface::saveData().
+     */
+    json: function() {
+        var obj = {'lines': this.data};
+        if (this.lastEditedRow !== null)
+            obj['ler'] = this.lastEditedRow;
+        return JSON.encode(obj);
+    }
+});
+
 /* Class: DataSource
 
    Defines an interface for classes that can be used as data sources for

@@ -39,10 +39,10 @@ var EditorModelUndo = new Class({
 
        Logs a change made by the user and stores it in the undo stack.
      */
-    logUndoInformation: function(data, changes) {
+    logUndoInformation: function(data, changes, ler) {
         var before = {}, this_undo = {};
         Object.each(changes, function(value, key) {
-            before[key] = data[key];
+            before[key] = (key === 'lastEditedRow') ? ler : data[key];
         });
         this_undo = {num: data.num, from: before, to: changes};
         if(!this.mergeWithLastUndo(this_undo))
