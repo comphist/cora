@@ -51,9 +51,7 @@ var EditorModel = new Class({
 	}
 	this.fileId = fileid;
         this.header = options.data.header;
-        Array.each(options.data.idlist, function(item, idx) {
-            this.idlist[item] = idx;
-        }.bind(this));
+        this._initializeIdList(options.data.idlist);
         this.flagHandler = new FlagHandler();
 
         /* Search function */
@@ -172,6 +170,16 @@ var EditorModel = new Class({
         if(options.onInit)
             this.dataTable.addEvent('render:once', options.onInit);
         this.dataTable.render();
+    },
+
+    /* Function: _initializeIdList
+
+     */
+    _initializeIdList: function(idlist) {
+        this.idlist = {};
+        Array.each(idlist, function(item, idx) {
+            this[item] = idx;
+        }.bind(this.idlist));
     },
 
     /* Function: _activateSaveFunctionality
@@ -811,17 +819,84 @@ var EditorModel = new Class({
 	lcdiff - the difference in line count after the edit operation
     */
     updateDataArray: function(tok_id, lcdiff) {
-	tok_id = Number.from(tok_id);
-	// delete all lines after the changed line from memory
-	this.data = Object.filter(this.data, function(item, index) {
-	    return index < tok_id;
-	});
-        // clear undo/redo information
-        this.clearUndoStack().clearRedoStack();
-	// update line count and re-load page
-        this.dataTable.setLineCount(this.dataTable.lineCount + lcdiff).render();
+        var afterRequestIdList = function() {
+	    tok_id = Number.from(tok_id);
+	    // delete all lines after the changed line from memory
+	    this.data = Object.filter(this.data, function(item, index) {
+	        return index < tok_id;
+	    });
+            // clear undo/redo information
+            this.clearUndoStack().clearRedoStack();
+	    // update line count and re-load page
+            this.dataTable.setLineCount(this.dataTable.lineCount + lcdiff).render();
+        }.bind(this);
+
+        var spinner = new Spinner(this.dataTable.table, {class: 'bg-color-page'});
+        spinner.show();
+
+        // request new ID list
+        new Request.JSON({
+            url: 'request.php?do=getAllModernIDs',
+            onSuccess: function(status) {
+                spinner.hide();
+                if (status && status.success) {
+                    this._initializeIdList(status.data);
+                    afterRequestIdList();
+                } else {
+                    // try closing and re-opening
+                    var id = cora.current().id;
+                    cora.fileManager.closeCurrentlyOpened(function() {
+                        cora.fileManager.openFile(id);
+                    });
+                }
+            }.bind(this)
+        }).send();
     },
 
+    /* Function: _resizeTextarea
+
+       Resizes a <textarea> element based on the required number of lines.
+
+       Parameters:
+         event - A trigger event (e.g. keydown) that called this function
+    */
+    _resizeTextarea: function(event) {
+        event.target.rows = event.target.get('value').split("\n").length;
+    },
+
+    /* Function: sendEditRequest
+
+       Sends a request to edit the primary data.
+     */
+    sendEditRequest: function(options) {
+        new Request.JSON({
+            url: 'request.php',
+            async: true,
+            onSuccess: function(status, text) {
+                if (status != null && status.success) {
+                    gui.showNotice('ok', options.successNotice);
+                    this.updateDataArray(options.tokId, options.getDiff(status));
+                } else {
+		    var rows = ((status != null && status.errors != null)
+                                ? status.errors
+                                : ["Ein unbekannter Fehler ist aufgetreten."]);
+		    gui.showTextDialog(
+                        "Änderung fehlgeschlagen",
+                        "Die Änderung an den Primärdaten war nicht erfolgreich:",
+                        rows);
+                }
+                gui.hideSpinner();
+            }.bind(this),
+            onFailure: function(xhr) {
+                gui.showTextDialog(
+                    "Änderung fehlgeschlagen",
+                    "Ein interner Fehler ist aufgetreten:",
+                    [xhr.statusText, xhr.responseText]
+                );
+		gui.hideSpinner();
+	    }
+        }).get(options.request);
+    },
 
     /* Function: deleteToken
 
@@ -840,75 +915,35 @@ var EditorModel = new Class({
 	}
 
 	$('deleteTokenToken').empty().appendText(old_token);
-	var confirmbox = new mBox.Modal({
+	new mBox.Modal({
 	    title: 'Löschen bestätigen',
 	    content: 'deleteTokenWarning',
 	    buttons: [
 		{title: 'Nein, abbrechen', addClass: 'mform'},
 		{title: 'Ja, löschen', addClass: 'mform button_red',
 		 event: function() {
-		     confirmbox.close();
+		     this.close();
 		     gui.showSpinner({message: 'Bitte warten...'});
-                     this.whenSaved(
+                     ref.whenSaved(
                          function() {
-                             this.sendDeleteTokenRequest(tok_id, db_id);
-                         }.bind(this),
+                             ref.sendEditRequest({
+                                 tokId: tok_id,
+                                 getDiff: function(s){
+                                     return -Number.from(s.oldmodcount);
+                                 },
+                                 successNotice: "Token gelöscht.",
+                                 request: {'do': 'deleteToken', 'token_id': db_id}
+                             });
+                         },
                          null,
                          function() { gui.hideSpinner(); }
                      );
-		 }.bind(this)
+		 }
 		}
 	    ],
 	    closeOnBodyClick: false
-	});
+	}).open();
         this.save();
-	confirmbox.open();
-    },
-
-    /* Function: sendDeleteTokenRequest
-
-       Sends a delete token request.
-
-       Is invoked by deleteToken(); do not call directly.
-     */
-    sendDeleteTokenRequest: function(tok_id, db_id) {
-	new Request.JSON({
-	    url: 'request.php',
-	    async: true,
-	    onSuccess: function(status, text) {
-		if (status!=null && status.success) {
-		    gui.showNotice('ok', 'Token gelöscht.');
-		    this.updateDataArray(tok_id, -Number.from(status.oldmodcount));
-		}
-		else {
-		    var rows = ((status != null && status.errors != null)
-                                ? status.errors
-                                : ["Ein unbekannter Fehler ist aufgetreten."]);
-		    gui.showTextDialog("Löschen fehlgeschlagen",
-                                       "Das Löschen des Tokens war nicht erfolgreich:",
-                                       rows);
-		}
-		gui.hideSpinner();
-	    }.bind(this),
-	    onFailure: function(xhr) {
-		new mBox.Modal({
-		    title: 'Bearbeiten fehlgeschlagen',
-		    content: 'Ein interner Fehler ist aufgetreten: "'+xhr.responseText+'" ('+xhr.statusText+').'
-		}).open();
-		gui.hideSpinner();
-	    }
-	}).get({'do': 'deleteToken', 'token_id': db_id});
-    },
-
-    /* Function: _resizeTextarea
-
-       Resizes a <textarea> element based on the required number of lines.
-
-       Parameters:
-         event - A trigger event (e.g. keydown) that called this function
-    */
-    _resizeTextarea: function(event) {
-        event.target.rows = event.target.get('value').split("\n").length;
     },
 
     /* Function: editToken
@@ -939,18 +974,28 @@ var EditorModel = new Class({
 	             var new_token = $('editTokenBox').get('value').trim();
                      if (!new_token) {
                          gui.showNotice('error', "Transkription darf nicht leer sein!");
-                     } else if (new_token != old_token) {
-		         gui.showSpinner({message: 'Bitte warten...'});
-                         ref.whenSaved(
-                             function() {
-                                 ref.sendEditTokenRequest(tok_id, db_id, new_token);
-                             },
-                             null,
-                             function() { gui.hideSpinner(); }
-                         );
                      }
                      this.close();
-		 }
+                     if (new_token == old_token)
+                         return;
+		     gui.showSpinner({message: 'Bitte warten...'});
+                     ref.whenSaved(
+                         function() {
+                             ref.sendEditRequest({
+                                 tokId: tok_id,
+                                 getDiff: function(s){
+                                     return Number.from(s.newmodcount)-Number.from(s.oldmodcount);
+                                 },
+                                 successNotice: "Token erfolgreich bearbeitet.",
+                                 request: {'do': 'editToken',
+                                           'token_id': db_id,
+                                           'value': new_token}
+                             });
+                         },
+                         null,
+                         function() { gui.hideSpinner(); }
+                     );
+                 }
 		}
 	    ],
 	    onOpenComplete: function() {
@@ -963,40 +1008,6 @@ var EditorModel = new Class({
         this._resizeTextarea({target: $('editTokenBox')});
         this.save();
 	editTokenBox.open();
-    },
-
-    /* Function: sendEditTokenRequest
-     */
-    sendEditTokenRequest: function(tok_id, db_id, new_token) {
-	new Request.JSON({
-	    url: 'request.php',
-	    async: true,
-	    onSuccess: function(status, text) {
-		if (status!=null && status.success) {
-		    gui.showNotice('ok', 'Transkription erfolgreich geändert.');
-		    // update data array if number of mods has changed
-		    this.updateDataArray(tok_id,
-                                         Number.from(status.newmodcount)
-                                         -Number.from(status.oldmodcount));
-		}
-		else {
-		    var rows = ((status != null && status.errors != null)
-                                ? status.errors
-                                : ["Ein unbekannter Fehler ist aufgetreten."]);
-		    gui.showTextDialog("Bearbeiten fehlgeschlagen",
-                        "Das Ändern der Transkription war nicht erfolgreich.",
-                        rows);
-		}
-		gui.hideSpinner();
-	    }.bind(this),
-	    onFailure: function(xhr) {
-		new mBox.Modal({
-		    title: 'Bearbeiten fehlgeschlagen',
-		    content: 'Ein interner Fehler ist aufgetreten: "'+xhr.responseText+'" ('+xhr.statusText+').'
-		}).open();
-		gui.hideSpinner();
-	    }
-	}).get({'do': 'editToken', 'token_id': db_id, 'value': new_token});
     },
 
     /* Function: addToken
@@ -1034,17 +1045,26 @@ var EditorModel = new Class({
 	             var new_token = $('addTokenBox').get('value').trim();
 	             if(!new_token) {
 		         gui.showNotice('error', "Transkription darf nicht leer sein!");
-	             } else {
-	                 this.close();
-	                 gui.showSpinner({message: 'Bitte warten...'});
-                         ref.whenSaved(
-                             function() {
-                                 ref.sendAddTokenRequest(tok_id, db_id, new_token);
-                             },
-                             null,
-                             function() { gui.hideSpinner(); }
-                         );
-                     }
+                         return;
+	             }
+	             this.close();
+	             gui.showSpinner({message: 'Bitte warten...'});
+                     ref.whenSaved(
+                         function() {
+                             ref.sendEditRequest({
+                                 tokId: tok_id,
+                                 getDiff: function(s){
+                                     return Number.from(s.newmodcount);
+                                 },
+                                 successNotice: "Token erfolgreich hinzugefügt.",
+                                 request: {'do': 'addToken',
+                                           'token_id': db_id,
+                                           'value': new_token}
+                             });
+                         },
+                         null,
+                         function() { gui.hideSpinner(); }
+                     );
 		 }
 		}
 	    ],
@@ -1058,37 +1078,6 @@ var EditorModel = new Class({
         this._resizeTextarea({target: $('addTokenBox')});
         this.save();
 	addTokenBox.open();
-    },
-
-    /* Function: sendAddTokenRequest
-     */
-    sendAddTokenRequest: function(tok_id, db_id, new_token) {
-	new Request.JSON({
-	    url: 'request.php',
-	    async: true,
-	    onSuccess: function(status, text) {
-		if (status!=null && status.success) {
-		    gui.showNotice('ok', 'Transkription erfolgreich hinzugefügt.');
-		    this.updateDataArray(tok_id, Number.from(status.newmodcount));
-		}
-		else {
-		    var rows = ((status != null && status.errors != null)
-                                ? status.errors
-                                : ["Ein unbekannter Fehler ist aufgetreten."]);
-		    gui.showTextDialog("Hinzufügen fehlgeschlagen",
-                        "Das Hinzufügen der Transkription war nicht erfolgreich.",
-                        rows);
-		}
-		gui.hideSpinner();
-	    }.bind(this),
-	    onFailure: function(xhr) {
-		new mBox.Modal({
-		    title: 'Hinzufügen fehlgeschlagen',
-		    content: 'Ein interner Fehler ist aufgetreten: "'+xhr.responseText+'" ('+xhr.statusText+').'
-		}).open();
-		gui.hideSpinner();
-	    }
-	}).get({'do': 'addToken', 'token_id': db_id, 'value': new_token});
     },
 
     /* Function: prepareAnnotationOptions

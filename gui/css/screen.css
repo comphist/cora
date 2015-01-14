@@ -523,6 +523,8 @@ div.limitedWidth-tiny p {
 
 #genericTextMsgPopup p {
   width: 50em; }
+#genericTextMsgPopup textarea {
+  width: 44em; }
 
 /***************************************************************************/
 /***** FILE PANEL **********************************************************/
