@@ -831,14 +831,11 @@ var EditorModel = new Class({
             this.dataTable.setLineCount(this.dataTable.lineCount + lcdiff).render();
         }.bind(this);
 
-        var spinner = new Spinner(this.dataTable.table, {class: 'bg-color-page'});
-        spinner.show();
-
         // request new ID list
         new Request.JSON({
             url: 'request.php?do=getAllModernIDs',
             onSuccess: function(status) {
-                spinner.hide();
+                gui.hideSpinner();
                 if (status && status.success) {
                     this._initializeIdList(status.data);
                     afterRequestIdList();
@@ -877,6 +874,7 @@ var EditorModel = new Class({
                     gui.showNotice('ok', options.successNotice);
                     this.updateDataArray(options.tokId, options.getDiff(status));
                 } else {
+                    gui.hideSpinner();
 		    var rows = ((status != null && status.errors != null)
                                 ? status.errors
                                 : ["Ein unbekannter Fehler ist aufgetreten."]);
@@ -885,7 +883,6 @@ var EditorModel = new Class({
                         "Die Änderung an den Primärdaten war nicht erfolgreich:",
                         rows);
                 }
-                gui.hideSpinner();
             }.bind(this),
             onFailure: function(xhr) {
                 gui.showTextDialog(
@@ -1145,10 +1142,10 @@ var EditorModel = new Class({
 		url: 'request.php',
 		async: true,
 		onComplete: function(response) {
-		    gui.hideSpinner();
 		    if(response && response.success) {
                         if(action == "train") {
                             gui.showNotice('ok', 'Neu trainieren war erfolgreich.');
+		            gui.hideSpinner();
                         }
                         else {
 			    gui.showNotice('ok', 'Automatische Annotation war erfolgreich.');
@@ -1156,6 +1153,7 @@ var EditorModel = new Class({
 			    ref.updateDataArray(0, 0);
                         }
 		    } else {
+		        gui.hideSpinner();
 			gui.showNotice('error', 'Annotation fehlgeschlagen.');
 			gui.showTextDialog('Annotation fehlgeschlagen',
 					   'Bei der automatischen Annotation ist ein Fehler aufgetreten.',
