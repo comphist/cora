@@ -28,6 +28,11 @@ $rq = new RequestHandler($sh);  /**< An instance of the RequestHandler object. *
 
 if($_SESSION["loggedIn"]) {
   $rq->handleJSONRequest( $_GET, $_POST );
+} else if($_GET['do'] == "login") {
+  $sh->login($_GET['user'], $_GET['pw']);
+  echo json_encode(array('success' => !$_SESSION["failedLogin"]));
+} else {
+  echo json_encode(array('success' => false, 'errcode' => -1));
 }
 
 ?>

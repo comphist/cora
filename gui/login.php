@@ -11,8 +11,8 @@
    <p style="color: red;">Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben.</p>
    <?php endif; ?>
 
-   <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post">
-     <input type="hidden" name="action" value="login" />
+   <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post" class="loginForm">
+     <input type="hidden" name="action" value="login"/>
       <h4><label for="loginform_un">Benutzername:</label></h4>
       <p class="text">
         <input type="text" name="loginform[un]" id="loginform_un" value="" />

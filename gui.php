@@ -172,6 +172,19 @@ NOTLOGGEDIN;
         <p></p>
         <p><textarea cols="80" rows="10" readonly="readonly"></textarea></p>
       </div>
+      <div id="confirmLoginPopup">
+        <p>Bitte geben Sie Ihre Zugangsdaten erneut ein, um fortzufahren.</p>
+        <form class="loginForm">
+          <label for="lipu_un">Benutzername:</label>
+          <p class="text">
+            <input type="text" name="lipu_un" id="lipu_un" value="" />
+          </p>
+          <label for="lipu_pw">Passwort:</label>
+          <p class="text">
+            <input type="password" name="lipu_pw" id="lipu_pw" value="" />
+          </p>
+        </form>
+      </div>
       <iframe id="fileDownloadTarget"></iframe>
     </div>
   </body>

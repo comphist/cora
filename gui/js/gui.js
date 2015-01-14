@@ -230,10 +230,18 @@ var gui = {
 		delay: 60000,
 		limit: 60000,
                 onSuccess: function(status, text) {
-                    if (status && status.notices) {
-                        Array.prototype.push.apply(this.serverNoticeQueue,
-                                                   status.notices);
-                        this.processServerNotices();
+                    if (status) {
+                        if (status.errcode == -1) {
+                            this.keepaliveRequest.stopTimer();
+                            this.login(function() {
+                                this.keepaliveRequest.startTimer();
+                            }.bind(this));
+                        }
+                        if (status.notices) {
+                            Array.prototype.push.apply(this.serverNoticeQueue,
+                                                       status.notices);
+                            this.processServerNotices();
+                        }
                     }
                 }.bind(this)
 	    });
@@ -600,6 +608,67 @@ var gui = {
             format_string += date_strings[date.diff(now)];
         format_string += ", %H:%M";
         return date.format(format_string);
+    },
+
+    /* Function: login
+
+       Asks the user to re-enter his login information, e.g., when the client
+       has been disconnected from the server for too long.
+
+       Parameters:
+         fn - Callback on successful login
+     */
+    login: function(fn) {
+        this.showSpinner({message: 'Warte auf Authorisierung...'});
+        var onSuccessfulRestore = function() {
+            this.hideSpinner();
+            if(typeof(fn) === "function")
+                fn();
+        }.bind(this);
+        var loginRequest = function(user, pw) {
+            new Request.JSON({
+                url: "request.php?do=login",
+                onSuccess: function(status) {
+                    if (status && status.success) {
+                        if (cora.editor !== null)
+                            cora.files.lock(cora.current().id, function(status) {
+                                if (status && status.success)
+                                    onSuccessfulRestore();
+                                else {
+                                    this.showMsgDialog('error',
+                                        "Anmeldung war erfolgreich, aber Zugriff "
+                                        + "auf die aktuell geöffnete Datei ist "
+                                        + "aktuell nicht möglich.  Eventuell wird "
+                                        + "diese Datei bereits von einem anderen "
+                                        + "Nutzer bearbeitet.");
+                                    mbox.open();
+                                }
+                            }.bind(this));
+                        else
+                            onSuccessfulRestore();
+                    } else {
+                        this.showNotice('error', 'Anmeldung fehlgeschlagen.');
+                        mbox.open();
+                    }
+                }.bind(this)
+            }).get({'user': user, 'pw': pw});
+        }.bind(this);
+        var mbox = new mBox.Modal({
+	    title: "Erneut anmelden",
+	    content: 'confirmLoginPopup',
+	    closeOnBodyClick: false,
+	    closeOnEsc: false,
+	    buttons: [ {title: "Anmelden",
+                        addClass: "mform",
+                        event: function() {
+                            var user = mbox.content.getElement('#lipu_un').get('value'),
+                                pw = mbox.content.getElement('#lipu_pw').get('value');
+                            mbox.close();
+                            loginRequest(user, pw);
+                        }.bind(this)
+                       }]
+        });
+        mbox.open();
     },
 
     /* Function: logout

@@ -513,8 +513,16 @@ div.limitedWidth-tiny p {
 .important_text {
   color: red; }
 
-#loginDiv input {
+.loginForm input {
   width: 20em; }
+
+#confirmLoginPopup p {
+  padding-bottom: 1em; }
+#confirmLoginPopup form {
+  padding-left: 1em; }
+
+#genericTextMsgPopup p {
+  width: 50em; }
 
 /***************************************************************************/
 /***** FILE PANEL **********************************************************/

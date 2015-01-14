@@ -650,8 +650,24 @@ div.limitedWidth-tiny p {
     color: red;
 }
 
-#loginDiv input {
+.loginForm input {
     width: 20em;
+}
+
+#confirmLoginPopup {
+    p {
+        padding-bottom: 1em;
+    }
+
+    form {
+        padding-left: 1em;
+    }
+}
+
+#genericTextMsgPopup {
+    p {
+        width: 50em;
+    }
 }
 
 /***************************************************************************/

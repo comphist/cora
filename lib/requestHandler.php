@@ -191,6 +191,9 @@ class RequestHandler {
       case "keepalive":
         return $this->sh->keepalive();
 
+      case "login":  // we are already logged in
+        return array('success' => true);
+
       case "getLinesById":
 	$data = $this->sh->getLinesById($get['start_id'], $get['end_id']);
 	return array('success' => true, 'data' => $data);

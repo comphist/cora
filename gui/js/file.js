@@ -1030,8 +1030,8 @@ cora.fileManager = {
                 if(status.lock) {
                     gui.showMsgDialog('info',
                         "Das Dokument wird zur Zeit bearbeitet von Benutzer '"
-                        + data.lock.locked_by + "' seit "
-                        + gui.formatDateString(data.lock.locked_since).toLowerCase()
+                        + status.lock.locked_by + "' seit "
+                        + gui.formatDateString(status.lock.locked_since).toLowerCase()
                         + ".");
                 } else {
                     gui.showMsgDialog('error',

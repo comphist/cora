@@ -180,45 +180,76 @@ var EditorModel = new Class({
      */
     _activateSaveFunctionality: function() {
         var ref = this;
+        var activateAutosaveTimer = function() {
+            this.autosaveTimerId = setInterval(this.save.bind(this),
+                                               this.autosaveInterval * 1000);
+        }.bind(this);
         this.currentChanges = new DataChangeSet();
         this.pendingChanges = null;
         this.saveRequest = new Request.JSON({
             url: 'request.php?do=saveData',
             method: 'post',
             onSuccess: function(status, statusText) {
-                var success;
+                var success, before = ref.saveFailures;
                 if (status != null && status.success) {  // successful save!
                     success = true;
                     ref.saveFailures = 0;
                 } else {
-                    // error signalled by PHP backend -- this type of error
-                    // should only be caused by a bug and is unlikely to resolve
-                    // itself, so we warn the user immediately
                     success = false;
                     ref.saveFailures = 100;
                     ref.currentChanges.merge(ref.pendingChanges);
-                    gui.showTextDialog("Kritischer Fehler",
-                        "Beim Speichern des Dokuments ist ein server-seitiger "
-                        + "Fehler aufgetreten.  Um Datenverluste zu vermeiden, "
-                        + "bearbeiten Sie das Dokument bitte nicht weiter und "
-                        + "melden diesen Fehler einem Administrator.  "
-                        + "Der Server antwortete:",
-                        ((status != null && status.errors != null) ?
-                          status.errors.join("\n") : statusText));
                 }
                 ref.pendingChanges = null;
-                this.fireEvent('processed', [success, status]);
+                this.fireEvent('processed', [success, status, null, before]);
             },
             onFailure: function(xhr) {
                 // failure due to server error or timeout
-                ref.saveFailures++;
                 ref.currentChanges.merge(ref.pendingChanges);
                 ref.pendingChanges = null;
-                this.fireEvent('processed', [false, null, xhr]);
+                this.fireEvent('processed', [false, null, xhr, ref.saveFailures++]);
+            },
+            onProcessed: function(success, status, xhr, before) {
+                if (success) {
+                    if (before > 0)
+                        gui.showNotice('ok', 'Speichern erfolgreich.');
+                    return;
+                }
+                if (ref.saveFailures > 2) {
+                    gui.showNotice('notice',
+                                   'Speichern derzeit nicht möglich.',
+                                   true);
+                }
+                if (status != null) {
+                    clearInterval(ref.autosaveTimerId);
+                    if (status.errcode == -1) {
+                        // uh oh, we have been logged out!
+                        gui.login(function() {
+                            gui.lock();
+                            cora.files.lock(cora.current().id, function() {
+                                activateAutosaveTimer();
+                                ref.save();
+                                gui.unlock();
+                            });
+                        });
+                    } else {
+                        // error signalled by PHP backend -- this type of error
+                        // should only be caused by a bug and is unlikely to
+                        // resolve itself, so we warn the user immediately
+                        gui.showTextDialog(
+                            "Kritischer Fehler",
+                            "Beim Speichern des Dokuments ist ein server-seitiger "
+                                + "Fehler aufgetreten.  Um Datenverluste zu vermeiden, "
+                                + "bearbeiten Sie das Dokument bitte nicht weiter und "
+                                + "melden diesen Fehler einem Administrator.  "
+                                + "Der Server antwortete:",
+                            ((status != null && status.errors != null) ?
+                             status.errors.join("\n") : statusText)
+                        );
+                    }
+                }
             }
         });
-        this.autosaveTimerId = setInterval(this.save.bind(this),
-                                           this.autosaveInterval * 1000);
+        activateAutosaveTimer();
     },
 
     /* Function: _activateMetadataForm
