@@ -163,12 +163,10 @@ var CoraRequest = new Class({
             if(json.success) {
                 this.fireEvent('success', [json]);
                 this._fireComplete();
-            } else if(typeof(json.errors) !== "undefined") {
-                this._fireError(new CoraRequestError.Handled(json.errors));
             } else if(json.errcode === -1) {
                 this._fireError(new CoraRequestError.NotLoggedIn());
             } else {
-                this._fireError(new CoraRequestError.Invalid(text));
+                this._fireError(new CoraRequestError.Handled(json));
             }
         } else {
             this._fireError(new CoraRequestError.Invalid(text));

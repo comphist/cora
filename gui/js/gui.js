@@ -631,19 +631,19 @@ var gui = {
                 onSuccess: function(status) {
                     if (status && status.success) {
                         if (cora.editor !== null)
-                            cora.files.lock(cora.current().id, function(status) {
-                                if (status && status.success)
-                                    onSuccessfulRestore();
-                                else {
-                                    this.showMsgDialog('error',
+                            cora.files.lock(
+                                cora.current().id,
+                                {onSuccess: onSuccessfulRestore,
+                                 onError: function(error) {
+                                     this.showMsgDialog('error',
                                         "Anmeldung war erfolgreich, aber Zugriff "
                                         + "auf die aktuell geöffnete Datei ist "
                                         + "aktuell nicht möglich.  Eventuell wird "
                                         + "diese Datei bereits von einem anderen "
                                         + "Nutzer bearbeitet.");
                                     mbox.open();
-                                }
-                            }.bind(this));
+                                 }.bind(this)}
+                            );
                         else
                             onSuccessfulRestore();
                     } else {

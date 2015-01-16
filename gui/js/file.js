@@ -126,32 +126,31 @@ cora.projects = {
      */
     performUpdate: function(fn){
         var ref = this;
-        var files = new Request.JSON({
-            url:'request.php',
-    		onSuccess: function(status, text) {
-                    ref.data = status['data'];
-                    ref.byID = {};
-                    ref.byFileID = {};
-                    Array.each(ref.data, function(prj, idx) {
-                        ref.byID[prj.id] = idx;
-                        Array.each(prj.files, function(file, idy) {
-                            ref.byFileID[file.id] = [idx, idy];
-                        });
+        new CoraRequest({
+            name: 'getProjectsAndFiles',
+    	    onSuccess: function(status) {
+                ref.data = status['data'];
+                ref.byID = {};
+                ref.byFileID = {};
+                Array.each(ref.data, function(prj, idx) {
+                    ref.byID[prj.id] = idx;
+                    Array.each(prj.files, function(file, idy) {
+                        ref.byFileID[file.id] = [idx, idy];
                     });
-                    if(!ref.initialized) {
-                        ref.initialized = true;
-                        Array.each(ref.onInitHandlers, function(handler) {
-                            handler();
-                        });
-                    }
-                    Array.each(ref.onUpdateHandlers, function(handler) {
-                        handler(status, text);
+                });
+                if(!ref.initialized) {
+                    ref.initialized = true;
+                    Array.each(ref.onInitHandlers, function(handler) {
+                        handler();
                     });
-                    if(typeof(fn) == "function")
-                        fn(status, text);
-		}
-    	});
-        files.get({'do': 'getProjectsAndFiles'});
+                }
+                Array.each(ref.onUpdateHandlers, function(handler) {
+                    handler(status);
+                });
+                if(typeof(fn) == "function")
+                    fn(status);
+	    }
+    	}).get();
         return this;
     }
 };
@@ -180,27 +179,6 @@ cora.files = {
         if(typeof(this.taggersByID[fid]) !== "undefined")
             file.taggers = this.taggersByID[fid];
         return file;
-    },
-
-    /* Function: _performGETRequest
-
-       Performs an asynchronous GET request that includes a file ID.
-
-       Parameters:
-         name - Name of request
-         fid - ID of the file
-         fn  - Callback function to invoke after successful request
-    */
-    _performGETRequest: function(name, fid, fn) {
-        new Request.JSON(
-            {'url': 'request.php',
-             'async': true,
-             onComplete: function(status, text) {
-                 if(typeof(fn) == "function")
-                     fn(status, text);
-             }
-            }
-        ).get({'do': name, 'fileid': fid});
     },
 
     /* Function: getTagsets
@@ -269,19 +247,13 @@ cora.files = {
 
        Parameters:
          fid - ID of the file to be deleted
-         fn  - Callback function to invoke after successful request
+         options - Additional options for the request object
      */
-    deleteFile: function(fid, fn) {
-        new Request.JSON(
-    	    {'url': 'request.php?do=deleteFile',
-    	     'async': false,
-    	     'data': 'file_id='+fid,
-    	     onSuccess: function(status, text) {
-                 if(typeof(fn) == "function")
-                     fn(status, text);
-    	     }
-    	    }
-    	).post();
+    deleteFile: function(fid, options) {
+        if(typeof(options) !== "object" || options === null)
+            options = {};
+        options.name = 'deleteFile';
+        new CoraRequest(options).post({'file_id': fid});
     },
 
     /* Function: lock
@@ -290,10 +262,13 @@ cora.files = {
 
        Parameters:
          fid - ID of the file to be locked
-         fn  - Callback function to invoke after successful request
+         options - Additional options for the request object
      */
-    lock: function(fid, fn) {
-        this._performGETRequest("lockFile", fid, fn);
+    lock: function(fid, options) {
+        if(typeof(options) !== "object" || options === null)
+            options = {};
+        options.name = 'lockFile';
+        new CoraRequest(options).get({'fileid': fid});
     },
 
     /* Function: open
@@ -305,10 +280,15 @@ cora.files = {
 
        Parameters:
          fid - ID of the file to be opened
-         fn  - Callback function to invoke after successful request
+         options - Additional options for the request object
      */
-    open: function(fid, fn) {
-        this._performGETRequest("openFile", fid, function(status, text) {
+    open: function(fid, options) {
+        var fn;
+        if(typeof(options) !== "object" || options === null)
+            options = {};
+        fn = options.onSuccess;
+        options.name = 'openFile';
+        options.onSuccess = function(status) {
             // tagset assocs?
             if(status.data && status.data.tagsets) {
                 this.tagsetsByID[fid] = {  // HACK for the time being
@@ -329,9 +309,10 @@ cora.files = {
             if(status.data && status.data.taggers) {
                 this.taggersByID[fid] = status.data.taggers;
             }
-            if(typeof(fn) == "function")
-                fn(status, text);
-        }.bind(this));
+            if(typeof(fn) === "function")
+                fn(status);
+        }.bind(this);
+        new CoraRequest(options).get({'fileid': fid});
     },
 
     /* Function: close
@@ -340,10 +321,13 @@ cora.files = {
 
        Parameters:
          fid - ID of the file to be closed/unlocked
-         fn  - Callback function to invoke after successful request
+         options - Additional options for the request object
      */
-    close: function(fid, fn) {
-        this._performGETRequest("unlockFile", fid, fn);
+    close: function(fid, options) {
+        if(typeof(options) !== "object" || options === null)
+            options = {};
+        options.name = 'unlockFile';
+        new CoraRequest(options).get({'fileid': fid});
     },
 
     /* Function: prefetchTagsets
@@ -354,23 +338,29 @@ cora.files = {
 
        Parameters:
          fid - ID of the file
-         fn  - Callback function to invoke after successful request
+         options - Additional options for the request object
      */
-    prefetchTagsets: function(fid, fn) {
+    prefetchTagsets: function(fid, options) {
+        var fn;
+        if(typeof(options) !== "object" || options === null)
+            options = {};
+        fn = options.onSuccess;
+        options.name = 'fetchTagsetsForFile';
         if(this.allTagsetsPrefetched(fid)) {
             if(typeof(fn) == "function")
-                fn({success: true}, '');
+                fn({});
             return;
         }
-        this._performGETRequest("fetchTagsetsForFile", fid, function(status, text) {
-            if(status.success && status.data) {
+        options.onSuccess = function(status) {
+            if(status.data) {
                 Object.each(status.data, function(tagset, cls) {
                     cora.tagsets.preprocess(tagset);
                 });
             }
-            if(typeof(fn) == "function")
-                fn(status, text);
-        });
+            if(typeof(fn) === "function")
+                fn(status);
+        };
+        new CoraRequest(options).get({'fileid': fid});
     },
 
     /* Function: allTagsetsPrefetched
@@ -697,8 +687,7 @@ cora.fileImporter = {
 	    },
             onFailure: function(xhr) {
                 if(failures++ > 3) {
-                    gui.showNotice('notice',
-                                   "Keine Verbindung zum Server.");
+                    gui.showNotice('notice', "Keine Verbindung zum Server.", true);
                 }
             }
 	});
@@ -1004,7 +993,9 @@ cora.fileManager = {
          fid - ID of the file to open
     */
     openFile: function(fid) {
-        var startChain, onLockSuccess, onOpenSuccess, onInitSuccess;
+        var startChain,
+            onLockSuccess, onOpenSuccess, onInitSuccess,
+            onLockError,   onOpenError;
 
         // Is there a file already opened?
         if (this.isFileOpened()) {
@@ -1018,50 +1009,54 @@ cora.fileManager = {
 
         // 1. Acquire the lock
         startChain = function() {
-            cora.files.lock(fid, onLockSuccess);
+            cora.files.lock(fid, {onSuccess: onLockSuccess, onError: onLockError});
         };
 
         // 2. If lock was successful, open the file
-        onLockSuccess = function(status) {
-            if(status.success) {
-                gui.showSpinner({message: "Datei wird geöffnet..."});
-                cora.files.open(fid, onOpenSuccess);
+        onLockSuccess = function() {
+            gui.showSpinner({message: "Datei wird geöffnet..."});
+            cora.files.open(fid, {onSuccess: onOpenSuccess, onError: onOpenError});
+        };
+        onLockError = function(error) {
+            if(error.name === 'Handled' && error.status.lock) {
+                gui.showMsgDialog('info',
+                    "Das Dokument wird zur Zeit bearbeitet von Benutzer '"
+                    + error.status.lock.locked_by + "' seit "
+                    + gui.formatDateString(error.status.lock.locked_since).toLowerCase()
+                    + ".");
             } else {
-                if(status.lock) {
-                    gui.showMsgDialog('info',
-                        "Das Dokument wird zur Zeit bearbeitet von Benutzer '"
-                        + status.lock.locked_by + "' seit "
-                        + gui.formatDateString(status.lock.locked_since).toLowerCase()
-                        + ".");
-                } else {
-                    gui.showMsgDialog('error',
-                                      "Das Dokument konnte nicht geöffnet werden.");
-                }
+                gui.showNotice('error', "Fehler beim Öffnen der Datei.");
+                error.showAsDialog();
             }
         };
 
         // 3. If open was successful, fetch and preprocess any closed tagsets
         onOpenSuccess = function(status) {
-            var response = status;
-            if(response.success) {
-                this.currentFileId = fid;
-                if(history.state !== null && typeof(history.state.f) === "undefined")
-                    history.pushState({"f": fid}, "", "?f="+fid);
-                gui.setHeader(cora.files.getDisplayName(fid));
-                cora.projects.performUpdate();
-                cora.files.prefetchTagsets(fid, function(status) {
-                    if(status.success) {
-                        response.onInit = onInitSuccess;
-                        cora.editor = new EditorModel(fid, response);
-                    } else {
-                        gui.showMsgDialog('error', "Fehler beim Laden der Tagsets.");
-                        this.closeCurrentlyOpened();
-                    }
-                }.bind(this));
-            } else {
-                gui.showMsgDialog('error', "Das Dokument konnte nicht geöffnet werden.");
-            }
+            this.currentFileId = fid;
+            if(history.state !== null && typeof(history.state.f) === "undefined")
+                history.pushState({"f": fid}, "", "?f="+fid);
+            gui.setHeader(cora.files.getDisplayName(fid));
+            cora.projects.performUpdate();
+            cora.files.prefetchTagsets(
+                fid,
+                {onSuccess: function() {
+                    status.onInit = onInitSuccess;
+                    cora.editor = new EditorModel(fid, status);
+                 },
+                 onError: function(error) {
+                     gui.hideSpinner();
+                     gui.showNotice('error', "Fehler beim Laden der Tagsets.");
+                     error.showAsDialog();
+                     this.closeCurrentlyOpened();
+                 }.bind(this)
+                }
+            );
         }.bind(this);
+        onOpenError = function(error) {
+            gui.hideSpinner();
+            gui.showNotice('error', "Fehler beim Laden der Tagsets.");
+            error.showAsDialog();
+        };
 
         // 4. Show the editor tab and clean up
         onInitSuccess = function() {
@@ -1097,9 +1092,11 @@ cora.fileManager = {
                         +"zur Zeit bearbeitet, könnten Datenverluste auftreten. "
                         +"Trotzdem schließen?",
                     function() {
-                        cora.files.close(fid, function() {
-                            cora.projects.performUpdate();
-                        });
+                        cora.files.close(
+                            fid,
+                            {onSuccess: cora.projects.performUpdate.bind(cora.projects),
+                             noticeOnError: true}
+                        );
                     }
                 );
             }
@@ -1115,17 +1112,20 @@ cora.fileManager = {
     closeCurrentlyOpened: function(fn) {
         if (this.isFileOpened()) {
             gui.lock();
-            cora.files.close(this.currentFileId, function(status) {
-                this.currentFileId = null;
-                cora.editor.destruct();
-                cora.editor = null;
-                cora.projects.performUpdate();
-                gui.setHeader("").hideTabButton('edit').changeTab('file').unlock();
-                if(history.state !== null && typeof(history.state.f) !== "undefined")
-                    history.pushState({}, "", "/");
-                if(typeof(fn) == "function")
-                    fn();
-            }.bind(this));
+            cora.files.close(
+                this.currentFileId,
+                {onComplete: function() {
+                    this.currentFileId = null;
+                    cora.editor.destruct();
+                    cora.editor = null;
+                    cora.projects.performUpdate();
+                    gui.setHeader("").hideTabButton('edit').changeTab('file').unlock();
+                    if(history.state !== null && typeof(history.state.f) !== "undefined")
+                        history.pushState({}, "", "/");
+                    if(typeof(fn) == "function")
+                        fn();
+                }.bind(this)}
+            );
         }
     },
 
@@ -1142,13 +1142,19 @@ cora.fileManager = {
             + "' wirklich gelöscht werden? Dieser Schritt kann nicht rückgängig "
             + "gemacht werden!";
         var performDelete = function() {
-            cora.files.deleteFile(fid, function(status) {
-		if(!status || !status.success)
-		    gui.showNotice('error', "Konnte Datei nicht löschen.");
-		else
-		    gui.showNotice('ok', "Datei gelöscht.");
-                cora.projects.performUpdate();
-            });
+            gui.showSpinner({message: "Bitte warten..."});
+            cora.files.deleteFile(
+                fid,
+                {noticeOnError: true,
+                 onSuccess: function(status) {
+		     gui.showNotice('ok', "Datei gelöscht.");
+                 },
+                 onComplete: function() {
+                     gui.hideSpinner();
+                     cora.projects.performUpdate();
+                 }
+                }
+            );
         };
         gui.confirm(message, performDelete, true);
     },
@@ -1191,26 +1197,13 @@ cora.fileManager = {
         var tagsets = div.getElements('input[name="linktagsets[]"]')
                          .filter(function(elem) { return elem.get('checked'); })
                          .get('value');
-        new Request.JSON(
-    	    {'url': 'request.php',
-    	     'async': false,
-    	     onSuccess: function(status, x) {
-                 if(status.success) {
-                     gui.showNotice('ok', "Tagset-Verknüpfungen geändert.");
-                 }
-                 else {
-                     gui.showNotice('error', "Tagset-Verknüpfungen nicht geändert.");
-                     if(status.errors && status.errors.length>0) {
-                         gui.showTextDialog("Ändern fehlgeschlagen",
-                                            "Tagset-Verknüpfungen konnten nicht "
-                                            +"geändert werden.",
-                                            status.errors);
-                     }
-                 }
-    	     }
-    	    }
-    	).get({'do': 'changeTagsetsForFile',
-               'file_id': fileid, 'linktagsets': tagsets});
+        new CoraRequest({
+            name: 'changeTagsetsForFile',
+            textDialogOnError: true,
+            onSuccess: function() {
+                gui.showNotice('ok', "Tagset-Verknüpfungen geändert.");
+            }
+        }).get({'file_id': fileid, 'linktagsets': tagsets});
     },
 
     /* Function: editTagsetAssoc
@@ -1242,26 +1235,24 @@ cora.fileManager = {
 	content.open();
 	spinner.show();
 
-	new Request.JSON(
-    	    {'url': 'request.php',
-    	     'async': false,
-    	     onSuccess: function(tlist, x) {
-		 // show tagset associations
-		 if(!tlist['success']) {
-                     gui.showNotice('error',
-                                    "Fehler beim Laden der Tagset-Verknüpfungen.");
-		     spinner.destroy();
-		     content.close();
-		 }
-		 contentdiv.getElement('table.tagset-list')
-		     .getElements('input').each(function(input) {
-			 var checked = tlist['data'].contains(input.value) ? "yes" : "";
-			 input.set('checked', checked);
-		     });
-		 spinner.destroy();
-    	     }
-    	    }
-    	).get({'do': 'getTagsetsForFile', 'file_id': fileid});
+        new CoraRequest({
+            name: 'getTagsetsForFile',
+            textDialogOnError: true,
+            onSuccess: function(status) {
+                if(typeof(status.data) !== "object") {
+                    content.close();
+                    gui.showMsgDialog('error', "Keine Daten erhalten.");
+                    return;
+                }
+		contentdiv.getElement('table.tagset-list')
+		    .getElements('input').each(function(input) {
+			var checked = status.data.contains(input.value) ? "yes" : "";
+			input.set('checked', checked);
+		    });
+            },
+            onError: function() { content.close(); },
+            onComplete: function() { spinner.destroy(); }
+        }).get({'file_id': fileid});
     }
 };
 

@@ -249,15 +249,14 @@ var TokenSearcher = new Class({
         });
         data = {'conditions': conditions, 'operator': operator};
         this.fireEvent('searchRequest', [data]);
-        new Request.JSON({
-            'url': 'request.php?do=search',
-            'data': data,
-            onSuccess: function(status, text) {
-                if(spinner)
-                    spinner.hide();
+        new CoraRequest({
+            name: 'search',
+            noticeOnError: true,
+            onSuccess: function(status) {
                 mbox.close();
                 this.fireEvent('searchSuccess', [data, status]);
-            }.bind(this)
-        }).get();
+            }.bind(this),
+            onComplete: function() { if(spinner) spinner.hide(); }
+        }).get(data);
     }
 });

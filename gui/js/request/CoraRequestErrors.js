@@ -14,7 +14,7 @@ var CoraRequestError = new Class({
     },
     showAsTextDialog: function() {
         if(typeof(this.details) === "undefined" || this.details === null
-           || this.details.length === 0) {
+           || this.details.length === undefined || this.details.length === 0) {
             this.showAsDialog();
         } else {
             gui.showTextDialog("Aktion fehlgeschlagen", this.message, this.details);
@@ -30,9 +30,12 @@ var CoraRequestError = new Class({
 CoraRequestError.Handled = new Class({
     Extends: CoraRequestError,
     name: 'Handled',
-    message: "Es sind Fehler aufgetreten.",
-    initialize: function(d) {
-        this.details = d;
+    message: "Die Aktion konnte nicht ausgeführt werden.",
+    status: {},
+    initialize: function(status) {
+        this.status  = status;
+        if(typeof(status.errors) !== "undefined")
+            this.details = status.errors;
     }
 });
 

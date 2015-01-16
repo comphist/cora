@@ -235,11 +235,14 @@ var EditorModel = new Class({
                         // uh oh, we have been logged out!
                         gui.login(function() {
                             gui.lock();
-                            cora.files.lock(cora.current().id, function() {
-                                activateAutosaveTimer();
-                                ref.save();
-                                gui.unlock();
-                            });
+                            cora.files.lock(
+                                cora.current().id,
+                                {onSuccess: function() {
+                                    activateAutosaveTimer();
+                                    ref.save();
+                                    gui.unlock();
+                                }}
+                            );
                         });
                     } else {
                         // error signalled by PHP backend -- this type of error
@@ -585,22 +588,14 @@ var EditorModel = new Class({
      */
     onSearchSuccess: function(criteria, status) {
         var data;
-
-        if(!status['success']) {
-            gui.showNotice('error', "Suchanfrage fehlgeschlagen.");
-            return;
-        }
-
         Array.each(status['results'], this.setLineFromServer.bind(this));
         data = status['results'].map(function(line) {
             return this.get(line.num);
         }.bind(this));
-
         if(this.searchResults !== null) {
             this.searchResults.destroy();
         }
         this.searchResults = new SearchResults(this, criteria, data, 'pagePanel');
-
         gui.changeTab('search');
     },
 
@@ -843,22 +838,21 @@ var EditorModel = new Class({
         }.bind(this);
 
         // request new ID list
-        new Request.JSON({
-            url: 'request.php?do=getAllModernIDs',
+        new CoraRequest({
+            name: 'getAllModernIDs',
             onSuccess: function(status) {
-                gui.hideSpinner();
-                if (status && status.success) {
-                    this._initializeIdList(status.data);
-                    afterRequestIdList();
-                } else {
-                    // try closing and re-opening
-                    var id = cora.current().id;
-                    cora.fileManager.closeCurrentlyOpened(function() {
-                        cora.fileManager.openFile(id);
-                    });
-                }
-            }.bind(this)
-        }).send();
+                this._initializeIdList(status.data);
+                afterRequestIdList();
+            }.bind(this),
+            onError: function(error) {
+                // try closing and re-opening
+                var id = cora.current().id;
+                cora.fileManager.closeCurrentlyOpened(function() {
+                    cora.fileManager.openFile(id);
+                });
+            }.bind(this),
+            onComplete: function() { gui.hideSpinner(); }
+        }).get();
     },
 
     /* Function: _resizeTextarea
@@ -877,32 +871,17 @@ var EditorModel = new Class({
        Sends a request to edit the primary data.
      */
     sendEditRequest: function(options) {
-        new Request.JSON({
-            url: 'request.php',
-            async: true,
-            onSuccess: function(status, text) {
-                if (status != null && status.success) {
-                    gui.showNotice('ok', options.successNotice);
-                    this.updateDataArray(options.tokId, options.getDiff(status));
-                } else {
-                    gui.hideSpinner();
-		    var rows = ((status != null && status.errors != null)
-                                ? status.errors
-                                : ["Ein unbekannter Fehler ist aufgetreten."]);
-		    gui.showTextDialog(
-                        "Änderung fehlgeschlagen",
-                        "Die Änderung an den Primärdaten war nicht erfolgreich:",
-                        rows);
-                }
+        new CoraRequest({
+            name: options.requestName,
+            textDialogOnError: true,
+            onSuccess: function(status) {
+                gui.showNotice('ok', options.successNotice);
+                this.updateDataArray(options.tokId, options.getDiff(status));
             }.bind(this),
-            onFailure: function(xhr) {
-                gui.showTextDialog(
-                    "Änderung fehlgeschlagen",
-                    "Ein interner Fehler ist aufgetreten:",
-                    [xhr.statusText, xhr.responseText]
-                );
-		gui.hideSpinner();
-	    }
+            onError: function(error) {
+                gui.showNotice('error', 'Primärdaten nicht geändert.');
+                gui.hideSpinner();
+            }
         }).get(options.request);
     },
 
@@ -940,7 +919,8 @@ var EditorModel = new Class({
                                      return -Number.from(s.oldmodcount);
                                  },
                                  successNotice: "Token gelöscht.",
-                                 request: {'do': 'deleteToken', 'token_id': db_id}
+                                 request: {'token_id': db_id},
+                                 requestName: 'deleteToken'
                              });
                          },
                          null,
@@ -995,9 +975,8 @@ var EditorModel = new Class({
                                      return Number.from(s.newmodcount)-Number.from(s.oldmodcount);
                                  },
                                  successNotice: "Token erfolgreich bearbeitet.",
-                                 request: {'do': 'editToken',
-                                           'token_id': db_id,
-                                           'value': new_token}
+                                 request: {'token_id': db_id, 'value': new_token},
+                                 requestName: 'editToken'
                              });
                          },
                          null,
@@ -1065,9 +1044,8 @@ var EditorModel = new Class({
                                      return Number.from(s.newmodcount);
                                  },
                                  successNotice: "Token erfolgreich hinzugefügt.",
-                                 request: {'do': 'addToken',
-                                           'token_id': db_id,
-                                           'value': new_token}
+                                 request: {'token_id': db_id, 'value': new_token},
+                                 requestName: 'addToken'
                              });
                          },
                          null,
@@ -1149,43 +1127,23 @@ var EditorModel = new Class({
 	var content = $('automaticAnnotationForm');
 	var performAnnotation = function(action) {
 	    var taggerID = $('automaticAnnotationForm').getElement('input[name="aa_tagger_select"]:checked').get('value');
-	    new Request.JSON({
-		url: 'request.php',
-		async: true,
-		onComplete: function(response) {
-		    if(response && response.success) {
-                        if(action == "train") {
-                            gui.showNotice('ok', 'Neu trainieren war erfolgreich.');
-		            gui.hideSpinner();
-                        }
-                        else {
-			    gui.showNotice('ok', 'Automatische Annotation war erfolgreich.');
-			    // clear and reload all lines
-			    ref.updateDataArray(0, 0);
-                        }
-		    } else {
+            new CoraRequest({
+                name: 'performAnnotation',
+                textDialogOnError: true,
+                onSuccess: function(status) {
+                    if(action == "train") {
+                        gui.showNotice('ok', 'Neu trainieren war erfolgreich.');
 		        gui.hideSpinner();
-			gui.showNotice('error', 'Annotation fehlgeschlagen.');
-			gui.showTextDialog('Annotation fehlgeschlagen',
-					   'Bei der automatischen Annotation ist ein Fehler aufgetreten.',
-					   response.errors);
-		    }
-		},
-		onError: function(response) {
-		    new mBox.Modal({
-			title: 'Annotation fehlgeschlagen',
-			content: 'Ein unbekannter Fehler ist aufgetreten.'
-		    }).open();
+                    } else {
+			gui.showNotice('ok', 'Automatische Annotation war erfolgreich.');
+			// clear and reload all lines
+			ref.updateDataArray(0, 0);
+                    }
+                },
+                onError: function(error) {
 		    gui.hideSpinner();
-		},
-		onFailure: function(xhr) {
-		    new mBox.Modal({
-			title: 'Annotation fehlgeschlagen',
-			content: 'Ein interner Fehler ist aufgetreten. Server lieferte folgende Antwort: "'+xhr.responseText+'" ('+xhr.statusText+').'
-		    }).open();
-		    gui.hideSpinner();
-		}
-	    }).get({'do': 'performAnnotation', 'action': action, 'tagger': taggerID});
+                }
+            }).get({'action': action, 'tagger': taggerID});
 	    mbox.close();
 	};
 
