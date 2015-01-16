@@ -9,8 +9,16 @@ var CoraRequestError = new Class({
     showAsNotice: function() {
         gui.showNotice('error', this.message);
     },
+    showAsDialog: function() {
+        gui.showMsgDialog('error', this.message);
+    },
     showAsTextDialog: function() {
-        gui.showTextDialog("Aktion fehlgeschlagen", this.message, this.details);
+        if(typeof(this.details) === "undefined" || this.details === null
+           || this.details.length === 0) {
+            this.showAsDialog();
+        } else {
+            gui.showTextDialog("Aktion fehlgeschlagen", this.message, this.details);
+        }
     }
 });
 

@@ -8,8 +8,6 @@ var EditorModel = new Class({
     fileId: 0,
     lastEditedRow: -1,
     header: "",
-    tries: 0,
-    maximumTries: 20,     // max. number of load requests before giving up
     dynamicLoadPages: 5,  // min. number of pages in each direction to be pre-fetched
     dynamicLoadLines: 50, // min. number of lines in each direction to be pre-fetched
     data: [],
@@ -26,6 +24,10 @@ var EditorModel = new Class({
     saveFailures: 0,
     autosaveInterval: 60,  // in seconds
     autosaveTimerId: null,
+
+    getRangeRetryTimer: null,
+    getRangeStart: null,
+    getRangeEnd: null,
 
     visibility: {},  // column visibility -- to be refactored soon
 
@@ -288,15 +290,15 @@ var EditorModel = new Class({
                     buttons.unshift({
                         title: "Ändern", addClass: "mform button_red",
                         event: function() {
-                            ref.saveMetadataFromForm(this.content);
-                            this.close();
+                            ref.saveMetadataFromForm(this);
                         }
                     });
                 }
                 new mBox.Modal({
                     content: content,
                     title: "Metadaten",
-                    buttons: buttons
+                    buttons: buttons,
+                    closeOnBodyClick: false
                 }).open();
             }.bind(this));
         }
@@ -319,28 +321,27 @@ var EditorModel = new Class({
 
        Sends a server request to save metadata changes.
      */
-    saveMetadataFromForm: function(form) {
-        var sigle, name, header;
+    saveMetadataFromForm: function(mbox) {
+        var sigle, name, header, form = mbox.content;
+        form.spin();
         sigle  = form.getElement('input[name="fmf-sigle"]').get('value');
         name   = form.getElement('input[name="fmf-name"]').get('value');
         header = form.getElement('textarea').get('value');
-        new Request.JSON({
-            url: "request.php?do=saveMetadata",
-            async: true,
+        new CoraRequest({
+            name: "saveMetadata",
+            textDialogOnError: true,
             onSuccess: function(status) {
-                if (status.success) {
-                    cora.projects.performUpdate();
-                    gui.setHeader(cora.files.getDisplayName(
-                        {id: this.fileId,
-                         sigle: sigle,
-                         fullname: name}
-                    ));
-                    this.header = header;
-                    gui.showNotice("ok", "Metadaten erfolgreich geändert.");
-                } else {
-                    gui.showNotice("error", "Metadaten konnten nicht geändert werden.");
-                }
-            }.bind(this)
+                cora.projects.performUpdate();
+                gui.setHeader(cora.files.getDisplayName(
+                    {id: this.fileId,
+                     sigle: sigle,
+                     fullname: name}
+                ));
+                this.header = header;
+                gui.showNotice("ok", "Metadaten erfolgreich geändert.");
+                mbox.close();
+            }.bind(this),
+            onComplete: function() { form.unspin(); }
         }).post({'id': this.fileId, 'sigle': sigle,
                  'name': name, 'header': header});
     },
@@ -430,29 +431,41 @@ var EditorModel = new Class({
          callback parameter to actually get to and process the data.
      */
     getRange: function(start, end, callback) {
-        var spinner;
-
+        // Reset any timers, and store the current (start, end) values in a
+        // class variable.  This way, the callbacks can see if their parent
+        // getRange() call has been superseded by a newer getRange() call.
+        this.getRangeStart = start;
+        this.getRangeEnd = end;
+        if(this.getRangeRetryTimer !== null)
+            clearTimeout(this.getRangeRetryTimer);
+        // Do we need to do anything?
         if(this.isRangeLoaded(start, end)) {
             if (typeof(callback) === "function")
                 callback(this._slice(this.data, start, end));
             return true;
         }
-
-        spinner = new Spinner(this.dataTable.table, {class: 'bg-color-page'});
-        spinner.show();
-        this.requestLines(start, end,
-                          function() {  // onSuccess
-                              spinner.hide().destroy();
-                              if (typeof(callback) === "function")
-                                  callback(this._slice(this.data, start, end));
-                          }.bind(this),
-                          function(e) {  // onError
-                              spinner.hide().destroy();
-                              gui.showNotice('error',
-                                             "Problem beim Laden des Dokuments.");
-                              gui.showMsgDialog('error', e.message);
-                          }
-                         );
+        // Perform server request
+        this.requestLines(
+            start, end,
+            function() {  // onSuccess
+                if (this.getRangeStart !== start || this.getRangeEnd !== end)
+                    return;  // we're too late
+                if (typeof(callback) === "function")
+                    callback(this._slice(this.data, start, end));
+            }.bind(this),
+            function(e) {  // onError
+                if (this.getRangeStart !== start || this.getRangeEnd !== end)
+                    return;  // we're too late
+                gui.showNotice('error', e.message,
+                               (e.name === 'FailureToLoadLines'));
+                this.getRangeRetryTimer = setTimeout(
+                    function(){
+                        this.getRangeRetryTimer = null;
+                        this.getRange(start, end, callback);
+                    }.bind(this),
+                    5000);
+            }.bind(this)
+        );
         return false;
     },
 
@@ -556,7 +569,6 @@ var EditorModel = new Class({
 
 	this.horizontalTextView.update(start, end);
         this.requestLines(start - dlr, end + dlr);  // dynamic pre-fetching
-	this.tries = 0;
     },
 
     /* Function: onSearchRequest
@@ -676,52 +688,51 @@ var EditorModel = new Class({
          onerror - Callback function to invoke on error
     */
     requestLines: function(start, end, fn, onerror) {
-        var range, handlers;
+        var range, internal_error;
         /* request in progress? -> come back later */
         if(this.lineRequestInProgress) {
-            setTimeout(function(){this.requestLines(start,end,fn);}.bind(this),
-                       10);
+            setTimeout(function(){this.requestLines(start,end,fn,onerror);}.bind(this),
+                       50);
             return;
         }
-
         /* get minimum required range */
 	range = this.getMinimumLineRange(start, end);
-	if(range.length == 0) { // success!
-	    this.tries = 0;
+	if(range.length === 0) {  // no server request necessary
             if(typeof(fn) === "function")
                 fn();
 	    return;
 	}
-	if(this.tries++>20) { // prevent endless recursion
+        /* start request */
+        internal_error = function() {
             if(typeof(onerror) === "function")
                 onerror({
 		    'name': 'FailureToLoadLines',
-		    'message': "Ein Fehler ist aufgetreten: Zeilen "+start+" bis "+(end-1)+" können nicht geladen werden.  Überprüfen Sie ggf. Ihre Internetverbindung."
+		    'message': "Ein interner Fehler ist aufgetreten: Zeilen "+start+" bis "+(end-1)+" können nicht geladen werden."
 	        });
-            return;
-	}
-
+        };
         this.lineRequestInProgress = true;
-	new Request.JSON({
-	    url: 'request.php',
-	    async: true,
-	    onSuccess: function(status, text) {
-                this.lineRequestInProgress = false;
-                var lineArrayLength = (status.success ? status['data'].length : false);
-		if (!lineArrayLength) {
-                    if(typeof(onerror) === "function")
-                        onerror({
-			    'name': 'EmptyRequest',
-			    'message': "Ein Fehler ist aufgetreten: Server-Anfrage für benötigte Zeilen "+start+" bis "+(end-1)+" lieferte kein Ergebnis zurück."
-		        });
-                    return;
-		}
-                for(var i = 0; i < lineArrayLength; i++) {
-                    this.setLineFromServer(status['data'][i]);
+	new CoraRequest({
+            name: 'getLinesById',
+	    onSuccess: function(status) {
+                if(typeof(status.data) === "undefined" || !status.data) {
+                    internal_error(); return;
                 }
-		this.requestLines(start, end, fn, onerror);
-	    }.bind(this)
-	}).get({'do': 'getLinesById', 'start_id': range[0], 'end_id': range[1]});
+                for(var i = 0; i < status.data.length; i++) {
+                    this.setLineFromServer(status.data[i]);
+                }
+                if (this.getMinimumLineRange(start, end).length === 0) {
+                    if(typeof(fn) === "function")
+                        fn();
+                } else {
+                    internal_error();
+                }
+	    }.bind(this),
+            onError: function(error) {
+                if(typeof(onerror) === "function")
+                    onerror({'name': error.name, 'message': error.message});
+            },
+            onComplete: function() { this.lineRequestInProgress = false; }.bind(this)
+	}).get({'start_id': range[0], 'end_id': range[1]});
     },
 
     /* Function: hasUnsavedChanges

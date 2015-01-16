@@ -30,6 +30,7 @@ var DataTable = new Class({
     table: null,  // The content <table> element
     lineTemplate: null,  // Template <tr> element
     pages: null,  // A PageModel object
+    spinner: null,
 
     lineCount: null,
     displayedStart: -1,
@@ -237,6 +238,28 @@ var DataTable = new Class({
         }
     },
 
+    /* Function: spin
+
+       Shows a spinner on the data table.
+     */
+    spin: function() {
+        if(this.spinner === null)
+            this.spinner = new Spinner(this.table, {class: 'bg-color-page'});
+        if(this.spinner.hidden)
+            this.spinner.show();
+        return this;
+    },
+
+    /* Function: unspin
+
+       Hides the spinner on the data table.
+     */
+    unspin: function() {
+        if(this.spinner !== null && !this.spinner.hidden)
+            this.spinner.hide(true);
+        return this;
+    },
+
     /* Function: update
 
        Updates an annotation with a new value.
@@ -266,6 +289,7 @@ var DataTable = new Class({
      */
     empty: function() {
         this.table.getElement('tbody').empty();
+        this.spinner = null;
         this.rowsByNum = {};
         return this;
     },
@@ -310,10 +334,11 @@ var DataTable = new Class({
          end   - Last line to be displayed
      */
     renderLines: function(start, end) {
+        this.spin();
         this.dataSource.getRange(start, end, function(data) {
             this.displayedStart = start;
             this.displayedEnd   = end;
-            this.renderData(data);
+            this.unspin().renderData(data);
         }.bind(this));
     },
 

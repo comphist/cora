@@ -15,7 +15,8 @@ var CoraRequest = new Class({
         retry: 2,  /**< a request that fails with anything other than
                         CoraRequestError.Handled is retried at least
                         this number of times before actually failing */
-        noticeOnError: false
+        noticeOnError: false,
+        textDialogOnError: false
     },
     request: null,
 
@@ -71,6 +72,11 @@ var CoraRequest = new Class({
                 e.showAsNotice();
             });
         }
+        if(this.options.textDialogOnError) {
+            this.addEvent('error', function(e) {
+                e.showAsTextDialog();
+            });
+        }
     },
 
     /* Function: send
@@ -82,8 +88,26 @@ var CoraRequest = new Class({
      */
     send: function(data) {
         this.lastData = data;
-        this.request.send(data);
+        this.request.send({'method': this.options.method, 'data': data});
         return this;
+    },
+
+    /* Function: get
+
+       Equivalent to send(), but enforces the 'get' method.
+     */
+    get: function(data) {
+        this.options.method = 'get';
+        return this.send(data);
+    },
+
+    /* Function: post
+
+       Equivalent to send(), but enforces the 'post' method.
+     */
+    post: function(data) {
+        this.options.method = 'post';
+        return this.send(data);
     },
 
     /* Function: retry
@@ -91,7 +115,7 @@ var CoraRequest = new Class({
        Retries the last request.
      */
     retry: function() {
-        this.request.send(this.lastData);
+        this.send(this.lastData);
     },
 
     /* Function: isRunning
@@ -111,11 +135,20 @@ var CoraRequest = new Class({
     _fireError: function(error) {
         if(error.name === 'Handled' || error.name === 'NotLoggedIn'
            || this.tries > this.options.retry) {
-            this.tries = 0;
             this.fireEvent('error', error);
+            this._fireComplete();
         } else {  // retry
             setTimeout(this.retry, 500);
         }
+    },
+
+    /* Function: _fireComplete
+
+       Cleans up and fires an event when a request completes.
+     */
+    _fireComplete: function() {
+        this.tries = 0;
+        this.fireEvent('complete');
     },
 
     /* Function: _onRequestSuccess
@@ -128,8 +161,8 @@ var CoraRequest = new Class({
     _onRequestSuccess: function(json, text) {
         if(typeof(json) === "object") {
             if(json.success) {
-                this.tries = 0;
                 this.fireEvent('success', [json]);
+                this._fireComplete();
             } else if(typeof(json.errors) !== "undefined") {
                 this._fireError(new CoraRequestError.Handled(json.errors));
             } else if(json.errcode === -1) {
