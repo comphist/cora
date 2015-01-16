@@ -73,6 +73,8 @@
           if(file_exists(dirname(__FILE__) . "/gui/js/master.min.js")) {
               embedJS("gui/js/master.min.js", true);
           } else {
+              embedJS("gui/js/request/CoraRequestErrors.js", true);
+              embedJS("gui/js/request/CoraRequest.js", true);
               embedJS("gui/js/settings.js", true);
               embedJS("gui/js/MultiSelect.js", true);
               embedJS("gui/js/baseBox.js", true);
