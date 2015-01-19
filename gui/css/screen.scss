@@ -676,8 +676,14 @@ div.limitedWidth-tiny p {
     color: red;
 }
 
-.loginForm input {
-    width: 20em;
+.loginForm {
+    input {
+        width: 20em;
+    }
+
+    p.button {
+        padding-top: 1.75em;
+    }
 }
 
 #confirmLoginPopup {

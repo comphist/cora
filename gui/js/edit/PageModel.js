@@ -15,6 +15,8 @@ var PageModel = new Class({
 
     initialize: function(parent) {
         this.parent = parent;
+        this.buttonsPageBack = new Elements();
+        this.buttonsPageForward = new Elements();
         this._calculateMaxPage();
         this.lineJumper = new LineJumper(this, $(this.lineJumperForm));
     },
@@ -152,9 +154,14 @@ var PageModel = new Class({
 
        Updates the element that displays current and maximum page
        numbers.
+
+       Also activates/deactivates back/forward navigation buttons if we're at
+       the start/end of the document.
      */
     _updatePageCounter: function() {
-        var elem = null;
+        var elem = null,
+            firstPage = (this.activePage <= 1),
+            lastPage = (this.activePage >= this.maxPage);
         Array.each(this.panels, function(panel) {
             elem = panel.getElement('span.page-active');
             if (elem != null)
@@ -162,6 +169,20 @@ var PageModel = new Class({
             elem = panel.getElement('span.page-max');
             if (elem != null)
                 elem.set('text', this.maxPage);
+            elem = panel.getElement('span.btn-page-back');
+            if (elem != null) {
+                if (firstPage)
+                    elem.addClass('disabled');
+                else
+                    elem.removeClass('disabled');
+            }
+            elem = panel.getElement('span.btn-page-forward');
+            if (elem != null) {
+                if (lastPage)
+                    elem.addClass('disabled');
+                else
+                    elem.removeClass('disabled');
+            }
         }.bind(this));
         return this;
     },
