@@ -16,7 +16,10 @@ var CoraRequest = new Class({
                         CoraRequestError.Handled is retried at least
                         this number of times before actually failing */
         noticeOnError: false,
-        textDialogOnError: false
+        textDialogOnError: false,
+        callbackOnSuccess: true,
+        callbackOnNotLoggedIn: true,
+        callbackOnNetworkError: true
     },
     request: null,
 
@@ -75,6 +78,23 @@ var CoraRequest = new Class({
         if(this.options.textDialogOnError) {
             this.addEvent('error', function(e) {
                 e.showAsTextDialog();
+            });
+        }
+        if(this.options.callbackOnNotLoggedIn) {
+            this.addEvent('error', function(e) {
+                if(e.name === 'NotLoggedIn')
+                    gui.onNotLoggedIn();
+            });
+        }
+        if(this.options.callbackOnNetworkError) {
+            this.addEvent('error', function(e) {
+                if(e.name === 'Network')
+                    gui.getPulse().removeClass('connected');
+            });
+        }
+        if(this.options.callbackOnSuccess) {
+            this.addEvent('success', function(e) {
+                gui.getPulse().addClass('connected');
             });
         }
     },

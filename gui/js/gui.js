@@ -610,6 +610,24 @@ var gui = {
         return date.format(format_string);
     },
 
+    /* Function: getPulse
+
+       Gets the pulse element that indicates connectivity status.
+     */
+    getPulse: function() {
+        return $('connectionInfo').getElement('.oi');
+    },
+
+    /* Function: onNotLoggedIn
+
+       Global callback used by CoraRequest when user is no longer logged in.
+     */
+    onNotLoggedIn: function() {
+        this.getPulse().removeClass("connected");
+        this.keepaliveRequest.stopTimer();
+        this.login(this.keepaliveRequest.startTimer.bind(this.keepaliveRequest));
+    },
+
     /* Function: login
 
        Asks the user to re-enter his login information, e.g., when the client
@@ -621,35 +639,37 @@ var gui = {
     login: function(fn) {
         this.showSpinner({message: 'Warte auf Authorisierung...'});
         var onSuccessfulRestore = function() {
-            this.hideSpinner();
             if(typeof(fn) === "function")
                 fn();
         }.bind(this);
         var loginRequest = function(user, pw) {
-            new Request.JSON({
-                url: "request.php?do=login",
+            new CoraRequest({
+                name: "login",
                 onSuccess: function(status) {
-                    if (status && status.success) {
-                        if (cora.editor !== null)
-                            cora.files.lock(
-                                cora.current().id,
-                                {onSuccess: onSuccessfulRestore,
-                                 onError: function(error) {
-                                     this.showMsgDialog('error',
+                    if (cora.editor !== null)
+                        cora.files.lock(
+                            cora.current().id,
+                            {onSuccess: onSuccessfulRestore,
+                             onError: function(error) {
+                                 this.showMsgDialog('error',
                                         "Anmeldung war erfolgreich, aber Zugriff "
                                         + "auf die aktuell geöffnete Datei ist "
-                                        + "aktuell nicht möglich.  Eventuell wird "
+                                        + "nicht möglich.  Eventuell wird "
                                         + "diese Datei bereits von einem anderen "
                                         + "Nutzer bearbeitet.");
-                                    mbox.open();
-                                 }.bind(this)}
-                            );
-                        else
-                            onSuccessfulRestore();
-                    } else {
-                        this.showNotice('error', 'Anmeldung fehlgeschlagen.');
-                        mbox.open();
+                                 mbox.open();
+                             }.bind(this),
+                            onComplete: function() { this.hideSpinner(); }.bind(this)
+                            }
+                        );
+                    else {
+                        this.hideSpinner();
+                        onSuccessfulRestore();
                     }
+                }.bind(this),
+                onError: function(error) {
+                    this.showNotice('error', 'Anmeldung fehlgeschlagen.');
+                    mbox.open();
                 }.bind(this)
             }).get({'user': user, 'pw': pw});
         }.bind(this);
@@ -699,6 +719,6 @@ function onLoad() {
 function onBeforeUnload() {
     if (cora.editor !== null && cora.editor.hasUnsavedChanges()) {
         cora.editor.save();
-	return ("Es gibt noch ungespeicherte Änderungen, die verloren gehen, wenn Sie fortfahren!");
+	return ("Es gibt noch ungespeicherte Änderungen, die verloren gehen könnten, wenn Sie fortfahren!");
     }
 }

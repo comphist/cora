@@ -130,9 +130,8 @@ var HorizontalTextPreview = new Class({
             //if(this.spinner.hidden)
             //    this.spinner.show();
             this.parent.requestLines(start_bound, end_bound,
-                                function(){ this.update(start, end); }.bind(this),
-                                function(){ gui.showNotice('error',
-                                            "Problem beim Laden der Text-Vorschau.");});
+                                     function(){ this.update(start, end); }.bind(this),
+                                     function(){});
             return this;
         } else {
             data = this.parent.data;  // TODO: make this at least a call to parent
@@ -141,12 +140,14 @@ var HorizontalTextPreview = new Class({
 	// find nearest sentence boundaries
         if(this.useTerminators) {
 	    for (; start >= start_bound; start--) {
-	        if(data[start]!==undefined && this.terminators.contains(data[start].trans))
+	        if(typeof(data[start]) !== "undefined"
+                   && this.terminators.contains(data[start].trans))
 		    break;
 	    }
 	    start++;
 	    for (; end < end_bound; end++) {
-	        if(data[end]!==undefined && this.terminators.contains(data[end].trans)) {
+	        if(typeof(data[end]) !== "undefined"
+                   && this.terminators.contains(data[end].trans)) {
 	            end++;
 		    break;
                 }

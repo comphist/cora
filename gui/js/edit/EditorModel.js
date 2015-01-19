@@ -55,6 +55,7 @@ var EditorModel = new Class({
         this.header = options.data.header;
         this._initializeIdList(options.data.idlist);
         this.flagHandler = new FlagHandler();
+        this.addEvent('applyChanges', function(){ gui.getPulse().addClass("unsaved"); });
 
         /* Search function */
         this.tokenSearcher =
@@ -196,69 +197,26 @@ var EditorModel = new Class({
         }.bind(this);
         this.currentChanges = new DataChangeSet();
         this.pendingChanges = null;
-        this.saveRequest = new Request.JSON({
-            url: 'request.php?do=saveData',
+        this.saveRequest = new CoraRequest({
+            name: 'saveData',
             method: 'post',
-            onSuccess: function(status, statusText) {
-                var success, before = ref.saveFailures;
-                if (status != null && status.success) {  // successful save!
-                    success = true;
-                    ref.saveFailures = 0;
-                } else {
-                    success = false;
-                    ref.saveFailures = 100;
-                    ref.currentChanges.merge(ref.pendingChanges);
-                }
+            onSuccess: function(status) {
                 ref.pendingChanges = null;
-                this.fireEvent('processed', [success, status, null, before]);
+                ref.updateSaveStatus(true);
             },
-            onFailure: function(xhr) {
-                // failure due to server error or timeout
+            onError: function(error) {
                 ref.currentChanges.merge(ref.pendingChanges);
                 ref.pendingChanges = null;
-                this.fireEvent('processed', [false, null, xhr, ref.saveFailures++]);
-            },
-            onProcessed: function(success, status, xhr, before) {
-                if (success) {
-                    if (before > 0)
-                        gui.showNotice('ok', 'Speichern erfolgreich.');
-                    return;
-                }
-                if (ref.saveFailures > 2) {
-                    gui.showNotice('notice',
-                                   'Speichern derzeit nicht möglich.',
-                                   true);
-                }
-                if (status != null) {
-                    clearInterval(ref.autosaveTimerId);
-                    if (status.errcode == -1) {
-                        // uh oh, we have been logged out!
-                        gui.login(function() {
-                            gui.lock();
-                            cora.files.lock(
-                                cora.current().id,
-                                {onSuccess: function() {
-                                    activateAutosaveTimer();
-                                    ref.save();
-                                    gui.unlock();
-                                }}
-                            );
-                        });
-                    } else {
-                        // error signalled by PHP backend -- this type of error
-                        // should only be caused by a bug and is unlikely to
-                        // resolve itself, so we warn the user immediately
-                        gui.showTextDialog(
-                            "Kritischer Fehler",
-                            "Beim Speichern des Dokuments ist ein server-seitiger "
-                                + "Fehler aufgetreten.  Um Datenverluste zu vermeiden, "
-                                + "bearbeiten Sie das Dokument bitte nicht weiter und "
-                                + "melden diesen Fehler einem Administrator.  "
-                                + "Der Server antwortete:",
-                            ((status != null && status.errors != null) ?
-                             status.errors.join("\n") : statusText)
-                        );
-                    }
+                ref.updateSaveStatus(false);
+                if(error.name === 'Handled') {
+                    gui.showTextDialog(
+                        "Kritischer Fehler",
+                        "Beim Speichern des Dokuments ist ein server-seitiger "
+                            + "Fehler aufgetreten.  Um Datenverluste zu vermeiden, "
+                            + "bearbeiten Sie das Dokument bitte nicht weiter und "
+                            + "melden diesen Fehler einem Administrator.",
+                        error.details
+                    );
                 }
             }
         });
@@ -755,6 +713,20 @@ var EditorModel = new Class({
         this.currentChanges = new DataChangeSet();
         this.saveRequest.send(this.pendingChanges.json());
         return true;
+    },
+
+    /* Function: updateSaveStatus
+
+       Keeps track if (and how often) saving fails and updates a status
+       indicator accordingly.
+     */
+    updateSaveStatus: function(success) {
+        var pulse = gui.getPulse();
+        this.saveFailures = (success ? 0 : (this.saveFailures + 1));
+        if(success)
+            pulse.removeClass("unsaved");
+        else
+            pulse.addClass("unsaved");
     },
 
     /* Function: whenSaved

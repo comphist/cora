@@ -31,4 +31,8 @@ MENUITEM;
     <span class="btn-toolbar-entry" id="logoutButton"><span class="oi" data-glyph="account-logout" aria-hidden="true"></span> Logout</span>
   </div>
 </div>
+
+<div id="connectionInfo">
+  <p>angemeldet als '<span class="username"><?php echo $_SESSION['user']; ?></span>'<span class="oi connected" data-glyph="pulse" aria-hidden="true"></p>
+</div>
 <?php endif; ?>

@@ -182,6 +182,32 @@ ol {
     text-shadow: black 1px 1px;
 }
 
+#connectionInfo {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+
+    color: $header-text-color;
+    font-size: 1.2em;
+    font-style: normal;
+    font-weight: bold;
+    text-shadow: black 1px 1px;
+
+    .oi {
+        text-shadow: none !important;
+        padding-left: 1em;
+        color: #FF4040;
+
+        &.connected {
+            color: #09EB19;
+
+            &.unsaved {
+                color: #6CF075;
+            }
+        }
+    }
+}
+
 /* Menu (tabs) */
 
 #menu {

@@ -179,7 +179,7 @@ NOTLOGGEDIN;
         <form class="loginForm">
           <label for="lipu_un">Benutzername:</label>
           <p class="text">
-            <input type="text" name="lipu_un" id="lipu_un" value="" />
+            <input type="text" name="lipu_un" id="lipu_un" disabled="disabled" value="<?php echo $_SESSION['user']; ?>" />
           </p>
           <label for="lipu_pw">Passwort:</label>
           <p class="text">

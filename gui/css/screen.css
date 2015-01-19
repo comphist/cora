@@ -121,6 +121,24 @@ ol {
   font-weight: bold;
   text-shadow: black 1px 1px; }
 
+#connectionInfo {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  color: #ffffff;
+  font-size: 1.2em;
+  font-style: normal;
+  font-weight: bold;
+  text-shadow: black 1px 1px; }
+  #connectionInfo .oi {
+    text-shadow: none !important;
+    padding-left: 1em;
+    color: #FF4040; }
+    #connectionInfo .oi.connected {
+      color: #09EB19; }
+      #connectionInfo .oi.connected.unsaved {
+        color: #6CF075; }
+
 /* Menu (tabs) */
 #menu {
   clear: both;
