@@ -753,6 +753,8 @@ var EditorModel = new Class({
         if (spinnerOptions)
             gui.showSpinner(spinnerOptions);
         this.saveRequest.addEvent('processed:once', function(success, details) {
+            if (spinnerOptions)
+                gui.hideSpinner();
             if (success) {
                 fn();
             } else {
@@ -760,8 +762,6 @@ var EditorModel = new Class({
                     "Das Dokument kann derzeit nicht gespeichert werden; der "
                     + "aktuelle Vorgang wird daher abgebrochen.  Überprüfen Sie "
                     + "Ihre Internetverbindung und versuchen Sie es ggf. erneut.");
-                if (spinnerOptions)
-                    gui.hideSpinner();
                 if (typeof(fail) === "function")
                     fail();
             }
