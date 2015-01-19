@@ -203,11 +203,13 @@ var EditorModel = new Class({
             onSuccess: function(status) {
                 ref.pendingChanges = null;
                 ref.updateSaveStatus(true);
+                this.fireEvent('processed', [true, status]);
             },
             onError: function(error) {
                 ref.currentChanges.merge(ref.pendingChanges);
                 ref.pendingChanges = null;
                 ref.updateSaveStatus(false);
+                this.fireEvent('processed', [false, error]);
                 if(error.name === 'Handled') {
                     gui.showTextDialog(
                         "Kritischer Fehler",
@@ -750,9 +752,9 @@ var EditorModel = new Class({
 
         if (spinnerOptions)
             gui.showSpinner(spinnerOptions);
-        this.saveRequest.addEvent('processed:once', function(success, status, xhr) {
-            if (success || this.saveFailures < 3) {
-                this.whenSaved(fn, spinnerOptions, fail);
+        this.saveRequest.addEvent('processed:once', function(success, details) {
+            if (success) {
+                fn();
             } else {
                 gui.showMsgDialog('error',
                     "Das Dokument kann derzeit nicht gespeichert werden; der "
@@ -764,7 +766,6 @@ var EditorModel = new Class({
                     fail();
             }
         }.bind(this));
-
         this.save();
     },
 
