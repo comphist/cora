@@ -49,6 +49,7 @@ var Tagset = new Class({
     classname: 'Tagset',  /**< display name for this tagset class */
     searchable: true,  /**< can user search for annotations in this tagset? */
     split_class: false,  /**< is this tagset displayed as two? */
+    value_key: '',  /**< defaults to "anno_" + class */
 
     tags: [],
     processed: false,
@@ -73,8 +74,10 @@ var Tagset = new Class({
             this.longname = data.longname;
         if(typeof(data.set_type) !== "undefined")
             this.set_type = data.set_type;
-        if(typeof(data.class) !== "undefined")
+        if(typeof(data.class) !== "undefined") {
             this.class = data.class;
+            this.value_key = "anno_" + this.class;
+        }
     },
 
     /* Function: setShowInputErrors
@@ -132,9 +135,16 @@ var Tagset = new Class({
      */
     getValues: function(data) {
         var result = {};
-        var key = "anno_"+this.class;
-        result[key] = data[key];
+        result[this.value_key] = data[this.value_key];
         return result;
+    },
+
+    /* Function: getValue
+
+       Get the main annotation value from a token data object.
+     */
+    getValue: function(data) {
+        return data[this.value_key];
     },
 
     /* Function: generateOptgroupFor

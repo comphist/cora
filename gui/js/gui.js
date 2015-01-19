@@ -65,9 +65,10 @@ var FlexRowList = new Class({
        Add a new row cloned from the row template to this element.
      */
     grabNewRow: function() {
-        this.rowTemplate.clone().inject(this.container, 'bottom');
+        var row = this.rowTemplate.clone();
+        row.inject(this.container, 'bottom');
         this.entries++;
-        return this;
+        return row;
     },
 
     /* Function: grab
@@ -100,12 +101,15 @@ var FlexRowList = new Class({
             this.grabNewRow();
     },
 
+    /* Function: empty
+
+       Destroys all rows in the container.
+     */
     empty: function() {
         this.container.getElements('li.flexrow-content').destroy();
         this.entries = 0;
         return this;
     }
-
 });
 
 var gui = {

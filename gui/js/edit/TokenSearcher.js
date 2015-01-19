@@ -97,7 +97,7 @@ var TokenSearcher = new Class({
     },
 
     _initializeFieldSelector: function() {
-        var optgroup;
+        var optgroup, elemlist = [];
         var fieldSelector =
                 this.templateListElem.getElement('select.editSearchField');
         var makeOption = function(a,b) {
@@ -113,10 +113,14 @@ var TokenSearcher = new Class({
         optgroup = new Element('optgroup', {'label': "Annotationsebenen"});
         Object.each(this.tagsets, function(tagset) {
             if(tagset.searchable) {
-                optgroup.grab(makeOption(tagset.class, tagset.classname));
+                elemlist.push(makeOption(tagset.class, tagset.classname));
                 cora.strings.search_condition.field[tagset.class] = tagset.classname;
             }
         });
+        elemlist.sort(function(a,b) {
+            return (a.get('text') > b.get('text')) ? -1 : 1;
+        });
+        elemlist.each(function(a) { optgroup.grab(a); });
         fieldSelector.grab(optgroup);
         // Flags
         optgroup = new Element('optgroup', {'label': "Markierungen"});
@@ -226,6 +230,46 @@ var TokenSearcher = new Class({
      */
     reset: function() {
         this.flexrow.empty().grabNewRow();
+        return this;
+    },
+
+    /* Function: setFromData
+
+       Sets the search dialog to match a given data object.
+     */
+    setFromData: function(data) {
+        var conditions = [];
+        Object.each(this.tagsets, function(tagset) {
+            var value = tagset.getValue(data);
+            if(typeof(value) !== "undefined" && value.length > 0) {
+                conditions.push({'field': tagset.class,
+                                 'match': 'eq',
+                                 'value': value});
+            }
+        });
+        Object.each(this.flagHandler.flags, function(flag, key) {
+            var value = data[key];
+            if(typeof(value) !== "undefined" && value == 1) {
+                conditions.push({'field': key, 'match': 'set'});
+            }
+        });
+        return this.setFromConditions(conditions);
+    },
+
+    setFromConditions: function(conditions) {
+        if(conditions.length < 1)
+            return this.reset();
+        this.flexrow.empty();
+        conditions.each(function(condition) {
+            var row = this.flexrow.grabNewRow();
+            this._fillSearchMatcher(
+                row.getElement('select.editSearchField').set('value', condition.field)
+            );
+            row.getElement('select.editSearchMatch').set('value', condition.match);
+            if (typeof(condition.value) !== "undefined")
+                row.getElement('input.editSearchText').set('value', condition.value);
+        }.bind(this));
+        return this;
     },
 
     /* Function: requestSearch

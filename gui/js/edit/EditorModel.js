@@ -89,6 +89,9 @@ var EditorModel = new Class({
         this.dataTable.table.set('id', 'editTable');
 
         this.dataTable.addDropdownEntries([
+            {name: 'Search',
+             text: 'Suche ähnliche...',
+             action: this.searchSimilarTokens.bind(this)},
             {name: 'Edit',
              text: 'Token bearbeiten...',
              action: this.editToken.bind(this)},
@@ -557,6 +560,20 @@ var EditorModel = new Class({
         }
         this.searchResults = new SearchResults(this, criteria, data, 'pagePanel');
         gui.changeTab('search');
+    },
+
+    /* Function: searchSimilarTokens
+
+       Opens the token searcher with predefined fields to search for tokens
+       similar to the selected one.
+
+       Parameters:
+         tok_id - The line ID of the token that was selected
+     */
+    searchSimilarTokens: function(tok_id) {
+        var data = this.data[tok_id];
+        if (typeof(data) !== "undefined" && this.tokenSearcher != null)
+            this.tokenSearcher.setFromData(data).open();
     },
 
     /* Function: getMinimumLineRange

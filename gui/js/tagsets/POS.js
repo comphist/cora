@@ -5,7 +5,7 @@
 var POSTagset = new Class({
     Extends: Tagset,
     Implements: SplitClassTagset,
-    classname: 'POS+Morphologie-Tag',
+    classname: 'POS-Tag (inkl. Morphologie)',
     optgroup: null,
     eventStringPOS: 'change:relay(select.et-select-pos-main)',
     eventStringMorph: 'change:relay(select.et-select-morph)',
