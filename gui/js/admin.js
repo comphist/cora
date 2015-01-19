@@ -59,20 +59,18 @@ cora.users = {
        Parameters:
         name - Desired username
         pw   - Desired password
-        fn   - Callback function to invoke after the request
     */
-    createUser: function(name, pw, fn) {
-        var ref = this;
-	new Request.JSON(
-	    {'url': 'request.php?do=createUser',
-	     'async': false,
-	     'data': {'username': name, 'password': pw},
-	     onSuccess: function(status, text) {
-		 ref.performUpdate();
-                 if(typeof(fn) == "function")
-                     fn(status, text);
-	     }
-	}).post();
+    createUser: function(name, pw) {
+        gui.lock();
+        new CoraRequest({
+            name: 'createUser',
+            textDialogOnError: true,
+            onSuccess: function(status) {
+                this.performUpdate();
+                gui.showNotice('ok', "Benutzer hinzugefügt.");
+            }.bind(this),
+            onComplete: function() { gui.unlock(); }
+        }).post({'username': name, 'password': pw});
     },
 
     /* Function: deleteUser
@@ -81,20 +79,18 @@ cora.users = {
 
        Parameters:
         id - ID of the user to delete
-        fn - Callback function to invoke after the request
      */
-    deleteUser: function(id, fn) {
-        var ref = this;
-	new Request.JSON({
-            'url': 'request.php?do=deleteUser',
-	    'async': false,
-	    'data': {'id': id},
-	    onSuccess: function(status, text) {
-                ref.performUpdate();
-                if(typeof(fn) == "function")
-                    fn(status, text);
-	    }
-	}).post();
+    deleteUser: function(id) {
+        gui.lock();
+        new CoraRequest({
+            name: 'deleteUser',
+            textDialogOnError: true,
+            onSuccess: function(status) {
+                this.performUpdate();
+                gui.showNotice('ok', "Benutzer gelöscht.");
+            }.bind(this),
+            onComplete: function() { gui.unlock(); }
+        }).post({'id': id});
     },
 
     /* Function: toggleAdmin
@@ -107,20 +103,16 @@ cora.users = {
         fn - Callback function to invoke after the request
      */
     toggleAdmin: function(id, fn) {
-        var ref = this;
-	new Request.JSON({
-            'url': 'request.php?do=toggleAdmin',
-	    'async': false,
-	    'data': {'id': id},
-	    onSuccess: function(status, text) {
-                if(status['success']) {
-                    var value = ref.data[ref.byID[id]].admin=="1" ? "0" : "1";
-                    ref.data[ref.byID[id]].admin = value;
-                }
-                if(typeof(fn) == "function")
-                    fn(status, text);
-            }
-	}).post();
+        new CoraRequest({
+            name: 'toggleAdmin',
+            textDialogOnError: true,
+            onSuccess: function(status) {
+                var value = this.data[this.byID[id]].admin=="1" ? "0" : "1";
+                this.data[this.byID[id]].admin = value;
+                if(typeof(fn) === "function")
+                    fn(status);
+            }.bind(this)
+        }).post({'id': id});
     },
 
     /* Function: changePassword
@@ -130,18 +122,17 @@ cora.users = {
        Parameters:
         id - ID of the user
         pw - New password
-        fn - Callback function to invoke after the request
     */
-    changePassword: function(id, pw, fn) {
-	new Request.JSON({
-            'url': 'request.php?do=changePassword',
-	    'async': false,
-	    'data': {'id': id, 'password': pw},
-	    onSuccess: function(status, text) {
-                if(typeof(fn) == "function")
-                    fn(status, text);
-	    }
-	}).post();
+    changePassword: function(id, pw) {
+        gui.lock();
+        new CoraRequest({
+            name: 'changePassword',
+            textDialogOnError: true,
+            onSuccess: function(status) {
+                gui.showNotice('ok', "Password geändert.");
+            }.bind(this),
+            onComplete: function() { gui.unlock(); }
+        }).post({'id': id, 'password': pw});
     },
 
     /* Function: makeMultiSelectBox
@@ -182,27 +173,22 @@ cora.users = {
        handlers previously registered via onUpdate().
      */
     performUpdate: function() {
-        var ref = this;
-        new Request.JSON({
-            url: 'request.php',
-            onSuccess: function(status, text) {
-                if(!status['success']) {
-                    gui.showNotice('error',
-                                   "Konnte Benutzerdaten nicht laden.");
-                    return;
-                }
-                ref.data = status['data'];
-                ref.byID = {};
-                Array.each(ref.data, function(user, idx) {
-                    ref.byID[user.id] = idx;
+        new CoraRequest({
+            name: 'getUserList',
+            textDialogOnError: true,
+            onSuccess: function(status) {
+                this.data = status.data;
+                this.byID = {};
+                Array.each(this.data, function(user, idx) {
+                    this.byID[user.id] = idx;
+                }.bind(this));
+                Array.each(this.onUpdateHandlers, function(handler) {
+                    handler(status);
                 });
-                Array.each(ref.onUpdateHandlers, function(handler) {
-                    handler(status, text);
-                });
-            }
-        }).get({'do': 'getUserList'});
+            }.bind(this)
+        }).get();
     }
-}
+};
 
 cora.userEditor = {
     initialize: function() {
@@ -270,14 +256,7 @@ cora.userEditor = {
         var performRequest = function(data) {
             var username = data[0];
             var password = data[1];
-            cora.users.createUser(username, password, function (status, text) {
-                if(status['success']) {
-                    gui.showNotice('ok', 'Benutzer hinzugefügt.');
-                }
-                else {
-	            gui.showNotice('error', 'Benutzer nicht hinzugefügt.');
-                }
-            });
+            cora.users.createUser(username, password);
         };
         new mBox.Modal({
             title: "Neuen Benutzer hinzufügen",
@@ -309,16 +288,7 @@ cora.userEditor = {
 	var parentrow = event.target.getParent('tr');
 	var uid = parentrow.get('id').substr(5);
         var username = parentrow.getElement('td.adminUserNameCell').get('text');
-        var performDelete = function() {
-            cora.users.deleteUser(uid, function(status, text) {
-                if(status['success']) {
-                    gui.showNotice('ok', 'Benutzer gelöscht.');
-                }
-                else {
-                    gui.showNotice('error', 'Benutzer nicht gelöscht.');
-                }
-            });
-        };
+        var performDelete = function() { cora.users.deleteUser(uid); };
         gui.confirm("Benutzer '" + username + "' wirklich löschen?",
                     performDelete, true);
     },
@@ -334,13 +304,9 @@ cora.userEditor = {
         var td = tr.getElement('td.adminUserAdminStatusTD');
 	var uid = tr.get('id').substr(5);
 
-        cora.users.toggleAdmin(uid, function(status, text) {
-            if(!status['success']) {
-                gui.showNotice('error', 'Admin-Status nicht geändert.');
-                return;
-            }
+        cora.users.toggleAdmin(uid, function(status) {
             td.toggleClass('adminUserIsAdmin');
-	    if(ts.hasClass('adminUserIsAdmin')) {
+	    if(td.hasClass('adminUserIsAdmin')) {
                 td.set('title', 'Admin');
 	    } else {
                 td.set('title', 'Kein Admin');
@@ -384,19 +350,9 @@ cora.userEditor = {
                        {title: "Abbrechen", addClass: "mform"},
                        {title: "Speichern", addClass: "mform button_green",
 			event: function() {
-                            var cb = function (status, text) {
-                                if(status && status['success']) {
-                                    gui.showNotice('ok',
-                                                   "Einstellungen gespeichert.");
-                                    cora.users.performUpdate();
-                                    this.close();
-                                }
-                                else {
-                                    gui.showNotice('error',
-                                                   "Speichern der Einstellungen fehlgeschlagen.");
-                                }
-                            }.bind(this);
-                            ref.saveUserSettings(uid, this.content, cb);
+                            ref.saveUserSettings(uid, this.content, function() {
+                                this.close();
+                            }.bind(this));
 			}}
                      ]
 	});
@@ -419,15 +375,18 @@ cora.userEditor = {
         data.comment = div.getElement('input[name=adminUserComment]').get('value');
 
         // send request
-	new Request.JSON(
-	    {'url': 'request.php?do=saveUserSettings',
-	     'async': false,
-	     'data': data,
-	     onSuccess: function(status, text) {
-                 if(typeof(fn) == "function")
-                     fn(status, text);
-	     }
-	}).post();
+        gui.lock();
+	new CoraRequest({
+            name: 'saveUserSettings',
+            textDialogOnError: true,
+	    onSuccess: function(status) {
+                cora.users.performUpdate();
+                gui.showNotice('ok', "Einstellungen geändert.");
+                if(typeof(fn) === "function")
+                    fn(status);
+	    },
+            onComplete: function() { gui.unlock(); }
+	}).post(data);
     },
 
     /* Function: changePassword
@@ -452,14 +411,6 @@ cora.userEditor = {
 	    }
             return pw1;
         };
-        var performRequest = function(uid, password) {
-            cora.users.changePassword(uid, password, function (status, text) {
-                if(status['success'])
-                    gui.showNotice('ok', 'Password geändert.');
-                else
-                    gui.showNotice('error', 'Password nicht geändert.');
-            });
-        };
         new mBox.Modal({
             title: "Passwort ändern",
             content: $('templateChangePassword'),
@@ -469,7 +420,7 @@ cora.userEditor = {
                             var pw = performChecks(this.content);
                             if(pw) {
                                 this.close();
-                                performRequest(uid, pw);
+                                cora.users.changePassword(uid, pw);
                             }
                         }
                        }
@@ -560,23 +511,21 @@ cora.annotatorEditor = {
 
        Sends a server request to get a list of all taggers.
      */
-    performUpdate: function() {
-        new Request.JSON({
-            url: 'request.php',
-            onSuccess: function(status, text) {
-                if(!status['success']) {
-                    gui.showNotice('error',
-                                   "Konnte Tagger nicht laden.");
-                    return;
-                }
+    performUpdate: function(fn) {
+        new CoraRequest({
+            name: 'adminGetAllAnnotators',
+            textDialogOnError: true,
+            onSuccess: function(status) {
                 this.annotators = status['taggers'];
                 this.byID = {};
                 Array.each(this.annotators, function(annotator, idx) {
                     this.byID[annotator.id] = idx;
                 }.bind(this));
                 this.refreshTable();
+                if(typeof(fn) === "function")
+                    fn(status);
             }.bind(this)
-        }).get({'do': 'adminGetAllAnnotators'});
+        }).get();
     },
 
     /* Function: refreshTable
@@ -614,20 +563,17 @@ cora.annotatorEditor = {
 	var tid  = parentrow.getElement('td.adminAnnotatorIDCell').get('text');
 	var name = parentrow.getElement('td.adminAnnotatorNameCell').get('text');
         var performDelete = function() {
-            new Request.JSON({
-                'url': 'request.php',
-                'async': false,
-	        onSuccess: function(status, text) {
-		    this.performUpdate();
-                    if(status['success']) {
-                        gui.showNotice('ok', 'Tagger gelöscht.');
-                    }
-                    else {
-                        gui.showNotice('error', 'Tagger nicht gelöscht.');
-                    }
-	        }.bind(this)
-	    }).get({'do': 'adminDeleteAnnotator', 'id': tid});
-        };
+            gui.lock();
+            new CoraRequest({
+                name: 'adminDeleteAnnotator',
+                textDialogOnError: true,
+                onSuccess: function(status) {
+                    this.performUpdate();
+                    gui.showNotice('ok', "Tagger gelöscht.");
+                }.bind(this),
+                onComplete: function() { gui.unlock(); }
+            }).get({'id': tid});
+        }.bind(this);
         gui.confirm("Tagger "+tid+" '"+name+"' wirklich löschen?",
                     performDelete, true);
     },
@@ -641,17 +587,18 @@ cora.annotatorEditor = {
          fn - Callback function to invoke after the server request
      */
     createAnnotator: function(name, fn) {
-        var ref = this;
-	new Request.JSON({
-	    'url': 'request.php?do=adminCreateAnnotator',
-	    'async': false,
-	    'data': {'name': name, 'class': 'None'},
-	    onSuccess: function(status, text) {
-		ref.performUpdate();
-                if(typeof(fn) == "function")
-                    fn(status, text);
-	    }
-	}).post();
+        gui.lock();
+        new CoraRequest({
+            name: 'adminCreateAnnotator',
+            textDialogOnError: true,
+            onSuccess: function(status) {
+                this.performUpdate(function() {
+                    this.showAnnotatorOptionsDialog(status.id);
+                }.bind(this));
+                gui.showNotice('ok', "Tagger erstellt.");
+            }.bind(this),
+            onComplete: function() { gui.unlock(); }
+        }).post({'name': name, 'class': 'None'});
     },
 
     /* Function: changeAnnotatorOptionsFromDialog
@@ -687,18 +634,16 @@ cora.annotatorEditor = {
                 annotator.options[key] = value;
         });
         /* send request */
-        new Request.JSON({
-            url: 'request.php?do=adminChangeAnnotator',
-            data: annotator,
-            onSuccess: function(status, text) {
-                if(status['success']) {
-                    gui.showNotice('ok', "Optionen geändert.");
-                } else {
-                    gui.showNotice('error', "Optionen nicht geändert.");
-                }
+        gui.lock();
+        new CoraRequest({
+            name: 'adminChangeAnnotator',
+            textDialogOnError: true,
+            onSuccess: function(status) {
                 this.performUpdate();
-            }.bind(this)
-        }).post();
+                gui.showNotice('ok', "Tagger-Optionen geändert.");
+            }.bind(this),
+            onComplete: function() { gui.unlock(); }
+        }).post(annotator);
     },
 
     /* Function: showAnnotatorOptionsDialog
@@ -763,15 +708,7 @@ cora.annotatorEditor = {
                 gui.showNotice('error', 'Name darf nicht leer sein!');
                 return false;
             }
-            this.createAnnotator(name, function (status) {
-                if(status['success']) {
-                    gui.showNotice('ok', 'Tagger hinzugefügt.');
-                    this.showAnnotatorOptionsDialog(status['id']);
-                }
-                else {
-                    gui.showNotice('error', 'Tagger nicht hinzugefügt.');
-                }
-            }.bind(this));
+            this.createAnnotator(name);
             return true;
         }.bind(this);
         new mBox.Modal({
@@ -821,18 +758,14 @@ cora.noticeEditor = {
        Sends a server request to get a list of all server notices.
      */
     performUpdate: function() {
-        new Request.JSON({
-            url: 'request.php',
-            onSuccess: function(status, text) {
-                if(!status['success']) {
-                    gui.showNotice('error',
-                                   "Konnte Benachrichtigungen nicht laden.");
-                    return;
-                }
+        new CoraRequest({
+            name: 'adminGetAllNotices',
+            textDialogOnError: true,
+            onSuccess: function(status) {
                 this.notices = status['notices'];
                 this.refreshNoticeTable();
             }.bind(this)
-        }).get({'do': 'adminGetAllNotices'});
+        }).get();
     },
 
     /* Function: refreshNoticeTable
@@ -861,20 +794,18 @@ cora.noticeEditor = {
          type - Type of the notice (alert|info)
          text - Notice text
          expires - Expiry date of the notice
-         fn - Callback function to invoke after the server request
      */
-    createNotice: function(type, text, expires, fn) {
-        var ref = this;
-	new Request.JSON({
-	    'url': 'request.php?do=adminCreateNotice',
-	    'async': false,
-	    'data': {'type': type, 'text': text, 'expires': expires},
-	    onSuccess: function(status, text) {
-		ref.performUpdate();
-                if(typeof(fn) == "function")
-                    fn(status, text);
-	    }
-	}).post();
+    createNotice: function(type, text, expires) {
+        gui.lock();
+        new CoraRequest({
+            name: 'adminCreateNotice',
+            textDialogOnError: true,
+            onSuccess: function(status) {
+                this.performUpdate();
+                gui.showNotice('ok', "Benachrichtigung hinzugefügt.");
+            }.bind(this),
+            onComplete: function() { gui.unlock(); }
+        }).post({'type': type, 'text': text, 'expires': expires});
     },
 
     /* Function: deleteNotice
@@ -885,19 +816,16 @@ cora.noticeEditor = {
 	var parentrow = event.target.getParent('tr');
 	var nid = parentrow.getElement('td.adminNoticeIDCell').get('text');
         var performDelete = function() {
-            new Request.JSON({
-                'url': 'request.php',
-                'async': false,
-	        onSuccess: function(status, text) {
-		    this.performUpdate();
-                    if(status['success']) {
-                        gui.showNotice('ok', 'Benachrichtigung gelöscht.');
-                    }
-                    else {
-                        gui.showNotice('error', 'Benachrichtigung nicht gelöscht.');
-                    }
-	        }.bind(this)
-	    }).get({'do': 'adminDeleteNotice', 'id': nid});
+            gui.lock();
+            new CoraRequest({
+                name: 'adminDeleteNotice',
+                textDialogOnError: true,
+                onSuccess: function(status) {
+                    this.performUpdate();
+                    gui.showNotice('ok', "Benachrichtigung gelöscht.");
+                }.bind(this),
+                onComplete: function() { gui.unlock(); }
+            }).get({'id': nid});
         }.bind(this);
         gui.confirm("Benachrichtigung "+nid+" wirklich löschen?",
                     performDelete, true);
@@ -921,14 +849,7 @@ cora.noticeEditor = {
                 gui.showNotice('error', 'Benachrichtigung darf nicht leer sein!');
                 return false;
             }
-            this.createNotice(type, text, expires, function (status) {
-                if(status['success']) {
-                    gui.showNotice('ok', 'Benachrichtigung hinzugefügt.');
-                }
-                else {
-                    gui.showNotice('error', 'Benachrichtigung nicht hinzugefügt.');
-                }
-            });
+            this.createNotice(type, text, expires);
             return true;
         }.bind(this);
         new mBox.Modal({
@@ -974,26 +895,25 @@ cora.projectEditor = {
                          {title: "Erstellen", addClass: "mform button_green",
                           event: function() {
 		              var pn = this.content.getElement('input').get('value');
-		              var req = new Request.JSON(
-		                  {url:'request.php',
-		                   onSuccess: function(status) {
-			               var pid = false;
-			               if(status!==null && status.success && status.pid) {
-			                   pid = Number.from(status.pid);
-			               }
-			               if(!pid || pid<1) {
-                                           gui.showNotice('error', 'Projekt erstellen fehlgeschlagen.');
-			               } else {
-			                   $('projectCreateForm').getElement('input').set('value', '');
-			                   this.close();
-                                           gui.showNotice('ok', 'Projekt angelegt.');
-                                           cora.projects.performUpdate(function() {
-                                               ref.showProjectEditDialog(pid);
-                                           });
-			               }
-		                   }.bind(this)
-		                  });
-		              req.get({'do': 'createProject', 'project_name': pn});
+                              gui.lock();
+                              new CoraRequest({
+                                  name: 'createProject',
+                                  textDialogOnError: true,
+                                  onSuccess: function(status) {
+                                      var pid = Number.from(status.pid);
+                                      if(typeof(pid) === "undefined" || pid < 1) {
+                                          gui.showMsgDialog('error', "Keine/ungültige Projekt-ID erhalten: '"+pid+"'");
+                                          return;
+                                      }
+			              $('projectCreateForm').getElement('input').set('value', '');
+			              this.close();
+                                      gui.showNotice('ok', 'Projekt angelegt.');
+                                      cora.projects.performUpdate(function() {
+                                          ref.showProjectEditDialog(pid);
+                                      });
+                                  }.bind(this),
+                                  onComplete: function() { gui.unlock(); }
+                              }).get({'project_name': pn});
                           }
                          }
                        ]
@@ -1038,19 +958,16 @@ cora.projectEditor = {
         var performDelete = function() {
             var prj = cora.projects.get(pid);
 	    if (prj.files == undefined || prj.files.length == 0) {
-	        var req = new Request.JSON(
-		    {url:'request.php',
-		     onSuccess: function(data, text) {
-		         if(data.success) {
-                             gui.showNotice('ok', 'Projekt gelöscht.');
-                             cora.projects.performUpdate();
-		         } else {
-                             gui.showNotice('error', 'Projekt löschen fehlgeschlagen.');
-		         }
-		     }
-		    }
-	        );
-	        req.get({'do': 'deleteProject', 'project_id': pid});
+                gui.lock();
+                new CoraRequest({
+                    name: 'deleteProject',
+                    textDialogOnError: true,
+                    onSuccess: function(status) {
+                        cora.projects.performUpdate();
+                        gui.showNotice('ok', "Projekt gelöscht.");
+                    }.bind(this),
+                    onComplete: function() { gui.unlock(); }
+                }).get({'project_id': pid});
 	    } else {
                 setTimeout(function() {
                     gui.showMsgDialog('error', 'Projekte können nicht gelöscht werden, '
@@ -1152,19 +1069,7 @@ cora.projectEditor = {
 	    buttons: [ {title: "Abbrechen", addClass: "mform"},
                        {title: "Speichern", addClass: "mform button_green",
 			event: function() {
-                            var cb = function (status, text) {
-                                if(status && status['success']) {
-                                    gui.showNotice('ok',
-                                                   "Einstellungen gespeichert.");
-                                    cora.projects.performUpdate();
-                                    this.close();
-                                }
-                                else {
-                                    gui.showNotice('error',
-                                                   "Speichern der Einstellungen fehlgeschlagen.");
-                                }
-                            }.bind(this);
-                            ref.saveProjectSettings(pid, this.content, cb);
+                            ref.saveProjectSettings(pid, this.content, this.close.bind(this));
 			}}
                      ]
 	});
@@ -1204,18 +1109,20 @@ cora.projectEditor = {
             data.tagsets = "";
 
         // send request
-	new Request.JSON(
-	    {'url': 'request.php?do=saveProjectSettings',
-	     'async': false,
-	     'data': data,
-	     onSuccess: function(status, text) {
-                 if(typeof(fn) == "function")
-                     fn(status, text);
-	     }
-	}).post();
+        gui.lock();
+        new CoraRequest({
+            name: 'saveProjectSettings',
+            textDialogOnError: true,
+            onSuccess: function(status) {
+                cora.projects.performUpdate();
+                gui.showNotice('ok', "Einstellungen geändert.");
+                if(typeof(fn) === "function")
+                    fn();
+            }.bind(this),
+            onComplete: function() { gui.unlock(); }
+        }).post(data);
     }
-}
-
+};
 
 cora.tagsetEditor = {
     initialize: function() {
@@ -1240,47 +1147,40 @@ cora.tagsetEditor = {
 	    var spinner    = new Spinner(textarea).show(true);
             textarea.empty();
 	    // fetch tag list and perform a quick and dirty analysis:
-	    var request = new Request.JSON(
-		{url:'request.php',
-		 onSuccess: function(status, text) {
-		     var output;
-		     if(status['success']) {
-			 var data = status['data'];
-			 var postags = new Array();
+            new CoraRequest({
+                name: 'fetchTagset',
+                textDialogOnError: true,
+                onSuccess: function(status) {
+		     var data = status['data'],
+                         postags = [],
 			 output = tagsetname + " (ID: " + tagset + ") has ";
-			 output += data.length + " tags ";
-			 Array.each(data, function(tag) {
-			     var pos;
-			     var dot = tag['value'].indexOf('.');
-			     if(dot>=0 && dot<tag['value'].length-1) {
-				 pos = tag['value'].slice(0, dot);
-			     } else {
-				 pos = tag['value'];
-			     }
-			     postags.push(pos);
-			 });
-			 postags = postags.unique();
-			 output += "in " + postags.length + " base POS categories.\n\n";
-			 output += "Base POS categories are:\n";
-			 output += postags.join(", ");
-			 output += "\n\nAll tags:\n";
-			 Array.each(data, function(tag) {
-			     if(tag['needs_revision']==1) {
-				 output += "^";
-			     }
-			     output += tag['value'] + "\n";
-			 });
-		     }
-		     else {
-			 output = "Fehler beim Laden des Tagsets.";
-		     }
-		     textarea.empty().appendText(output);
-                     spinner.hide();
-		 }
-		}
-	    );
-	    request.get({'do': 'fetchTagset', 'tagset_id': tagset, 'limit': 'none'});
-	});
+		    output += data.length + " tags ";
+		    Array.each(data, function(tag) {
+			var pos;
+			var dot = tag['value'].indexOf('.');
+			if(dot>=0 && dot<tag['value'].length-1) {
+			    pos = tag['value'].slice(0, dot);
+			} else {
+			    pos = tag['value'];
+			}
+			postags.push(pos);
+		    });
+		    postags = postags.unique();
+		    output += "in " + postags.length + " base POS categories.\n\n";
+		    output += "Base POS categories are:\n";
+		    output += postags.join(", ");
+		    output += "\n\nAll tags:\n";
+		    Array.each(data, function(tag) {
+			if(tag['needs_revision']==1) {
+			    output += "^";
+			}
+			output += tag['value'] + "\n";
+		    });
+		    textarea.empty().appendText(output);
+                },
+                onComplete: function() { spinner.hide(); }
+            }).get({'tagset_id': tagset, 'limit': 'none'});
+        });
     },
 
     activateImportForm: function() {
@@ -1390,11 +1290,11 @@ cora.tagsetEditor = {
 };
 
 cora.initAdminLogging = function(editor) {
-    editor.saveRequest.addEvent('processed', function(success, status, xhr) {
+    editor.saveRequest.addEvent('processed', function(success, details) {
         console.log("Save" + (success ? " " : " NOT ") + "successful.");
         if(!success) {
-            console.log(status);
-            console.log(xhr);
+            console.log(details.name + ": " + details.message);
+            console.log(details.details);
         }
     });
     editor.addEvent('applyChanges', function(data, changes, caller) {
