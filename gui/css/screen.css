@@ -693,10 +693,11 @@ table.editTable {
       font-size: 80%;
       font-weight: bold;
       text-align: right; }
-    table.editTable td.editTable_pos select {
-      width: 8em; }
+    table.editTable td.editTable_pos select, table.editTable td.editTable_lemmapos select {
+      width: 100%; }
     table.editTable td.editTable_morph select {
-      width: 12em; }
+      min-width: 12.5em;
+      width: 100%; }
     table.editTable td.editTable_norm input {
       width: 8em; }
     table.editTable td.editTable_norm_broad input {

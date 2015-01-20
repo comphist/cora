@@ -51,10 +51,9 @@ var POSTagset = new Class({
      */
     buildTemplate: function(td) {
         var elem = td.getElement('select');
-        if (elem !== null) {
+        if (elem !== null && this.processed) {
             elem.empty();
-            if(this.processed)
-                elem.grab(this.optgroup.clone());
+            elem.grab(this.optgroup.clone());
         }
     },
 

@@ -165,7 +165,7 @@ NOTLOGGEDIN;
                 include( $menu->getItemFile($item) );
 	    }
       ?>
-      <div id="footer">&copy; 2012&mdash;2014 Marcel Bollmann, Florian Petran, Sprachwissenschaftliches Institut, Ruhr-Universität Bochum</div>
+      <div id="footer">&copy; 2012&mdash;2015 Marcel Bollmann, Florian Petran, Sprachwissenschaftliches Institut, Ruhr-Universität Bochum</div>
     </div>
 
     <!-- templates -->

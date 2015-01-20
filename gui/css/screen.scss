@@ -905,11 +905,13 @@ table.editTable{
             font-weight: bold;
             text-align: right;
         }
-        &.editTable_pos select {
-            width: 8em;
+        &.editTable_pos select,
+        &.editTable_lemmapos select {
+            width: 100%;
         }
         &.editTable_morph select {
-            width: 12em;
+            min-width: 12.5em;
+            width: 100%;
         }
         &.editTable_norm input {
             width: 8em;
