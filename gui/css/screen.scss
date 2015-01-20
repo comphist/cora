@@ -896,6 +896,11 @@ table.editTable{
         border-bottom: 1px solid #BBB;
         padding: 0px 6px;
         white-space: nowrap;
+
+        input {
+            background-color: white;
+        }
+
         &.editTable_token {
             font-family: $historical-font-stack;
             font-size: 110%;
@@ -924,6 +929,9 @@ table.editTable{
         }
         &.editTable_comment input {
             width: 15em;
+            &:focus {
+                width: 30em;
+            }
         }
         &.editTable_lemma_sugg {
             padding-left: 0 !important;

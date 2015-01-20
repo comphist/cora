@@ -686,6 +686,8 @@ table.editTable {
     border-bottom: 1px solid #BBB;
     padding: 0px 6px;
     white-space: nowrap; }
+    table.editTable td input {
+      background-color: white; }
     table.editTable td.editTable_token {
       font-family: Junicode, Cardo, Alphabetum, "Palemonas MUFI", "Andron Scriptor Web", LeedsUni, "Titus Cyberbit", "Times New Roman", Times, serif;
       font-size: 110%; }
@@ -706,6 +708,8 @@ table.editTable {
       width: 13em; }
     table.editTable td.editTable_comment input {
       width: 15em; }
+      table.editTable td.editTable_comment input:focus {
+        width: 30em; }
     table.editTable td.editTable_lemma_sugg {
       padding-left: 0 !important; }
     table.editTable td.data-table-clickable {
