@@ -93,7 +93,22 @@ var LemmaPOSTagset = new Class({
          value - New value of the annotation
      */
     update: function(tr, data, changes, cls, value) {
-        if (cls === "lemmapos")
+        if (cls === "lemmapos") {
             changes.anno_lemmapos = value;
+        } else if (cls === "pos" && !data.anno_lemmapos) {
+            // try to "pre-select" a reasonable tag
+            if (this.tags.contains(value)) {
+                changes.anno_lemmapos = value;
+                this.fill(tr, changes);
+            } else {
+                for(var i=0; i<this.tags.length; i++) {
+                    if (value.indexOf(this.tags[i]) === 0) {
+                        changes.anno_lemmapos = this.tags[i];
+                        this.fill(tr, changes);
+                        break;
+                    }
+                }
+            }
+        }
     }
 });
