@@ -424,11 +424,14 @@ class CoraSessionHandler {
   }
 
   /** Wraps Exporter::export() */
-  public function exportFile($fileid, $format){
+  public function exportFile($fileid, $format, $GET){
     if(!$_SESSION['admin'] && !$this->db->isAllowedToOpenFile($fileid, $_SESSION['user'])) {
       return false;
     }
 
+    $options = array();
+    if(array_key_exists('ccsv', $GET))
+      $options = $GET['ccsv'];
     $filename = $this->makeExportFilename($this->db->getFilenameFromID($fileid), $format);
     $output = fopen('php://output', 'wb');
     header("Cache-Control: public");
@@ -436,7 +439,7 @@ class CoraSessionHandler {
     // header("Content-Transfer-Encoding: Binary");
     // header("Content-Length:".filesize($attachment_location));
     header("Content-Disposition: attachment; filename=".$filename);
-    $this->exporter->export($fileid, $format, $output);
+    $this->exporter->export($fileid, $format, $options, $output);
     return true;
   }
 

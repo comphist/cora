@@ -71,17 +71,21 @@ class Exporter {
    *
    * @param string $fileid ID of the file to be exported
    * @param string $format Desired format of the export file
+   * @param array $options (optional, can be empty) Additional options
    * @param resource $handle A resource representing an output stream
    *                         where the exported data will be sent
    *
    * @return ???
    */
-  public function export($fileid, $format, $handle) {
+  public function export($fileid, $format, $options, $handle) {
     if($format == ExportType::Tagging) {
-      return $this->exportPOS($fileid, $handle);
+        return $this->exportPOS($fileid, $handle);
     }
     if($format == ExportType::Normalization) {
-      return $this->exportNormalization($fileid, $handle);
+        return $this->exportNormalization($fileid, $handle);
+    }
+    if($format == ExportType::CustomCSV) {
+        return $this->exportCSV($fileid, $options, $handle);
     }
 
     // make a try..catch
@@ -189,8 +193,7 @@ class Exporter {
    *                         where the exported data will be sent
    */
   protected function exportPOS($fileid, $handle) {
-    $tokens = $this->db->getAllTokens($fileid);
-    $moderns = $tokens[2];
+    $moderns = $this->db->getAllModerns($fileid);
     foreach($moderns as $mod) {
       $tok = $mod['ascii'];
       $pos = '';
@@ -205,8 +208,7 @@ class Exporter {
 
   /** Export a file with normalization annotations. */
   protected function exportNormalization($fileid, $handle) {
-    $tokens = $this->db->getAllTokens($fileid);
-    $moderns = $tokens[2];
+    $moderns = $this->db->getAllModerns($fileid);
     foreach($moderns as $mod) {
       $tok = $mod['ascii'];
       $norm = '--'; $normbroad = '--'; $normtype = '';
@@ -239,6 +241,28 @@ class Exporter {
       fwrite($handle, $dom->saveXML());
   }
 
+  /** Export a file as CSV. */
+  protected function exportCSV($fileid, $options, $handle) {
+      fwrite($handle, implode("\t", $options) . "\n");
+      $moderns = $this->db->getAllModerns($fileid);
+      foreach($moderns as $mod) {
+          // filter selected tags && flags
+          foreach($mod['tags'] as $tag) {
+              if($tag['selected'] == 1)
+                  $mod[$tag['type']] = $tag['tag'];
+          }
+          foreach($mod['flags'] as $flag) {
+              $mod['flag_'.str_replace(" ", "_", $flag)] = "yes";
+          }
+          // output line
+          $output = array();
+          foreach($options as $opt) {
+              $output[] = (isset($mod[$opt]) ? $mod[$opt] : "");
+          }
+          fwrite($handle, implode("\t", $output));
+          fwrite($handle, "\n");
+      }
+  }
 }
 
 ?>

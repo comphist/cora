@@ -1187,29 +1187,31 @@ cora.fileManager = {
        CustomCSV export.
      */
     exportMultiSelectForCSV: function(fid) {
-        var div = new Element('div', {'class': 'MultiSelect export_CustomCSV_MS'});
-        var fixed = [['tok_ascii', "Token (simplifiziert)"],
-                     ['tok_trans', "Token (Transkription)"],
-                     ['tok_utf', "Token (UTF)"]];
+        var fixed,
+            div = new Element('div', {'class': 'MultiSelect export_CustomCSV_MS'}),
+            makeMultiSelectEntry = function(div, value, text) {
+                var entry = new Element('input', {type: 'checkbox',
+                                                  id: 'ccsv_'+value,
+                                                  name: 'ccsv[]',
+                                                  value: value});
+                var label = new Element('label', {for: 'ccsv_'+value,
+                                                  text: text});
+                div.grab(entry).grab(label);
+            };
+        fixed = [['trans', "Token (Transkription)"],
+                 ['ascii', "Token (ASCII)"],
+                 ['utf', "Token (UTF)"],
+                 ['comment', "Kommentar"]];
         Array.each(fixed, function(elem) {
-            var entry = new Element('input', {type: 'checkbox',
-                                              id: 'ccsv_'+elem[0],
-                                              name: 'ccsv[]',
-                                              value: elem[0]});
-            var label = new Element('label', {for: 'ccsv_'+elem[0],
-                                              text: elem[1]});
-            div.grab(entry).grab(label);
+            makeMultiSelectEntry(div, elem[0], elem[1]);
         });
         Array.each(cora.files.get(fid).tagset_links, function(tid) {
             var ts = cora.tagsets.get(tid);
-            if (!ts.exportable) return;
-            var entry = new Element('input', {type: 'checkbox',
-                                              id: 'ccsv_'+tid,
-                                              name: 'ccsv[]',
-                                              value: ts.class});
-            var label = new Element('label', {for: 'ccsv_'+tid,
-                                              text: ts.classname});
-            div.grab(entry).grab(label);
+            if (ts.exportable)
+                makeMultiSelectEntry(div, ts.class, ts.classname);
+        });
+        Object.each(cora.flags, function(flag, key) {
+            makeMultiSelectEntry(div, key, flag.displayname);
         });
         new MultiSelect(div, {monitorText: ' Spalte(n) ausgewählt'});
         return div;

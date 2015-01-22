@@ -94,19 +94,22 @@
           <option value="<?php echo ExportType::CoraXML ?>" selected="selected">CorA-XML</option>
           <option value="<?php echo ExportType::CustomCSV ?>">Spaltenformat (CSV)</option>
           <?php if($_SESSION["admin"]): ?>
+            <option value="<?php echo ExportType::Normalization ?>">4-Spaltenformat (Normalisierung)</option>
             <option value="<?php echo ExportType::Transcription ?>" disabled="disabled">Transkriptionsformat</option>
           <?php endif; ?>
         </select>
       </p>
       <p class="for-fileexport for-<?php echo ExportType::CoraXML ?>">
-        Dateien im CorA-XML-Format enthalten alle Informationen über ein
-        Dokument, die auch auf dem Server gespeichert sind.  Sie können eine
-        CorA-XML-Datei auch wieder re-importieren, um das Dokument im selben
-        Zustand wie zum Zeitpunkt des Exports wiederherzustellen.
+        Exportiert eine CorA-XML-Datei, die das vollständige Dokument mitsamt
+        allen Annotationen enthält.  Diese Datei kann auch wieder re-importiert
+        werden, um eine Kopie des Dokuments im selben Zustand wie zum Zeitpunkt
+        des Exports zu erhalten.
       </p>
       <span class="start-hidden for-fileexport for-<?php echo ExportType::CustomCSV ?>">
         <p>
-          foo bar
+          Exportiert eine mehrspaltige Textdatei, die sich u.a. zum Import in
+          eine Tabellenkalkulation (z.B. Microsoft Excel) eignet.  Wählen Sie
+          aus, welche Annotationsebenen im Export enthalten sein sollen:
         </p>
         <div class="export_CustomCSV_MS"></div>
       </span>

@@ -288,7 +288,7 @@ class RequestHandler {
 	return $this->sh->addToken($get['token_id'], $get['value']);
 
       case "exportFile":
-	$this->sh->exportFile($get['fileid'], $get['format']);
+          $this->sh->exportFile($get['fileid'], $get['format'], $get);
 	exit;
 
       case "performAnnotation":

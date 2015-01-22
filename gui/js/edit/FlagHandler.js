@@ -1,3 +1,18 @@
+cora.flags = {
+    'flag_general_error': {
+        elem: 'div.editTableError',
+        class: 'editTableErrorChecked',
+        displayname: "Fehler-Markierung",
+        eventString: 'click:relay(div.editTableError)'
+    },
+    'flag_lemma_verified': {
+        elem: 'div.editTableLemma',
+        class: 'editTableLemmaChecked',
+        displayname: "Lemma-Markierung",
+        eventString: 'click:relay(div.editTableLemma)'
+    }
+};
+
 /* Class: FlagHandler
 
    An addition to the tagset-specific classes, this class handles all annotation
@@ -7,24 +22,10 @@
    to all texts without needing to be linked to them.
  */
 var FlagHandler = new Class({
-    flags: {
-        'flag_general_error': {
-            elem: 'div.editTableError',
-            class: 'editTableErrorChecked',
-            displayname: "Fehler-Markierung",
-            eventString: 'click:relay(div.editTableError)'
-        },
-        'flag_lemma_verified': {
-            elem: 'div.editTableLemma',
-            class: 'editTableLemmaChecked',
-            displayname: "Lemma-Markierung",
-            eventString: 'click:relay(div.editTableLemma)'
-        }
-    },
-
     /* Function: initialize
      */
     initialize: function() {
+        this.flags = cora.flags;
     },
 
     /* Function: getEventData
