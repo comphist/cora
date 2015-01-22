@@ -22,6 +22,7 @@ class ExportType {
   const Transcription = 3; // export in original transcription format
   const Normalization = 4; /**< Tab-separated format containing
 			simplification, normalization, modernization. */
+  const CustomCSV = 5; /**< Customized tab-separated text file. */
 
   public static function mapToContentType($format) {
     switch ($format) {
@@ -32,6 +33,9 @@ class ExportType {
     case ExportType::Transcription:
     case ExportType::Normalization:
       return "text/plain";
+      break;
+    case ExportType::CustomCSV:
+      return "text/csv";
       break;
     }
   }
@@ -44,6 +48,7 @@ class ExportType {
     case ExportType::Tagging:
     case ExportType::Transcription:
     case ExportType::Normalization:
+    case ExportType::CustomCSV:
       return ".txt";
       break;
     }

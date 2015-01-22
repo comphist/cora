@@ -10,6 +10,7 @@ var LemmaSuggTagset = new Class({
     classname: 'Lemma-Vorschlag',
     eventString: 'click:relay(div.editTableLemmaLink)',
     searchable: false,
+    exportable: false,
     baseURL: "http://www.woerterbuchnetz.de/DWB",
     windowTarget: "coraExternalLemmaLink",
 

@@ -705,6 +705,21 @@ var gui = {
         } else {
             window.location.href = '../index.php?do=logout';
         }
+    },
+
+    /* Function: download
+
+       Initiates a download from a given URL
+
+       Parameters:
+         url - URL to download from
+         query - (optional) Object to use as query string
+     */
+    download: function(url, query) {
+        var src = url;
+        if(typeof(query) === "object")
+            src += "?" + Object.toQueryString(query);
+        $('fileDownloadTarget').src = src;
     }
 };
 

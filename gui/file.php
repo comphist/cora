@@ -86,22 +86,30 @@
       </tr>
     </table>
 
-    <div id="fileExportPopup">
+    <div id="fileExportPopup" class="limitedWidth">
       <p>In welchem Format möchten Sie die Datei exportieren?</p>
       <p>
         <label for="format">Exportformat: </label>
         <select id="fileExportFormat" name="format" size="1">
-          <option value="<?php echo ExportType::Tagging ?>" selected="selected">Spaltenformat (POS)</option>
+          <option value="<?php echo ExportType::CoraXML ?>" selected="selected">CorA-XML</option>
+          <option value="<?php echo ExportType::CustomCSV ?>">Spaltenformat (CSV)</option>
           <?php if($_SESSION["admin"]): ?>
-            <option value="<?php echo ExportType::Normalization ?>">Spaltenformat (Normalisierung)</option>
-          <?php endif; ?>
-          <option value="<?php echo ExportType::CoraXML ?>">CorA-XML</option>
-          <?php if($_SESSION["admin"]): ?>
-            <option value="<?php echo ExportType::Transcription ?>" disabled="disabled">Transkriptionsformat (ohne Annotationen)</option>
+            <option value="<?php echo ExportType::Transcription ?>" disabled="disabled">Transkriptionsformat</option>
           <?php endif; ?>
         </select>
       </p>
-      <p></p>
+      <p class="for-fileexport for-<?php echo ExportType::CoraXML ?>">
+        Dateien im CorA-XML-Format enthalten alle Informationen über ein
+        Dokument, die auch auf dem Server gespeichert sind.  Sie können eine
+        CorA-XML-Datei auch wieder re-importieren, um das Dokument im selben
+        Zustand wie zum Zeitpunkt des Exports wiederherzustellen.
+      </p>
+      <span class="start-hidden for-fileexport for-<?php echo ExportType::CustomCSV ?>">
+        <p>
+          foo bar
+        </p>
+        <div class="export_CustomCSV_MS"></div>
+      </span>
     </div>
 
     <div id="fileImportXMLForm" class="limitedWidth">

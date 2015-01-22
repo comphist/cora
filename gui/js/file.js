@@ -1,13 +1,13 @@
 
-// ***********************************************************************
-// ********** Global Variables *******************************************
-// ***********************************************************************
+/*************************************************************************
+ ************ Global Variables *******************************************
+ *************************************************************************/
 
 var debugMode = false;
 
-// ***********************************************************************
-// ********** Projects and Files *****************************************
-// ***********************************************************************
+/*************************************************************************
+ ************ Projects and Files *****************************************
+ *************************************************************************/
 
 /* Class: cora.projects
 
@@ -879,6 +879,7 @@ cora.fileManager = {
                 }
             }.bind(this)
         );
+        this._prepareFileExportEvents();
     },
 
     /* Function: isFileOpened
@@ -1159,6 +1160,61 @@ cora.fileManager = {
         gui.confirm(message, performDelete, true);
     },
 
+    /****** FILE EXPORT *******************************************************/
+
+    /* Function: _prepareFileExportEvents
+
+       Sets up events for the file export dialog.
+     */
+    _prepareFileExportEvents: function() {
+        var div = $('fileExportPopup');
+        if (div == null) return;
+        div.getElement('#fileExportFormat').addEvent(
+            'change',
+            function(e) {
+                var elem, value = e.target.getSelected()[0].get('value');
+                div.getElements('.for-fileexport').hide();
+                elem = div.getElement('.for-'+value);
+                if (elem != null)
+                    elem.show();
+            }
+        );
+    },
+
+    /* Function: exportMultiSelectForCSV
+
+       Creates a dropdown box using MultiSelect.js for selecting columns in a
+       CustomCSV export.
+     */
+    exportMultiSelectForCSV: function(fid) {
+        var div = new Element('div', {'class': 'MultiSelect export_CustomCSV_MS'});
+        var fixed = [['tok_ascii', "Token (simplifiziert)"],
+                     ['tok_trans', "Token (Transkription)"],
+                     ['tok_utf', "Token (UTF)"]];
+        Array.each(fixed, function(elem) {
+            var entry = new Element('input', {type: 'checkbox',
+                                              id: 'ccsv_'+elem[0],
+                                              name: 'ccsv[]',
+                                              value: elem[0]});
+            var label = new Element('label', {for: 'ccsv_'+elem[0],
+                                              text: elem[1]});
+            div.grab(entry).grab(label);
+        });
+        Array.each(cora.files.get(fid).tagset_links, function(tid) {
+            var ts = cora.tagsets.get(tid);
+            if (!ts.exportable) return;
+            var entry = new Element('input', {type: 'checkbox',
+                                              id: 'ccsv_'+tid,
+                                              name: 'ccsv[]',
+                                              value: ts.class});
+            var label = new Element('label', {for: 'ccsv_'+tid,
+                                              text: ts.classname});
+            div.grab(entry).grab(label);
+        });
+        new MultiSelect(div, {monitorText: ' Spalte(n) ausgewählt'});
+        return div;
+    },
+
     /* Function: exportFile
 
        Displays a dialog to export a file and triggers the export.
@@ -1167,22 +1223,36 @@ cora.fileManager = {
          fid - ID of the file to be exported
      */
     exportFile: function(fid){
+        var content = $('fileExportPopup');
+        this.exportMultiSelectForCSV(fid)
+            .replaces(content.getElement('.export_CustomCSV_MS'));
 	new mBox.Modal({
-	    content: 'fileExportPopup',
+	    content: content,
 	    title: 'Datei exportieren',
 	    buttons: [
 		{title: 'Abbrechen', addClass: 'mform'},
 		{title: 'Exportieren', addClass: 'mform button_green',
 		 event: function() {
-		     var format = $('fileExportFormat').getSelected()[0].get('value');
+                     var ccsv = [],
+                         data = {do: 'exportFile', fileid: fid};
+		     data.format = this.content.getElement('#fileExportFormat')
+                                               .get('value');
+                     this.content.getElements('input[name="ccsv[]"]').each(
+                         function(el) {
+                             if(el.get('checked'))
+                                 ccsv.push(el.get('value'));
+                         }
+                     );
+                     if(ccsv) data.ccsv = ccsv;
 		     this.close();
-		     $('fileDownloadTarget').src = 'request.php?do=exportFile'
-                         +'&fileid='+fid+'&format='+format;
+                     gui.download('request.php', data);
 		 }
 		}
 	    ]
 	}).open();
     },
+
+    /****** TAGSET ASSOCIATIONS ***********************************************/
 
     /* Function: performChangeTagsetAssoc
 
@@ -1242,9 +1312,9 @@ cora.fileManager = {
     }
 };
 
-// ***********************************************************************
-// ********** Convenience functions **************************************
-// ***********************************************************************
+/*************************************************************************
+ ************ Convenience functions **************************************
+ *************************************************************************/
 
 cora.current = function() {
     return cora.files.get(cora.fileManager.currentFileId);
@@ -1258,9 +1328,9 @@ cora.currentHasTagset = function(cls) {
     return (typeof(cora.current().tagsets[cls]) !== "undefined");
 };
 
-// ***********************************************************************
-// ********** DOMREADY BINDINGS ******************************************
-// ***********************************************************************
+/*************************************************************************
+ ************ DOMREADY BINDINGS ******************************************
+ *************************************************************************/
 
 window.addEvent('domready', function() {
     cora.fileImporter.initialize();

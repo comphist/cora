@@ -772,6 +772,14 @@ tr.opened a.editTagsetAssocLink {
     pointer-events: none;
 }
 
+/* File export dialog */
+
+div#fileExportPopup {
+    select#fileExportFormat {
+        margin-left: 6px;
+    }
+}
+
 /* Tagset list */
 
 table.tagset-list {

@@ -48,6 +48,7 @@ var Tagset = new Class({
     class: null,
     classname: 'Tagset',  /**< display name for this tagset class */
     searchable: true,  /**< can user search for annotations in this tagset? */
+    exportable: true,  /**< can user export this tagset in CSV format? */
     split_class: false,  /**< is this tagset displayed as two? */
     value_key: '',  /**< defaults to "anno_" + class */
 
