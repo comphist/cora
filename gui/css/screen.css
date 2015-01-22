@@ -594,8 +594,11 @@ tr.opened a.editTagsetAssocLink {
   pointer-events: none; }
 
 /* File export dialog */
-div#fileExportPopup select#fileExportFormat {
-  margin-left: 6px; }
+div#fileExportPopup p.file-export-format-selector input {
+  margin-left: 1.5em;
+  vertical-align: middle; }
+div#fileExportPopup p.file-export-format-selector label {
+  margin-left: 5px; }
 
 /* Tagset list */
 table.tagset-list {

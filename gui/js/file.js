@@ -1169,10 +1169,10 @@ cora.fileManager = {
     _prepareFileExportEvents: function() {
         var div = $('fileExportPopup');
         if (div == null) return;
-        div.getElement('#fileExportFormat').addEvent(
-            'change',
-            function(e) {
-                var elem, value = e.target.getSelected()[0].get('value');
+        div.addEvent(
+            'change:relay(input[name=file-export-format])',
+            function(e, target) {
+                var elem, value = div.getElement('input:checked').get('value');
                 div.getElements('.for-fileexport').hide();
                 elem = div.getElement('.for-'+value);
                 if (elem != null)
@@ -1237,8 +1237,9 @@ cora.fileManager = {
 		 event: function() {
                      var ccsv = [],
                          data = {do: 'exportFile', fileid: fid};
-		     data.format = this.content.getElement('#fileExportFormat')
-                                               .get('value');
+		     data.format = this.content
+                         .getElement('input[name=file-export-format]:checked')
+                         .get('value');
                      this.content.getElements('input[name="ccsv[]"]').each(
                          function(el) {
                              if(el.get('checked'))

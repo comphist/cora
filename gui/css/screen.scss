@@ -775,8 +775,14 @@ tr.opened a.editTagsetAssocLink {
 /* File export dialog */
 
 div#fileExportPopup {
-    select#fileExportFormat {
-        margin-left: 6px;
+    p.file-export-format-selector {
+        input {
+            margin-left: 1.5em;
+            vertical-align: middle;
+        }
+        label {
+            margin-left: 5px;
+        }
     }
 }
 

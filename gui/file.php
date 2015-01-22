@@ -88,16 +88,13 @@
 
     <div id="fileExportPopup" class="limitedWidth">
       <p>In welchem Format möchten Sie die Datei exportieren?</p>
-      <p>
-        <label for="format">Exportformat: </label>
-        <select id="fileExportFormat" name="format" size="1">
-          <option value="<?php echo ExportType::CoraXML ?>" selected="selected">CorA-XML</option>
-          <option value="<?php echo ExportType::CustomCSV ?>">Spaltenformat (CSV)</option>
-          <?php if($_SESSION["admin"]): ?>
-            <option value="<?php echo ExportType::Normalization ?>">4-Spaltenformat (Normalisierung)</option>
-            <option value="<?php echo ExportType::Transcription ?>" disabled="disabled">Transkriptionsformat</option>
-          <?php endif; ?>
-        </select>
+      <p class="file-export-format-selector">
+        <input type="radio" name="file-export-format" value="<?php echo ExportType::CoraXML ?>" id="fef-coraxml" checked="checked" /><label for="fef-coraxml">CorA-XML</label><br />
+        <input type="radio" name="file-export-format" value="<?php echo ExportType::CustomCSV ?>" id="fef-customcsv" /><label for="fef-customcsv">Spaltenformat (CSV)</label><br />
+        <?php if($_SESSION["admin"]): ?>
+          <input type="radio" name="file-export-format" value="<?php echo ExportType::Normalization ?>" id="fef-norm" /><label for="fef-norm">4-Spaltenformat (Normalisierung)</label><br />
+          <input type="radio" name="file-export-format" value="<?php echo ExportType::Transcription ?>" id="fef-trans" disabled="disabled"/><label for="fef-trans">Transkriptionsformat</label><br />
+        <?php endif; ?>
       </p>
       <p class="for-fileexport for-<?php echo ExportType::CoraXML ?>">
         Exportiert eine CorA-XML-Datei, die das vollständige Dokument mitsamt
