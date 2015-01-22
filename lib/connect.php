@@ -769,7 +769,7 @@
    public function openFile($fileid, $user="system"){
      $locked = $this->lockFile($fileid, $user);
      if(!$locked['success']) {
-       return array('success' => false);
+       return array('success' => false, 'errors' => array("lock failed"));
      }
 
      $qs  = "SELECT text.id, text.sigle, text.fullname, text.project_id, ";

@@ -103,17 +103,6 @@ class CoraSessionHandler {
     return array('success' => true, 'data' => $data);
   }
 
-  /** Wraps DBInterface::getTagsetsForFile() and filters it to create
-      a list of IDs only. */
-  public function getTagsetsForFile($fileid){
-    $tagsets = $this->db->getTagsetsForFile($fileid);
-    $tlist = array();
-    foreach($tagsets as $tagset) {
-      $tlist[] = $tagset['id'];
-    }
-    return array('success' => true, 'data' => $tlist);
-  }
-
   /** Changes tagset associations for a file. */
   public function changeTagsetsForFile($fileid, $tagset_ids){
       if(!$_SESSION["admin"]) {

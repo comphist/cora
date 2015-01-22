@@ -23,6 +23,7 @@ class ProjectAccessor {
   private $stmt_setSettings = null;
   private $stmt_getFiles = null;
   private $stmt_getFilesFull = null;
+  private $stmt_getTagsetLinks = null;
 
   /** Construct a new ProjectAccessor.
    *
@@ -73,6 +74,9 @@ class ProjectAccessor {
           . "       WHERE text.project_id=:pid "
           . "   ORDER BY  text.sigle, text.fullname ASC";
       $this->stmt_getFilesFull = $this->dbo->prepare($query);
+      $query = "SELECT `tagset_id` FROM `text2tagset`"
+          . "    WHERE `text_id`=:tid";
+      $this->stmt_getTagsetLinks = $this->dbo->prepare($query);
   }
 
   /**********************************************/
@@ -155,7 +159,15 @@ class ProjectAccessor {
   public function getAssociatedFiles($pid, $full=false) {
       $stmt = $full ? $this->stmt_getFilesFull : $this->stmt_getFiles;
       $stmt->execute(array(':pid' => $pid));
-      return $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $files = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      if($full) {
+          $stmt = $this->stmt_getTagsetLinks;
+          foreach($files as &$file) {
+              $stmt->execute(array(':tid' => $file['id']));
+              $file['tagset_links'] = $stmt->fetchAll(PDO::FETCH_COLUMN);
+          }
+      }
+      return $files;
   }
 
   /** Fetch project-specific settings.

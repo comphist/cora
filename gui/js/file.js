@@ -1202,6 +1202,7 @@ cora.fileManager = {
             textDialogOnError: true,
             onSuccess: function() {
                 gui.showNotice('ok', "Tagset-Verknüpfungen geändert.");
+                cora.projects.performUpdate();
             }
         }).get({'file_id': fileid, 'linktagsets': tagsets});
     },
@@ -1217,7 +1218,7 @@ cora.fileManager = {
         var ref = this;
         var fullname = cora.files.getDisplayName(fileid);
 	var contentdiv = $('tagsetAssociationTable');
-	var spinner = new Spinner(contentdiv);
+        var tagsetLinks = cora.files.get(fileid).tagset_links;
 	var content = new mBox.Modal({
 	    title: "Tagset-Verknüpfungen für '"+fullname+"'",
 	    content: contentdiv,
@@ -1232,27 +1233,12 @@ cora.fileManager = {
                         }}
 		     ]
 	});
+	contentdiv.getElement('table.tagset-list')
+	    .getElements('input').each(function(input) {
+		var checked = tagsetLinks.contains(input.value) ? "yes" : "";
+		input.set('checked', checked);
+	    });
 	content.open();
-	spinner.show();
-
-        new CoraRequest({
-            name: 'getTagsetsForFile',
-            textDialogOnError: true,
-            onSuccess: function(status) {
-                if(typeof(status.data) !== "object") {
-                    content.close();
-                    gui.showMsgDialog('error', "Keine Daten erhalten.");
-                    return;
-                }
-		contentdiv.getElement('table.tagset-list')
-		    .getElements('input').each(function(input) {
-			var checked = status.data.contains(input.value) ? "yes" : "";
-			input.set('checked', checked);
-		    });
-            },
-            onError: function() { content.close(); },
-            onComplete: function() { spinner.destroy(); }
-        }).get({'file_id': fileid});
     }
 };
 
