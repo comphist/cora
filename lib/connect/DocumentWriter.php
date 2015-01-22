@@ -28,6 +28,7 @@ class DocumentWriter extends DocumentAccessor {
   private $stmt_insertComm = null;
   private $stmt_deleteComm = null;
   private $stmt_insertShift = null;
+  private $stmt_markLastPos = null;
 
   /** Construct a new DocumentWriter.
    *
@@ -85,6 +86,8 @@ class DocumentWriter extends DocumentAccessor {
     $stmt = "INSERT INTO shifttags (`tok_from`, `tok_to`, `tag_type`) "
         . "                 VALUES (:tokfrom,   :tokto,   :type)";
     $this->stmt_insertShift = $this->dbo->prepare($stmt);
+    $stmt = "UPDATE text SET `currentmod_id`=:mid WHERE `id`=:tid";
+    $this->stmt_markLastPos = $this->dbo->prepare($stmt);
   }
 
   /**********************************************/
@@ -195,6 +198,13 @@ class DocumentWriter extends DocumentAccessor {
 					':source' => $source,
 					':tagid' => $tagid,
 					':modid' => $modid));
+  }
+
+  /** Sets the position of the progress marker.
+   */
+  protected function markLastPosition($modid) {
+      return $this->stmt_markLastPos->execute(array(':mid' => $modid,
+                                                    ':tid' => $this->fileid));
   }
 
   /** Save an annotation for a given mod.

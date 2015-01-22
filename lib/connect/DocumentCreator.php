@@ -4,7 +4,7 @@
   * Functions related to creating new documents.
   *
   * @author Marcel Bollmann
-  * @date September 2014 
+  * @date September 2014
   */
 
 require_once('DocumentWriter.php');
@@ -226,19 +226,33 @@ class DocumentCreator extends DocumentWriter {
 
   /** Saves all annotations, including suggestions, in a document. */
   private function saveAllAnnotations(&$moderns) {
+      $last_checked = null;
+      $last_checked_found = false;
       foreach($moderns as $mod) {
+          // currentmod_id -- done here because this might become a flag-type
+          //                  annotation for moderns in the future
+          if(!$last_checked_found) {
+              if($mod['chk'])
+                  $last_checked = $mod['db_id'];
+              else
+                  $last_checked_found = true;
+          }
+          // All tags
           foreach($mod['tags'] as $anno) {
               $this->saveAnnotation($mod['db_id'], null,
                                     $anno['type'], $anno['tag'],
                                     $anno['selected'],
                                     $anno['source'], $anno['score']);
           }
+          // All flags
           if(array_key_exists('flags', $mod)) {
               foreach($mod['flags'] as $flag) {
                   $this->saveFlag($mod['db_id'], $flag, 1);
               }
           }
       }
+      if($last_checked !== null)
+          $this->markLastPosition($last_checked);
   }
 
   /** Saves all shifttags. */

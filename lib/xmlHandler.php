@@ -140,6 +140,7 @@ class XMLHandler {
       $modern['trans']  = (string) $modnode['trans'];
       $modern['ascii']  = (string) $modnode['ascii'];
       $modern['utf']    = (string) $modnode['utf'];
+      $modern['chk']    = (((string) $modnode['checked']) === "y");
       $modern['parent_xml_id'] = $thistokid;
       // first, parse all automatic suggestions
       if($modnode->suggestions) {
@@ -154,7 +155,7 @@ class XMLHandler {
       // then, parse all selected annotations
       foreach($modnode->children() as $annonode) {
         $annotype = strtolower($annonode->getName());
-        // CorA-internal comment  
+        // CorA-internal comment
 	if($annotype=='cora-comment') {
           $document->addComment(null, $modern['parent_xml_id'],
                                 (string) $annonode, 'C',
@@ -288,7 +289,7 @@ class XMLHandler {
     $xmlerror = $this->processXMLHeader($reader, $options, $format);
     if($xmlerror){
       $reader->close();
-      return array("success"=>False, 
+      return array("success"=>False,
 		   "errors"=>array($xmlerror));
     }
     try {
@@ -315,7 +316,7 @@ class XMLHandler {
     // insert data into database
     $status = $this->db->insertNewDocument($options, $data);
     if(!$status['success']){
-        return array("success" => false, 
+        return array("success" => false,
                      "errors"  => $status['warnings']);
     }
     return array("success" => True,
@@ -449,7 +450,7 @@ class XMLHandler {
           $container->appendChild($elem);
       }
       unset($shifttag);
-      $root->appendChild($container);      
+      $root->appendChild($container);
   }
 
   private function serializeDipls(&$dipls, &$doc, &$root) {
@@ -576,7 +577,7 @@ class XMLHandler {
               else {
                   $currentline['xml_range'] = $dipl_db_to_xml[$from]
                       ."..".$dipl_db_to_xml[$to];
-              } 
+              }
           }
       }
       $lid = 1;
