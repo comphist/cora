@@ -1024,6 +1024,18 @@
      return $stmt->fetchAll(PDO::FETCH_ASSOC);
    }
 
+   /** Get filename from ID
+    *
+    * @param string $fid File ID
+    */
+   public function getFilenameFromID($fid){
+     $qs = "SELECT a.id, a.sigle, a.fullname "
+         . "FROM   text a WHERE a.id=:fid";
+     $stmt = $this->dbo->prepare($qs);
+     $stmt->execute(array(':fid' => $fid));
+     return $stmt->fetch(PDO::FETCH_ASSOC);
+   }
+
    /** Get a list of all files in a given project.
     *
     * @param string $pid Project ID

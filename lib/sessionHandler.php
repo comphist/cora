@@ -415,18 +415,27 @@ class CoraSessionHandler {
     return $lock;
   }
 
+  private function makeExportFilename($data, $format) {
+      $name = $data['fullname'];
+      if($data['sigle'])
+          $name = "[".$data['sigle']."] ".$name;
+      $name .= ExportType::mapToExtension($format);
+      return $name;
+  }
+
   /** Wraps Exporter::export() */
-  public function exportFile( $fileid, $format ){
+  public function exportFile($fileid, $format){
     if(!$_SESSION['admin'] && !$this->db->isAllowedToOpenFile($fileid, $_SESSION['user'])) {
       return false;
     }
 
+    $filename = $this->makeExportFilename($this->db->getFilenameFromID($fileid), $format);
     $output = fopen('php://output', 'wb');
     header("Cache-Control: public");
     header("Content-Type: " . ExportType::mapToContentType($format));
     // header("Content-Transfer-Encoding: Binary");
     // header("Content-Length:".filesize($attachment_location));
-    header("Content-Disposition: attachment; filename=".$fileid.ExportType::mapToExtension($format));
+    header("Content-Disposition: attachment; filename=".$filename);
     $this->exporter->export($fileid, $format, $output);
     return true;
   }
