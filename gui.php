@@ -187,7 +187,6 @@ NOTLOGGEDIN;
           </p>
         </form>
       </div>
-      <iframe id="fileDownloadTarget"></iframe>
     </div>
   </body>
 </html>

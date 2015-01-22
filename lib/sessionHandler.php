@@ -426,6 +426,7 @@ class CoraSessionHandler {
   /** Wraps Exporter::export() */
   public function exportFile($fileid, $format, $GET){
     if(!$_SESSION['admin'] && !$this->db->isAllowedToOpenFile($fileid, $_SESSION['user'])) {
+      header("HTTP/1.1 404 Not Found");
       return false;
     }
 

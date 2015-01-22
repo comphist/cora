@@ -719,7 +719,7 @@ var gui = {
         var src = url;
         if(typeof(query) === "object")
             src += "?" + Object.toQueryString(query);
-        $('fileDownloadTarget').src = src;
+        window.location = src;
     }
 };
 

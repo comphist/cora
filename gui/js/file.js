@@ -1248,6 +1248,7 @@ cora.fileManager = {
                      );
                      if(ccsv) data.ccsv = ccsv;
 		     this.close();
+                     gui.showNotice('info', "Datei wird exportiert...");
                      gui.download('request.php', data);
 		 }
 		}
