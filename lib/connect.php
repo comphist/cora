@@ -1370,7 +1370,7 @@
      $currentmod_id = $stmt->fetch(PDO::FETCH_COLUMN);
      $verified = ($currentmod_id && $currentmod_id != null && !empty($currentmod_id));
 
-     $qs = "SELECT modern.id, modern.ascii "
+     $qs = "SELECT modern.id, modern.ascii, modern.utf, modern.trans "
        ."     FROM token "
        ."    INNER JOIN modern ON modern.tok_id=token.id "
        ."    WHERE token.text_id=:tid "
@@ -1558,10 +1558,7 @@
        return "lock failed";
      }
 
-     $warnings = $this->performSaveLines($fileid,$lines);
-     if($lasteditedrow !== null) {
-       $this->markLastPosition($fileid,$lasteditedrow);
-     }
+     $warnings = $this->performSaveLines($fileid, $lines, $lasteditedrow);
      $userid = $this->getUserIDFromName($uname);
      $this->updateChangedTimestamp($fileid,$userid);
 
@@ -1571,10 +1568,16 @@
      return False;
    }
 
-   public function performSaveLines($fileid, $lines) {
+   public function performSaveLines($fileid, $lines, $lasteditedrow) {
      $dw = new DocumentWriter($this, $this->dbo, $fileid);
      if(!empty($lines)) {
        $dw->saveLines($lines);
+     }
+     if($lasteditedrow !== null) {
+       if($lasteditedrow == -1) {
+         $lasteditedrow = null;
+       }
+       $dw->markLastPosition($lasteditedrow);
      }
      return $dw->getWarnings();
    }
@@ -1586,25 +1589,6 @@
        . "                  `changed`=CURRENT_TIMESTAMP WHERE `id`=:tid";
      $stmt = $this->dbo->prepare($qs);
      $stmt->execute(array(':uid' => $userid, ':tid' => $fileid));
-     return $stmt->rowCount();
-   }
-
-
-   /** Save progress on the given file.
-    *
-    * Progress is shown by a green bar at the left side of the editor and indicates the last line for which changes have been made.
-    *
-    * This function is called during the saving process.
-    *
-    * @param string $file the file id
-    * @param string $line the current mod id
-    *
-    * @return bool the result of the mysql query
-    */
-   public function markLastPosition($fileid,$line){
-     $qs = "UPDATE text SET `currentmod_id`=:line WHERE `id`=:tid";
-     $stmt = $this->dbo->prepare($qs);
-     $stmt->execute(array(':line' => $line, ':tid' => $fileid));
      return $stmt->rowCount();
    }
 

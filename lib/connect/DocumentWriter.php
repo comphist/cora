@@ -202,7 +202,7 @@ class DocumentWriter extends DocumentAccessor {
 
   /** Sets the position of the progress marker.
    */
-  protected function markLastPosition($modid) {
+  public function markLastPosition($modid) {
       return $this->stmt_markLastPos->execute(array(':mid' => $modid,
                                                     ':tid' => $this->fileid));
   }

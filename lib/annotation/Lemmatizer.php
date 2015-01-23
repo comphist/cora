@@ -17,7 +17,7 @@ class Lemmatizer extends AutomaticAnnotator {
     private $use_norm = false;
 
     // lemmatizer return value if lemma could not be found:
-    private $unknown_lemma = "<unknown>";    
+    private $unknown_lemma = "<unknown>";
 
     public function __construct($prfx, $opts) {
         parent::__construct($prfx, $opts);
@@ -103,8 +103,8 @@ class Lemmatizer extends AutomaticAnnotator {
                                   $tmpfname));
         exec($cmd, $output, $retval);
         if($retval) {
-            throw new Exception("Lemmatisierer gab den Status-Code {$retval} zurück.".
-                                "\nAufruf war: {$cmd}");
+            throw new Exception("Lemmatisierer gab den Status-Code {$retval} zurück.");
+            // "\nAufruf war: {$cmd}");
         }
 
         return array_map(array($this, 'makeAnnotationArray'), $tokens, $output);
