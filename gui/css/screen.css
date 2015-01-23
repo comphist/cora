@@ -43,8 +43,8 @@ h2 {
   font-style: italic; }
 
 h3 {
-  font-size: 1.7em;
-  font-style: italic; }
+  font-weight: bold;
+  font-size: 1.6em; }
 
 h4 {
   font-weight: bold;
@@ -69,6 +69,16 @@ ol {
 
 .bg-color-page {
   background: #f8f8f8; }
+
+.text-content {
+  font-size: 1.5em;
+  max-width: 42em; }
+  .text-content h2, .text-content h3, .text-content h4 {
+    font-size: 100%;
+    padding: 1em 0 0.5em 0; }
+  .text-content ul, .text-content ol {
+    padding-top: 0.5em;
+    padding-bottom: 0.5em; }
 
 /***************************************************************************/
 /***** HEADER **************************************************************/

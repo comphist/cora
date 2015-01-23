@@ -102,8 +102,8 @@ h2 {
 }
 
 h3 {
-    font-size: 1.7em;
-    font-style: italic;
+    font-weight: bold;
+    font-size: 1.6em;
 }
 
 h4 {
@@ -135,6 +135,20 @@ ol {
 
 .bg-color-page {
    background: $page-background-color;
+}
+
+.text-content {
+    font-size: 1.5em;
+    max-width: 45em;
+
+    h2, h3, h4 {
+        font-size: 100%;
+        padding: 1em 0 0.5em 0;
+    }
+    ul, ol {
+        padding-top: 0.5em;
+        padding-bottom: 0.5em;
+    }
 }
 
 /***************************************************************************/

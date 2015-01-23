@@ -28,6 +28,7 @@ if( $_SESSION["loggedIn"] === true ) {
   if ( $_SESSION["admin"] ) {
     $menu->addMenuItem( "admin", "gui/admin.php", "", "Administration", "Benutzer und Projekte verwalten" );
   }
+  $menu->addMenuItem( "help", "gui/help.php", "", "Hilfe", "Hilfe zur Benutzung von CorA" );
 } else {
   $menu->addMenuItem( "login", "gui/login.php", "", "Anmeldung", "In CorA anmelden" );
 }

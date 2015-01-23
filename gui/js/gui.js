@@ -724,30 +724,34 @@ var gui = {
 
     /* Function: showNews
      */
-    showNews: function() {
+    showNews: function(force) {
         var div = $('whatsNew'),
             cookie = Cookie.read('whatsNew');
-        if (div == null || cookie == div.get('class'))
+        if (div == null)
             return;
-	this.newsDialog = new mBox.Modal({
-	    title: div.getElement('.whats-new-title'),
-	    content: div.getElement('.whats-new-content'),
-            addClass: {wrapper: 'WhatsNewDialog'},
-	    closeOnBodyClick: false,
-	    closeOnEsc: true,
-	    buttons: [
-                {title: "Schließen und nicht wieder anzeigen",
-                 addClass: "mform button_left",
-                 event: function() {
-                     Cookie.write('whatsNew', div.get('class'), {duration: 365});
-                     this.close();
-                     gui.showNotice('info', "Sie können sich die Neuigkeiten "
-                                    + "jederzeit über den Tab 'Hilfe' erneut "
-                                    + "anzeigen lassen.");
-                 }},
-                {title: "Schließen", addClass: "mform"}
-            ]
-	});
+        if (cookie == div.get('class') && !force)
+            return;
+        if (this.newsDialog == null) {
+	    this.newsDialog = new mBox.Modal({
+	        title: div.getElement('.whats-new-title'),
+	        content: div.getElement('.whats-new-content'),
+                addClass: {wrapper: 'WhatsNewDialog'},
+	        closeOnBodyClick: false,
+	        closeOnEsc: true,
+	        buttons: [
+                    {title: "Schließen und nicht wieder anzeigen",
+                     addClass: "mform button_left",
+                     event: function() {
+                         Cookie.write('whatsNew', div.get('class'), {duration: 365});
+                         this.close();
+                         gui.showNotice('info', "Sie können sich die Neuigkeiten "
+                                        + "jederzeit über den Tab 'Hilfe' erneut "
+                                        + "anzeigen lassen.");
+                     }},
+                    {title: "Schließen", addClass: "mform"}
+                ]
+	    });
+        }
         this.newsDialog.open();
     }
 };
