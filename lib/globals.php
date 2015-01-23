@@ -11,7 +11,7 @@ define( "MAIN_DB",     "cora"      );
 
 /* Globals */
 define( "TITLE",              "CorA"	                  );
-define( "VERSION",            "1.0"			  );
+define( "VERSION",            "1.2"			  );
 define( "LONGTITLE",          "Corpus Annotator"          );
 define( "DESCRIPTION",        "A corpus annotation tool." );
 define( "KEYWORDS",           "annotation,corpus,POS"     );
