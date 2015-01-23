@@ -720,6 +720,24 @@ var gui = {
         if(typeof(query) === "object")
             src += "?" + Object.toQueryString(query);
         window.location = src;
+    },
+
+    /* Function: showNews
+     */
+    showNews: function() {
+        if (this.newsDialog == null) {
+            var div = $('whatsNew');
+            if (div == null) return null;
+	    this.newsDialog = new mBox.Modal({
+	        title: div.getElement('.whats-new-title'),
+	        content: div.getElement('.whats-new-content'),
+                addClass: {wrapper: 'WhatsNewDialog'},
+	        closeOnBodyClick: false,
+	        closeOnEsc: true,
+	        buttons: [ {title: "Schließen", addClass: "mform"} ]
+	    });
+        }
+        return this.newsDialog.open();
     }
 };
 

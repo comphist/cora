@@ -187,6 +187,7 @@ NOTLOGGEDIN;
           </p>
         </form>
       </div>
+      <?php include("news.php"); ?>
     </div>
   </body>
 </html>

@@ -546,6 +546,18 @@ div.limitedWidth-tiny p {
 #genericTextMsgPopup textarea {
   width: 44em; }
 
+.whats-new-content {
+  max-width: 45em; }
+  .whats-new-content h4 {
+    font-size: 1.3em;
+    padding: 0 0 0.5em 0.75em; }
+  .whats-new-content ul {
+    padding-top: 0.5em;
+    padding-bottom: 0.5em; }
+    .whats-new-content ul li {
+      padding-top: 0.5em;
+      padding-bottom: 0.5em; }
+
 /***************************************************************************/
 /***** FILE PANEL **********************************************************/
 /***************************************************************************/
