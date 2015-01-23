@@ -129,6 +129,8 @@ var TokenSearcher = new Class({
                         optgroup.grab(makeOption(flagname, flag.displayname));
                         cora.strings.search_condition.field[flagname] = flag.displayname;
                     });
+        // optgroup.grab(makeOption("flag_progress", "Fortschrittsbalken"));
+        // cora.strings.search_condition.field["flag_progress"] = "Fortschrittsbalken";
         fieldSelector.grab(optgroup);
         // Set matcher
         this._fillSearchMatcher(fieldSelector);
