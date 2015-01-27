@@ -13,7 +13,8 @@
 \usepackage{subcaption}
 \usepackage{etoolbox}
 \usepackage{fancyhdr}
-\usepackage{enumerate}
+%\usepackage{enumerate}
+\usepackage{enumitem}
 \usepackage{booktabs}
 \usepackage[usenames,dvipsnames]{xcolor}
 \usepackage{wrapfig}
@@ -21,7 +22,10 @@
 %\usepackage{gb4e}
 \usepackage{covington}
 \usepackage{ngerman}
-\usepackage[style=1]{mdframed}
+\usepackage{tikz}
+\usepackage[framemethod=tikz]{mdframed}
+\usepackage{graphicx}
+\usepackage{overpic}
 
 \newtoggle{usenorm}
 \toggletrue{usenorm}
@@ -30,6 +34,7 @@
 
 \newcommand{\mmb}{Marcel Bollmann ({\small\url{bollmann@linguistics.rub.de}})}
 \newcommand{\trans}[1]{"`{\small\texttt{#1}}"'}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{\node[shape=circle,draw,inner sep=1pt,fill=yellow] (char) {\small\textbf{#1}};}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% DEFINITION OF BOX ENVIRONMENTS %%%%%%%%%%%%%%
@@ -42,7 +47,7 @@
     skipabove=\baselineskip,%
     roundcorner=6pt,%
     innerleftmargin=6pt,innerrightmargin=6pt,%
-    innerbottommargin=.85\baselineskip,innertopmargin=0pt]
+    innerbottommargin=.85\baselineskip,innertopmargin=6pt]
     \textbf{#1}\\
 }{
   \end{mdframed}
@@ -55,7 +60,7 @@
     skipabove=\baselineskip,%
     roundcorner=6pt,%
     innerleftmargin=6pt,innerrightmargin=6pt,%
-    innerbottommargin=.85\baselineskip,innertopmargin=0pt]
+    innerbottommargin=.85\baselineskip,innertopmargin=6pt]
     \textbf{#1}\\
 }{
   \end{mdframed}
@@ -72,7 +77,7 @@
 %\originalTeX
 
 \title{CorA (Corpus Annotator)\\Benutzerhandbuch}
-\subtitle{Version 1.0} \author{Marcel
+\subtitle{Version 1.2} \author{Marcel
   Bollmann\\\url{bollmann@linguistics.rub.de}\\Sprachwissenschaftliches
   Institut\\Ruhr-Universität Bochum} \date{\today}
 \maketitle
@@ -127,49 +132,112 @@ hierzu loggen Sie sich zunächst ein, wechseln zum Reiter
 ändern\ldots"'.  Wenn Sie sich zum ersten Mal einloggen, sollten Sie
 als erstes unbedingt Ihr Passwort ändern!
 
+\subsection{Die Titelleiste}
+
+In der Titelleiste, die sich immer am oberen Bildschirmrand befindet, können Sie
+
+\begin{itemize}
+\item Sigle und Dateinamen des aktuell geöffneten Dokuments sehen;
+\item Benutzernamen und Online-Status sehen (das Symbol in der oberen rechten Ecke ist \textbf{grün,} wenn alles okay ist, und wird \textbf{rot,} falls die Verbindung zum Server verloren geht bzw.\ etwaige Fehler auftreten);
+\item zwischen den verschiedenen Tabs wechseln (s.u.);
+\item die aktuell geöffnete \textbf{Datei schließen} bzw.\ sich aus CorA \textbf{ausloggen.}
+\end{itemize}
+
+\newpage
+\begin{figure}[!h]
+  \centering
+  \begin{overpic}[width=\linewidth]{img/1.2/header.png}
+    %\put(2,32){\circled{1}}
+  \end{overpic}
+  \caption{Titelleiste von CorA}
+  \label{fig:header}
+\end{figure}
+
+Hier eine Übersicht über die verschiedenen Tabs:
+
+\begin{itemize}
+\item \textbf{Datei:}  Hier können Dateien geöffnet, importiert, exportiert, oder gelöscht werden (s.\ Abschnitt~\ref{sec:datei}).
+\item \textbf{Editor:}  Das Haupt-Editorfenster (s.\ Abschnitt~\ref{sec:editor}); nur sichtbar, wenn aktuell eine Datei geöffnet ist.
+\item \textbf{Suchen:}  Hier erscheinen die Ergebnisse einer Suchanfrage (s.\ Abschnitt~\ref{sec:sufu}); nur sichtbar, nachdem eine Suchanfrage gestartet wurde.
+\item \textbf{Einstellungen:}  Hier können Anpassungen am Editor vorgenommen werden (s.\ Abschnitt~\ref{sec:anpassen}).
+\item \textbf{Hilfe:}  Hier findet sich u.a.\ immer die aktuellste Version dieses Benutzerhandbuchs.
+\end{itemize}
+
 \newpage
 \section{Dateiverwaltung}
 \label{sec:datei}
 
-\begin{figure}[!b]
+% \begin{figure}[!b]
+%   \centering
+% %  \includegraphics[width=\linewidth]{img/datei.png}
+%   \begin{overpic}[width=\linewidth]{img/1.2/datei.png}
+%     \put(2,32){\circled{1}}
+%     \put(9,32){\circled{2}}
+%     \put(13,32){\circled{3}}
+%     \put(29,32){\circled{4}}
+%     \put(3,25){\circled{5}}
+%     \put(3,18){\circled{6}}
+%     \put(94,22){\circled{7}}
+%     \put(84,3){\circled{8}}
+%   \end{overpic}
+%   \caption{Dateien verwalten}
+%   \label{fig:datei}
+% \end{figure}
+
+Nach der Anmeldung in CorA wird zunächst der Reiter "`Datei"' angezeigt:
+
+\begin{figure}[!h]
   \centering
-  \includegraphics[width=\linewidth]{img/datei.png}
+  \begin{overpic}[width=\linewidth]{img/1.2/datei.png}
+    \put(2,32){\circled{1}}
+    \put(9,32){\circled{2}}
+    \put(13,32){\circled{3}}
+    \put(29,32){\circled{4}}
+    \put(3,25){\circled{5}}
+    \put(3,18){\circled{6}}
+    \put(94,22){\circled{7}}
+    \put(84,3){\circled{8}}
+  \end{overpic}
   \caption{Dateien verwalten}
   \label{fig:datei}
 \end{figure}
 
-Nach der Anmeldung in CorA wird zunächst der Reiter "`Datei"'
-angezeigt.  Abbildung~\ref{fig:datei} zeigt einen Beispiel-Screenshot,
-der im Folgenden näher erläutert wird.
+Alle Dateien in CorA sind \textbf{Projekten} zugeordnet (hier
+z.B. ``Beispielprojekt'').  Der Button \circled{1} aktualisiert die Dateiliste.
+Ein Klick auf den Projektnamen klappt die Liste der zugeordneten Dateien ein
+bzw.\ aus.  Die Buttons \circled{2} klappen die Dateilisten aller Projekte
+gleichzeitig ein bzw.\ aus.
 
-% Dateien in CorA sind immer \emph{Projekten} zugeordnet.  In
-% Abbildung~\ref{sec:datei} gibt es nur ein Projekt (mit Namen
-% "`Beispielprojekt"'), welches drei Texte enthält.
+\textbf{Neue Texte importieren} können Sie entweder als Textdatei \circled{3}
+oder als CorA-XML-Datei \circled{4}.  Der Import als Textdatei ist nur möglich,
+wenn dem entsprechenden Projekt ein Importskript zugeordnet wurde, der das
+Textformat intern nach CorA-XML konvertiert.  (Details zum Import finden sich in
+Abschnitt \ref{sec:datei-import}.)
 
-\subsection{Öffnen einer Datei}
+Die Dateien sind standardmäßig aufsteigend nach Sigle \textbf{sortiert} \circled{5}.
+Durch Klick auf eine beliebige Spaltenüberschrift können Sie die Dateiliste nach
+dieser Spalte sortieren lassen, um z.B.\ schnell alle kürzlich bearbeiteten
+Dateien zu sehen.  Klicken Sie mehrmals auf dieselbe Spalte, um zwischen
+aufsteigender und absteigender Sortierung zu wechseln.
 
-Klicken Sie einfach auf einen Dateinamen, um die entsprechende Datei
-zum Annotieren zu öffnen.  Nun öffnet sich automatisch das
-Editor-Fenster (s.\ Abschnitt~\ref{sec:editor}).
+Um eine Datei zu öffnen, klicken Sie einfach auf einen Dateinamen.  Dateien, die
+\textbf{leicht ausgegraut} erscheinen \circled{6}, sind bereits von einem
+anderen Nutzer geöffnet.  Eine Datei kann immer \textbf{nur von einem Nutzer
+  gleichzeitig} geöffnet sein!  Klicken Sie den Dateinamen an, um zu erfahren,
+wer die Datei aktuell geöffnet hat.  Die Datei kann erst wieder von jemand
+anderem geöffnet werden, wenn dieser Nutzer die Datei schließt, sich ganz aus
+CorA ausloggt, oder länger als 30~Minuten nicht mehr online gewesen ist.
 
-Dateinamen, die in der Liste \textbf{leicht ausgegraut} erscheinen
-(wie z.B.\ "`Deo Gratias"' in Abbildung~\ref{fig:datei}), sind bereits
-von einem anderen Nutzer geöffnet.  Eine Datei kann immer \textbf{nur
-  von einem Nutzer gleichzeitig} geöffnet sein!  Klicken Sie den
-Dateinamen an, um zu erfahren, wer die Datei aktuell geöffnet hat.
-Die Datei kann erst wieder von jemand anderem geöffnet werden, wenn
-dieser Nutzer entweder
-\begin{itemize}
-\item die Datei über den Knopf "`Datei schließen"' schließt,
-\item sich aus CorA ausloggt (über den Knopf "`Logout"' oben rechts),
-  oder
-\item länger als 30~Minuten nicht mehr online gewesen ist.
-\end{itemize}
+\textbf{``Exportieren\ldots''} \circled{7} öffnet ein Fenster, um eine Datei im
+CorA-XML-Format oder als mehrspaltige Textdatei zu exportieren.  Ein Klick auf
+\circled{8} \textbf{löscht} eine Datei komplett; dieser Vorgang ist endgültig
+und \textbf{kann nicht rückgängig gemacht werden!}  Nur Administratoren oder der
+Benutzer, der die entsprechende Datei importiert hat, kann sie auch wieder
+löschen.
 
-Durch Klicken auf das
-Symbol \includegraphics[height=0.9\baselineskip]{img/view-refresh.png}
-wird die Dateiliste aktualisiert.
-
+%\begin{enumerate}[label=\protect\circled{\arabic*}]
+%\item Aktualisiert die Dateiliste.
+%\end{enumerate}
 
 \subsection{Importieren von Transkriptionen}
 \label{sec:datei-import}
@@ -193,9 +261,11 @@ wird die Dateiliste aktualisiert.
   \label{fig:import}
 \end{figure}
 
-Um eine neue Datei hinzuzufügen, klicken Sie auf den Knopf "`Neues
-Dokument aus Transkriptionsdatei importieren\ldots"' (s.\
-Abbildung~\ref{fig:datei}).
+Neue Texte können jederzeit im CorA-XML-Format importiert werden.  Wenn für ein
+Projekt ein Importskript festgelegt ist,\footnote{Dies können nur
+  Administratoren einrichten.} können auch Textdateien, z.B.\
+Transkriptionsdateien, direkt importiert werden via ``Import aus Textdatei''
+(vgl.\ \circled{3} in Abbildung~\ref{fig:datei}).
 
 Es öffnet sich ein Fenster ähnlich wie in
 Abbildung~\ref{fig:import-dialog}.  Wählen Sie hier die \textbf{Datei}
@@ -236,75 +306,40 @@ CorA weiter!
 % Sie dazu unbedingt auch die Hinweise in Abschnitt~\ref{sec:error}, die
 % wir extra für diesen Fall zusammengestellt haben.
 
-\subsection{Exportieren}
-\label{sec:datei-export}
-
-Jede Datei in der Dateiliste besitzt am Ende der Zeile einen Link
-"`Exportieren\ldots"' (s.\ Abbildung~\ref{fig:datei}).  Diese
-Funktionalität ist in der aktuellen CorA-Version jedoch noch nicht
-implementiert und wird zu einem späteren Zeitpunkt nachgeliefert.
-
-\subsection{Löschen}
-\label{sec:datei-delete}
-
-Dateien können durch Klick auf das rote
-Kreuz \includegraphics[height=0.8\baselineskip]{img/delete.png} vor
-dem jeweiligen Dateinamen (s.\ Abbildung~\ref{fig:datei}) wieder gelöscht werden.  Das Löschen von
-Dateien ist endgültig und \textbf{kann nicht rückgängig gemacht
-  werden!}  Es erscheint daher eine entsprechende Warnung, die
-bestätigt werden muss, bevor die Datei tatsächlich gelöscht wird.
-
-Nur der Benutzer, der die Datei importiert hat, kann sie auch wieder
-löschen.  Allen anderen Nutzern wird das entsprechende Symbol gar
-nicht erst angezeigt.
 
 \newpage
 \section{Das Editor-Fenster}
 \label{sec:editor}
 
-\begin{figure}[!b]
-  \centering
-  \includegraphics[width=\linewidth]{img/editor.png}
-  \caption{Das Editor-Fenster}
-  \label{fig:editor}
-\end{figure}
-
 Der Editor ist der zentrale Bestandteil von CorA.  Er öffnet sich
 automatisch, wenn eine Datei geöffnet wird, bzw.\ durch Klick auf den
 Reiter "`Editor"' am oberen Bildschirmrand.
-Abbildung~\ref{fig:editor} zeigt einen Beispiel-Screenshot.
 
-\subsection{Navigationsleiste}
+Änderungen, die Sie im Editor vornehmen, werden von CorA \textbf{automatisch
+  gespeichert.}  CorA wird Sie ggf.\ darüber informieren, wenn der
+Speichervorgang fehlschlägt.
 
-Am oberen Rand des Editors befindet sich eine Leiste, mit der
-innerhalb des Dokuments navigiert werden kann:
+\begin{infobox}{}
+  Wenn Sie sichergehen wollen, dass Ihre Änderungen auch wirklich gespeichert
+  wurden, klicken Sie immer explizit auf \textbf{``Datei schließen''} oder
+  \textbf{``Logout''}, bevor Sie das Browserfenster schließen!  Wenn die Datei
+  ordnungsgemäß geschlossen bzw.\ Sie ordnungsgemäß ausgeloggt wurden, sind Ihre
+  gemachten Änderungen auf jeden Fall übernommen worden.
 
-\begin{center}
-  \includegraphics[height=15px]{img/navigation.png}
-\end{center}
+  Falls es ein Problem mit der Internetverbindung oder einen sonstigen Fehler
+  beim Speichervorgang gibt, wird CorA Sie spätestens beim Versuch, die Datei zu
+  schließen bzw.\ sich auszuloggen ausdrücklich darauf hinweisen, und den
+  entsprechenden Vorgang abbrechen!
+\end{infobox}
 
-\begin{itemize}
-\item "`|<{}<"' bzw. "`|>{}>"' springt zur ersten bzw. letzten Seite
-  des Dokuments
-\item "`<"' bzw. "`>"' blättert eine Seite zurück bzw. vor
-\item Die Dropdown-Box in der Mitte zeigt die momentane Seitenzahl an;
-  Auswählen einer anderen Seitenzahl springt zur entsprechenden Seite.
-\item Klicken auf "`Springe zu Zeile\ldots{}"' öffnet ein Fenster, wo
-  eine Zeilennummer eingegeben werden kann; der Editor springt dann
-  auf die Seite, die die entsprechende Zeilennummer enthält.
-\end{itemize}
+\subsection{Annotationsebenen (Spalten im Editor)}
 
-Zeilen- und Seitenzahlen beziehen sich dabei immer auf die Darstellung
-im Editor, \textbf{nicht} auf Zeilen bzw.\ Seiten in der
-Transkription!  Funktionen zum Navigieren anhand der Nummerierung in
-der Original-Transkription sind momentan noch nicht implementiert.
-
-\subsection{Spalten im Editor}
-
-Wortformen im CorA-Editor werden immer zeilenweise angezeigt, wobei
-jede Zeile ein Token nach moderner Tokenisierung enthält.  Im
-Folgenden werden Bedeutung und Funktionsweise der einzelnen Spalten
-erläutert.
+Wortformen im CorA-Editor werden immer zeilenweise angezeigt, wobei jede Zeile
+ein Token nach moderner Tokenisierung enthält.  Die Spalten in der
+Editor-Tabelle entsprechen verschiedenen Annotationsebenen, wobei die
+verfügbaren Annotationsebenen flexibel pro Text eingestellt werden
+können.\footnote{Dies kann jedoch nur ein Administrator festlegen.}  Nicht jede
+der im folgenden aufgeführten Ebenen ist daher für jeden Text verfügbar!
 
 \subsubsection{Fortschrittsbalken (P)}
 
@@ -323,8 +358,8 @@ Diese Markierung erfüllt derzeit folgende Funktionen:
 \begin{itemize}
 \item Wenn eine Datei geöffnet wird, springt der Editor automatisch an
   die Stelle, wo der Fortschrittsbalken endet.
-\item Die automatische Lernfunktion lernt nur aus den Daten, die
-  bereits grün markiert sind. (noch nicht implementiert)
+\item Die automatische Lernfunktion lernt nur aus den Daten, die bereits grün
+  markiert sind, und überschreibt nur Daten, die noch nicht grün markiert sind.
 \end{itemize}
 
 Wird eine Annotation an einem Token geändert, verlängert sich der
@@ -335,7 +370,7 @@ diesem Fall merken, an welchem Punkt Sie zuvor gewesen sind, da die
 Fortschrittsanzeige sich automatisch verlängert.
 
 Durch Klick auf den Fortschrittsbalken kann dieser allerdings bei
-Bedarf auch manuell eingestellt werden: Klick auf einen grünen Bereich
+Bedarf auch \textbf{manuell eingestellt} werden: Klick auf einen grünen Bereich
 verkürzt den Balken bis zu diesem Punkt, Klick auf einen grauen
 Bereich verlängert ihn entsprechend.
 
@@ -360,7 +395,6 @@ Zwei verschiedene Zeilennummern werden angezeigt:
   eine bekannte Einschränkung.)
 \end{enumerate}
 
-\newpage %% HACK
 \subsubsection{Markierung von Problemfällen (E)}
 
 \begin{wrapfigure}{r}{0.1\textwidth}
@@ -369,15 +403,11 @@ Zwei verschiedene Zeilennummern werden angezeigt:
   \end{center}
 \end{wrapfigure}
 
-Die Spalte "`E"' (ursprünglich für "`Error"') enthält eine Checkbox,
-in der durch Anklicken eine rote Markierung gesetzt bzw.\ entfernt
-werden kann.  Diese Markierung ist lediglich eine Hilfe für den
-Bearbeiter und hat intern keine weitere Funktion.  Sie kann z.B.\
-benutzt werden, um Fehler oder Problemfälle zu markieren, die später
-noch einmal angesehen werden müssen.
-
-Es wird in Zukunft eine Suchfunktion geben, mit der gezielt nach
-derart markierten Token gesucht werden kann.
+Die Spalte "`E"' (ursprünglich für "`Error"') enthält eine Checkbox, in der
+durch Anklicken eine rote Markierung gesetzt bzw.\ entfernt werden kann.  Diese
+Markierung kann z.B.\ benutzt werden, um Fehler oder Problemfälle zu markieren,
+die später noch einmal angesehen werden müssen.  Derart markierte Tokens lassen
+sich später z.B.\ mithilfe der Suchfunktion gezielt auffinden.
 
 \subsubsection{Token}
 
@@ -417,20 +447,19 @@ bedeutet, dass der entsprechende Tag auf jeden Fall fehlerhaft ist und
 geändert werden sollte (z.B., wenn der Tagger nur "`?"' als Tag
 vorgeschlagen hat).
 
-\newpage %% HACK
 \subsubsection{Lemmatisierung}
 
 \begin{wrapfigure}{r}{0.35\textwidth}\vspace{-2em}
   \begin{center}
-    \includegraphics[width=0.28\textwidth]{img/lemma.png}\vspace{20px}
+    \includegraphics[width=0.28\textwidth]{img/1.2/lemma.png}\vspace{20px}
     \includegraphics[width=0.28\textwidth]{img/lemma-edit.png}
   \end{center}
 \end{wrapfigure}
 
 Die Lemma-Spalte hat drei Bestandteile: eine \textbf{Checkbox}, um
-Lemma-Einträge als "`bestätigt"' zu markieren; ein
-\textbf{Eingabefeld} für das Lemma; und einen \textbf{Verweis} auf die
-Online-Ausgabe des Grimmschen Wörterbuchs.
+Lemma-Einträge als "`bestätigt"' zu markieren; ein \textbf{Eingabefeld} für das
+Lemma; und ggf.\ einen \textbf{Verweis} auf eine externe Resource (z.B.\
+Online-Ausgabe eines Lexikons).
 
 Das Eingabefeld ist mit einer \textbf{Dropdown-Liste mit
   Lemma-Vorschlägen} verknüpft.  Diese Liste öffnet sich automatisch,
@@ -444,14 +473,11 @@ verschiedene Arten von Einträgen enthalten:
 \item Zusätzlich \textbf{grün hervorgehobene} Einträge sind Lemmata,
   die an anderer Stelle für eine gleichlautende Wortform bereits
   eingetragen und als "`bestätigt"' markiert wurden.  Diese Vorschläge
-  werden aus allen Texten im selben Projekt generiert.  (Es ist
-  allerdings erforderlich, dass die Lemma-Einträge bereits gespeichert
-  wurden, damit sie für andere gleichlautende Wortformen als Vorschlag
-  angezeigt werden können.)
-\item Alle anderen Einträge sind durch Autovervollständigung gefundene Treffer im Grimmschen Wörterbuch. Dabei gilt:
+  werden aus allen Texten im selben Projekt generiert.
+\item Alle anderen Einträge sind durch Autovervollständigung gefundene Treffer in einer verlinkten Lemma-Liste (nur, falls eine solche Liste für das Projekt definiert worden ist). Dabei gilt:
   \begin{enumerate}
   \item es wird immer nur nach passendem Wortanfang gesucht;
-  \item Diakritika in Grimm werden ignoriert, d.h.\ Eingabe von
+  \item Diakritika werden ignoriert, d.h.\ Eingabe von
     \emph{geta} findet sowohl \emph{getacht} wie auch \emph{getäckel}
     oder \emph{getâkel}; und
   \item wenn es sehr viele Treffer gibt, wird nur ein Teil davon
@@ -474,105 +500,229 @@ unabsichtlichen Fehlern (und damit vor falschen Einträgen, die
 trotzdem "`bestätigt"' sind) schützen.
 
 Klicken auf das
-Symbol \includegraphics[height=\baselineskip]{img/lemma-link2.png}
-öffnet die Online-Version des Grimmschen Wörterbuchs in einem
-separaten Browserfenster.  Dabei wird automatisch der zu dem
-eingetragenen Lemma passende Eintrag aufgerufen.  Weitere Aufrufe
-öffnen sich immer in demselben Fenster.
+Symbol \includegraphics[height=\baselineskip]{img/1.2/lemma-link.png} öffnet eine
+evtl.\ verlinkte externe Resource in einem separaten Browserfenster.  Dabei wird
+automatisch der zu dem eingetragenen Lemma passende Eintrag aufgerufen.  Weitere
+Aufrufe öffnen sich immer in demselben Fenster.
 % , sodass CorA- und
 % Grimm-Browserfenster auch gut nebeneinander platziert werden können,
 % wenn öfter in Grimm nachgeschlagen werden soll.
+
+\subsubsection{Normalisierung \& Modernisierung}
+
+\begin{wrapfigure}{r}{0.45\textwidth}%\vspace{-2em}
+  \begin{center}
+    \includegraphics[width=0.38\textwidth]{img/1.2/norm.png}
+  \end{center}
+\end{wrapfigure}
+
+Die Spalten ``Normalisierung'' und ``Modernisierung'' sind einfache Textfelder,
+die beliebige Eingaben akzeptieren.  Falls die Spalte ``Modernisierung'' leer
+ist, erscheint standardmäßig der Wert der Normalisierung grau hinterlegt.  Dies
+spiegelt die Konvention wider, dass die Modernisierung nur angegeben werden
+muss, wenn sie sich von der Normalisierung unterscheidet.
+
+In der Dropdown-Box neben dem Modernisierungsfeld kann der Typ der
+Modernisierung (z.B.\ ``f''~= ``durch Flexion bedingt'', ``s''~= ``durch
+Semantik bedingt'') näher spezifiziert werden.  Ist die Modernisierung leer,
+bleibt diese Dropdown-Box deaktiviert; wird in das Modernisierungsfeld etwas
+eingetragen, so muss auch ein Wert in der Dropdown-Box ausgewählt werden.
+Andernfalls wird sie rot umrandet dargestellt, um auf die fehlende Annotation
+hinzuweisen.
 
 \subsubsection{Kommentarfeld}
 
 Die Spalte "`Kommentar"' enthält ein Eingabefeld, worin ein beliebiger
 Freitext eingegeben werden kann.  Diese Kommentare sind unabhängig von
-Kommentaren in der Transkription (+K \ldots{}@K).
+etwaigen Kommentaren in der Transkription (z.B.\ +K~\ldots{}~@K).
 
 \subsubsection{Kontextmenü}
 
 \vspace{-.5em} Klicken auf den
 Pfeil \includegraphics[height=\baselineskip]{img/dropdown.png} öffnet
-ein Kontextmenü.  Derzeit besteht es nur aus drei Einträgen, die sich
-alle auf die Bearbeitung der Transkription beziehen, welcher der
-Abschnitt~\ref{sec:bearbeiten} gewidmet ist.
+ein Kontextmenü.  Derzeit besteht es aus folgenden Einträgen:
 
-\subsection{Horizontale Textansicht}
-\label{sec:horizontal}
+\begin{itemize}
+\item \textbf{``Suche ähnliche\ldots''} öffnet den Suchdialog mit voreingestellten Werten (vgl.\ Abs.~\ref{sec:sufu});
+\item \textbf{``Token bearbeiten\ldots'', ``Token hinzufügen\ldots''} und \textbf{``Token löschen''} ermöglichen die Bearbeitung der Original-Transkription, welcher der Abschnitt~\ref{sec:bearbeiten} gewidmet ist.
+\end{itemize}
 
-Am unteren Rand des Editors befindet sich eine Textansicht, die einen
-Ausschnitt aus dem derzeit geöffneten Dokument wiedergibt.  Dort
-können die Token nebeneinander (horizontal) statt untereinander
-gelesen werden, um den Satzzusammenhang schneller zu erfassen.  Das
-Token, das gerade annotiert wird, ist in dieser Ansicht gelb
-hinterlegt (s.\ Abbildung~\ref{fig:horizontal}).  Diese Markierung
-ändert sich immer dann, wenn ein Textfeld oder eine Dropdown-Box im
-Editor angewählt bzw.\ bearbeitet wird.
+\newpage
+\subsection{Die Toolbar}
 
-Die horizontale Textansicht umfasst immer mindestens die Token, die
-auf der aktuell angezeigten Seite sichtbar sind.  Nach Möglichkeit
-erweitert CorA die Anzeige immer bis zu einer Satzgrenze, damit der
-gesamte Satzzusammenhang gesehen werden kann.  Es gibt jedoch derzeit
-ein Limit nach oben, wieviele Token als weiterer "`Kontext"' angezeigt
-werden.
+Am oberen Rand des Editors befindet sich eine Toolbar, die zur Navigation
+innerhalb des Dokuments und zum Aufrufen verschiedener Funktionen verwendet
+werden kann.
 
-Aussehen und Inhalt der horizontalen Textansicht lassen sich z.~Zt.\
-noch nicht näher konfigurieren; dies ist eventuell zu einem späteren
-Zeitpunkt möglich.
-
-\begin{figure}
+\begin{figure}[!h]
   \centering
-  \includegraphics[width=0.8\linewidth]{img/textpreview.png}
-  \caption{Horizontale Textansicht}
-  \label{fig:horizontal}
+  \begin{overpic}[width=\linewidth]{img/1.2/editor-toolbar.png}
+    \put(1.5,3){\circled{1}}
+    \put(13.25,3){\circled{2}}
+    \put(18,3){\circled{3}}
+    \put(34.75,3){\circled{4}}
+    \put(40.25,3){\circled{5}}
+    \put(53.25,3){\circled{6}}
+    \put(60.25,3){\circled{7}}
+    \put(87,3){\circled{8}}
+  \end{overpic}
+  \caption{Die Editor-Toolbar}
+  \label{fig:editor-toolbar}
 \end{figure}
 
+\begin{enumerate}[label=\protect\circled{\arabic*}]
+\item Zeigt die \textbf{aktuelle Seitenzahl} und die Gesamtanzahl an Seiten an.  Durch Klick auf dieses Element kann direkt zu einer bestimmten Seite im Editor navigiert werden.
+\item \textbf{Blättert} eine Seite vor bzw.\ zurück.
+\item Springt zu einer bestimmten Zeile innerhalb des Dokuments.
+\item Macht die letzte Änderung \textbf{rückgängig} bzw.\ \textbf{stellt sie wieder her.}
+\item Aktiviert die \textbf{Suchfunktion} (vgl.\ Abs.\ \ref{sec:sufu}).
+\item Springt zum vorherigen bzw.\ nächsten Suchergebnis.  Nur aktiv, wenn zuvor eine Suche ausgeführt wurde.
+\item Startet die \textbf{automatische Annotation} mithilfe externer Tools (vgl.\ Abs.\ \ref{sec:autoanno}).
+\item Zeigt die \textbf{Metadaten} des aktuellen Dokuments an bzw.\ erlaubt, sie zu ändern.
+\end{enumerate}
 
+Zeilen- und Seitenzahlen beziehen sich dabei immer auf die Darstellung im
+Editor, \textbf{nicht} auf Zeilen bzw.\ Seiten in der Transkription!  Die
+Seitenzahlen sind abhängig davon, wieviele Zeilen pro Seite angezeigt werden,
+was vom Benutzer selbst eingestellt werden kann (vgl.\
+Abschnitt~\ref{sec:anpassen}).  Daher können sie auch für denselben Text von
+Benutzer zu Benutzer verschieden sein!
+
+Funktionen zum Navigieren anhand der Nummerierung in der Original-Transkription
+sind momentan noch nicht implementiert.
+
+\newpage
+\subsection{Suchen innerhalb des Dokuments}
+\label{sec:sufu}
+
+Durch Klick auf ``Suchen...'' im Editor oder ``Suche ändern'' in den
+Suchergebnissen kann eine neue Suche gestartet werden.  CorA kann nur im aktuell geöffneten Dokument suchen, und nur nach einzelnen Wortformen -- eine kontextabhängige Suchanfrage (z.B.\ ``Token \emph{x} gefolgt von \emph{y}'') ist nicht möglich.
+
+\begin{figure}[!h]
+  \centering
+  \begin{overpic}[width=0.6\linewidth]{img/1.2/such-dialog.png}
+    \put(30,27){\circled{1}}
+    \put(2,16){\circled{2}}
+    \put(90,22){\circled{3}}
+    \put(20.5,6){\circled{4}}
+    %\put(94,6){\circled{5}}
+  \end{overpic}
+  \caption{Suchfenster}
+  \label{fig:sufu}
+\end{figure}
+
+Folgende Einstellungen können bei der Suche vorgenommen werden:
+
+\begin{enumerate}[label=\protect\circled{\arabic*}]
+\item Steuert, ob \textbf{alle} oder nur \textbf{mindestens eins} der angegebenen Suchkriterien erfüllt sein müssen.
+\item Definiert die Suchkriterien, d.h.\ welches \textbf{Feld} (z.B.\ Token, POS-Tag) auf welche Weise (z.B.\ ``ist'', ``endet auf'') mit welchem \textbf{Wert} verglichen werden soll.
+\item Entfernt ein Suchkriterium bzw.\ fügt ein neues hinzu.
+\item Löscht alle momentan angegebenen Suchkriterien.
+\end{enumerate}
+
+Die Suchergebnisse werden in einem separaten Tab ``Suchen'' angezeigt.  Annotationen können hier genauso bearbeitet werden wie im Haupteditor auch:
+
+\begin{figure}[!h]
+  \centering
+  \includegraphics[width=\linewidth]{img/1.2/such-tab2.png}
+  \caption{Anzeige der Suchergebnisse}
+  \label{fig:such-tab}
+\end{figure}
+
+Ein Klick auf die Zeilennummer oder das Token \textbf{springt zur entsprechenden Textstelle im Editor}.  Sie können durch Klick auf den jeweiligen Tab jederzeit zwischen Editor und Suchergebnissen hin und her wechseln.  Zum Navigieren innerhalb der Suchergebnisse können außerdem die entsprechenden Buttons im Editor (\circled{6} in Abb.~\ref{fig:editor-toolbar}) verwendet werden.
+
+Um eine neue Suche zu starten, klicken Sie einfach wieder auf ``Suchen\ldots'' bzw.\ ``Suche ändern''.  Ihre letzten Suchkriterien bleiben erhalten, bis Sie im Suchfenster auf ``Zurücksetzen'' klicken, sodass Sie z.B.\ auch ihre vorherige Suche modifizieren oder erneut ausführen können.
+
+\begin{infobox}{}
+  Beachten Sie, dass die Suchergebnisse sich \textbf{nicht} automatisch aktualisieren, wenn Sie zwischenzeitlich Änderungen im Editor vornehmen.  Wenn Sie also z.B.\ nach Tokens mit dem POS-Tag \emph{XX} suchen, und anschließend bei einigen Tokens den POS-Tag \emph{XX} auf \emph{YY} ändern, werden diese dennoch weiterhin in den Suchergebnissen angezeigt.  Sie können jedoch einfach das Suchfenster öffnen und die Suche mit denselben Kriterien erneut starten, um die Ergebnisse zu aktualisieren.
+\end{infobox}
+
+Um nach Tokens zu suchen, die einem bestimmten Token in der Editor-Ansicht
+ähnlich sind, gibt es im \textbf{Dropdown-Menü} des jeweiligen Tokens den
+Eintrag \textbf{``Suche ähnliche\ldots''}.  Dieser Menüpunkt öffnet das
+Suchfenster, wobei die Suchkriterien automatisch so ausgefüllt sind, dass sie
+den Annotationen des aktuell ausgewählten Tokens entsprechen.  Die Suche kann
+entweder direkt ausgeführt oder noch weiter modifiziert werden.
+
+\newpage
+\subsection{Automatische Annotation mit externen Tools}
+\label{sec:autoanno}
+
+CorA bietet die Möglichkeit, direkt aus der Weboberfläche heraus externe
+Annotationstools aufzurufen.  Hierzu klicken Sie in der Editor-Ansicht auf den
+Knopf ``Automatisch annotieren'' (vgl.\ \circled{7} in
+Abb.~\ref{fig:editor-toolbar}); es sollte sich ein Fenster ähnlich wie dieses
+öffnen:
+
+\begin{figure}[!h]
+  \centering
+  \begin{overpic}[width=0.5\linewidth]{img/1.2/anno-dialog.png}
+    %\put(94,6){\circled{5}}
+  \end{overpic}
+  \caption{Starten der automatischen Annotation}
+  \label{fig:autoanno}
+\end{figure}
+
+Hier können Sie zwischen verschiedenen Taggern auswählen, die auf das aktuell
+geöffnete Dokument anwendbar sind.  Die Einrichtung dieser Tagger kann nur ein
+Administrator vornehmen; bitte fragen Sie ggf.\ dort nach, wenn Sie sich nicht
+sicher sind, was ein bestimmter Tagger in der Auswahlliste genau macht, oder
+falls ein neuer Tagger hinzugefügt werden soll.
+
+Durch Klick auf \textbf{``Annotieren''} wird der Tagger aufgerufen und auf das
+aktuell geöffnete Dokument angewendet; dabei werden alle eventuell bereits
+bestehenden Annotationen \textbf{überschrieben,} die \textbf{nicht} mittels des
+Fortschrittsbalkens grün markiert sind.
+
+\begin{alertbox}{}
+  Das automatische Annotieren kann \textbf{nicht rückgängig} gemacht werden!
+  Bitte stellen Sie vor dem Klick auf ``Annotieren'' sicher, dass der grüne
+  Fortschrittsbalken an der korrekten Position steht.
+\end{alertbox}
+
+Der Button \textbf{``Neu trainieren''} ist je nach Konfiguration nicht für jeden
+Tagger verfügbar.  Falls er aktiv ist, wird hierdurch der ausgewählte Tagger auf
+dem geöffneten Text \textbf{und allen Texten des übergeordneten Projekts} neu
+trainiert.  Hierfür werden \textbf{nur} Textpassagen herangezogen, die mittels
+des Fortschrittsbalkens grün markiert sind.
+
+\newpage
 \subsection{Anpassen des Editors}
 \label{sec:anpassen}
 
-Das Aussehen des Editors kann in verschiedenen Punkten individuell
-angepasst werden.
+% Die \textbf{Anordnung der Spalten} kann per "`Drag \& Drop"' geändert
+% werden.  Gehen Sie dazu auf eine beliebige Spalten-Überschrift,
+% klicken und halten Sie die linke Maustaste gedrückt, ziehen Sie die
+% Spalte an eine beliebige andere Position, und lassen die Maustaste
+% wieder los.  CorA merkt sich die individuelle Anordnung der Spalten
+% automatisch.
 
-Die \textbf{Anordnung der Spalten} kann per "`Drag \& Drop"' geändert
-werden.  Gehen Sie dazu auf eine beliebige Spalten-Überschrift,
-klicken und halten Sie die linke Maustaste gedrückt, ziehen Sie die
-Spalte an eine beliebige andere Position, und lassen die Maustaste
-wieder los.  CorA merkt sich die individuelle Anordnung der Spalten
-automatisch.
+Der Editor kann über den \textbf{Reiter "`Einstellungen"'} individuell angepasst
+werden (s.\ Abbildung~\ref{fig:settings}).
 
-Weitere Anpassungen können \textbf{über den Reiter "`Einstellungen"'}
-vorgenommen werden (s.\ Abbildung~\ref{fig:settings}).  Die
-Einstellung \textbf{Zeilen pro Seite} steuert, wieviele Wortformen im
-Editor gleichzeitig dargestellt werden.  Wir empfehlen, aus
-Performance-Gründen nicht mehr als 50~Zeilen pro Seite anzeigen zu
-lassen.  \textbf{Überlappende Zeilen} gibt an, wieviele Zeilen vom
-Seitenende auch noch auf dem Anfang der nächsten Seite erscheinen
-sollen.  Beide Einstellungen müssen durch Klick auf
+Die Einstellung \textbf{``Zeilen pro Seite''} steuert, wieviele Wortformen im
+Editor gleichzeitig dargestellt werden.  Wir empfehlen, aus Performance-Gründen
+nicht mehr als 50~Zeilen pro Seite anzeigen zu lassen.  \textbf{``Überlappende
+  Zeilen''} gibt an, wieviele Zeilen vom Seitenende auch noch auf dem Anfang der
+nächsten Seite erscheinen sollen.  Beide Einstellungen müssen durch Klick auf
 "`Zeilen-Einstellungen übernehmen"' bestätigt werden.
 
-Die Checkboxen unter \textbf{Sichtbare Spalten} steuern, welche
-Spalten im Editor angezeigt werden.  Standardmäßig sind alle Spalten
-sichtbar, durch Abwählen einzelner Checkboxen können bestimmte Spalten
-jedoch ausgeblendet werden.  Dies kann der besseren Übersichtlichkeit
-im Editor dienen.  Änderungen hier müssen nicht separat bestätigt
-werden und sind sofort wirksam.
+\textbf{``Sichtbare Spalten''} steuert, welche Spalten im Editor angezeigt
+werden.  Standardmäßig sind alle Spalten sichtbar, durch Abwählen einzelner
+Checkboxen können bestimmte Spalten jedoch ausgeblendet werden.  Dies kann der
+besseren Übersichtlichkeit im Editor dienen.  Änderungen hier sind sofort
+wirksam.
 
-\begin{infobox}{Hinweis}
-  Wenn Sie Spalten sichtbar machen, die zuvor ausgeblendet waren, kann
-  es vereinzelt zu Darstellungsfehlern im Editor kommen.  Neuladen der
-  Seite sollte dieses Problem beheben.  (Speichern Sie eventuelle
-  Änderungen vorher ab!)
-\end{infobox}
-
-\begin{figure}
+\begin{figure}[tb]
   \centering
-  \includegraphics[width=\linewidth]{img/settings.png}
+  \includegraphics[width=\linewidth]{img/1.2/einstellungen.png}
   \caption{Der Reiter "`Einstellungen"'}
   \label{fig:settings}
 \end{figure}
 
-Die Option \textbf{Fehlerhafte Tags hervorheben} steuert, ob
+Unter \textbf{``Horizontale Textvorschau''} kann eingestellt werden, welche Tokenebene (Trans oder UTF) in der Textvorschau am unteren Bildschirmrand angezeigt werden soll.  Alternativ kann die Textvorschau hier auch deaktiviert werden.
+
+Die Option \textbf{``Fehlerhafte Tags hervorheben''} steuert, ob
 fehlerhafte Tags im Editor mit einer roten Umrandung versehen werden.
 
 \newpage
@@ -592,16 +742,10 @@ erläutert.
 
 \begin{alertbox}{Wichtig!}
   \begin{itemize}\vspace{-1.5em}
-  \item Vor jeder Änderung der Transkription müssen eventuell
-    geänderte Annotationen \textbf{gespeichert} werden!
-    Ungespeicherte Änderungen am Dokument gehen ansonsten verloren.
-    (CorA weist Sie auch ggf.\ mit einem roten Hinweistext darauf
-    hin.)
-  \item Änderungen an der Transkription sind augenblicklich
-    gespeichert und können \textbf{nicht rückgängig} gemacht werden!
-    Sie können die Transkription zwar per Hand wieder zurück ändern,
-    es gibt jedoch keine Möglichkeit, den Zustand der Transkription
-    vor der Bearbeitung zu sehen.
+  \item Änderungen an der Transkription können \textbf{nicht rückgängig} gemacht
+    werden!  Sie können die Transkription zwar per Hand wieder zurück ändern, es
+    gibt jedoch keine Möglichkeit, den Zustand der Transkription vor der
+    Bearbeitung zu sehen.
   \end{itemize}
 \end{alertbox}
 
@@ -631,9 +775,9 @@ Spalte "`Token~(Trans)"' oder "`Token~(UTF)"'.
     \label{fig:trans-bsp1}
   \end{subfigure}
   \hfill
-  \begin{subfigure}[b]{0.5\textwidth}
+  \begin{subfigure}[b]{0.4\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{img/trans-edit1.png}
+    \includegraphics[width=\textwidth]{img/1.2/trans-edit1.png}
     \caption{}
     \label{fig:trans-edit1}
   \end{subfigure}
@@ -661,36 +805,36 @@ Transkriptionszeichen werden von CorA nicht akzeptiert; die
 entsprechende Fehlermeldung des Check-Skripts wird dann angezeigt und
 die Änderung wird nicht vorgenommen.
 
-\textbf{Leerzeichen in der Transkription} haben an dieser Stelle eine
-besondere Bedeutung.  Sie werden von CorA immer dann verwendet, wenn
-sich ein Token in der Original-Transkription über mehrere Zeilen
-erstreckt:
+% \textbf{Leerzeichen in der Transkription} haben an dieser Stelle eine
+% besondere Bedeutung.  Sie werden von CorA immer dann verwendet, wenn
+% sich ein Token in der Original-Transkription über mehrere Zeilen
+% erstreckt:
 
-\begin{quote}\ttfamily\small
-  F137-02r,20~~~~dein hoche vernunft \$o begirlich be=\\
-  F137-02r,21~~~~gert(,) \$u\*cht vnd erfra\textbackslash{}vgt(,) alle kun\$t
-\end{quote}
+% \begin{quote}\ttfamily\small
+%   F137-02r,20~~~~dein hoche vernunft \$o begirlich be=\\
+%   F137-02r,21~~~~gert(,) \$u\*cht vnd erfra\textbackslash{}vgt(,) alle kun\$t
+% \end{quote}
 
-Das Token, das sich hier über beide Zeilen erstreckt, würde beim
-Bearbeiten in CorA als \trans{be=~gert(,)} angezeigt.  Das Leerzeichen
-markiert dabei die Stelle, an der der Zeilenumbruch stattfindet.
-Dieses Leerzeichen darf beim Bearbeiten der Transkription nicht
-entfernt werden, da ansonsten der hintere Teil in der
-Original-Transkription mit auf die vorherige Zeile gezogen würde!
+% Das Token, das sich hier über beide Zeilen erstreckt, würde beim
+% Bearbeiten in CorA als \trans{be=~gert(,)} angezeigt.  Das Leerzeichen
+% markiert dabei die Stelle, an der der Zeilenumbruch stattfindet.
+% Dieses Leerzeichen darf beim Bearbeiten der Transkription nicht
+% entfernt werden, da ansonsten der hintere Teil in der
+% Original-Transkription mit auf die vorherige Zeile gezogen würde!
 
-Andersherum dürfen Leerzeichen beim Bearbeiten der Transkription nur
-dann eingefügt werden, wenn Sie einen Zeilenumbruch repräsentieren
-sollen.  Dies ist nur möglich, wenn das bearbeitete Token am Ende
-einer Zeile steht und wird ansonsten von CorA nicht akzeptiert.
-Außerdem muss jedem Leerzeichen ein Trennzeichen vorausgehen.
+% Andersherum dürfen Leerzeichen beim Bearbeiten der Transkription nur
+% dann eingefügt werden, wenn Sie einen Zeilenumbruch repräsentieren
+% sollen.  Dies ist nur möglich, wenn das bearbeitete Token am Ende
+% einer Zeile steht und wird ansonsten von CorA nicht akzeptiert.
+% Außerdem muss jedem Leerzeichen ein Trennzeichen vorausgehen.
 
-\begin{infobox}{Tipp}
-  Möchten Sie einmal in die Transkription tatsächlich ein Leerzeichen
-  einfügen, das nicht für einen Zeilenumbruch steht (z.B.\ um
-  \trans{in\#der} in \trans{in der} abzuändern), so sind dafür mehrere
-  Schritte nötig!  In Abschnitt~\ref{sec:trans-bsp} wird dies an
-  Beispielen verdeutlicht.
-\end{infobox}
+% \begin{infobox}{Tipp}
+%   Möchten Sie einmal in die Transkription tatsächlich ein Leerzeichen
+%   einfügen, das nicht für einen Zeilenumbruch steht (z.B.\ um
+%   \trans{in\#der} in \trans{in der} abzuändern), so sind dafür mehrere
+%   Schritte nötig!  In Abschnitt~\ref{sec:trans-bsp} wird dies an
+%   Beispielen verdeutlicht.
+% \end{infobox}
 
 \subsection{Token hinzufügen}
 
@@ -706,7 +850,7 @@ neue Transkription \textbf{vor} einem bestehenden Token einzufügen.
 Es öffnet sich ein Fenster, worin die neue Transkription eingegeben
 werden kann (s.\ Abbildung~\ref{fig:trans-add}).  Dabei gelten
 dieselben Regeln wie für das Bearbeiten einer Transkription (siehe
-oben); insbesondere darf die Transkription kein Leerzeichen enthalten.
+oben).
 
 In einem Hinweistext unter dem Eingabefeld wird nochmals erläutert, an
 welcher Position und auf welcher Zeile der Original-Transkription das
@@ -778,16 +922,13 @@ Schritte nötig:
   \trans{MVLLNER\#ORD=~nung}, und anschließend das erste Token
   \trans{MVLLNER} löschen.
 
-  Andersherum ist es jedoch \textbf{nicht} möglich, zuerst
-  \trans{MVLLNER} in \trans{MVLLNER\#ORD=~nung} zu ändern und dann das
-  Folgetoken zu löschen!  Die entsprechende Operation wird
-  fehlschlagen, da die neue Transkription ein Leerzeichen
-  (=~Zeilenumbruch) enthält, das Token \trans{MVLLNER} sich jedoch
+  Andersherum ist es jedoch \textbf{nicht} möglich, zuerst \trans{MVLLNER} in
+  \trans{MVLLNER\#ORD=~nung} zu ändern und dann das Folgetoken zu löschen!  Die
+  entsprechende Operation wird fehlschlagen, da sich die neue Transkription
   nicht am Zeilenende befindet.
 
-  Behelfen Sie sich \textbf{in keinem Fall}, indem Sie das Leerzeichen
-  weglassen oder entfernen!  Das Ergebnis würde dann fälschlicherweise
-  so interpretiert\ldots{}
+  Behelfen Sie sich \textbf{in keinem Fall}, indem Sie den Zeilenumbruch
+  weglassen!  Das Ergebnis würde dann fälschlicherweise so interpretiert\ldots{}
 
   \begin{quote}\ttfamily\small
     F57-1r,01~~~~MVLLNER\#ORD=nung\\
@@ -818,17 +959,13 @@ einer Zeile soll mit dem ersten Token \trans{schah} der nächsten Zeile
 mittels eines Trennstriches \trans{(=)} zusammengeführt werden.  Dies
 gelingt mit folgenden Schritten:
 \begin{enumerate}
-\item Doppelklicken Sie auf die Transkription \trans{ge} und ändern
-  Sie sie zu \trans{ge(=)~schah} (Leerzeichen beachten!).
+\item Doppelklicken Sie auf die Transkription \trans{ge} und ändern Sie sie zu
+  \trans{ge(=)~schah} (mit Zeilenumbruch zwischen den Wörtern).
 \item Löschen Sie nun einfach das zweite \trans{schah}.
 \end{enumerate}
 
 \vspace{2em} %% HACK
 \section{Tastaturbefehle}
-
-Im Folgenden werden einige Tastaturbefehle aufgeführt, die für ein
-zügigeres Arbeiten in CorA hilfreich sein können.  Diese Liste wird im
-Laufe der Zeit noch ergänzt.
 
 Mit \textbf{Tab} (Tabulator-Taste) springen Sie im Editor zum nächsten
 editierbaren Feld, mit \textbf{Shift+Tab} springen Sie ein Feld
@@ -842,7 +979,10 @@ können Sie auch die Anfangsbuchstaben des gewünschten Tags eingeben.
 (Dies ist eine Funktion Ihres Internetbrowsers, nicht von CorA
 selbst.)
 
-Mit \textbf{Strg+S} können Sie die aktuelle Datei speichern.
+Innerhalb von Textfeldern (außer Lemma) können die \textbf{Pfeiltasten nach
+  oben/unten} außerdem zum Navigieren zwischen den Zeilen benutzt werden.
+
+Mit \textbf{Strg+F} öffnet sich das Suchfenster (s.\ Abs.\ \ref{sec:sufu}).
 
 \newpage
 \section{Umgang mit Fehlermeldungen}

@@ -6,3 +6,6 @@ pqp
 *.min.css
 *.css.map
 *.bak
+*.toc
+*.aux
+*.log
