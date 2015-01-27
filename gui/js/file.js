@@ -1122,7 +1122,7 @@ cora.fileManager = {
                     cora.projects.performUpdate();
                     gui.setHeader("").hideTabButton('edit').changeTab('file').unlock();
                     if(history.state !== null && typeof(history.state.f) !== "undefined")
-                        history.pushState({}, "", "/");
+                        history.pushState({}, "", "./");
                     if(typeof(fn) == "function")
                         fn();
                 }.bind(this)}
@@ -1371,7 +1371,7 @@ window.addEvent('domready', function() {
         fid = uri.parsed.query.parseQueryString()["f"];
     }
     fid = fid || cora.settings.get('currentFileId');  // file open on server-side?
-    history.replaceState({}, "", "/");
+    history.replaceState({}, "", "./");
     if(fid)
         cora.fileManager.openFile(fid);
 });
