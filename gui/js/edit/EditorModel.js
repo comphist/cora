@@ -22,6 +22,7 @@ var EditorModel = new Class({
     pendingChanges: null,
     saveRequest: null,
     saveFailures: 0,
+    saveFailureNotice: null,
     autosaveInterval: 60,  // in seconds
     autosaveTimerId: null,
 
@@ -741,11 +742,19 @@ var EditorModel = new Class({
      */
     updateSaveStatus: function(success) {
         var pulse = gui.getPulse();
-        this.saveFailures = (success ? 0 : (this.saveFailures + 1));
-        if(success)
+        if(success) {
             pulse.removeClass("unsaved");
-        else
+            if(this.saveFailures > 0 && this.saveFailureNotice !== null)
+                this.saveFailureNotice.close();
+            this.saveFailures = 0;
+        } else {
             pulse.addClass("unsaved");
+            this.saveFailures++;
+            if(this.saveFailures > 2) {
+                this.saveFailureNotice = gui.showNotice('notice',
+                    "Dokument kann derzeit nicht gespeichert werden.");
+            }
+        }
     },
 
     /* Function: whenSaved

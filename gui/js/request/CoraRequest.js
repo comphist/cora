@@ -88,8 +88,8 @@ var CoraRequest = new Class({
         }
         if(this.options.callbackOnNetworkError) {
             this.addEvent('error', function(e) {
-                if(e.name === 'Network')
-                    gui.getPulse().removeClass('connected');
+                //if(e.name === 'Network')
+                gui.getPulse().removeClass('connected');
             });
         }
         if(this.options.callbackOnSuccess) {

@@ -363,14 +363,13 @@ var gui = {
          onclose - Callback function to invoke when notice is closed
     */
     showNotice: function(ntype, message, keepopen, onclose) {
-	new mBox.Notice({
+	return new mBox.Notice({
 	    type: ntype,
 	    position: {x: 'right'},
 	    content: new Element('span', {text: message}),
             neverClose: (keepopen || false),
             onClose: onclose
 	});
-        return this;
     },
 
     /* Function: confirm
