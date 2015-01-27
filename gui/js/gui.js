@@ -702,7 +702,7 @@ var gui = {
         if (cora.editor !== null && cora.editor.hasUnsavedChanges()) {
             cora.editor.confirmClose(this.logout.bind(this));
         } else {
-            window.location.href = '../index.php?do=logout';
+            window.location.href = './index.php?do=logout';
         }
     },
 
