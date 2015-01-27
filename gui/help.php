@@ -13,7 +13,7 @@
       </p>
       <ul>
         <li>
-          <a href="doc/cora-guide.pdf" download="cora-guide.pdf">CorA Benutzerhandbuch, 23.01.2015 (PDF)</a>
+          <a href="doc/cora-guide.pdf" download="cora-guide.pdf">CorA Benutzerhandbuch, 27.01.2015 [PDF]</a>
         </li>
       </ul>
       <p>
