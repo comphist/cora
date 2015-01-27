@@ -135,7 +135,7 @@ echo <<<NOTLOGGEDIN
               if(fid && form) {
                   form.set('action', form.get('action') + "?f=" + fid);
               } else {
-                  history.replaceState({}, "", "/");
+                  history.replaceState({}, "", "./");
               }
           }
       };
