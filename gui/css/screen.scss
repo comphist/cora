@@ -284,6 +284,7 @@ ol {
     height: auto !important;
     height: 1%;
     padding: 8px 0 0 0;
+    display: none;
 }
 
 .panel {
@@ -688,6 +689,10 @@ div.limitedWidth-tiny p {
 
 .important_text {
     color: red;
+}
+
+#loginDiv {
+    display: block !important;
 }
 
 .loginForm {

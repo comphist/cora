@@ -5,7 +5,7 @@
 
 ?>
 
-<div id="settingsDiv" class="content" style="display: none;">
+<div id="settingsDiv" class="content">
   <div class="panel">
     <div class="btn-toolbar">
       <span class="btn-toolbar-entry" id="changePasswordLink">Passwort ändern...</span>

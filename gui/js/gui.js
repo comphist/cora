@@ -327,10 +327,7 @@ var gui = {
 	var contentBox, tabButton, activeTab, i;
 
 	// hide all tabs
-	contentBox = $$(".content");
-	for (i = 0; i < contentBox.length; i++) {
-            contentBox[i].setStyle("display", "none");
-	}
+	contentBox = $$(".content").setStyle("display", "none");
 
 	// select correct tab button
 	tabButton = $$(".tabButton");

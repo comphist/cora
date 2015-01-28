@@ -4,7 +4,7 @@
    */
 ?>
 
-<div id="editDiv" class="content" style="display: none;">
+<div id="editDiv" class="content">
 <div id="editPanelDiv" class="panel">
   <div class="btn-toolbar" id="pagePanel">
     <span class="btn-toolbar-entry btn-page-count"><span class="oi" aria-hidden="true"></span>Seite <input type="text" class="btn-page-to" size="2" /><span class="page-active"></span>/<span class="page-max"></span></span>

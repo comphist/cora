@@ -4,7 +4,7 @@
  */
 ?>
 
-<div id="fileDiv" class="content" style="display: none;">
+<div id="fileDiv" class="content">
   <div class="panel">
     <div class="btn-toolbar">
       <span class="btn-toolbar-entry" id="fileViewRefresh" title="Aktualisieren"><span class="oi" data-glyph="reload" aria-hidden="true"></span></span>

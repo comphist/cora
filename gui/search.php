@@ -4,7 +4,7 @@
    */
 ?>
 
-<div id="searchDiv" class="content" style="display: none;">
+<div id="searchDiv" class="content">
   <div id="searchPanelDiv" class="panel">
     <div class="srl-criteria" id="searchResultsCriteria">
       <p>
