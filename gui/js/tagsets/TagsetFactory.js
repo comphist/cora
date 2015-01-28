@@ -16,6 +16,8 @@ cora.tagsetFactory = {
      */
     make: function(data, ts_class) {
         var cls = ts_class || data.class;
+        if(cls == "comment")
+            return new CommentTagset(data);
         if(cls == "pos")
             return new POSTagset(data);
         if(cls == "lemmapos")
@@ -30,8 +32,8 @@ cora.tagsetFactory = {
             return new LemmaTagset(data);
         if(cls == "lemma_sugg")
             return new LemmaSuggTagset(data);
-        if(cls == "comment")
-            return new CommentTagset(data);
+        if(cls == "boundary")
+            return new BoundaryTagset(data);
         return new Tagset(data);
     }
 };

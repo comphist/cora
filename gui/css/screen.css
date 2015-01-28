@@ -774,11 +774,14 @@ div.editTableProgressChecked {
 div.editTableErrorChecked {
   background-color: red !important; }
 
-div.editTableLemma {
-  display: inline-block; }
-
 div.editTableLemmaChecked {
   background-color: green !important; }
+
+div.editTableBoundaryChecked {
+  background-color: cadetblue !important; }
+
+div.editTableLemma, div.editTableBoundary {
+  display: inline-block; }
 
 div.editTableLemmaLink {
   display: inline;

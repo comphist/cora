@@ -101,7 +101,7 @@ var NormTypeTagset = new Class({
             changes.anno_norm_type = value;
             this.updateInputErrorAlt(tr, data.anno_norm_broad, value);
         }
-        if (cls === "norm_broad") {
+        else if (cls === "norm_broad") {
             elem = tr.getElement('.editTable_norm_type select');
             if(elem !== null) {
                 normtype = data.anno_norm_type;

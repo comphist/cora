@@ -3,7 +3,8 @@
    List of all tagset classes that are recognized by the GUI.
  */
 cora.supportedTagsets = ["pos", "norm", "norm_broad", "norm_type",
-                         "lemma", "lemmapos", "lemma_sugg", "comment"];
+                         "lemma", "lemmapos", "lemma_sugg", "comment",
+                         "boundary"];
 
 /* Class: cora.tagsets
 

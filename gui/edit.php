@@ -140,6 +140,7 @@
         <th class="editTable_norm et-anno">Normalisierung</th>
         <th class="editTable_norm_broad et-anno">Modernisierung</th>
         <th class="editTable_norm_type et-anno"></th>
+        <th class="editTable_boundary et-anno">Satzgrenze</th>
         <th class="editTable_pos et-anno">POS-Tag</th>
         <th class="editTable_morph et-anno">Morphologie-Tag</th>
         <th class="editTable_lemma et-anno">Lemma</th>
@@ -170,6 +171,10 @@
         <td class="editTable_norm_type et-anno">
           <select size="1" disabled="disabled" class="et-select-norm_type">
           </select>
+        </td>
+        <td class="editTable_boundary et-anno">
+          <div class="editTableBoundary editTableCheckbox"></div>
+          <select size="1" class="et-select-boundary"></select>
         </td>
         <td class="editTable_pos et-anno">
           <select size="1" class="et-select-pos et-select-pos-main"></select>

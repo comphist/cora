@@ -94,6 +94,7 @@
               embedJS("gui/js/tagsets/Lemma.js", true);
               embedJS("gui/js/tagsets/LemmaSugg.js", true);
               embedJS("gui/js/tagsets/LemmaPOS.js", true);
+              embedJS("gui/js/tagsets/Boundary.js", true);
               embedJS("gui/js/tagsets/Comment.js", true);
               embedJS("gui/js/tagsets/TagsetFactory.js", true);
               embedJS("gui/js/file.js", true);

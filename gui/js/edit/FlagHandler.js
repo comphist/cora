@@ -10,6 +10,12 @@ cora.flags = {
         class: 'editTableLemmaChecked',
         displayname: "Lemma-Markierung",
         eventString: 'click:relay(div.editTableLemma)'
+    },
+    'flag_boundary': {
+        elem: 'div.editTableBoundary',
+        class: 'editTableBoundaryChecked',
+        displayname: "Satzgrenzen-Markierung",
+        eventString: 'click:relay(div.editTableBoundary)'
     }
 };
 
