@@ -114,44 +114,6 @@ class Lemmatizer extends AutomaticAnnotator {
         return array_map(array($this, 'makeAnnotationArray'), $tokens, $output);
     }
 
-    public function train($tokens) {
-        if($this->use_norm) {
-            $tokens = array_map(array($this, 'mapNormToAscii'), $tokens);
-        }
-        if($this->lowercase_all) {
-            $this->lowercaseAscii($tokens);
-        }
-
-        $lines = array();
-        foreach($tokens as $tok) {
-            if(!$tok['verified'] ||
-               !isset($tok['tags']['pos']) || empty($tok['tags']['pos']) ||
-               !isset($tok['tags']['lemma']) || empty($tok['tags']['lemma'])) {
-                continue;
-            }
-            $newline = $tok['ascii']."\t";
-            if($this->use_pos) {
-                $newline = $newline . $tok['tags']['pos']."\t";
-            }
-            $newline = $newline . $tok['tags']['lemma'];
-            $lines[] = $newline;
-        }
-        $lines = array_unique($lines);
-        $tokens = null;
-
-        $handle = fopen($this->options['par'], "w");
-        if(!$handle) {
-            throw new Exception("Konnte Parameterdatei nicht zum Schreiben öffnen:".
-                                $this->options['par']);
-        }
-        foreach($lines as $line) {
-            fwrite($handle, $line);
-            fwrite($handle, "\n");
-        }
-        fclose($handle);
-    }
-
-
     public function startTrain() {
         $this->lines = array();
     }

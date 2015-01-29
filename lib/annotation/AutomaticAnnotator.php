@@ -72,22 +72,6 @@ class AutomaticAnnotator {
         // tokens with [verified] => 1 will never be overwritten
     }
 
-    /** Train on a set of tokens.
-     *
-     * Implementing this function is only required if you want to be able
-     * to retrain the tagger from within CorA.
-     *
-     * @param array $tokens  An array of tokens, in the same form as the
-     *                       parameter of the @c annotate() function.
-     *                       When retraining from within CorA, this function
-     *                       is given **all** tokens of **all** files within
-     *                       the current project.
-     *
-     * @return Nothing.
-     */
-    public function train($tokens) {
-    }
-
     /** Start training process.
      *
      * Called at the beginning of a training process.

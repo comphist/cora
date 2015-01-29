@@ -119,12 +119,6 @@ class DualRFTaggerAnnotator extends AutomaticAnnotator {
         return array_map(array($this, 'chooseTag'), $fixed, $variable);
     }
 
-    public function train($tokens) {
-        $tokens = $this->variableRFT->train($tokens);
-        $this->makeVocabulary($tokens);
-        $this->saveVocabulary();
-    }
-
     public function startTrain() {
         $this->variableRFT->startTrain();
         $this->vocabulary = array();

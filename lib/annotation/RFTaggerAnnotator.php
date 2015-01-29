@@ -214,38 +214,6 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         return array_map(array($this, 'makeAnnotationArray'), $tokens, $output);
     }
 
-    public function train($tokens) {
-        $tokens = $this->preprocessTokens($tokens);
-        list($tokens, $lextokens) = $this->filterForTraining($tokens);
-        if(empty($tokens)) return array();
-
-        // write tokens to temporary file
-        $tmpfname = $this->writeTaggerInput($tokens, true);
-        $flags = $this->options["flags"];
-        if(!empty($lextokens)) {
-            $tmplname = $this->writeTaggerInput($lextokens, true);
-            $flags = $flags . " -l " . $tmplname;
-        }
-
-        // call RFTagger
-        $output = array();
-        $retval = 0;
-        $cmd = implode(" ", array($this->options["train"],
-                                  $tmpfname,
-                                  $this->options["wc"],
-                                  $this->options["par"],
-                                  $flags));
-        exec($cmd, $output, $retval);
-        if($retval) {
-            error_log("CorA: RFTaggerAnnotator.php: RFTagger returned status code {$retval}; call was: {$cmd}");
-            throw new Exception("RFTagger gab den Status-Code {$retval} zurück."
-                                ."\n{$output}");
-            // "\nAufruf war: {$cmd}");
-        }
-
-        return $tokens;
-    }
-
     public function startTrain() {
         $this->train_lines = array();
         $this->train_lex_lines = array();
