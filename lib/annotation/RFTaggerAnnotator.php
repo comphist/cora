@@ -205,6 +205,7 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
                                   "2>/dev/null"));
         exec($cmd, $output, $retval);
         if($retval) {
+            error_log("CorA: RFTaggerAnnotator.php: RFTagger returned status code {$retval}; call was: {$cmd}");
             throw new Exception("RFTagger gab den Status-Code {$retval} zurück."
                                 ."\n{$output}");
                                 // "\nAufruf war: {$cmd}"
@@ -238,7 +239,8 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         exec($cmd, $output, $retval);
         if($retval) {
             error_log("CorA: RFTaggerAnnotator.php: RFTagger returned status code {$retval}; call was: {$cmd}");
-            throw new Exception("RFTagger gab den Status-Code {$retval} zurück.");
+            throw new Exception("RFTagger gab den Status-Code {$retval} zurück."
+                                ."\n{$output}");
             // "\nAufruf war: {$cmd}");
         }
 
