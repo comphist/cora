@@ -13,7 +13,7 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
     private $tmpfiles = array();
     private $minimum_span_size = 5;
     private $lowercase_all = false;
-    private $use_norm = false;
+    private $use_layer = "ascii";
 
     public function __construct($prfx, $opts) {
         parent::__construct($prfx, $opts);
@@ -26,8 +26,13 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         if(!array_key_exists("flags", $this->options)) {
             $this->options["flags"] = "-c 2 -q";
         }
-        if(array_key_exists("use_norm", $this->options)) {
-            $this->use_norm = (bool) $this->options["use_norm"];
+        if(array_key_exists("use_layer", $this->options)) {
+            $this->use_layer = $this->options["use_layer"];
+        }
+        if(array_key_exists("use_norm", $this->options)) {  // backwards-compatibility
+            if((bool) $this->options["use_norm"]) {
+                $this->use_layer = "norm";
+            }
         }
         if(array_key_exists("lowercase_all", $this->options)) {
             $this->lowercase_all = (bool) $this->options["lowercase_all"];
@@ -149,6 +154,13 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         return $tok;
     }
 
+    private function mapUtfToAscii($tok) {
+        if(isset($tok['utf'])) {
+            $tok['ascii'] = $tok['utf'];
+        }
+        return $tok;
+    }
+
     private function lowercaseAscii($tok) {
         if(isset($tok['ascii'])) {
             $tok['ascii'] = mb_strtolower($tok['ascii'], 'UTF-8');
@@ -156,13 +168,20 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         return $tok;
     }
 
-    public function annotate($tokens) {
-        if($this->use_norm) {
+    protected function preprocessTokens($tokens) {
+        if($this->use_layer == "norm") {
             $tokens = array_map(array($this, 'mapNormToAscii'), $tokens);
+        } else if($this->use_layer == "utf") {
+            $tokens = array_map(array($this, 'mapUtfToAscii'), $tokens);
         }
         if($this->lowercase_all) {
             $tokens = array_map(array($this, 'lowercaseAscii'), $tokens);
         }
+        return $tokens;
+    }
+
+    public function annotate($tokens) {
+        $tokens = $this->preprocessTokens($tokens);
 
         // write tokens to temporary file
         $tmpfname = $this->writeTaggerInput($tokens, false);
@@ -185,13 +204,7 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
     }
 
     public function train($tokens) {
-        if($this->use_norm) {
-            $tokens = array_map(array($this, 'mapNormToAscii'), $tokens);
-        }
-        if($this->lowercase_all) {
-            $tokens = array_map(array($this, 'lowercaseAscii'), $tokens);
-        }
-
+        $tokens = $this->preprocessTokens($tokens);
         list($tokens, $lextokens) = $this->filterForTraining($tokens);
         if(empty($tokens)) return array();
 
