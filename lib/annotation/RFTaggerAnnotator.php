@@ -236,6 +236,7 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
                                   $flags));
         exec($cmd, $output, $retval);
         if($retval) {
+            error_log("CorA: RFTaggerAnnotator.php: RFTagger returned status code {$retval}; call was: {$cmd}");
             throw new Exception("RFTagger gab den Status-Code {$retval} zurück.");
             // "\nAufruf war: {$cmd}");
         }

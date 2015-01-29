@@ -106,6 +106,7 @@ class Lemmatizer extends AutomaticAnnotator {
                                   $tmpfname));
         exec($cmd, $output, $retval);
         if($retval) {
+            error_log("CorA: Lemmatizer.php: Lemmatizer returned status code {$retval}; call was: {$cmd}");
             throw new Exception("Lemmatisierer gab den Status-Code {$retval} zurück.");
             // "\nAufruf war: {$cmd}");
         }
