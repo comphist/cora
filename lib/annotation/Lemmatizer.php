@@ -62,11 +62,13 @@ class Lemmatizer extends AutomaticAnnotator {
         return $filename;
     }
 
-    private function lowercaseAscii($tok) {
-        if(array_key_exists('ascii', $tok)) {
-            $tok['ascii'] = mb_strtolower($tok['ascii'], 'UTF-8');
+    private function lowercaseAscii(&$tokens) {
+        foreach($tokens as &$tok) {
+            if(array_key_exists('ascii', $tok)) {
+                $tok['ascii'] = mb_strtolower($tok['ascii'], 'UTF-8');
+            }
         }
-        return $tok;
+        unset($tok);
     }
 
     /** Converts lemmatizer output to an array for saving it back to CorA.
@@ -90,7 +92,7 @@ class Lemmatizer extends AutomaticAnnotator {
             $tokens = array_map(array($this, 'mapNormToAscii'), $tokens);
         }
         if($this->lowercase_all) {
-            $tokens = array_map(array($this, 'lowercaseAscii'), $tokens);
+            $this->lowercaseAscii($tokens);
         }
 
         $tmpfname = $this->writeLemmatizerInput($tokens);
@@ -115,7 +117,7 @@ class Lemmatizer extends AutomaticAnnotator {
             $tokens = array_map(array($this, 'mapNormToAscii'), $tokens);
         }
         if($this->lowercase_all) {
-            $tokens = array_map(array($this, 'lowercaseAscii'), $tokens);
+            $this->lowercaseAscii($tokens);
         }
 
         $lines = array();
