@@ -64,7 +64,7 @@ class Lemmatizer extends AutomaticAnnotator {
 
     private function lowercaseAscii(&$tokens) {
         foreach($tokens as &$tok) {
-            if(array_key_exists('ascii', $tok)) {
+            if(isset($tok['ascii'])) {
                 $tok['ascii'] = mb_strtolower($tok['ascii'], 'UTF-8');
             }
         }
