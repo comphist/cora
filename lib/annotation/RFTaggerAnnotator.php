@@ -69,7 +69,7 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         $this->tmpfiles[] = $filename;
         $handle = fopen($filename, "w");
         foreach($tokens as $tok) {
-            fwrite($handle, $tok['ascii']);
+            fwrite($handle, $tok[$this->use_layer]);
             if($training) {
                 fwrite($handle, "\t".$tok['tags']['pos']);
             }
@@ -91,11 +91,11 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         if(empty($line) || empty($mod) || count($line) != 2) {
             return array();
         }
-        if($mod['ascii'] != $line[0]) {
-            throw new Exception("Token mismatch: ".$mod['ascii']." != ".$line[0]);
+        if($mod[$this->use_layer] != $line[0]) {
+            throw new Exception("Token mismatch: ".$mod[$this->use_layer]." != ".$line[0]);
         }
         return array("id" => $mod['id'],
-                     "ascii" => $mod['ascii'],
+                     $this->use_layer => $mod[$this->use_layer],
                      "anno_pos" => $line[1]);
     }
 
@@ -125,7 +125,7 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         $currentspan = 0;
         foreach($tokens as $tok) {
             if($tok['verified'] && isset($tok['tags']['pos'])
-               && !empty($tok['ascii'])) {
+               && !empty($tok[$this->use_layer])) {
                 $currentspan++;
                 $currentlist[] = $tok;
             }
@@ -146,24 +146,17 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
 
     private function mapNormToAscii($tok) {
         if(isset($tok['tags']['norm_broad']) && !empty($tok['tags']['norm_broad'])) {
-            $tok['ascii'] = $tok['tags']['norm_broad'];
+            $tok['norm'] = $tok['tags']['norm_broad'];
         }
         else if(isset($tok['tags']['norm']) && !empty($tok['tags']['norm'])) {
-            $tok['ascii'] = $tok['tags']['norm'];
-        }
-        return $tok;
-    }
-
-    private function mapUtfToAscii($tok) {
-        if(isset($tok['utf'])) {
-            $tok['ascii'] = $tok['utf'];
+            $tok['norm'] = $tok['tags']['norm'];
         }
         return $tok;
     }
 
     private function lowercaseAscii($tok) {
-        if(isset($tok['ascii'])) {
-            $tok['ascii'] = mb_strtolower($tok['ascii'], 'UTF-8');
+        if(isset($tok[$this->use_layer])) {
+            $tok[$this->use_layer] = mb_strtolower($tok[$this->use_layer], 'UTF-8');
         }
         return $tok;
     }
@@ -171,8 +164,6 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
     protected function preprocessTokens($tokens) {
         if($this->use_layer == "norm") {
             $tokens = array_map(array($this, 'mapNormToAscii'), $tokens);
-        } else if($this->use_layer == "utf") {
-            $tokens = array_map(array($this, 'mapUtfToAscii'), $tokens);
         }
         if($this->lowercase_all) {
             $tokens = array_map(array($this, 'lowercaseAscii'), $tokens);

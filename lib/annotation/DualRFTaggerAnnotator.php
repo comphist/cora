@@ -56,12 +56,12 @@ class DualRFTaggerAnnotator extends AutomaticAnnotator {
      */
     private function makeVocabulary($tokens) {
         foreach($tokens as $tok) {
-            if(!array_key_exists('ascii', $tok)) continue;
-            if(!array_key_exists($tok['ascii'], $this->vocabulary)) {
-                $this->vocabulary[$tok['ascii']] = 1;
+            if(!array_key_exists($this->use_layer, $tok)) continue;
+            if(!array_key_exists($tok[$this->use_layer], $this->vocabulary)) {
+                $this->vocabulary[$tok[$this->use_layer]] = 1;
             }
             else {
-                $this->vocabulary[$tok['ascii']] += 1;
+                $this->vocabulary[$tok[$this->use_layer]] += 1;
             }
         }
     }
@@ -100,8 +100,8 @@ class DualRFTaggerAnnotator extends AutomaticAnnotator {
         if($varline["anno_pos"] == "?") {
             return $fixline;
         }
-        if(array_key_exists($fixline["ascii"], $this->vocabulary)
-           && $this->vocabulary[$fixline["ascii"]] >= $this->threshold) {
+        if(array_key_exists($fixline[$this->use_layer], $this->vocabulary)
+           && $this->vocabulary[$fixline[$this->use_layer]] >= $this->threshold) {
             return $varline;
         }
         return $fixline;
@@ -111,7 +111,7 @@ class DualRFTaggerAnnotator extends AutomaticAnnotator {
         $fixed = $this->fixedRFT->annotate($tokens);
         $variable = $this->variableRFT->annotate($tokens);
         $this->loadVocabulary();
-        
+
         return array_map(array($this, 'chooseTag'), $fixed, $variable);
     }
 

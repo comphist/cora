@@ -1129,6 +1129,7 @@ var EditorModel = new Class({
             new CoraRequest({
                 name: 'performAnnotation',
                 textDialogOnError: true,
+                retry: 0,
                 onSuccess: function(status) {
                     if(action == "train") {
                         gui.showNotice('ok', 'Neu trainieren war erfolgreich.');
