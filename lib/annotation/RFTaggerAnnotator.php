@@ -14,6 +14,8 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
     private $minimum_span_size = 5;
     private $lowercase_all = false;
     private $use_layer = "ascii";
+    private $train_lines = null;
+    private $train_lex_lines = null;
 
     public function __construct($prfx, $opts) {
         parent::__construct($prfx, $opts);
@@ -74,6 +76,23 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
                 fwrite($handle, "\t".$tok['tags']['pos']);
             }
             fwrite($handle, "\n");
+        }
+        fclose($handle);
+        return $filename;
+    }
+
+    /** Writes an input file for training RFTagger.
+     *
+     * @param array $lines Lines to write
+     *
+     * @return Name of the newly created file
+     */
+    private function writeTrainInput($lines) {
+        $filename = tempnam(sys_get_temp_dir(), "cora_rft");
+        $this->tmpfiles[] = $filename;
+        $handle = fopen($filename, "w");
+        foreach($lines as $line) {
+            fwrite($handle, $line);
         }
         fclose($handle);
         return $filename;
@@ -224,6 +243,51 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         return $tokens;
     }
 
+    public function startTrain() {
+        $this->train_lines = array();
+        $this->train_lex_lines = array();
+    }
+
+    public function bufferTrain($tokens) {
+        list($tokens, $lextokens)
+            = $this->filterForTraining($this->preprocessTokens($tokens));
+        if(empty($tokens)) return;
+
+        foreach($tokens as $tok) {
+            $this->train_lines[]
+                = $tok[$this->use_layer] . "\t" . $tok['tags']['pos'] . "\n";
+        }
+        foreach($lextokens as $tok) {
+            $this->train_lex_lines[]
+                = $tok[$this->use_layer] . "\t" . $tok['tags']['pos'] . "\n";
+        }
+    }
+
+    public function performTrain() {
+        if(empty($this->train_lines)) return;
+        $tmpfname = $this->writeTrainInput($this->train_lines);
+        $flags = $this->options["flags"];
+        if(!empty($this->train_lex_lines)) {
+            $tmplname = $this->writeTrainInput($this->train_lex_lines);
+            $flags = $flags . " -l " . $tmplname;
+        }
+
+        // call RFTagger
+        $output = array();
+        $retval = 0;
+        $cmd = implode(" ", array($this->options["train"],
+                                  $tmpfname,
+                                  $this->options["wc"],
+                                  $this->options["par"],
+                                  $flags));
+        exec($cmd, $output, $retval);
+        if($retval) {
+            throw new Exception("RFTagger gab den Status-Code {$retval} zurück.");
+            // "\nAufruf war: {$cmd}");
+        }
+        $this->train_lines = null;
+        $this->train_lex_lines = null;
+    }
 }
 
 ?>

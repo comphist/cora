@@ -120,7 +120,7 @@ class AutomaticAnnotationWrapper {
       $lines_to_save = array_filter($annotated, $is_valid_annotation);
 
       // warnings are ignored here ...
-      $this->db->performSaveLines($fileid, $lines_to_save);
+      $this->db->performSaveLines($fileid, $lines_to_save, null);
   }
 
   public function annotate($fileid) {
@@ -137,12 +137,12 @@ class AutomaticAnnotationWrapper {
   public function train() {
       if(!$this->trainable) return;
       $all_files = $this->db->getFilesForProject($this->projectid);
-      $tokens = array();
+      $this->tagger->startTrain();
       foreach($all_files as $f) {
-          $tokens = array_merge($tokens,
-                                $this->db->getAllModerns_simple($f['id'], true));
+          $tokens = $this->db->getAllModerns_simple($f['id'], true);
+          $this->tagger->bufferTrain($tokens);
       }
-      $this->tagger->train($tokens);
+      $this->tagger->performTrain();
   }
 
 }

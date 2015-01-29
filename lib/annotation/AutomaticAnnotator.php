@@ -87,6 +87,41 @@ class AutomaticAnnotator {
      */
     public function train($tokens) {
     }
+
+    /** Start training process.
+     *
+     * Called at the beginning of a training process.
+     *
+     * @return Nothing.
+     */
+    public function startTrain() {
+    }
+
+    /** Process a batch of tokens for training.
+     *
+     * Preprocess the given array of tokens and store the information required
+     * for training in an intermediate storage.
+     *
+     * @param array $tokens  An array of tokens, in the same form as the
+     *                       parameter of the @c annotate() function.
+     *                       When retraining from within CorA, this function
+     *                       is called once for each file within the
+     *                       current project.
+     *
+     * @return Nothing.
+     */
+    public function bufferTrain($tokens) {
+    }
+
+    /** Perform the actual training process.
+     *
+     * Use the intermediate data created by @c bufferTrain() to perform the
+     * actual training process.
+     *
+     * @return Nothing.
+     */
+    public function performTrain() {
+    }
 }
 
 ?>

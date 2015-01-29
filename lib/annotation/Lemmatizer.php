@@ -15,6 +15,7 @@ class Lemmatizer extends AutomaticAnnotator {
     private $lowercase_all = false;
     private $use_pos = true;
     private $use_norm = false;
+    private $lines = null;
 
     // lemmatizer return value if lemma could not be found:
     private $unknown_lemma = "<unknown>";
@@ -135,6 +136,7 @@ class Lemmatizer extends AutomaticAnnotator {
             $lines[] = $newline;
         }
         $lines = array_unique($lines);
+        $tokens = null;
 
         $handle = fopen($this->options['par'], "w");
         if(!$handle) {
@@ -148,6 +150,48 @@ class Lemmatizer extends AutomaticAnnotator {
         fclose($handle);
     }
 
+
+    public function startTrain() {
+        $this->lines = array();
+    }
+
+    public function bufferTrain($tokens) {
+        if($this->use_norm) {
+            $tokens = array_map(array($this, 'mapNormToAscii'), $tokens);
+        }
+        if($this->lowercase_all) {
+            $this->lowercaseAscii($tokens);
+        }
+
+        foreach($tokens as $tok) {
+            if(!$tok['verified'] ||
+               !isset($tok['tags']['pos']) || empty($tok['tags']['pos']) ||
+               !isset($tok['tags']['lemma']) || empty($tok['tags']['lemma'])) {
+                continue;
+            }
+            $newline = $tok['ascii']."\t";
+            if($this->use_pos) {
+                $newline = $newline . $tok['tags']['pos']."\t";
+            }
+            $newline = $newline . $tok['tags']['lemma'];
+            $this->lines[] = $newline;
+        }
+        $this->lines = array_unique($this->lines);
+    }
+
+    public function performTrain() {
+        $handle = fopen($this->options['par'], "w");
+        if(!$handle) {
+            throw new Exception("Konnte Parameterdatei nicht zum Schreiben öffnen:".
+                                $this->options['par']);
+        }
+        foreach($this->lines as $line) {
+            fwrite($handle, $line);
+            fwrite($handle, "\n");
+        }
+        fclose($handle);
+        $this->lines = null;
+    }
 }
 
 ?>

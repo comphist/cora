@@ -15,6 +15,7 @@ class DualRFTaggerAnnotator extends AutomaticAnnotator {
     private $variableRFT;
     private $vocabulary = array();
     private $threshold  = 1;
+    private $use_layer = "ascii";
 
     public function __construct($prfx, $opts) {
         parent::__construct($prfx, $opts);
@@ -27,6 +28,9 @@ class DualRFTaggerAnnotator extends AutomaticAnnotator {
         }
         if(array_key_exists("threshold", $this->options)) {
             $this->threshold = $this->options["threshold"];
+        }
+        if(array_key_exists("use_layer", $this->options)) {
+            $this->use_layer = $this->options["use_layer"];
         }
     }
 
@@ -94,10 +98,10 @@ class DualRFTaggerAnnotator extends AutomaticAnnotator {
             throw new Exception("Fehler beim Zusammenführen der Tagger-Outputs:"
                                 ."Token sind nicht identisch.");
         }
-        if($fixline["anno_pos"] == "?") {
+        if(isset($fixline["anno_pos"]) && $fixline["anno_pos"] == "?") {
             return $varline;
         }
-        if($varline["anno_pos"] == "?") {
+        if(isset($varline["anno_pos"]) && $varline["anno_pos"] == "?") {
             return $fixline;
         }
         if(array_key_exists($fixline[$this->use_layer], $this->vocabulary)
@@ -121,6 +125,20 @@ class DualRFTaggerAnnotator extends AutomaticAnnotator {
         $this->saveVocabulary();
     }
 
+    public function startTrain() {
+        $this->variableRFT->startTrain();
+        $this->vocabulary = array();
+    }
+
+    public function bufferTrain($tokens) {
+        $this->variableRFT->bufferTrain($tokens);
+        $this->makeVocabulary($tokens);
+    }
+
+    public function performTrain() {
+        $this->variableRFT->performTrain();
+        $this->saveVocabulary();
+    }
 }
 
 ?>
