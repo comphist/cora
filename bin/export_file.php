@@ -1,4 +1,5 @@
 <?php
+ini_set('memory_limit', '-1');
 $CORA_DIR = dirname(__FILE__) . "/../";
 require_once( $CORA_DIR . "lib/globals.php" );
 require_once( $CORA_DIR . "lib/connect.php" );
@@ -54,7 +55,7 @@ No export format given!
 
 // go
 foreach($files as $k => $file) {
-    $exp->export($file, $format, STDOUT);
+    $exp->export($file, $format, array(), STDOUT);
 }
 
 ?>
