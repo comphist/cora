@@ -180,6 +180,10 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
         return $tok;
     }
 
+    private function filterEmpty($tok) {
+        return !empty($tok[$this->use_layer]);
+    }
+
     protected function preprocessTokens($tokens) {
         if($this->use_layer == "norm") {
             $tokens = array_map(array($this, 'mapNormToAscii'), $tokens);
@@ -191,7 +195,7 @@ class RFTaggerAnnotator extends AutomaticAnnotator {
     }
 
     public function annotate($tokens) {
-        $tokens = $this->preprocessTokens($tokens);
+        $tokens = array_filter($this->preprocessTokens($tokens), array($this, 'filterEmpty'));
 
         // write tokens to temporary file
         $tmpfname = $this->writeTaggerInput($tokens, false);
