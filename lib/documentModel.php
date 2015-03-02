@@ -1,7 +1,7 @@
 <?php
 
-/** @file documentModel.php 
- * 
+/** @file documentModel.php
+ *
  * Representation of a CorA document, used for converting between
  * formats (e.g., for DB import from XML).
  *
@@ -21,7 +21,7 @@ class CoraDocument {
   private $internal = array("fileid"  => null,
 			    "currentmod_id" => null,
 			    "tagsets" => array()
-			    );			    
+			    );
 
   private $pages     = array();
   private $columns   = array();
@@ -232,6 +232,8 @@ class CoraDocument {
     $currentline = $this->lines[0];
     foreach($this->pages as &$currentpage) {
       list($pagestart, $pageend) = $currentpage['range'];
+      if(empty($pagestart))
+        continue;
       if ($currentcol_idx >= count($this->columns)) {
 	throw new DocumentValueException("Out of columns for page '" . $currentpage['xml_id'] . "'.");
       }
@@ -247,6 +249,8 @@ class CoraDocument {
         $currentcol = $this->columns[$currentcol_idx];
 	$this->columns[$currentcol_idx]['parent_xml_id'] = $currentpage['xml_id'];
 	list($colstart, $colend) = $currentcol['range'];
+        if(empty($colstart))
+          continue;
 	if ($currentline_idx >= count($this->lines)) {
 	  throw new DocumentValueException("Out of lines for column '" . $currentcol['xml_id'] . "'.");
 	}
@@ -281,6 +285,8 @@ class CoraDocument {
     foreach($this->lines as &$currentline) {
       $currentdipl = $this->dipls[$currentdipl_idx];
       list($linestart, $lineend) = $currentline['range'];
+      if(empty($linestart))
+        continue;
       if($currentdipl['xml_id'] !== $linestart) {
 	throw new DocumentValueException("Expected dipl '{$linestart}' for line '" . $currentline['xml_id']
 					 ."', but found dipl '" . $currentdipl['xml_id'] . "'.");
@@ -312,7 +318,7 @@ class CoraDocument {
           $lnid = $currentdipl["parent_line_db_id"];
           $dpid = $currentdipl["db_id"];
           if(!array_key_exists($lnid, $lines_by_id)) {
-              // this dipl is the start (and currently-known end) 
+              // this dipl is the start (and currently-known end)
               // of the span
               $lines_by_id[$lnid] = array($dpid, $dpid);
           }
@@ -334,7 +340,7 @@ class CoraDocument {
           else {
               $currentline["range"] = $lines_by_id[$lnid];
           }
-          
+
           if(!array_key_exists($clid, $col_by_id)) {
               $col_by_id[$clid] = array($lnid, $lnid);
           }
