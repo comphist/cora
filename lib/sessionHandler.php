@@ -598,7 +598,7 @@ class CoraSessionHandler {
         $exp = new Exporter($this->db);
         $aa = new AutomaticAnnotationWrapper($this->db, $exp, $taggerid, $pid);
         if($action == "train" || $action == "both") {
-            $aa->train();
+            $aa->train($fid);
         }
         if($action == "anno"  || $action == "both") {
             $aa->annotate($fid);

@@ -27,6 +27,8 @@ class AutomaticAnnotationWrapper {
   protected $tagset_cls; /**< Array of associated tagset classes. */
   protected $tagsets;    /**< Array of associated tagset metadata. */
   protected $trainable;
+  protected $train_single_file = false; /**< Hack to make training work on
+                                             current file only. */
 
   protected $paramdir = EXTERNAL_PARAM_DIR;
 
@@ -71,6 +73,9 @@ class AutomaticAnnotationWrapper {
     $options = $this->db->getTaggerOptions($this->taggerid);
     $this->tagger = new $this->tagger_objects[$class_name]($this->getPrefix(),
                                                            $options);
+    if(array_key_exists('train_single_file', $options)) {
+      $this->train_single_file = ($options['train_single_file'] == 1);
+    }
     // get info about associated tagsets
     $this->tagset_ids = $tagger[$this->taggerid]['tagsets'];
     $this->tagsets    = $this->db->getTagsetMetadata($this->tagset_ids);
@@ -134,9 +139,13 @@ class AutomaticAnnotationWrapper {
       $this->updateAnnotation($fileid, $tokens, $annotated);
   }
 
-  public function train() {
+  public function train($fileid) {
       if(!$this->trainable) return;
-      $all_files = $this->db->getFilesForProject($this->projectid);
+      if($this->train_single_file) {
+          $all_files = array(array('id' => $fileid));
+      } else {
+          $all_files = $this->db->getFilesForProject($this->projectid);
+      }
       $this->tagger->startTrain();
       foreach($all_files as $f) {
           $tokens = $this->db->getAllModerns_simple($f['id'], true);
