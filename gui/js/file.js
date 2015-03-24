@@ -1325,10 +1325,12 @@ cora.current = function() {
 };
 
 cora.currentTagset = function(cls) {
+    if (cls == "morph") cls = "pos";
     return cora.current().tagsets[cls];
 };
 
 cora.currentHasTagset = function(cls) {
+    if (cls == "morph") cls = "pos";
     return (typeof(cora.current().tagsets[cls]) !== "undefined");
 };
 
