@@ -24,6 +24,7 @@ fi
 echo "~SUCCESS CHECK"
 
 echo "~BEGIN XMLCALL"
+echo "~BEGIN XML"
 OUTPUT_CONV=$(mktemp)
 $PYTHON -u $SCRIPT_CONV "$1" > "$2" 2> "$OUTPUT_CONV"
 if [ $? -gt 0 ]; then
@@ -36,4 +37,5 @@ if [ $? -gt 0 ]; then
     fi
     exit 1
 fi
+echo "~SUCCESS XML"
 echo "~SUCCESS XMLCALL"
