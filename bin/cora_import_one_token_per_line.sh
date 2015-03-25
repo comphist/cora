@@ -37,5 +37,6 @@ if [ $? -gt 0 ]; then
     fi
     exit 1
 fi
+echo "~PROGRESS 0.5"
 echo "~SUCCESS XML"
 echo "~SUCCESS XMLCALL"
