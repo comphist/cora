@@ -54,13 +54,10 @@ var LemmaAutocomplete = new Class({
     },
 
     _acFilter: function(text, data) {
-        if (data.t == "s" || data.t == "c")
-            return true;
-        return text ?
-            data.v.standardize().test(
-                new RegExp("^" + text.standardize().escapeRegExp(), 'i')
-            )
-            : true;
+        // Input was already filtered by PHP/MySQL, so we trust it -- prevents
+        // problems with certain Unicode characters being handled differently in
+        // PHP/MySQL and here
+        return true;
     },
 
     _acFormatMatch: function(text, data, i) {
