@@ -1,3 +1,3 @@
-vnd	und	KOKOM
-er	er	NA
-gieng	ging	VVFIN
+vnd	KOKOM
+er	NA
+giebt	VVFIN

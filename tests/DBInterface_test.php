@@ -100,18 +100,21 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         $this->assertEquals(1, $this->dbi->getUserIDFromName('system'));
         $this->assertEquals(5, $this->dbi->getUserIDFromName('test'));
 
-        $result = $this->dbi->getUserData("test","test");
-        $this->assertEquals(array('id' => '5',
-                                  'name' => 'test',
-                                  'admin' => '0',
-                                  'lastactive' => '2013-01-22 15:38:32'),
-                            $result);
-
         $this->assertEquals(array(array_merge($this->expected["users"]["bollmann"],
 					      array("active" => '0', "opened_text" => '3', "email" => null, "comment" => null)),
 				  array_merge($this->expected["users"]["test"],
 					      array("active" => '0', "opened_text" => null, "email" => null, "comment" => null))),
 			    $this->dbi->getUserList(30));
+
+        // Calling getUserData() updates the password hash if necessary,
+        // which modifies 'lastactive', so put this test last
+        $result = $this->dbi->getUserData("test", "test");
+        $this->assertEquals(array('id' => '5',
+                                  'name' => 'test',
+                                  'admin' => '0',
+                                  'lastactive' => '2013-01-22 15:38:32',
+                                  'password' => '68358d5d9cbbf39fe571ba41f26524b6'),
+                            $result);
     }
 
     public function testUserActions() {
@@ -127,10 +130,20 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
                                  $this->getConnection()->createQueryTable("users",
                                     "SELECT id,name,admin FROM users WHERE name='anselm';"));
 
+        // Passwords cannot be asserted against the DB any longer since the
+        // hashing algorithm is unknown (i.e., it uses the algorithm currently
+        // considered as "best" by PHP, which could change between versions)
+        // and also uses dynamically generated salts.
         $this->dbi->changePassword(5, "password");  // user "test"
-        $this->assertEquals("1619d7adc23f4f633f11014d2f22b7d8",
-            $this->getConnection()->createQueryTable("users",
-            "SELECT password FROM users WHERE name='test'")->getValue(0, 'password' ));
+        $this->assertTrue($this->dbi->verifyPassword(
+                              "password",  // old hash supported for compatibility
+                              "1619d7adc23f4f633f11014d2f22b7d8")
+        );
+        $this->assertTrue($this->dbi->verifyPassword(
+                              "password",
+                              $this->getConnection()->createQueryTable("users",
+                              "SELECT password FROM users WHERE name='test'")->getValue(0, 'password'))
+        );
 
         $this->dbi->deleteUser(6);  // user "anselm"
         $this->assertEquals(0, $this->getConnection()->createQueryTable("users",
@@ -195,7 +208,7 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         $this->assertEquals($getfiles_expected,
                             $this->dbi->getFilesForUser("bollmann"));
 
-        $this->dbi->markLastPosition("3", "2");
+        $this->dbi->performSaveLines("3", array(), "2");
         $this->assertEquals("2",
             $this->getConnection()->createQueryTable("currentpos",
             "SELECT currentmod_id FROM text WHERE id=3;")->getValue(0, "currentmod_id"));
@@ -257,8 +270,12 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
 						 $this->expected["tagsets"]["ts1"],
 						 $this->expected["tagsets"]["ts2"],
 						 $this->expected["tagsets"]["ts3"],
-
-								 ))),
+								 ),
+                                              "idlist" => array(
+                                                 0 => '1', 1 => '2', 2 => '3',
+                                                 3 => '4', 4 => '5', 5 => '6',
+                                                 6 => '7', 7 => '8', 8 => '9'
+                                              ))),
                   "success" => true),
             $this->dbi->openFile("3", "bollmann")
         );
@@ -272,13 +289,17 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
 					      "taggers" => array(),
 					      "tagsets" => array(
 						 $this->expected["tagsets"]["ts1"]
-								 ))),
+								 ),
+                                              "idlist" => array(
+                                                 0 => '13', 1 => '14'
+                                              ))),
                   "success" => true),
             $this->dbi->openFile("4")
         );
 
         // opening a file that's already opened by someone else must fail
-        $this->assertEquals(array("success" => false),
+        $this->assertEquals(array("success" => false,
+                                  "errors" => array("lock failed")),
                             $this->dbi->openFile("3"));
     }
     public function testGetLines() {
@@ -467,6 +488,8 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         $expected = $this->createXMLDataset("data/inserted_document.xml");
 
         $actual = $this->dbi->insertNewDocument($options, $data);
+        $this->assertEquals(array("success" => true, "warnings" => array()),
+                            $actual);
 
         $this->assertTablesEqual($expected->getTable("inserted_text"),
             $this->getConnection()->createQueryTable("inserted_text",
@@ -515,8 +538,6 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         $this->assertTablesEqual($expected->getTable("inserted_mod2error"),
             $this->getConnection()->createQueryTable("inserted_mod2error",
             "SELECT * FROM mod2error WHERE mod_id >= 15"));
-
-        $this->assertTrue($actual['success']);
     }
 
     public function testEditToken() {
