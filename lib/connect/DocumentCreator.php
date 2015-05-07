@@ -232,7 +232,7 @@ class DocumentCreator extends DocumentWriter {
           // currentmod_id -- done here because this might become a flag-type
           //                  annotation for moderns in the future
           if(!$last_checked_found) {
-              if($mod['chk'])
+              if(isset($mod['chk']) && $mod['chk'])
                   $last_checked = $mod['db_id'];
               else
                   $last_checked_found = true;
@@ -305,7 +305,7 @@ class DocumentCreator extends DocumentWriter {
           $this->saveAllShifttags($doc->getShifttags());
           $this->saveAllComments($doc->getComments());
       }
-      catch (PDOException $ex) {
+      catch (Exception $ex) {
           $this->dbo->rollBack();
           $this->warn("ERROR: An exception occured!\n"
                       . $ex->getMessage());

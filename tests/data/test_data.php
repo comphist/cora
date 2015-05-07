@@ -123,7 +123,6 @@ function get_DBInterface_expected() {
                             'utf' => 'Anshelm\'',
                             'tok_id' => '1',
                             'full_trans' => '*{A*4}n$helm%9',
-                            'num' => '0',
                             'suggestions' => array (
                                 array ( 'pos' => 'VVFIN.3.Pl.Past.Konj',
                                         'score' => '0.97')
@@ -140,7 +139,6 @@ function get_DBInterface_expected() {
                             'utf'         => 'pist',
                             'tok_id'      => '2',
                             'full_trans'  => 'pi$t||u||s',
-                            'num'         => '1',
                             'suggestions' => array(
                                 array( 'pos' => 'PPOSAT.Fem.Nom.Sg',
                                        'score' => null)
@@ -157,7 +155,6 @@ function get_DBInterface_expected() {
                             'utf'         => 'u',
                             'tok_id'      => '2',
                             'full_trans'  => 'pi$t||u||s',
-                            'num'         => '2',
                             'suggestions' => array(array('pos' => 'VMINF',
                                                    'score' => null)),
                             'anno_pos' => 'VMINF',
@@ -174,7 +171,6 @@ function get_DBInterface_expected() {
                             'utf'         => 's',
                             'tok_id'      => '2',
                             'full_trans'  => 'pi$t||u||s',
-                            'num'         => '3',
                             'suggestions' => array(
                                 array('pos' => 'VVFIN.3.Pl.Pres.Konj',
                                       'score' => null)
@@ -191,7 +187,6 @@ function get_DBInterface_expected() {
                             'utf'         => 'allerliebstev',
                             'tok_id'      => '3',
                             'full_trans'  => 'aller#lieb$tev',
-                            'num'         => '4',
                             'suggestions' => array(),
                             'anno_pos'    => 'PDS.*.Gen.Pl',
                             'anno_lemma'  => 'lemma',
@@ -206,7 +201,6 @@ function get_DBInterface_expected() {
                             'utf'         => 'vunftusentvndvierhundertvnsechzig',
                             'tok_id'      => '4',
                             'full_trans'  => "vunf=\ntusent#vnd#vierhundert#vn-(=)\nsechzig",
-                            'num'         => '5',
                             'suggestions' => array(),
                             'anno_norm'   => 'norm',
 			      'comment' => null,
@@ -220,7 +214,6 @@ function get_DBInterface_expected() {
                             'utf' => 'kunnen',
                             'tok_id' => '5',
                             'full_trans' => 'kunnen.(.)',
-                            'num' => '6',
                             'suggestions' => Array (),
                             'anno_lemma' => 'deletedlemma',
 			      'comment' => null,
@@ -235,7 +228,6 @@ function get_DBInterface_expected() {
                             'utf' => '.',
                             'tok_id' => '5',
                             'full_trans' => 'kunnen.(.)',
-                            'num' => '7',
                             'suggestions' => Array (),
 			      'comment' => null,
 			     'page_name' => '1',
@@ -249,7 +241,6 @@ function get_DBInterface_expected() {
                             'utf' => '.',
                             'tok_id' => '5',
                             'full_trans' => 'kunnen.(.)',
-                            'num' => '8',
                             'suggestions' => Array (),
                             'anno_norm' => 'deletednorm',
 			      'comment' => null,
@@ -312,7 +303,8 @@ function get_XMLHandler_expected() {
                     'ascii' => 'sol',
                     'utf' => 'ſol',
                     'parent_xml_id' => 't1',
-                    'flags' => array()
+                    'flags' => array(),
+                    'chk' => false
                 ),
                 array(
                     'tags' => array(
@@ -364,7 +356,8 @@ function get_XMLHandler_expected() {
                     'ascii' => 'tu',
                     'utf' => 'tu',
                     'parent_xml_id' => 't1',
-                    'flags' => array()
+                    'flags' => array(),
+                    'chk' => false
                 ),
                 array(
                     'tags' => array(
@@ -395,7 +388,8 @@ function get_XMLHandler_expected() {
                     'ascii' => 'geessen',
                     'utf' => 'geeſſen',
                     'parent_xml_id' => 't2',
-                    'flags' => array()
+                    'flags' => array(),
+                    'chk' => false
                 ),
                 array(
                     'tags' => array(
@@ -426,7 +420,8 @@ function get_XMLHandler_expected() {
                     'ascii' => 'Anshelm',
                     'utf' => 'Anshelm',
                     'parent_xml_id' => 't3',
-                    'flags' => array()
+                    'flags' => array(),
+                    'chk' => false
                 ),
                 array(
                     'tags' => array(array(
@@ -441,7 +436,8 @@ function get_XMLHandler_expected() {
                     'ascii' => '/',
                     'utf' => '/',
                     'parent_xml_id' => 't3',
-                    'flags' => array()
+                    'flags' => array(),
+                    'chk' => false
                 ),
                 array(
                     'tags' => array(array(
@@ -456,7 +452,8 @@ function get_XMLHandler_expected() {
                     'ascii' => '',
                     'utf' => '',
                     'parent_xml_id' => 't3',
-                    'flags' => array()
+                    'flags' => array(),
+                    'chk' => false
                 ),
         ),
         "tokens" => array(
@@ -914,12 +911,12 @@ function get_AutomaticAnnotator_data() {
                                        ),
                  "tagger_options" => array("annotate" => "cat",
                                            "par" => $outfile),
-                 "expected" => array(array("id" => 801,
-                                           "anno_norm" => "und",
-                                           "anno_pos" => "KOKOM"),
-                                     array("id" => 803,
-                                           "anno_norm" => "ging",
-                                           "anno_pos" => "VVFIN")
+                 "expected" => array(0 => array("id" => 801,
+                                                "anno_pos" => "KOKOM",
+                                                "ascii" => "vnd"),
+                                     2 => array("id" => 803,
+                                                "anno_pos" => "VVFIN",
+                                                "ascii" => "giebt")
                                      )
                  );
 }

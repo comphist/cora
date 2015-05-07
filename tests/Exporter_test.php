@@ -36,6 +36,14 @@ class Cora_Tests_DBInterface_Exporter_Mock {
                      array("id" => 43));
     }
 
+    public function getAllModerns($fileid) {
+        $tokens = $this->getAllTokens($fileid);
+        if(isset($tokens[2]))
+            return $tokens[2];
+        else
+            return $tokens;
+    }
+
     public function getAllTokens($fileid) {
         if($fileid == 42) {
             return $this->test_data["all_tokens"];
@@ -58,7 +66,7 @@ class Cora_Tests_Exporter_test extends PHPUnit_Framework_TestCase {
 
     public function testExportPOS() {
         $stream = fopen("php://memory", 'r+');
-        $result = $this->exp->export(42, ExportType::Tagging, $stream);
+        $result = $this->exp->export(42, ExportType::Tagging, array(), $stream);
         rewind($stream);
 
         $this->assertEquals($this->dbi->getExpectedPOS(),
@@ -68,7 +76,7 @@ class Cora_Tests_Exporter_test extends PHPUnit_Framework_TestCase {
 
     public function testExportNorm() {
         $stream = fopen("php://memory", 'r+');
-        $result = $this->exp->export(42, ExportType::Normalization, $stream);
+        $result = $this->exp->export(42, ExportType::Normalization, array(), $stream);
         rewind($stream);
 
         $this->assertEquals($this->dbi->getExpectedNorm(),
