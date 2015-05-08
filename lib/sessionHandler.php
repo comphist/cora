@@ -10,6 +10,7 @@
 require_once( "connect.php" );
 require_once( "xmlHandler.php" );
 require_once( "commandHandler.php" );
+require_once( "localeHandler.php" );
 require_once( "exporter.php" );
 require_once( "automaticAnnotation.php" );
 
@@ -40,8 +41,7 @@ class CoraSessionHandler {
     $this->xml = $xml;
     $this->exporter = $exp;
 
-    $defaults = array( "locale"      => DEFAULT_LOCALE,
-		       "loggedIn"    => false,
+    $defaults = array( "loggedIn"    => false,
 		       "admin"       => false,
 		       "failedLogin" => false,
 		       "currentName" => null,
@@ -52,10 +52,24 @@ class CoraSessionHandler {
         $_SESSION[$key] = $default;
       }
     }
+
+    if(!array_key_exists("locale", $_SESSION))
+      $this->setLocale();
   }
 
-  public function setLocale($locale) {
+  /** Set a locale.
+   */
+  public function setLocale($locale=null) {
+    $lh = new LocaleHandler();
+    if($locale == null || !$lh->isSupported($locale)) {
+      if (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"])) {
+        $locale = $lh->extractBestLocale($_SERVER["HTTP_ACCEPT_LANGUAGE"]);
+      } else {
+        $locale = $lh->defaultLocale();
+      }
+    }
     $_SESSION["locale"] = $locale;
+    return $locale;
   }
 
   public function setUserSettings($lpp,$cl){
@@ -74,7 +88,7 @@ class CoraSessionHandler {
                        "columns_order" => "editTableDragHistory");
     if($this->db->setUserSetting($_SESSION['user'],$name,$value)){
       if($name === "locale") {
-        $this->setLocale($value);
+        $value = $this->setLocale($value);
       } else {
         $key = array_key_exists($name, $mapToSVAR) ? $mapToSVAR[$name] : $name;
         $_SESSION[$key] = $value;
@@ -850,7 +864,7 @@ class CoraSessionHandler {
 		$_SESSION['hiddenColumns'] = (isset($data['columns_hidden']))? $data['columns_hidden'] : '';
 		$_SESSION['textPreview'] = (isset($data['text_preview']))? $data['text_preview'] : 'off';
 		$_SESSION['showInputErrors'] = (isset($data['show_error']))? ($data['show_error']==1 ? 'true' : 'false') : 'true';
-                $this->setLocale((isset($data['locale']))? $data['locale'] : 'en-US');
+                $this->setLocale((isset($data['locale']))? $data['locale'] : null);
 	  } else {
 		$_SESSION['noPageLines'] = '30';
 		$_SESSION['contextLines'] = '5';
@@ -858,7 +872,7 @@ class CoraSessionHandler {
 		$_SESSION['textPreview'] = 'off';
 		$_SESSION['hiddenColumns'] = '';
 		$_SESSION['showInputErrors'] = 'true';
-                $this->setLocale('en-US');
+                $this->setLocale();
 	  }
     } else {      // login failed
       $_SESSION["failedLogin"] = true;

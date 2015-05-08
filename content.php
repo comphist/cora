@@ -54,7 +54,10 @@ function embedJS($filename, $withtimestamp=false) {
 
 function embedSessionVars($svars) {
     echo "var userdata = { ";
-    $userdata = array('name: "'.$_SESSION['user'].'"');
+    $userdata = array();
+    if(isset($_SESSION['user'])) {
+      $userdata[] = 'name: "'.$_SESSION['user'].'"';
+    }
     foreach($svars as $key => $quoted) {
         if($quoted)
             $userdata[] = $key.': "'.$_SESSION[$key].'"';

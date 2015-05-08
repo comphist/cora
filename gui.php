@@ -42,12 +42,12 @@
                              'showInputErrors' => false,
                              'locale' => true
                              );
-              embedSessionVars($svars);
               embedTagsets($tagsets_all);
           }
           else {
-              echo "var userdata = {};\n";
+              $svars = array('locale' => true);
           }
+          embedSessionVars($svars);
         ?>
     </script>
     <?php
