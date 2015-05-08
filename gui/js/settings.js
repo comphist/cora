@@ -4,16 +4,46 @@
    settings and controls the "settings" tab.
 */
 cora.settings = {
+    languageDiv: 'editorLanguageSettings',
     lineSettingsDiv: 'editLineSettings',
     columnVisibilityDiv: 'editorSettingsHiddenColumns',
     textPreviewDiv: 'editorSettingsTextPreview',
     inputAidsDiv: 'editorSettingsInputAids',
 
     initialize: function() {
+        this._activateLanguageDiv();
         this._activateLineSettingsDiv();
         this._activateColumnVisibilityDiv();
         this._activateTextPreviewDiv();
         this._activateInputAidsDiv();
+    },
+
+    /* Function: _activateLanguageDiv
+
+       Activates the radio boxes to change language settings.
+     */
+    _activateLanguageDiv: function() {
+        var elem, div = $(this.languageDiv);
+        if (div === null || typeof(div) === "undefined")
+            return;
+
+        // Pre-select currently chosen value
+        elem = div.getElement('input[value="'+this.get('locale')+'"]');
+        if(elem !== null)
+            elem.set('checked', 'yes');
+
+        div.addEvent(
+            'change:relay(input)',
+            function(event, target) {
+                var value = div.getElement('input:checked').get('value');
+                this.set('locale', value);
+		new Request({url: 'request.php'}).get(
+		    {'do': 'setUserEditorSetting',
+		     'name': 'locale',
+		     'value': value}
+		);
+            }.bind(this)
+        );
     },
 
     /* Function: _activateLineSettingsDiv

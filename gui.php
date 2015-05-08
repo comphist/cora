@@ -39,7 +39,8 @@
                              'admin' => true,
                              'currentFileId' => true,
                              'currentName' => true,
-                             'showInputErrors' => false
+                             'showInputErrors' => false,
+                             'locale' => true
                              );
               embedSessionVars($svars);
               embedTagsets($tagsets_all);

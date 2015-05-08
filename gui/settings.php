@@ -12,6 +12,14 @@
     </div>
 
     <div>
+      <div id="editorLanguageSettings">
+        <h4>Sprache</h4>
+        <p>
+          <input type="radio" name="language" value="en-US" id="lang_en" /><label for="lang_en">Englisch</label>
+          <input type="radio" name="language" value="de-DE" id="lang_de" /><label for="lang_de">Deutsch</label>
+        </p>
+      </div>
+
       <div id="editorSettingsNumberOfLines">
         <h4>Zeilenanzahl</h4>
         <form action="request.php" id="editLineSettings" method="get" accept-charset="utf-8">
