@@ -13,7 +13,6 @@ This list is probably still incomplete.
 
 * PHP 5.x+ with the following extensions: (**TODO:** find out which version exactly the minimum required)
     * dom
-    * intl
     * json
     * libxml
 
