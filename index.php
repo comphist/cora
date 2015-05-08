@@ -9,12 +9,6 @@
  *
  * @author Marcel Bollmann
  * @date   January 2012
- *
- * @note Languages are currently hardcoded (German and English); this
- * is reflected in database structure, the way language selection
- * works in gui.php, and some helper functions (e.g. in
- * sessionHandler.php). Further languages cannot be added without
- * considerable modifications.
  */
 
 header( "Content-Type: text/html; charset=utf-8" );

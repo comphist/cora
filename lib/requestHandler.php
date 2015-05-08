@@ -28,8 +28,6 @@ class RequestHandler {
    * Supports the following GET requests:
    * <ul>
    *   <li><code>do=logout</code> - Log out the current user.</li>
-   *   <li><code>lang</code> - Set the language code to the given
-   *     argument.</li>
    * </ul>
    *
    * Supports the following POST request:
@@ -41,7 +39,7 @@ class RequestHandler {
    *
    * @note Requests sent to index.php involve a reload of the whole
    * page, and should only be needed in a few circumstances, e.g.\ a
-   * user logging in, or changing the language setting.
+   * user logging in.
    */
   public function handleRequests( $get, $post ) {
     if(array_key_exists("action", $post)) {
@@ -60,10 +58,6 @@ class RequestHandler {
 	$this->sh->logout();
 	break;
       }
-    }
-
-    if(array_key_exists("lang", $get)) {
-      $_SESSION["lang"] = $get["lang"];
     }
   }
 

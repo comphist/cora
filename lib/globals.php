@@ -15,7 +15,7 @@ define( "VERSION",            "1.2"			  );
 define( "LONGTITLE",          "Corpus Annotator"          );
 define( "DESCRIPTION",        "A corpus annotation tool." );
 define( "KEYWORDS",           "annotation,corpus,POS"     );
-define( "DEFAULT_LANGUAGE",   "de"                        );
+define( "DEFAULT_LOCALE",     "en_US"                     );
 
 define( "EXTERNAL_PARAM_DIR", "/var/lib/cora"             );
 
