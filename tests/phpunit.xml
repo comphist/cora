@@ -17,6 +17,7 @@
             <file>Menu_test.php</file>
             <file>Exporter_test.php</file>
             <file>AutomaticAnnotator_test.php</file>
+            <file>Locale_test.php</file>
         </testsuite>
     </testsuites>
 </phpunit>
