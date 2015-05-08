@@ -128,7 +128,7 @@
     */
    public function getUserSettings($user){
      $qs = "SELECT lines_per_page, lines_context, text_preview, "
-       . "         columns_order, columns_hidden, show_error "
+       . "         columns_order, columns_hidden, show_error, locale "
        . "    FROM users WHERE name=:name";
      $stmt = $this->dbo->prepare($qs);
      $stmt->bindValue(':name', $user, PDO::PARAM_STR);
@@ -1167,7 +1167,8 @@
     */
    public function setUserSetting($user,$name,$value) {
      $validnames = array("lines_context", "lines_per_page", "show_error",
-			 "columns_order", "columns_hidden", "text_preview");
+			 "columns_order", "columns_hidden", "text_preview",
+                         "locale");
      if (in_array($name,$validnames)) {
        $qs = "UPDATE users SET {$name}=:value WHERE name=:user AND `id`!=1";
        $stmt = $this->dbo->prepare($qs);

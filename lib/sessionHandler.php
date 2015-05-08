@@ -858,6 +858,7 @@ class CoraSessionHandler {
 		$_SESSION['hiddenColumns'] = (isset($data['columns_hidden']))? $data['columns_hidden'] : '';
 		$_SESSION['textPreview'] = (isset($data['text_preview']))? $data['text_preview'] : 'off';
 		$_SESSION['showInputErrors'] = (isset($data['show_error']))? ($data['show_error']==1 ? 'true' : 'false') : 'true';
+		$_SESSION['locale'] = (isset($data['locale']))? $data['locale'] : 'en-US';
 	  } else {
 		$_SESSION['noPageLines'] = '30';
 		$_SESSION['contextLines'] = '5';
@@ -865,6 +866,7 @@ class CoraSessionHandler {
 		$_SESSION['textPreview'] = 'off';
 		$_SESSION['hiddenColumns'] = '';
 		$_SESSION['showInputErrors'] = 'true';
+                $_SESSION['locale'] = 'en-US';
 	  }
     } else {      // login failed
       $_SESSION["failedLogin"] = true;
