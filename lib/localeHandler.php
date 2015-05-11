@@ -11,11 +11,17 @@
  */
 class LocaleHandler {
   protected $locale = null;
+  protected $localedir = null;
   protected $supported = array();
+  private $data = array();
 
-  function __construct($localefile="/../locale/supported_locales.json") {
+  function __construct($localedir=null) {
+    if ($localedir == null) {
+      $localedir = __DIR__ . "/../locale/";
+    }
+    $this->localedir = $localedir;
     $this->supported = json_decode(
-      file_get_contents(__DIR__ . $localefile)
+      file_get_contents($localedir . "supported_locales.json")
     );
   }
 
@@ -29,7 +35,33 @@ class LocaleHandler {
       }
     }
     $this->locale = $locale;
+    $this->loadLocaleFile();
     return $locale;
+  }
+
+  /** Retrieve a localized string.
+   *
+   * @param string $category The name of the field to retrieve, with dots (.)
+   *                         being interpreted as field delimiters
+   * @param array $args An optional array of values to be substituted for
+   *                    placeholders in the localized string.
+   *
+   * @return The localized string.
+   */
+  public function localize($category, $args=array()) {
+    if ($this->locale == null) return "";
+    $str = $this->retrieveElement($category);
+    return self::performSubstitutions($str, $args);
+  }
+
+  /** An alias for LocaleHandler::localize(). */
+  public function _($category, $args=array()) {
+    return $this->localize($category, $args);
+  }
+
+  /** An alias for LocaleHandler::localize(). */
+  public function __invoke($category, $args=array()) {
+    return $this->localize($category, $args);
   }
 
   /** Check if a given locale is supported.
@@ -84,6 +116,40 @@ class LocaleHandler {
     }
 
     return $this->defaultLocale();
+  }
+
+  /** Loads the JSON file containing the translation strings. */
+  private function loadLocaleFile() {
+    if ($this->locale == null)
+      return;
+    $filename = $this->localedir . "Locale." . $this->locale . ".json";
+    $json = json_decode(file_get_contents($filename), true);
+    assert((isset($json["name"]) && $json["name"] === $this->locale));
+    assert(isset($json["sets"]));
+    $this->data = $json["sets"];
+  }
+
+  /** Looks up a string in the localization table. */
+  private function retrieveElement($category) {
+    $keys = explode(".", $category);
+    $elem = $this->data;
+    foreach($keys as $k) {
+      if (!isset($elem[$k])) return "";
+      $elem = $elem[$k];
+    }
+    return $elem;
+  }
+
+  /** Substitutes variables in a format string. */
+  private static function performSubstitutions($s, $args) {
+    if (empty($args)) return $s;
+    $keys = array();
+    $values = array();
+    foreach($args as $k => $v) {
+      $keys[] = '{'.$k.'}';
+      $values[] = $v;
+    }
+    return str_replace($keys, $values, $s);
   }
 }
 
