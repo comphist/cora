@@ -7,6 +7,11 @@ class Cora_Tests_LocaleHandler_Mock extends LocaleHandler {
     function __construct() {
         $this->supported = array("en-US", "de-DE");
     }
+
+    /* expose protected function */
+    public function extractBestLocale($str) {
+        return parent::extractBestLocale($str);
+    }
 }
 
 /** Test LocaleHandler class
