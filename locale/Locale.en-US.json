@@ -1,0 +1,8 @@
+{"name": "en-US",
+ "sets": {
+     "Locales": {
+         "de-DE": "German",
+         "en-US": "English"
+     }
+ }
+}
