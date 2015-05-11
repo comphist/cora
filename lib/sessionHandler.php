@@ -10,7 +10,6 @@
 require_once( "connect.php" );
 require_once( "xmlHandler.php" );
 require_once( "commandHandler.php" );
-require_once( "localeHandler.php" );
 require_once( "exporter.php" );
 require_once( "automaticAnnotation.php" );
 
@@ -23,8 +22,7 @@ require_once( "automaticAnnotation.php" );
  */
 class CoraSessionHandler {
   private $db; /**< A DBInterface object. */
-  private $xml; /**< An XMLHandler object. */
-  private $exporter; /**< An Exporter object. */
+  private $lh; /**< A LocaleHandler object. */
 
   private $timeout = 30; // session timeout in minutes
 
@@ -33,15 +31,15 @@ class CoraSessionHandler {
    * Initializes a session, constructs a new DBInterface, and sets
    * defaults for various session values if required.
    */
-  function __construct($db, $xml, $exp) {
+  function __construct(DBInterface $db, LocaleHandler $lh) {
     session_name("PHPSESSID_CORA");
     session_start();
 
     $this->db = $db;
-    $this->xml = $xml;
-    $this->exporter = $exp;
+    $this->lh = $lh;
 
-    $defaults = array( "loggedIn"    => false,
+    $defaults = array( "locale"      => null,
+                       "loggedIn"    => false,
 		       "admin"       => false,
 		       "failedLogin" => false,
 		       "currentName" => null,
@@ -53,21 +51,13 @@ class CoraSessionHandler {
       }
     }
 
-    if(!array_key_exists("locale", $_SESSION))
-      $this->setLocale();
+    $this->setLocale($_SESSION["locale"]);
   }
 
   /** Set a locale.
    */
   public function setLocale($locale=null) {
-    $lh = new LocaleHandler();
-    if($locale == null || !$lh->isSupported($locale)) {
-      if (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"])) {
-        $locale = $lh->extractBestLocale($_SERVER["HTTP_ACCEPT_LANGUAGE"]);
-      } else {
-        $locale = $lh->defaultLocale();
-      }
-    }
+    $locale = $this->lh->set($locale);
     $_SESSION["locale"] = $locale;
     return $locale;
   }
@@ -234,7 +224,8 @@ class CoraSessionHandler {
 
   /** Wraps XMLHandler::import() */
   public function importFile($xmldata, $options) {
-    return $this->xml->import($xmldata, $options);
+    $xml = new XMLHandler($this->db);
+    return $xml->import($xmldata, $options);
   }
 
   /** Checks and parses the logfile for the current file import. */
@@ -283,6 +274,7 @@ class CoraSessionHandler {
   public function importTranscriptionFile($transdata, $options) {
     $ch_options = $this->db->getProjectOptions($options['project']);
     $ch = new CommandHandler($ch_options);
+    $xml = new XMLHandler($this->db);
 
     $localname = $transdata['tmp_name'];
     $logfile = fopen($options['logfile'], 'a');
@@ -320,7 +312,7 @@ class CoraSessionHandler {
     // perform import
     fwrite($logfile, "~BEGIN IMPORT\n");
     $xmldata = array("tmp_name" => $xmlname, "name" => $transdata['name']);
-    $status = $this->xml->import($xmldata, $options);
+    $status = $xml->import($xmldata, $options);
     if(!isset($status['success']) || !$status['success']) {
       fwrite($logfile, "~ERROR IMPORT\n");
       fwrite($logfile, implode("\n", $status['errors']) . "\n");
@@ -436,6 +428,7 @@ class CoraSessionHandler {
       return false;
     }
 
+    $exp = new Exporter($this->db);
     $options = array();
     if(array_key_exists('ccsv', $GET))
       $options = $GET['ccsv'];
@@ -446,7 +439,7 @@ class CoraSessionHandler {
     // header("Content-Transfer-Encoding: Binary");
     // header("Content-Length:".filesize($attachment_location));
     header("Content-Disposition: attachment; filename=".$filename);
-    $this->exporter->export($fileid, $format, $options, $output);
+    $exp->export($fileid, $format, $options, $output);
     return true;
   }
 

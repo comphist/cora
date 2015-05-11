@@ -10,12 +10,26 @@
 /** Contains locale-specific data and functions.
  */
 class LocaleHandler {
+  protected $locale = null;
   protected $supported = array();
 
-  function __construct() {
+  function __construct($localefile="/../locale/supported_locales.json") {
     $this->supported = json_decode(
-      file_get_contents(__DIR__ . "/../locale/supported_locales.json")
+      file_get_contents(__DIR__ . $localefile)
     );
+  }
+
+  /** Set a locale. */
+  public function set($locale) {
+    if($locale == null || !$this->isSupported($locale)) {
+      if (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"])) {
+        $locale = $this->extractBestLocale($_SERVER["HTTP_ACCEPT_LANGUAGE"]);
+      } else {
+        $locale = $this->defaultLocale();
+      }
+    }
+    $this->locale = $locale;
+    return $locale;
   }
 
   /** Check if a given locale is supported.
@@ -38,7 +52,7 @@ class LocaleHandler {
    * Accept-Language header, and returns the best matching locale from the list
    * of supported locales.
    */
-  public function extractBestLocale($str) {
+  protected function extractBestLocale($str) {
     // from <http://www.thefutureoftheweb.com/blog/use-accept-language-header>
     preg_match_all('/([a-z]{1,8}(-[a-z]{1,8})?)\s*(;\s*q\s*=\s*(1|0\.[0-9]+))?/i',
                    $str,

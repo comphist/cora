@@ -14,13 +14,14 @@
 header( "Content-Type: text/html; charset=utf-8" );
 
 /* Includes */
-require_once( "lib/globals.php" );
-require_once( "lib/connect.php" );      // provides DB interface
-require_once"lib/xmlHandler.php";
-require_once( "lib/requestHandler.php" );
-require_once( "lib/sessionHandler.php" );
-require_once( "lib/exporter.php" );
+require_once "lib/globals.php";
+require_once "lib/connect.php";      // provides DB interface
+require_once "lib/localeHandler.php";
+require_once "lib/sessionHandler.php";
+require_once "lib/requestHandler.php";
 
+$dbi;  /**< An instance of the DBInterface object. */
+$lh;   /**< An instance of the LocaleHandler object. */
 $sh;   /**< An instance of the SessionHandler object. */
 $rq;   /**< An instance of the RequestHandler object. */
 $menu; /**< A Menu object containing the menu items and references to
@@ -29,10 +30,9 @@ $menu; /**< A Menu object containing the menu items and references to
 
 /* Initiate session */
 $dbi = new DBInterface(DB_SERVER, DB_USER, DB_PASSWORD, MAIN_DB);
-$xml = new XMLHandler($dbi);
-$exp = new Exporter($dbi);
-$sh = new CoraSessionHandler($dbi, $xml, $exp);
-$rq = new RequestHandler( $sh );
+$lh = new LocaleHandler();
+$sh = new CoraSessionHandler($dbi, $lh);
+$rq = new RequestHandler($sh);
 $rq->handleRequests($_GET, $_POST);
 
 /* Define site content */
