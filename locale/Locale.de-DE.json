@@ -3,6 +3,12 @@
      "Locales": {
          "de-DE": "Deutsch",
          "en-US": "Englisch"
+     },
+     "Forms": {
+         "buttonLogin": "Anmelden",
+         "msgFailedLogin": "Anmeldung fehlgeschlagen.  Bitte überprüfen Sie Ihre Eingaben.",
+         "password": "Passwort",
+         "username": "Benutzername"
      }
  }
 }

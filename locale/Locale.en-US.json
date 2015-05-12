@@ -3,6 +3,12 @@
      "Locales": {
          "de-DE": "German",
          "en-US": "English"
+     },
+     "Forms": {
+         "buttonLogin": "Login",
+         "msgFailedLogin": "Login failed.  Please check your credentials.",
+         "password": "Password",
+         "username": "Username"
      }
  }
 }
