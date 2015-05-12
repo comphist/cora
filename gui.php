@@ -170,6 +170,7 @@ NOTLOGGEDIN;
     </div>
 
     <!-- templates -->
+    <?php if($_SESSION['loggedIn']): ?>
     <div class="templateHolder">
       <div id="genericTextMsgPopup">
         <p></p>
@@ -190,5 +191,6 @@ NOTLOGGEDIN;
       </div>
       <?php include("news.php"); ?>
     </div>
+    <?php endif; ?>
   </body>
 </html>
