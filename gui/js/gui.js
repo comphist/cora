@@ -12,6 +12,8 @@ var gui = {
     editKeyboard: null,
     serverNoticeQueue: [],
     serverNoticeShowing: false,
+    currentLocale: null,
+    availableLocales: {},
 
     initialize: function() {
 	this._addKeyboardShortcuts();
@@ -144,6 +146,56 @@ var gui = {
 	    });
 	    this.keepaliveRequest.startTimer();
 	}
+    },
+
+    /* Function: changeLocale
+
+       Retrieve the locale file (if necessary) and update all GUI text.
+     */
+    changeLocale: function(locale) {
+        if (locale === this.currentLocale)
+            return;
+        if (!this.availableLocales[locale]) {
+            this.requestLocale(locale, function() {
+                this.changeLocale(locale);
+            }.bind(this));
+            return;
+        }
+        Locale.use(locale);
+        this.currentLocale = locale;
+        this.updateAllLocaleText();
+    },
+
+    /* Function: requestLocale
+
+       Requests the locale file from the server.
+     */
+    requestLocale: function(locale, callback) {
+        new Request.JSON({
+            url: 'locale/Locale.'+locale+'.json',
+            async: true,
+            onSuccess: function(json, text) {
+                Object.each(json.sets, function(data, set) {
+                    Locale.define(locale, set, data);
+                });
+                this.availableLocales[locale] = true;
+                if (callback && typeof callback === "function")
+                    callback();
+            }.bind(this)
+        }).get();
+    },
+
+    /* Function: updateAllLocaleText
+
+       Updates all HTML elements with new translation strings.
+     */
+    updateAllLocaleText: function() {
+        $$("[data-trans-id]").each(function(elem) {
+            elem.set("text", Locale.get(elem.get("data-trans-id")));
+        });
+        $$("[data-trans-title-id]").each(function(elem) {
+            elem.set("title", Locale.get(elem.get("data-trans-title-id")));
+        });
     },
 
     /* Function: setHeader
@@ -650,8 +702,8 @@ var gui = {
  * the default tab.
  */
 window.addEvent('domready', function() {
-    Locale.use("de-DE");
     gui.initialize();
+    gui.changeLocale(cora.settings.get("locale"));
 
     // default item defined in content.php, variable set in gui.php
     gui.changeTab(default_tab);
