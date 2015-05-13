@@ -37,6 +37,7 @@ cora.settings = {
             function(event, target) {
                 var value = div.getElement('input:checked').get('value');
                 this.set('locale', value);
+                gui.changeLocale(value);
 		new Request({url: 'request.php'}).get(
 		    {'do': 'setUserEditorSetting',
 		     'name': 'locale',
