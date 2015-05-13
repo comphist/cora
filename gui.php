@@ -3,13 +3,13 @@
  * Display the graphical user interface.
  */
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<!DOCTYPE html>
+<html lang="en" xml:lang="en">
   <head>
+    <meta charset="utf-8" />
     <title><?php echo TITLE . " (" . LONGTITLE . ") " . VERSION; ?></title>
     <meta name="description" content="<?php echo DESCRIPTION; ?>" />
     <meta name="keywords" content="<?php echo KEYWORDS; ?>" />
-    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,700,400,600' rel='stylesheet' type='text/css'>
 
     <?php
@@ -171,6 +171,7 @@ NOTLOGGEDIN;
     </div>
 
     <!-- templates -->
+    <?php if($_SESSION['loggedIn']): ?>
     <div class="templateHolder">
       <div id="genericTextMsgPopup">
         <p></p>
@@ -191,5 +192,6 @@ NOTLOGGEDIN;
       </div>
       <?php include("news.php"); ?>
     </div>
+    <?php endif; ?>
   </body>
 </html>
