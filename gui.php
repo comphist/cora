@@ -128,7 +128,8 @@
 echo <<<NOTLOGGEDIN
     <script type="text/javascript">
       var gui = {changeTab: function() {}};
-      var onLoad = function() {
+
+      window.addEvent('domready', function() {
           $('loginTabButton').set('active', 'true');
 
           var uri = new URI();
@@ -141,14 +142,14 @@ echo <<<NOTLOGGEDIN
                   history.replaceState({}, "", "./");
               }
           }
-      };
+      });
     </script>
 NOTLOGGEDIN;
       }
     ?>
   </head>
   <?php flush(); ?>
-  <body onload="onLoad();"<?php if($_SESSION['loggedIn']): ?> onbeforeunload="return onBeforeUnload();"<?php endif; ?>>
+  <body>
     <div id="overlay"></div>
     <div id="spin-overlay"></div>
 

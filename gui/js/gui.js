@@ -649,16 +649,16 @@ var gui = {
  * navigation elements, e.g.\ clappable div containers, and selects
  * the default tab.
  */
-function onLoad() {
+window.addEvent('domready', function() {
     Locale.use("de-DE");
     gui.initialize();
 
     // default item defined in content.php, variable set in gui.php
     gui.changeTab(default_tab);
     gui.showNews();
-}
+});
 
-function onBeforeUnload() {
+window.onbeforeunload = function() {
     if (cora.editor !== null && cora.editor.hasUnsavedChanges()) {
         cora.editor.save();
 	return ("Es gibt noch ungespeicherte Änderungen, die verloren gehen könnten, wenn Sie fortfahren!");
