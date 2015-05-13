@@ -4,6 +4,22 @@
          "de-DE": "Deutsch",
          "en-US": "Englisch"
      },
+     "Menu": {
+         "file": "Datei",
+         "fileTooltip": "Dokumente öffnen oder verwalten",
+         "edit": "Editor",
+         "editTooltip": "Geöffnetes Dokument bearbeiten",
+         "search": "Suchen",
+         "searchTooltip": "Aktuelle Suchergebnisse anzeigen",
+         "settings": "Einstellungen",
+         "settingsTooltip": "Einstellungen von CorA ändern",
+         "admin": "Administration",
+         "adminTooltip": "Benutzer und Projekte verwalten",
+         "help": "Hilfe",
+         "helpTooltip": "Hilfe zur Benutzung von CorA",
+         "login": "Anmeldung",
+         "loginTooltip": "In CorA anmelden"
+     },
      "Forms": {
          "buttonLogin": "Anmelden",
          "msgFailedLogin": "Anmeldung fehlgeschlagen.  Bitte überprüfen Sie Ihre Eingaben.",

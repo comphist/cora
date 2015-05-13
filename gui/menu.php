@@ -12,11 +12,13 @@
 <?php
 /* Generate a button for each menu entry */
 foreach( $menu->getItems() as $item ) {
-   $tooltip = $menu->getItemTooltip($item);
-   $text = $menu->getItemCaption($item);
+   $tooltipID = $menu->getItemTooltip($item);
+   $tooltip = $lh($tooltipID);
+   $transID = $menu->getItemCaption($item);
+   $text = $lh($transID);
 echo <<<MENUITEM
-      <li class="tabButton" id="{$item}TabButton" title="{$tooltip}" active="false">
-         <a onclick="gui.changeTab('$item');">$text</a>
+      <li class="tabButton" id="{$item}TabButton" data-trans-title-id="{$tooltipID}" title="{$tooltip}" active="false">
+         <a onclick="gui.changeTab('$item');" data-trans-id="{$transID}">$text</a>
       </li>
 MENUITEM;
 }

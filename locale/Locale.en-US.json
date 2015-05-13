@@ -4,6 +4,22 @@
          "de-DE": "German",
          "en-US": "English"
      },
+     "Menu": {
+         "file": "File",
+         "fileTooltip": "Open or manage documents",
+         "edit": "Editor",
+         "editTooltip": "Edit the opened document",
+         "search": "Search",
+         "searchTooltip": "Show current search results",
+         "settings": "Settings",
+         "settingsTooltip": "Change CorA settings",
+         "admin": "Administration",
+         "adminTooltip": "Manage users and projects",
+         "help": "Help",
+         "helpTooltip": "Information about using CorA",
+         "login": "Login",
+         "loginTooltip": "Login to CorA"
+     },
      "Forms": {
          "buttonLogin": "Login",
          "msgFailedLogin": "Login failed.  Please check your credentials.",
