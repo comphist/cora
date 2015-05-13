@@ -83,6 +83,7 @@
               // embedJS("gui/js/dragtable_hack.js", true);
               embedJS("gui/js/iFrameFormRequest.js", true);
               embedJS("gui/js/Meio.Autocomplete.js", true);
+              embedJS("gui/js/FlexRowList.js", true);
               embedJS("gui/js/gui.js", true);
               embedJS("gui/js/tagsets.js", true);
               embedJS("gui/js/tagsets/Tagset.js", true);
