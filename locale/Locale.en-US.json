@@ -5,7 +5,8 @@
          "en-US": "English"
      },
      "Date": {
-         "daysRelative": ["Today", "Yesterday"]
+         "daysRelative": ["Today", "Yesterday"],
+         "shortTime": "%I:%M %p"
      },
      "Menu": {
          "file": "File",

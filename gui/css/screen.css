@@ -590,7 +590,9 @@ table.fileList th.ftr-changed, table.fileList th.ftr-created {
   text-align: center; }
 table.fileList .ftr-changed-at, table.fileList .ftr-created-at {
   width: 9.4em;
-  text-align: right; }
+  max-width: 10.4em;
+  text-align: right;
+  white-space: nowrap; }
 table.fileList .ftr-changed-by, table.fileList .ftr-created-by {
   width: 6em;
   text-align: right; }

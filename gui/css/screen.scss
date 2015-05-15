@@ -769,7 +769,9 @@ table.fileList {
     }
     .ftr-changed-at, .ftr-created-at {
         width: 9.4em;
+        max-width: 10.4em;
         text-align: right;
+        white-space: nowrap;
     }
     .ftr-changed-by, .ftr-created-by {
         width: 6em;

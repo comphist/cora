@@ -22,7 +22,6 @@ var gui = {
 	this._addKeyboardShortcuts();
 	this.addToggleEvents($$('.clappable'));
 	this._activateKeepalive();
-        this._defineDateParsers();
 
         var btn = $('logoutButton');
         if (btn) {
@@ -162,8 +161,12 @@ var gui = {
             var old_locale = this.currentLocale;
             Locale.use(locale);
             this.currentLocale = locale;
-            if (old_locale !== null)
+            this._defineDateParsers();
+            if (old_locale !== null) {
                 this.updateAllLocaleText();
+                if (cora.projects && typeof cora.projects.performUpdate === "function")
+                    cora.projects.performUpdate();
+            }
         }.bind(this);
         if (!this.availableLocales[locale]) {
             this.requestLocale(locale, setLocale);
@@ -503,23 +506,36 @@ var gui = {
        Registers date parsers for our custom date formats.
      */
     _defineDateParsers: function() {
-        Date.defineParser("%Y-%m-%d %H:%M:%S");
-        Date.defineParser("%d.%m.%Y, %H:%M");
-        // TODO: this exists to make sorting table columns by date work
-        //       -- but how best to localize this?!
-        Date.defineParser({
-            re: /([hH]eute|[gG]estern|[vV]orgestern), (\d\d):(\d\d)/,
+        var re, daysRelative = Locale.get("Date.daysRelative"),
+            equalIgnoringCase = function(a, b) {
+                if (String.prototype.toLocaleUpperCase === undefined)
+                    return (a.toUpperCase() === b.toUpperCase());
+                return (a.toLocaleUpperCase() === b.toLocaleUpperCase());
+            };
+        re = "(" + daysRelative.join("|") + "), (\\d\\d):(\\d\\d)";
+        // NOTE --
+        // Accessing Date.parsePatterns directly is deprecated according to
+        // MooTools 1.5.1 docs, but currently the only way to make sure this
+        // pattern has precedence over system-defined ones, particularly
+        // the stupid /^(?:tod|tom|yes)/i pattern which can easily interfere
+        // with localized patterns.
+        Date.parsePatterns.unshift({
+            re: new RegExp(re, "i"),
             handler: function (bits) {
                 var date = new Date();
-                if(bits[1].toUpperCase() === "GESTERN")
-                    date.decrement('day', 1);
-                else if(bits[1].toUpperCase() === "VORGESTERN")
-                    date.decrement('day', 2);
+                for (var i=0; i<daysRelative.length; ++i) {
+                    if (equalIgnoringCase(bits[1], daysRelative[i])) {
+                        date.decrement('day', i);
+                        break;
+                    }
+                }
                 date.set('hours', bits[2]);
                 date.set('minutes', bits[3]);
                 return date;
             }
         });
+        Date.defineParser(Locale.get("Date.shortDate") + ", "
+                          + Locale.get("Date.shortTime"));
     },
 
     /* Function: parseSQLDate
@@ -555,7 +571,7 @@ var gui = {
     formatDateString: function(date) {
         var format_string = '';
         var daysRelative = Locale.get("Date.daysRelative");
-        var now = Date.now();
+        var datediff;
         if(!(date instanceof Date)) {
             date = this.parseSQLDate(date);
             if(!(date instanceof Date))
@@ -563,11 +579,12 @@ var gui = {
         }
         if(!date.isValid() || date.get('year') < 1980)
             return "";
-        if(date.diff(now) >= daysRelative.length || date.diff(now) < 0)
-            format_string += "%d.%m.%Y";
+        datediff = date.diff(Date.now());
+        if(datediff >= daysRelative.length || datediff < 0)
+            format_string += Locale.get("Date.shortDate");
         else
-            format_string += daysRelative[date.diff(now)];
-        format_string += ", %H:%M";
+            format_string += daysRelative[datediff];
+        format_string += ", " + Locale.get("Date.shortTime");
         return date.format(format_string);
     },
 
