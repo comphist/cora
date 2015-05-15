@@ -17,7 +17,7 @@ var gui = {
 
     initialize: function(locale) {
         if (locale)
-            this.changeLocale(locale, true);
+            this.useLocale(locale);
 
 	this._addKeyboardShortcuts();
 	this.addToggleEvents($$('.clappable'));
@@ -151,20 +151,18 @@ var gui = {
 	}
     },
 
-    /* Function: changeLocale
+    /* Function: useLocale
 
        Retrieve the locale file (if necessary) and update all GUI text.
-
-       If skip_update is set to true, the locale is changed, but existing GUI
-       text is not updated.  This is only used during first page load.
      */
-    changeLocale: function(locale, skip_update) {
+    useLocale: function(locale) {
         if (locale === this.currentLocale)
             return;
         var setLocale = function() {
+            var old_locale = this.currentLocale;
             Locale.use(locale);
             this.currentLocale = locale;
-            if (!skip_update)
+            if (old_locale !== null)
                 this.updateAllLocaleText();
         }.bind(this);
         if (!this.availableLocales[locale]) {
