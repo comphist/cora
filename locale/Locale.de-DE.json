@@ -4,6 +4,9 @@
          "de-DE": "Deutsch",
          "en-US": "Englisch"
      },
+     "Date": {
+         "daysRelative": ["Heute", "Gestern", "Vorgestern"]
+     },
      "Menu": {
          "file": "Datei",
          "fileTooltip": "Dokumente öffnen oder verwalten",
@@ -19,6 +22,9 @@
          "helpTooltip": "Hilfe zur Benutzung von CorA",
          "login": "Anmeldung",
          "loginTooltip": "In CorA anmelden"
+     },
+     "Dialog": {
+         "documentInUse": "Das Dokument wird bereits bearbeitet von Benutzer '{user}' seit {lockDate}."
      },
      "Forms": {
          "buttonLogin": "Anmelden",

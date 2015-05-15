@@ -4,6 +4,9 @@
          "de-DE": "German",
          "en-US": "English"
      },
+     "Date": {
+         "daysRelative": ["Today", "Yesterday"]
+     },
      "Menu": {
          "file": "File",
          "fileTooltip": "Open or manage documents",

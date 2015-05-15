@@ -1021,10 +1021,11 @@ cora.fileManager = {
         onLockError = function(error) {
             if(error.name === 'Handled' && error.status.lock) {
                 gui.showMsgDialog('info',
-                    "Das Dokument wird zur Zeit bearbeitet von Benutzer '"
-                    + error.status.lock.locked_by + "' seit "
-                    + gui.formatDateString(error.status.lock.locked_since).toLowerCase()
-                    + ".");
+                    _("Dialog.documentInUse", {
+                        'user': error.status.lock.locked_by,
+                        'lockDate': gui.formatDateString(
+                            error.status.lock.locked_since).toLowerCase()
+                    }));
             } else {
                 gui.showNotice('error', "Fehler beim Öffnen der Datei.");
                 error.showAsDialog();

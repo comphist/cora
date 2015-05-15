@@ -507,6 +507,8 @@ var gui = {
     _defineDateParsers: function() {
         Date.defineParser("%Y-%m-%d %H:%M:%S");
         Date.defineParser("%d.%m.%Y, %H:%M");
+        // TODO: this exists to make sorting table columns by date work
+        //       -- but how best to localize this?!
         Date.defineParser({
             re: /([hH]eute|[gG]estern|[vV]orgestern), (\d\d):(\d\d)/,
             handler: function (bits) {
@@ -554,7 +556,7 @@ var gui = {
      */
     formatDateString: function(date) {
         var format_string = '';
-        var date_strings = ['Heute', 'Gestern', 'Vorgestern'];
+        var daysRelative = Locale.get("Date.daysRelative");
         var now = Date.now();
         if(!(date instanceof Date)) {
             date = this.parseSQLDate(date);
@@ -563,10 +565,10 @@ var gui = {
         }
         if(!date.isValid() || date.get('year') < 1980)
             return "";
-        if(date.diff(now) > 2 || date.diff(now) < 0)
+        if(date.diff(now) >= daysRelative.length || date.diff(now) < 0)
             format_string += "%d.%m.%Y";
         else
-            format_string += date_strings[date.diff(now)];
+            format_string += daysRelative[date.diff(now)];
         format_string += ", %H:%M";
         return date.format(format_string);
     },
