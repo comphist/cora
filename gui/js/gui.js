@@ -15,7 +15,10 @@ var gui = {
     currentLocale: null,
     availableLocales: {},
 
-    initialize: function() {
+    initialize: function(locale) {
+        if (locale)
+            this.changeLocale(locale, true);
+
 	this._addKeyboardShortcuts();
 	this.addToggleEvents($$('.clappable'));
 	this._activateKeepalive();
@@ -151,19 +154,24 @@ var gui = {
     /* Function: changeLocale
 
        Retrieve the locale file (if necessary) and update all GUI text.
+
+       If skip_update is set to true, the locale is changed, but existing GUI
+       text is not updated.  This is only used during first page load.
      */
-    changeLocale: function(locale) {
+    changeLocale: function(locale, skip_update) {
         if (locale === this.currentLocale)
             return;
+        var setLocale = function() {
+            Locale.use(locale);
+            this.currentLocale = locale;
+            if (!skip_update)
+                this.updateAllLocaleText();
+        }.bind(this);
         if (!this.availableLocales[locale]) {
-            this.requestLocale(locale, function() {
-                this.changeLocale(locale);
-            }.bind(this));
-            return;
+            this.requestLocale(locale, setLocale);
+        } else {
+            setLocale();
         }
-        Locale.use(locale);
-        this.currentLocale = locale;
-        this.updateAllLocaleText();
     },
 
     /* Function: requestLocale
@@ -196,6 +204,14 @@ var gui = {
         $$("[data-trans-title-id]").each(function(elem) {
             elem.set("title", Locale.get(elem.get("data-trans-title-id")));
         });
+    },
+
+    /* Function: localizeText
+
+       Localizes a text string with optional arguments.
+     */
+    localizeText: function(cat, args) {
+        return Locale.get(cat).substitute(args);
     },
 
     /* Function: setHeader
@@ -697,13 +713,15 @@ var gui = {
     }
 };
 
+/** Alias for localization function. */
+var _ = gui.localizeText;
+
 /** Perform initialization. Adds JavaScript events to interactive
  * navigation elements, e.g.\ clappable div containers, and selects
  * the default tab.
  */
 window.addEvent('domready', function() {
-    gui.initialize();
-    gui.changeLocale(cora.settings.get("locale"));
+    gui.initialize(cora.settings.get("locale"));
 
     // default item defined in content.php, variable set in gui.php
     gui.changeTab(default_tab);
