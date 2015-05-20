@@ -29,7 +29,9 @@ MENUITEM;
 <?php if($_SESSION["loggedIn"]): ?>
 <div id="menuRight">
   <div class="btn-toolbar-dark">
-    <span class="btn-toolbar-entry when-file-open-only" id="closeButton"><span class="oi" aria-hidden="true"></span>Datei schließen</span>
+    <span class="btn-toolbar-entry when-file-open-only" id="closeButton"><span class="oi" aria-hidden="true"></span>
+      <span data-trans-id="Toolbar.closeFile"><?= $lh("Toolbar.closeFile"); ?></span>
+    </span>
     <span class="btn-toolbar-entry" id="logoutButton"><span class="oi" data-glyph="account-logout" aria-hidden="true"></span> Logout</span>
   </div>
 </div>

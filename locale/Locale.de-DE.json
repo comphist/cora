@@ -23,6 +23,9 @@
          "login": "Anmeldung",
          "loginTooltip": "In CorA anmelden"
      },
+     "Toolbar": {
+         "closeFile": "Datei schließen"
+     },
      "Dialog": {
          "documentInUse": "Das Dokument wird bereits bearbeitet von Benutzer '{user}' seit {lockDate}."
      },
