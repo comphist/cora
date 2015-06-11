@@ -12,8 +12,7 @@ require_once( "documentModel.php" );
 require_once( "xmlHandler.php" );
 //require_once( "pqp/classes/PhpQuickProfiler.php" );
 
-/** Defines constants that represent file formats available for
- * exporting. */
+/** Data formats used for exporting. */
 class ExportType {
   const CoraXML = 1; /**< CorA XML format */
   const Tagging = 2; /**< Tab-separated format containing
@@ -55,7 +54,7 @@ class ExportType {
   }
 }
 
-/** Encapsulates functions relevant for export. */
+/** Performs export of documents. */
 class Exporter {
   private $db; /**< A DBInterface object. */
 

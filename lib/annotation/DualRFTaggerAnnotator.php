@@ -10,6 +10,18 @@
 require_once( "AutomaticAnnotator.php" );
 require_once( "RFTaggerAnnotator.php" );
 
+/** Annotates POS tagsets using RFTagger and two distinct models.
+ *
+ * This tagger combines two instances of RFTaggerAnnotator: one using
+ * a fixed, pre-computed model; another one individually retrainable.
+ *
+ * During annotation, it calls both instances.  The tag returned by the
+ * individually retrainable model is chosen if either (a) the input token
+ * was already seen during training (or rather, seen at least as many times
+ * as the defined threshold, by default 1) and its tag is NOT "?"; or
+ * (b) the fixed model returned "?" as its tag.  Otherwise, the tag from the
+ * fixed model is chosen.
+ */
 class DualRFTaggerAnnotator extends AutomaticAnnotator {
     private $fixedRFT;
     private $variableRFT;

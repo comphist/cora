@@ -7,6 +7,8 @@
   * @date December 2014
   */
 
+/** Builds and executes a query to search within a document.
+ */
 class SearchQuery {
   protected $dbi; /**< DBInterface object to use for queries */
   protected $fileid;

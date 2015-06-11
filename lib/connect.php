@@ -10,7 +10,7 @@
   * web server directory!
   */
 
- /** The database settings. */
+ /* The database settings. */
  require_once 'globals.php';
  require_once 'documentModel.php';
  require_once 'commandHandler.php';
@@ -21,7 +21,7 @@
  require_once 'connect/ProjectAccessor.php';
  require_once 'connect/SearchQuery.php';
 
- /** An interface for application-specific database requests.
+ /** Common interface for all database requests.
   *
   * This class implements all application-specific functionality for
   * database access.  If some part of the application requires that one

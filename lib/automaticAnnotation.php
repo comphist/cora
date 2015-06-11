@@ -16,6 +16,11 @@ require_once( "annotation/RFTaggerAnnotator.php" );
 require_once( "annotation/DualRFTaggerAnnotator.php" );
 require_once( "annotation/Lemmatizer.php" );
 
+/** Wrapper for all automatic annotators.
+ *
+ * This class instantiates and operates on AutomaticAnnotator objects,
+ * setting project-specific objects for them and checking their return values.
+ */
 class AutomaticAnnotationWrapper {
   protected $db; /**< A DBInterface object. */
   protected $exp; /**< An Exporter object. */

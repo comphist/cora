@@ -9,6 +9,11 @@
 
 require_once( "AutomaticAnnotator.php" );
 
+/** Annotates lemma tagsets by wrapping an external lemmatization script.
+ *
+ * Has options to lowercase all tokens, use POS information in addition to the
+ * token, or use the normalized wordform instead of the token.
+ */
 class Lemmatizer extends AutomaticAnnotator {
     private $tmpfiles = array();
     private $dictionary = array();
