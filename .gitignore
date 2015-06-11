@@ -9,3 +9,5 @@ pqp
 *.toc
 *.aux
 *.log
+doc/html
+doc/latex
