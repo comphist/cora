@@ -1,2 +1,9 @@
 site_name: CorA User Documentation
 theme: readthedocs
+pages:
+  - Home: index.md
+  - Installing CorA: setup.md
+  - Administrating your CorA instance: admin.md
+  - Using the web interface: using.md
+  - Annotation layers: layers.md
+  - CorA XML file format: coraxml.md
