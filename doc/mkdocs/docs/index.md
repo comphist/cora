@@ -29,9 +29,8 @@ To run your own instance of CorA on a server machine, you need:
 
 To access an existing CorA instance on a web server, you only need:
 
-* A web browser (we recommend [Chrome](http://www.google.com/chrome/), though
-  [Firefox](http://www.mozilla.org/firefox/) and
-  [Safari](http://www.apple.com/safari/) should work as well)
+* A web browser (we recommend [Chrome][], though
+  [Firefox][] and [Safari][] should work as well)
     * JavaScript must be enabled
 * An active internet connection
 
@@ -43,3 +42,7 @@ To access an existing CorA instance on a web server, you only need:
 
 For any comments, questions, inquiries, etc., please contact Marcel Bollmann
 (<bollmann@linguistics.rub.de>).
+
+[chrome]: http://www.google.com/chrome/
+[firefox]: http://www.mozilla.org/firefox/
+[safari]: http://www.apple.com/safari/
