@@ -11,3 +11,4 @@ pqp
 *.log
 doc/html
 doc/latex
+doc/mkdocs/site
