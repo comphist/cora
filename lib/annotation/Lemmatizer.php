@@ -41,7 +41,7 @@ class Lemmatizer extends AutomaticAnnotator {
             $this->lowercase_all = (bool) $this->options["lowercase_all"];
         }
         if(array_key_exists("filter_unknown", $this->options)) {
-            $this->filter_unknown = (bool) $this->options["filter_unkown"];
+            $this->filter_unknown = (bool) $this->options["filter_unknown"];
         }
     }
 
