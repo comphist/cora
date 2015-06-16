@@ -10,11 +10,11 @@ if($num_args < 2) {
 
 $dictfile = $ARGV[0];
 $infile   = $ARGV[1];
-if($num_args > 2 && $ARGV[2] == "-n") {
+if($num_args > 2 && $ARGV[2] eq "-n") {
     $no_pos = 1;
 }
 
-open(FILE,$dictfile) or die "Error: unable to open \"$filename\"\n";
+open(FILE,$dictfile) or die "Error: unable to open \"$dictfile\"\n";
 if($no_pos) {
     while (<FILE>) {
         chomp;
@@ -94,13 +94,13 @@ sub lemmatize_with_pos {
             $lemma = find_matching_entry($x, $pos);
             if($lemma) {
                 return substr($word,0,$i).lc($lemma);
-            }            
+            }
         }
         elsif (exists $lemma{$X}) {
             $lemma = find_matching_entry($X, $pos);
             if($lemma) {
                 return substr($word,0,$i).lc($lemma);
-            }            
+            }
         }
     }
 
