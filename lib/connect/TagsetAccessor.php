@@ -51,6 +51,10 @@ class TagsetAccessor {
     return $this->errors;
   }
 
+  public function hasErrors() {
+    return count($this->errors) > 0;
+  }
+
   /**********************************************
    ********* SQL Statement Preparations *********
    **********************************************/
