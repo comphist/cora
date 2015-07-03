@@ -1186,11 +1186,19 @@ cora.tagsetEditor = {
     activateImportForm: function() {
 	var ref = this;
 	var formname = 'newTagsetImportForm';
+        var class_selector = $(formname).getElement('select[name="tagset_class"]');
 	var import_mbox = new mBox.Modal({
 	    title: 'Tagset aus Textdatei importieren',
 	    content: 'tagsetImportForm',
 	    attach: 'adminImportTagset'
 	});
+
+        cora.importableTagsets.each(function(cls) {
+            class_selector.grab(new Element('option', {
+                text: cls,
+                value: cls
+            }));
+        });
 
 	// note: these checks would be redundant if the iFrame method
 	// below would be replaced by an mForm.Submit ...

@@ -6,6 +6,13 @@ cora.supportedTagsets = ["pos", "morph", "norm", "norm_broad",
                          "norm_type", "lemma", "lemmapos", "lemma_sugg",
                          "comment", "boundary"];
 
+/* Array: cora.importableTagsets
+
+   List of all tagset classes that can be used for tagset import.
+ */
+cora.importableTagsets = ["pos", "boundary", "lemmapos", "lemma_sugg",
+                          "norm_type"];
+
 /* Class: cora.tagsets
 
    Acts as a wrapper for an array containing all tagset information.

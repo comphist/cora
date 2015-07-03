@@ -241,13 +241,20 @@ $ulist = array();
         <input type="text" name="tagset_name" value="" size="40" maxlength="255" data-required />
       </p>
       <p>
+        <label for="tagset_class">Tagset-Klasse: </label>
+        <select size="1" name="tagset_class"></select>
+      </p>
+      <p>
         <label for="txtFile">Tagset-Datei: </label>
         <input type="file" name="txtFile" data-required />
       </p>
       <p style="max-width:32em;">
-        Hinweis: Als Tagset-Datei wird eine Textdatei erwartet, die aus einem Tag pro Zeile besteht.  Punkte werden als Trennsymbole zwischen POS- und Morph-Attributen interpretiert.  Tags, die als "korrekturbedürftig" markiert werden sollen, muss jeweils ein Caret (^) vorangestellt werden.
+        Hinweis: Als Tagset-Datei wird eine Textdatei erwartet, die aus einem Tag pro Zeile besteht.  Bei POS-Tagsets werden Punkte als Trennsymbole zwischen POS- und Morph-Attributen interpretiert.  Tags, die als "korrekturbedürftig" markiert werden sollen, muss jeweils ein Caret (^) vorangestellt werden.
       </p>
-      <p><input type="hidden" name="action" value="importTagsetTxt" /></p>
+      <p>
+        <input type="hidden" name="action" value="importTagsetTxt" />
+        <input type="hidden" name="tagset_settype" value="closed" />
+      </p>
       <p style="text-align:right;">
         <input type="submit" value="Tagset importieren &rarr;" />
       </p>
