@@ -240,7 +240,6 @@ $ulist = array();
         <label for="tagset_name">Name des Tagsets:</label>
         <input type="text" name="tagset_name" value="" size="40" maxlength="255" data-required />
       </p>
-      <p class="error_text">Bitte wählen Sie eine Datei zum Importieren aus!</p>
       <p>
         <label for="txtFile">Tagset-Datei: </label>
         <input type="file" name="txtFile" data-required />
@@ -253,11 +252,6 @@ $ulist = array();
         <input type="submit" value="Tagset importieren &rarr;" />
       </p>
       </form>
-    </div>
-
-    <div id="adminImportPopup">
-      <p></p>
-      <p><textarea cols="80" rows="10" readonly="readonly"></textarea></p>
     </div>
 
     <div id="adminTagsetBrowser">
