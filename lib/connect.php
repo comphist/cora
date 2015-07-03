@@ -20,6 +20,8 @@
  require_once 'connect/DocumentCreator.php';
  require_once 'connect/ProjectAccessor.php';
  require_once 'connect/SearchQuery.php';
+ require_once 'connect/TagsetAccessor.php';
+ require_once 'connect/TagsetCreator.php';
 
  /** Common interface for all database requests.
   *
@@ -2061,98 +2063,18 @@
      return array("success" => true, "oldmodcount" => count($oldmod), "newmodcount" => $modcount);
    }
 
-  /** Add a list of tags as a new POS tagset. */
-  public function importTagList($taglist, $tagsetname){
-    $tagarray = array();
-    $poslist = array();
-    $errors = array();
-    $warnings = array();
-    $pos = "";
-    $numattr = 0;
-
-    foreach($taglist as $tag) {
-      $tag = trim($tag);
-      if(empty($tag)) {
-	continue;
-      }
-      if(strlen($tag)>255) {
-	$errors[] = "Tag ist über 255 Zeichen lang: {$tag}";
-	continue;
-      }
-      $attribs = array();
-      // check for "^" (indicates that a tag needs correction)
-      if(substr($tag, 0, 1) == '^') {
-	$needscorrection = true;
-	$tag = substr($tag, 1);
-      }
-      else {
-	$needscorrection = false;
-      }
-      // check for duplicates
-      if(array_key_exists($tag, $tagarray)) {
-	$errors[] = "Tag ist doppelt vorhanden: {$tag}";
-	continue;
-      }
-      // check number and length of (morphological) attributes
-      if((substr($tag, -1)=='.') && (substr_count($tag, '.')==1)) {
-	$pos = $tag;
-	$numattr = 0;
-      }
-      else {
-	$numattr = substr_count($tag, '.');
-	$attribs = explode('.',$tag);
-	foreach($attribs as $attrib) {
-	  if(strlen($attrib) < 1) {
-	    $errors[] = "Tag hat leere Attribute: {$tag}";
-	    break;
-	  }
-	}
-	$pos = $attribs[0];
-      }
-      if(array_key_exists($pos, $poslist) && ($poslist[$pos]!=$numattr)) {
-	$expected = $poslist[$pos];
-	$errors[] = "POS-Tag mit ungleicher Anzahl von Attributen gefunden (jetzt {$numattr}, vormals {$expected}): {$tag}";
-      }
-      else {
-	$poslist[$pos] = $numattr;
-      }
-      // construct entry for the database
-      $tagarray[$tag] = $needscorrection;
+  /** Add a list of tags as a new tagset.
+   */
+  public function importTagList($taglist, $cls, $settype, $name) {
+    $creator = new TagsetCreator($this, $this->dbo, $cls, $settype, $name);
+    $creator->addTaglist($taglist);
+    if ($creator->hasErrors()) {
+      return array('success' => false, 'errors' => $creator->getErrors());
     }
-    if(empty($tagarray)) {
-      $errors[] = "Keine Tags zum Importieren gefunden.";
+    if (!$creator->commitChanges()) {
+      return array('success' => false, 'errors' => $creator->getErrors());
     }
-
-    // did errors occur? then abort
-    if(!empty($errors)) {
-      return array("success"=>false, "errors"=>$errors);
-    }
-
-    // otherwise, perform the import
-    try{
-      $this->dbo->beginTransaction();
-      $qs  = "INSERT INTO tagset (name, set_type, class) ";
-      $qs .= "VALUES (:name, 'closed', 'pos')";
-      $stmt = $this->dbo->prepare($qs);
-      $stmt->execute(array(':name' => $tagsetname));
-      $tagsetid = $this->dbo->lastInsertId();
-
-      $qs  = "INSERT INTO tag (`value`, `needs_revision`, ";
-      $qs .= "`tagset_id`) VALUES (:value, :needrev, :tagset) ";
-      $stmt = $this->dbo->prepare($qs);
-      foreach($tagarray as $tagname => $tagnc) {
-	$stmt->execute(array(':value' => $tagname,
-			     ':needrev' => ($tagnc ? '1' : '0'),
-			     ':tagset' => $tagsetid));
-      }
-      $this->dbo->commit();
-    } catch (DBOException $ex) {
-      $this->dbo->rollBack();
-      return array("success"=>false, "errors"=>array($ex->getMessage()));
-    }
-
-    // done!
-    return array("success"=>true, "warnings"=>$warnings);
+    return array('success' => true);
   }
 
   /** Find the text ID for a given token ID. */

@@ -1186,102 +1186,82 @@ cora.tagsetEditor = {
     activateImportForm: function() {
 	var ref = this;
 	var formname = 'newTagsetImportForm';
+        var class_selector = $(formname).getElement('select[name="tagset_class"]');
 	var import_mbox = new mBox.Modal({
 	    title: 'Tagset aus Textdatei importieren',
 	    content: 'tagsetImportForm',
 	    attach: 'adminImportTagset'
 	});
 
+        cora.importableTagsets.each(function(cls) {
+            class_selector.grab(new Element('option', {
+                text: cls,
+                value: cls
+            }));
+        });
+
 	// note: these checks would be redundant if the iFrame method
 	// below would be replaced by an mForm.Submit ...
 	// check if a name & file has been selected
-	$('newTagsetImportForm').getElement('input[type="submit"]').addEvent('click', function(e) {
-	    var importname = $('newTagsetImportForm').getElement('input[name="tagset_name"]').get('value');
+	$(formname).getElement('input[type="submit"]').addEvent('click', function(e) {
+	    var importname = $(formname).getElement('input[name="tagset_name"]').get('value');
 	    if(importname==null || importname=="") {
-		$('newTagsetImportForm').getElement('input[name="tagset_name"]').addClass("input_error");
+		$(formname).getElement('input[name="tagset_name"]').addClass("input_error");
 		e.stop();
 	    } else {
-		$('newTagsetImportForm').getElement('input[name="tagset_name"]').removeClass("input_error");
+		$(formname).getElement('input[name="tagset_name"]').removeClass("input_error");
 	    }
-	    var importfile = $('newTagsetImportForm').getElement('input[name="txtFile"]').get('value');
+	    var importfile = $(formname).getElement('input[name="txtFile"]').get('value');
 	    if(importfile==null || importfile=="") {
-		$$('#newTagsetImportForm p.error_text').show();
+                gui.showNotice('error', "Keine Datei zum Importieren ausgewählt!");
 		e.stop();
-	    } else {
-		$$('#newTagsetImportForm p.error_text').hide();
 	    }
 	});
 
         var iFrame = new iFrameFormRequest(formname, {
+	    onRequest: function(){
+		import_mbox.close();
+		gui.showSpinner({message: 'Importiere Tagset...'});
+	    },
             onFailure: function(xhr) {
 		// never fires?
        		gui.showTextDialog("Import nicht erfolgreich",
                                    "Der Server lieferte folgende Fehlermeldung zurück:",
        		                   xhr.responseText);
        	    },
-	    onRequest: function(){
-		import_mbox.close();
-		gui.showSpinner({message: 'Importiere Tagset...'});
-	    },
 	    onComplete: function(response){
 		var title="", message="", textarea="", error=false;
-		try{
+		try {
 		    response = JSON.decode(response);
-		}catch(err){
-		    message =  "Der Server lieferte eine ungültige Antwort zurück.";
+		} catch(err) {
+		    message = "Der Server lieferte eine ungültige Antwort zurück.";
 		    textarea  = "Antwort des Servers:\n";
 		    textarea += response;
 		    textarea += "\n\nInterner Fehler:\n";
 		    textarea += err.message;
 		    error = true;
 		}
-
-		if(error){
-		    title = "Tagset-Import fehlgeschlagen";
-		}
-		else if(response==null){
-		    title = "Tagset-Import fehlgeschlagen";
-		    message = "Beim Import des Tagsets ist ein unbekannter Fehler aufgetreten.";
-		}
-		else if(!response.success){
-		    title = "Tagset-Import fehlgeschlagen";
-		    message  = "Beim Import des Tagsets ";
-		    message += response.errors.length>1 ? "sind " + response.errors.length : "ist ein";
-		    message += " Fehler aufgetreten:";
-
-		    for(var i=0;i<response.errors.length;i++){
-			textarea += response.errors[i] + "\n";
-		    }
-		}
-		else {
-		    title = "Tagset-Import erfolgreich";
-		    message = "Das Tagset wurde erfolgreich hinzugefügt.";
-		    if((typeof response.warnings !== "undefined") && response.warnings.length>0) {
-			message += " Das System lieferte ";
-			message += response.warnings.length>1 ? response.warnings.length + " Warnungen" : "eine Warnung";
-			message += " zurück:";
-
-			for(var i=0;i<response.warnings.length;i++){
-			    textarea += response.warnings[i] + "\n";
-			}
-		    }
-
-		    form.reset($(formname));
-		    $(formname).getElements('.error_text').hide();
+                if (!error) {
+                    if (response == null) {
+                        error = true;
+		        message = "Beim Import des Tagsets ist ein unbekannter Fehler aufgetreten.";
+                    }
+                    else if (!response.success) {
+                        error = true;
+                        textarea = response.errors;
+		        message  = "Beim Import des Tagsets ";
+		        message += response.errors.length>1 ? "sind " + response.errors.length : "ist ein";
+		        message += " Fehler aufgetreten:";
+                    }
                 }
-
-		if(textarea!='') {
-		    $('adminImportPopup').getElement('p').empty().appendText(message);
-		    $('adminImportPopup').getElement('textarea').empty().appendText(textarea);
-		    message = 'adminImportPopup';
-		}
-		new mBox.Modal({
-		    title: title,
-		    content: message,
-		    closeOnBodyClick: false,
-		    buttons: [ {title: "OK"} ]
-		}).open();
-
+                if (error) {
+                    title = "Tagset-Import fehlgeschlagen";
+                    gui.showTextDialog(title, message, textarea);
+                }
+                else {
+		    form.reset($(formname));
+                    gui.showMsgDialog('ok', "Das Tagset wurde erfolgreich hinzugefügt.");
+                }
 		gui.hideSpinner();
             }
 	});
