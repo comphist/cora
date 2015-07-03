@@ -154,8 +154,11 @@ class RequestHandler {
 	if(empty($post['tagset_name'])) {
 	  return array("errors"=>array("Kein Tagset-Name angegeben."));
 	}
+        $tsclass = empty($post['tagset_class']) ? 'pos' : $post['tagset_class'];
+        $settype = empty($post['tagset_settype']) ? 'closed' : $post['tagset_settype'];
 	$taglist = explode("\n", file_get_contents($_FILES['txtFile']['tmp_name']));
-	return $this->sh->importTagList($taglist, $post['tagset_name']);
+	return $this->sh->importTaglist($taglist, $tsclass,
+                                        $settype, $post['tagset_name']);
 
       case "importXMLFile":
 	$errmsg = $this->checkFileUpload($_FILES['xmlFile']);

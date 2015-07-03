@@ -327,12 +327,12 @@ class CoraSessionHandler {
     return true;
   }
 
-  /** Wraps DBInterface::importTagList() */
-  public function importTagList($taglist, $tagsetname){
+  /** Wraps DBInterface::importTaglist() */
+  public function importTaglist($taglist, $cls, $settype, $name) {
     if(!$_SESSION['admin']) {
       return array('success'=>false, 'errors'=>array("Keine Berechtigung."));
     }
-    return $this->db->importTagList($taglist, $tagsetname);
+    return $this->db->importTaglist($taglist, $cls, $settype, $name);
   }
 
   /** Wraps DBInterface::deleteFile() */

@@ -2063,9 +2063,10 @@
      return array("success" => true, "oldmodcount" => count($oldmod), "newmodcount" => $modcount);
    }
 
-  /** Add a list of tags as a new POS tagset. */
-  public function importTagList($taglist, $name) {
-    $creator = new TagsetCreator($this, $this->dbo, 'pos', 'closed', $name);
+  /** Add a list of tags as a new tagset.
+   */
+  public function importTagList($taglist, $cls, $settype, $name) {
+    $creator = new TagsetCreator($this, $this->dbo, $cls, $settype, $name);
     $creator->addTaglist($taglist);
     if ($creator->hasErrors()) {
       return array('success' => false, 'errors' => $creator->getErrors());
