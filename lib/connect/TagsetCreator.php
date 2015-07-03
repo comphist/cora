@@ -57,6 +57,7 @@ class TagsetCreator extends TagsetAccessor {
                   ':class' => $this->tsclass);
     $stmt_createTagset = $this->dbo->prepare($stmt);
     $stmt_createTagset->execute($data);
+    $this->id = $this->dbo->lastInsertId();
     parent::executeCommitChanges();
   }
 
