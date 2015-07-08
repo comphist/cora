@@ -132,7 +132,16 @@ class RequestHandler {
     }
 
     // return JSON object
-    echo json_encode($status);
+    if (isset($post['via']) && $post['via'] === 'iframe') {
+      header('Content-Type: text/html');
+      echo '<pre class="json">';
+      echo json_encode($status);
+      echo '</pre>';
+    }
+    else {
+      header('Content-Type: application/json');
+      echo json_encode($status);
+    }
   }
 
   public function performJSONRequest($get, $post) {

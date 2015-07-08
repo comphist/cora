@@ -25,14 +25,16 @@ $ch = new CommandHandler();
 $sh = new CoraSessionHandler($dbi, $xml, $exp, $ch);
 $rq = new RequestHandler($sh);
 
-header('Content-Type: application/json');
-
 if($_SESSION["loggedIn"]) {
   $rq->handleJSONRequest( $_GET, $_POST );
-} else if($_GET['do'] == "login") {
+}
+else if($_GET['do'] == "login") {
   $sh->login($_GET['user'], $_GET['pw']);
+  header('Content-Type: application/json');
   echo json_encode(array('success' => !$_SESSION["failedLogin"]));
-} else {
+}
+else {
+  header('Content-Type: application/json');
   echo json_encode(array('success' => false, 'errcode' => -1));
 }
 

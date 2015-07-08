@@ -1230,9 +1230,11 @@ cora.tagsetEditor = {
        		                   xhr.responseText);
        	    },
 	    onComplete: function(response){
-		var title="", message="", textarea="", error=false;
+		var title="", message="", textarea="", error=false, tmp;
 		try {
-		    response = JSON.decode(response);
+                    tmp = new Element('div');
+                    tmp.innerHTML = response;
+                    response = JSON.decode(tmp.getElement('pre.json').get('text'));
 		} catch(err) {
 		    message = "Der Server lieferte eine ungültige Antwort zurück.";
 		    textarea  = "Antwort des Servers:\n";

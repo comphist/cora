@@ -253,6 +253,7 @@ $ulist = array();
       </p>
       <p>
         <input type="hidden" name="action" value="importTagsetTxt" />
+        <input type="hidden" name="via" value="iframe" />
         <input type="hidden" name="tagset_settype" value="closed" />
       </p>
       <p style="text-align:right;">
