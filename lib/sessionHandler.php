@@ -98,8 +98,8 @@ class CoraSessionHandler {
   }
 
   /** Wraps DBInterface::getTagset(). */
-  public function getTagset($tagset, $limit) {
-    $data = $this->db->getTagset($tagset, $limit);
+  public function getTagset($tagset) {
+    $data = $this->db->getTagset($tagset);
     return array('success' => true, 'data' => $data);
   }
 

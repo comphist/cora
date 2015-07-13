@@ -467,8 +467,6 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         // strings would work too
         $this->assertEquals($lemma_tagset,
                             $this->dbi->getTagset("3"));
-        $this->assertEquals(array($lemma_tagset[1]),
-                            $this->dbi->getTagset("3", 'legal'));
 
         $this->assertEquals(array('lemma' => '511',
                                   'deletedlemma' => '512'),

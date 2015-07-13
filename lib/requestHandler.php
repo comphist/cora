@@ -217,7 +217,7 @@ class RequestHandler {
 	return $this->sh->getImportStatus();
 
       case "fetchTagset":
-	return $this->sh->getTagset($get["tagset_id"], $get["limit"]);
+	return $this->sh->getTagset($get["tagset_id"]);
 
       case "changeTagsetsForFile":
         return $this->sh->changeTagsetsForFile($get["file_id"],
