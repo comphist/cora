@@ -20,7 +20,6 @@
  require_once 'connect/DocumentCreator.php';
  require_once 'connect/ProjectAccessor.php';
  require_once 'connect/SearchQuery.php';
- require_once 'connect/TagsetAccessor.php';
  require_once 'connect/TagsetCreator.php';
 
  /** Common interface for all database requests.
@@ -2066,7 +2065,7 @@
   /** Add a list of tags as a new tagset.
    */
   public function importTagList($taglist, $cls, $settype, $name) {
-    $creator = new TagsetCreator($this, $this->dbo, $cls, $settype, $name);
+    $creator = new TagsetCreator($this->dbo, $cls, $settype, $name);
     $creator->addTaglist($taglist);
     if ($creator->hasErrors()) {
       return array('success' => false, 'errors' => $creator->getErrors());

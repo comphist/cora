@@ -14,14 +14,13 @@ class TagsetCreator extends TagsetAccessor {
 
   /** Construct a new TagsetCreator.
    *
-   * @param DBInterface $parent A DBInterface object to use for queries
-   * @param PDO $dbo A PDO database object passed from DBInterface
+   * @param PDO $dbo A PDO database object to use for queries
    * @param string $cls Class of the new tagset
    * @param string $settype Set type of the new tagset (open,closed)
    * @param string $name Name of the new tagset
    */
-  function __construct($parent, $dbo, $cls, $settype, $name) {
-    parent::__construct($parent, $dbo, null);
+  function __construct($dbo, $cls, $settype, $name) {
+    parent::__construct($dbo, null);
     $this->tsclass = $cls;
     $this->settype = $settype;
     $this->name = $name;

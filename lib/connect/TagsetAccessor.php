@@ -9,7 +9,6 @@
 /** Handles extended tagset access such as import or export.
  */
 class TagsetAccessor {
-  protected $dbi; /**< DBInterface object to use for queries */
   protected $dbo; /**< PDO object to use for own queries */
   protected $id;  /**< ID of the associated tagset */
 
@@ -30,12 +29,10 @@ class TagsetAccessor {
 
   /** Construct a new TagsetAccessor.
    *
-   * @param DBInterface $parent A DBInterface object to use for queries
-   * @param PDO $dbo A PDO database object passed from DBInterface
+   * @param PDO $dbo A PDO database object to use for queries
    * @param string $tagset_id ID of the tagset to be accessed
    */
-  function __construct($parent, $dbo, $tagset_id) {
-    $this->dbi = $parent;
+  function __construct($dbo, $tagset_id) {
     $this->dbo = $dbo;
     $this->id = $tagset_id;
     $this->prepareStatements();
