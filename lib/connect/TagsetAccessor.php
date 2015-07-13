@@ -22,6 +22,7 @@ class TagsetAccessor {
                                            POS tag; only used when $check_pos
                                            is true. */
 
+  protected $has_changed = false; /**< Whether changes have been made */
   protected $errors = array(); /**< Messages of errors that occured */
 
   // SQL statements
@@ -148,11 +149,13 @@ class TagsetAccessor {
                  'needs_revision' => $needs_rev,
                  'status' => 'new');
     $this->tags_by_value[$value] = $tag;
+    $this->has_changed = true;
   }
 
   /** Commits all changes to the database.
    */
   public function commitChanges() {
+    if (!$this->has_changed) return true;
     try {
       $this->dbo->beginTransaction();
       $this->executeCommitChanges();
