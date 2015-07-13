@@ -1,3 +1,14 @@
-/#coradb.sql#
-/gui/css/.sass-cache/
-/gui/css/screen.css.map
+.sass-cache
+FirePHPCore
+pqp
+*.min.js
+*.min.js.map
+*.min.css
+*.css.map
+*.bak
+*.toc
+*.aux
+*.log
+doc/html
+doc/latex
+doc/mkdocs/site

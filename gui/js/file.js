@@ -600,7 +600,8 @@ cora.fileImporter = {
        an informational dialog to the user.
 
        Parameters:
-        re_json - The server response as a JSON string
+        response - The server response as a JSON string wrapped in
+                   <pre class="json">...</pre>
         error_only - If true, only show a dialog on error,
                      and just return true otherwise
 
@@ -608,31 +609,34 @@ cora.fileImporter = {
         True if the server response indicates a successful import,
         false otherwise
      */
-    showImportResponseDialog: function(re_json, error_only) {
-        var title="", message="", textarea="", re;
+    showImportResponseDialog: function(response, error_only) {
+        var title="", message="", textarea="", tmp;
         var success=false;
         try {
-            re = JSON.decode(re_json);
+            tmp = new Element('div');
+            tmp.innerHTML = response;
+            response = JSON.decode(tmp.getElement('pre.json').get('text'));
         }
         catch (err) {
             title = "Fehlerhafte Server-Antwort";
             message = "Der Server lieferte eine ungültige Antwort zurück. "
                     + "Das Importieren der Datei war möglicherweise nicht erfolgreich.";
             textarea = "Fehler beim Interpretieren der Server-Antwort:\n\t"
-                     + err.message + "\n\nDer Server antwortete:\n" + re_json;
+                     + err.message + "\n\nDer Server antwortete:\n" + response;
         }
         if(message != "") {}
-        else if(!re || typeof re.success == "undefined") {
+        else if(!response || typeof response.success == "undefined") {
             message = "Beim Hinzufügen der Datei ist ein unbekannter Fehler aufgetreten.";
             gui.showMsgDialog('error', message);
             return false;
         }
-        else if(!re.success) {
+        else if(!response.success) {
             title = "Datei-Import fehlgeschlagen";
             message = "Beim Hinzufügen der Datei "
-                    + ((re.errors.length>1) ? ("sind " + re.errors.length) : "ist ein")
+                    + ((response.errors.length>1) ?
+                       ("sind " + response.errors.length) : "ist ein")
                     + " Fehler aufgetreten:";
-            textarea = re.errors.join("\n");
+            textarea = response.errors.join("\n");
         }
         else if(error_only) {
             return true;
@@ -641,12 +645,12 @@ cora.fileImporter = {
             success = true;
             title = "Datei-Import erfolgreich";
             message = "Die Datei wurde erfolgreich hinzufügt.";
-            if(re.warnings instanceof Array && re.warnings.length>0) {
+            if(response.warnings instanceof Array && response.warnings.length>0) {
                 message += " Das System lieferte "
-                         + ((re.warnings.length>1) ?
-                            (re.warnings.length + " Warnungen") : "eine Warnung")
+                         + ((response.warnings.length>1) ?
+                            (response.warnings.length + " Warnungen") : "eine Warnung")
                          + " zurück:";
-                textarea = re.warnings.join("\n");
+                textarea = response.warnings.join("\n");
             } else {
                 gui.showMsgDialog('info', message);
                 return true;

@@ -4,10 +4,9 @@ ini_set('memory_limit', '536870912');
 /** @file request.php
  * Handle requests sent via JavaScript.
  *
- * This file is intended to be called from JavaScript code to perform
- * database requests.  It will usually pass them on to a
- * RequestHandler object, which then typically outputs a JSON object
- * string (depending on the nature of the request).
+ * This file is intended to be called from JavaScript code to perform database
+ * requests.  It will usually pass them on to a RequestHandler object, which
+ * then outputs a JSON object string (depending on the nature of the request).
  */
 
 require_once "lib/globals.php";
@@ -28,12 +27,16 @@ $sh = new CoraSessionHandler($dbi, $lh);
 $rq = new RequestHandler($sh);
 
 if ($_SESSION["loggedIn"]) {
-    $rq->handleJSONRequest($_GET, $_POST);
-} else if ($_GET['do'] == "login") {
-    $sh->login($_GET['user'], $_GET['pw']);
-    echo json_encode(array('success' => !$_SESSION["failedLogin"]));
-} else {
-    echo json_encode(array('success' => false, 'errcode' => -1));
+  $rq->handleJSONRequest($_GET, $_POST);
+}
+else if ($_GET['do'] == "login") {
+  $sh->login($_GET['user'], $_GET['pw']);
+  header('Content-Type: application/json');
+  echo json_encode(array('success' => !$_SESSION["failedLogin"]));
+}
+else {
+  header('Content-Type: application/json');
+  echo json_encode(array('success' => false, 'errcode' => -1));
 }
 
 ?>

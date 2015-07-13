@@ -9,11 +9,20 @@
  * @date February 2013
  */
 
-/** Exception when encountering illegal values. */
+/* Custom exceptions */
 class CoraDocumentException extends Exception { }
 class DocumentValueException extends CoraDocumentException { }
 class DocumentImportException extends CoraDocumentException { }
 
+/** Models a full document.
+ *
+ * This class represents a full document with all information associated
+ * with it.  It is only used when access to all information at once is
+ * required, which currently means import and export of documents.
+ *
+ * Convenience functions that convert between different representations
+ * of the data (e.g. layout ranges) are provided for this purpose.
+ */
 class CoraDocument {
   private $sigle     = "";     /**< Document sigle */
   private $fullname  = "";     /**< Document name */

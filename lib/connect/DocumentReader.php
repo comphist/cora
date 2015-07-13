@@ -10,7 +10,7 @@
 
 require_once('DocumentAccessor.php');
 
-/** Document access for retrieving information for the client.
+/** Handles retrieving information from a document.
  */
 class DocumentReader extends DocumentAccessor {
   private $toktrans_cache = array(null, null);

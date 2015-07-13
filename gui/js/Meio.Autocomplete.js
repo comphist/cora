@@ -103,7 +103,7 @@ provides: [Meio]
 
     // the key event that repeats
     Element.Events.keyrepeat = {
-        base : (browser.firefox || browser.opera) ? 'keypress' : 'keydown',
+        base: 'keydown',
         condition: Function.from(true)
     };
 

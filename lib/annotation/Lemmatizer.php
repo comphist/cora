@@ -9,12 +9,18 @@
 
 require_once( "AutomaticAnnotator.php" );
 
+/** Annotates lemma tagsets by wrapping an external lemmatization script.
+ *
+ * Has options to lowercase all tokens, use POS information in addition to the
+ * token, or use the normalized wordform instead of the token.
+ */
 class Lemmatizer extends AutomaticAnnotator {
     private $tmpfiles = array();
     private $dictionary = array();
     private $lowercase_all = false;
     private $use_pos = true;
     private $use_norm = false;
+    private $filter_unknown = true;
     private $lines = null;
 
     // lemmatizer return value if lemma could not be found:
@@ -33,6 +39,9 @@ class Lemmatizer extends AutomaticAnnotator {
         }
         if(array_key_exists("lowercase_all", $this->options)) {
             $this->lowercase_all = (bool) $this->options["lowercase_all"];
+        }
+        if(array_key_exists("filter_unknown", $this->options)) {
+            $this->filter_unknown = (bool) $this->options["filter_unknown"];
         }
     }
 
@@ -80,7 +89,7 @@ class Lemmatizer extends AutomaticAnnotator {
      * @return An array element suitable for DBInterface::saveLines()
      */
     private function makeAnnotationArray($mod, $line) {
-        if($line == $this->unknown_lemma) {
+        if($this->filter_unknown && ($line == $this->unknown_lemma)) {
             return array();
         }
         return array("id" => $mod['id'],

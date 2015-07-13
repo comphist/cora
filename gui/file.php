@@ -136,7 +136,10 @@
         <p style="padding-top: 15px;">Tagset-Verknüpfungen:</p>
         <div class="import_LinkTagsets_MS"></div>
       </div>
-      <p><input type="hidden" name="action" value="importXMLFile" /></p>
+      <p>
+        <input type="hidden" name="action" value="importXMLFile" />
+        <input type="hidden" name="via" value="iframe" />
+      </p>
       <p style="text-align:right;">
         <input type="submit" value="Importieren &rarr;" />
       </p>
@@ -175,7 +178,10 @@
         <p style="padding-top: 15px;">Tagset-Verknüpfungen:</p>
         <div class="import_LinkTagsets_MS"></div>
       </div>
-      <p><input type="hidden" name="action" value="importTransFile" /></p>
+      <p>
+        <input type="hidden" name="action" value="importTransFile" />
+        <input type="hidden" name="via" value="iframe" />
+      </p>
       <p style="text-align:right;">
         <input type="submit" value="Importieren &rarr;" />
       </p>

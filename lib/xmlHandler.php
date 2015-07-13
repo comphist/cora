@@ -10,8 +10,8 @@
 require_once( "documentModel.php" );
 //require_once( "pqp/classes/PhpQuickProfiler.php" );
 
+/** Provides functions specific to handling CorA-XML format. */
 class XMLHandler {
-
   private $db; /**< A DBInterface object. */
   private $output_suggestions; /**< Boolean indicating whether to output tagger suggestions. */
   private $xml_header_options; /**< Valid attributes for the XML <header> tag. */

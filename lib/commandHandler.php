@@ -8,6 +8,8 @@
  * @date February 2013
  */
 
+/** Handles calls to external commands.
+ */
 class CommandHandler {
 
   private $options;
