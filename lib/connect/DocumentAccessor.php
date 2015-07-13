@@ -7,6 +7,8 @@
   * @date December 2013
   */
 
+require_once 'TagsetAccessor.php';
+
 class DocumentAccessViolation extends Exception {
 }
 
@@ -160,8 +162,8 @@ class DocumentAccessor {
    * reference.
    */
   protected function preloadTagset($tagset) {
-    $tags = $this->dbi->getTagset($tagset['id']);
-    $this->tagsets[$tagset['class']]['tags'] = $tags;
+    $tagset = new TagsetAccessor($this->dbo, $tagset['id']);
+    $this->tagsets[$tagset['class']]['tags'] = array_values($tagset->entries());
   }
 
   /** Returns a list of tagsets linked to the associated file.

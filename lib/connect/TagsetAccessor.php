@@ -22,6 +22,7 @@ class TagsetAccessor {
                                            POS tag; only used when $check_pos
                                            is true. */
 
+  protected $has_changed = false; /**< Whether changes have been made */
   protected $errors = array(); /**< Messages of errors that occured */
 
   // SQL statements
@@ -67,16 +68,16 @@ class TagsetAccessor {
   /** Retrieves tagset information from the database. */
   protected function loadTagset() {
     // fetch metadata
-    $stmt = $this->dbo->prepare("SELECT name, set_type, class FROM tagset "
-                                . "WHERE id=?");
+    $stmt = $this->dbo->prepare("SELECT `name`, `set_type`, `class` FROM tagset "
+                                . "WHERE `id`=?");
     $stmt->execute(array($this->id));
     $metadata = $stmt->fetch(PDO::FETCH_ASSOC);
     $this->name = $metadata['name'];
     $this->tsclass = strtolower($metadata['class']);
     $this->settype = strtolower($metadata['set_type']);
     // fetch tag list
-    $stmt = $this->dbo->prepare("SELECT id, value, needs_revision "
-                                . "FROM tag WHERE tagset_id=?");
+    $stmt = $this->dbo->prepare("SELECT `id`, `value`, `needs_revision` "
+                                . "FROM tag WHERE `tagset_id`=?");
     $stmt->execute(array($this->id));
     while ($tag = $stmt->fetch(PDO::FETCH_ASSOC)) {
       $this->tags_by_value[$tag['value']] = $tag;
@@ -95,6 +96,17 @@ class TagsetAccessor {
       return array($value);
     }
     return explode('.', $value);
+  }
+
+  /** Return a list of all tags.
+   *
+   * @return An associative array containing all tags of this tagset.
+   *         The array maps tag values to an array with more tag info,
+   *         containing at least the keys 'id', 'value', and
+   *         'needs_revision'.
+   */
+  public function entries() {
+    return $this->tags_by_value;
   }
 
   /** Checks a tag value for validity.
@@ -148,11 +160,13 @@ class TagsetAccessor {
                  'needs_revision' => $needs_rev,
                  'status' => 'new');
     $this->tags_by_value[$value] = $tag;
+    $this->has_changed = true;
   }
 
   /** Commits all changes to the database.
    */
   public function commitChanges() {
+    if (!$this->has_changed) return true;
     try {
       $this->dbo->beginTransaction();
       $this->executeCommitChanges();

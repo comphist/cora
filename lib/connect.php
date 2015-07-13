@@ -20,6 +20,7 @@
  require_once 'connect/DocumentCreator.php';
  require_once 'connect/ProjectAccessor.php';
  require_once 'connect/SearchQuery.php';
+ require_once 'connect/TagsetAccessor.php';
  require_once 'connect/TagsetCreator.php';
 
  /** Common interface for all database requests.
@@ -203,24 +204,12 @@
     * This function retrieves all valid tags of a given tagset.
     *
     * @param string $tagset The id of the tagset to be retrieved
-    * @param string $limit String argument containing "none" or "legal",
-    *                 indicating whether tags marked with "needs_revision"
-    *                 should be included or not
     *
     * @return An associative @em array containing the tagset information.
     */
-   public function getTagset($tagset, $limit="none") {
-     $tags = array();
-     $qs  = "SELECT `id`, `value`, `needs_revision` FROM tag "
-       . "    WHERE `tagset_id`=:tagsetid";
-     if($limit=='legal') {
-       $qs .= " AND `needs_revision`=0";
-     }
-     $qs .= " ORDER BY `value`";
-     $stmt = $this->dbo->prepare($qs);
-     $stmt->bindValue(':tagsetid', $tagset, PDO::PARAM_INT);
-     $stmt->execute();
-     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+   public function getTagset($tagset) {
+     $tagset = new TagsetAccessor($this->dbo, $tagset);
+     return array_values($tagset->entries());
    }
 
    /** Fetch all tagsets for a given file.
