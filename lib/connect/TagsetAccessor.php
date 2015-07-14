@@ -27,6 +27,9 @@ class TagsetAccessor {
 
   // SQL statements
   private $stmt_insertTag = null;
+  private $stmt_deleteTag = null;
+  private $stmt_reviseTag = null;
+  private $stmt_checkTagLinks = null;
 
   /** Construct a new TagsetAccessor.
    *
@@ -58,9 +61,19 @@ class TagsetAccessor {
    **********************************************/
 
   private function prepareStatements() {
+    $stmt = "SELECT COUNT(*) FROM tag_suggestion WHERE `tag_id`=:id";
+    $this->stmt_checkTagLinks = $this->dbo->prepare($stmt);
+  }
+
+  // statements that are only needed when changes are commited
+  private function prepareCommitStatements() {
     $stmt = "INSERT INTO tag (`value`, `needs_revision`, `tagset_id`) "
           . "VALUES (:value, :needsrev, :tagset) ";
     $this->stmt_insertTag = $this->dbo->prepare($stmt);
+    $stmt = "DELETE FROM tag WHERE `id`=:id";
+    $this->stmt_deleteTag = $this->dbo->prepare($stmt);
+    $stmt = "UPDATE tag SET `needs_revision`=:needsrev WHERE `id`=:id";
+    $this->stmt_reviseTag = $this->dbo->prepare($stmt);
   }
 
   /**********************************************/
@@ -151,16 +164,49 @@ class TagsetAccessor {
    * @param string $value The new tag value
    * @param $needs_rev Whether the tag should be flagged as needing revision;
    *        if not given, defaults to false.
+   *
+   * @return True if tag was successfully added, false otherwise.
    */
   public function addTag($value, $needs_rev) {
     $value = trim($value);
-    if (empty($value) || !$this->checkTag($value)) return;
+    if (empty($value) || !$this->checkTag($value)) return false;
     $needs_rev = ($needs_rev === true || $needs_rev === '1') ? '1' : '0';
     $tag = array('value' => $value,
                  'needs_revision' => $needs_rev,
                  'status' => 'new');
     $this->tags_by_value[$value] = $tag;
     $this->has_changed = true;
+    return true;
+  }
+
+  /** Set the 'needs_revision' flag for a tag.
+   */
+  public function setRevisionFlagForTag($value, $needs_rev) {
+    if (!isset($this->tags_by_value[$value])) return false;
+    $tag = &$this->tags_by_value[$value];
+    $needs_rev = ($needs_rev === true || $needs_rev === '1') ? '1' : '0';
+    $tag['needs_revision'] = $needs_rev;
+    if (!isset($tag['status'])) {
+      $tag['status'] = 'mark';
+    }
+    return true;
+  }
+
+  /** Delete a tag, or mark it as needing revision if it is currently in use.
+   */
+  public function deleteOrMarkTag($value) {
+    if (!isset($this->tags_by_value[$value])) return false;
+    $tag = &$this->tags_by_value[$value];
+    if ($this->settype === 'closed') {
+      // closed-class tagsets can link to tag entries
+      $this->stmt_checkTagLinks->execute(array(':id' => $tag['id']));
+      if ($this->stmt_checkTagLinks->fetchColumn() > 0) {
+        $this->setRevisionFlagForTag($value);
+        return true;
+      }
+    }
+    $tag['status'] = 'delete';
+    return true;
   }
 
   /** Commits all changes to the database.
@@ -180,15 +226,22 @@ class TagsetAccessor {
   }
 
   protected function executeCommitChanges() {
+    $this->prepareCommitStatements();
     foreach ($this->tags_by_value as $value => $tag) {
       if (!isset($tag['status']))
         continue;
       $status = $tag['status'];
       if ($status === 'new') {
-        $data = array(':value' => $tag['value'],
-                      ':needsrev' => $tag['needs_revision'],
-                      ':tagset' => $this->id);
-        $this->stmt_insertTag->execute($data);
+        $this->stmt_insertTag->execute(array(':value' => $tag['value'],
+                                             ':needsrev' => $tag['needs_revision'],
+                                             ':tagset' => $this->id));
+      }
+      else if ($status === 'delete') {
+        $this->stmt_deleteTag->execute(array(':id' => $tag['id']));
+      }
+      else if ($status === 'mark') {
+        $this->stmt_reviseTag->execute(array(':id' => $tag['id'],
+                                             ':needsrev' => '1'));
       }
     }
   }
