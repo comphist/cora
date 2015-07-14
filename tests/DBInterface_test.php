@@ -466,7 +466,10 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         // default value for limit is 'none', but actually other
         // strings would work too
         $this->assertEquals($lemma_tagset,
-                            $this->dbi->getTagset("3"));
+                            $this->dbi->getTagset("3"),
+                            "Lemma tagset",
+                            $delta = 0.0, $maxDepth = 10, $canonicalize = true);
+        // cf. <http://stackoverflow.com/a/28189403> ------^
 
         $this->assertEquals(array('lemma' => '511',
                                   'deletedlemma' => '512'),
