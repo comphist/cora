@@ -18,9 +18,6 @@ class TagsetAccessor {
   protected $tags_by_value = array(); /**< List of tags */
 
   public $check_pos = true; /**< Whether to apply integrity checks to POS tags */
-  protected $feature_count = array(); /**< Number of morphological features per
-                                           POS tag; only used when $check_pos
-                                           is true. */
 
   protected $has_changed = false; /**< Whether changes have been made */
   protected $errors = array(); /**< Messages of errors that occured */
@@ -107,13 +104,6 @@ class TagsetAccessor {
     while ($tag = $stmt->fetch(PDO::FETCH_ASSOC)) {
       $this->tags_by_value[$tag['value']] = $tag;
     }
-    // gather POS integrity data, if necessary
-    if ($this->tsclass === 'pos' && $this->check_pos) {
-      foreach($this->tags_by_value as $value => $tag) {
-        $parts = $this->splitPOS($value);
-        $this->feature_count[$parts[0]] = count($parts);
-      }
-    }
   }
 
   protected function executeCommitChanges() {
@@ -136,6 +126,37 @@ class TagsetAccessor {
                                              ':needsrev' => $tag['needs_revision']));
       }
     }
+  }
+
+  protected function checkPOSConsistency() {
+    if (!$this->check_pos || $this->tsclass != 'pos')
+      return true;
+    $feature_count = array();
+    $consistent = true;
+    foreach ($this->tags_by_value as $value => $tag) {
+      if (isset($tag['status']) && $tag['status'] === 'delete')
+        continue;  // do not look at deleted tags
+      $parts = $this->splitPOS($value);
+      foreach ($parts as $part) {
+        if (strlen($part) < 1) {
+          $this->error("POS tag has empty attributes: {$value}");
+          $consistent = false;
+        }
+      }
+      if (isset($feature_count[$parts[0]])) {
+        if ($feature_count[$parts[0]] !== count($parts)) {
+          $old = $this->feature_count[$parts[0]];
+          $new = count($parts);
+          $this->error("POS tag has inconsistent attribute count "
+                      . "(now {$new}, expected {$old}): {$value}");
+          $consistent = false;
+        }
+      }
+      else {
+        $feature_count[$parts[0]] = count($parts);
+      }
+    }
+    return $consistent;
   }
 
   /**********************************************
@@ -185,25 +206,6 @@ class TagsetAccessor {
       $this->error("Tag is longer than 255 characters: {$value}");
       return false;
     }
-    // only for POS:
-    if ($this->tsclass === 'pos' && $this->check_pos) {
-      $parts = $this->splitPOS($value);
-      foreach ($parts as $part) {
-        if (strlen($part) < 1) {
-          $this->error("POS tag has empty attributes: {$value}");
-          return false;
-        }
-      }
-      if (isset($this->feature_count[$parts[0]])
-          && $this->feature_count[$parts[0]] !== count($parts)) {
-        $old = $this->feature_count[$parts[0]];
-        $new = count($parts);
-        $this->error("POS tag has inconsistent attribute count "
-                    . "(now {$new}, expected {$old}): {$value}");
-        return false;
-      }
-    }
-    // passed
     return true;
   }
 
@@ -305,6 +307,7 @@ class TagsetAccessor {
    */
   public function commitChanges() {
     if (!$this->has_changed) return true;
+    if (!$this->checkPOSConsistency()) return false;
     try {
       $this->dbo->beginTransaction();
       $this->executeCommitChanges();
