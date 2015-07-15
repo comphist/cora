@@ -221,7 +221,10 @@ class TagsetAccessor {
   /** Set the 'needs_revision' flag for a tag.
    */
   public function setRevisionFlagForTag($value, $needs_rev) {
-    if (!isset($this->tags_by_value[$value])) return false;
+    if (!isset($this->tags_by_value[$value])) {
+      $this->error("Tried to change non-existing tag: {$value}");
+      return false;
+    }
     $tag = &$this->tags_by_value[$value];
     $needs_rev = $this->convertNeedsRev($needs_rev);
     $tag['needs_revision'] = $needs_rev;
@@ -235,8 +238,14 @@ class TagsetAccessor {
    */
   public function changeTag($value, $nvalue) {
     $value = trim($value);
-    if (!isset($this->tags_by_value[$value]) || $value === $nvalue
-        || empty($value) || !$this->checkTag($value)) return false;
+    if (!isset($this->tags_by_value[$value])) {
+      $this->error("Tried to change non-existing tag: {$value}");
+      return false;
+    }
+    else if ($value === $nvalue || empty($value)
+             || !$this->checkTag($value)) {
+      return false;
+    }
     $tag = $this->tags_by_value[$value];
     $tag['value'] = $nvalue;
     $this->tags_by_value[$nvalue] = $tag;
@@ -250,7 +259,10 @@ class TagsetAccessor {
   /** Delete a tag, or mark it as needing revision if it is currently in use.
    */
   public function deleteOrMarkTag($value) {
-    if (!isset($this->tags_by_value[$value])) return false;
+    if (!isset($this->tags_by_value[$value])) {
+      $this->error("Tried to delete non-existing tag: {$value}");
+      return false;
+    }
     $tag = &$this->tags_by_value[$value];
     if ($this->settype === 'closed') {
       // closed-class tagsets can link to tag entries
