@@ -28,7 +28,7 @@ class TagsetAccessor {
   // SQL statements
   private $stmt_insertTag = null;
   private $stmt_deleteTag = null;
-  private $stmt_reviseTag = null;
+  private $stmt_updateTag = null;
   private $stmt_checkTagLinks = null;
 
   /** Construct a new TagsetAccessor.
@@ -72,11 +72,18 @@ class TagsetAccessor {
     $this->stmt_insertTag = $this->dbo->prepare($stmt);
     $stmt = "DELETE FROM tag WHERE `id`=:id";
     $this->stmt_deleteTag = $this->dbo->prepare($stmt);
-    $stmt = "UPDATE tag SET `needs_revision`=:needsrev WHERE `id`=:id";
-    $this->stmt_reviseTag = $this->dbo->prepare($stmt);
+    $stmt = "UPDATE tag SET `value`=:value, `needs_revision`=:needsrev "
+          . " WHERE `id`=:id";
+    $this->stmt_updateTag = $this->dbo->prepare($stmt);
   }
 
   /**********************************************/
+
+  private function convertNeedsRev($value) {
+    if ($value === true || $value === '1' || $value === 1)
+      return 1;
+    return 0;
+  }
 
   /** Retrieves tagset information from the database. */
   protected function loadTagset() {
@@ -170,7 +177,7 @@ class TagsetAccessor {
   public function addTag($value, $needs_rev) {
     $value = trim($value);
     if (empty($value) || !$this->checkTag($value)) return false;
-    $needs_rev = ($needs_rev === true || $needs_rev === '1') ? '1' : '0';
+    $needs_rev = $this->convertNeedsRev($needs_rev);
     $tag = array('value' => $value,
                  'needs_revision' => $needs_rev,
                  'status' => 'new');
@@ -184,10 +191,26 @@ class TagsetAccessor {
   public function setRevisionFlagForTag($value, $needs_rev) {
     if (!isset($this->tags_by_value[$value])) return false;
     $tag = &$this->tags_by_value[$value];
-    $needs_rev = ($needs_rev === true || $needs_rev === '1') ? '1' : '0';
+    $needs_rev = $this->convertNeedsRev($needs_rev);
     $tag['needs_revision'] = $needs_rev;
     if (!isset($tag['status'])) {
-      $tag['status'] = 'mark';
+      $tag['status'] = 'update';
+    }
+    return true;
+  }
+
+  /** Modifies a tag value in-place.
+   */
+  public function changeTag($value, $nvalue) {
+    $value = trim($value);
+    if (!isset($this->tags_by_value[$value]) || $value === $nvalue
+        || empty($value) || !$this->checkTag($value)) return false;
+    $tag = $this->tags_by_value[$value];
+    $tag['value'] = $nvalue;
+    $this->tags_by_value[$nvalue] = $tag;
+    unset($this->tags_by_value[$value]);
+    if (!isset($tag['status'])) {
+      $tag['status'] = 'update';
     }
     return true;
   }
@@ -201,7 +224,7 @@ class TagsetAccessor {
       // closed-class tagsets can link to tag entries
       $this->stmt_checkTagLinks->execute(array(':id' => $tag['id']));
       if ($this->stmt_checkTagLinks->fetchColumn() > 0) {
-        $this->setRevisionFlagForTag($value);
+        $this->setRevisionFlagForTag($value, true);
         return true;
       }
     }
@@ -239,9 +262,10 @@ class TagsetAccessor {
       else if ($status === 'delete') {
         $this->stmt_deleteTag->execute(array(':id' => $tag['id']));
       }
-      else if ($status === 'mark') {
-        $this->stmt_reviseTag->execute(array(':id' => $tag['id'],
-                                             ':needsrev' => '1'));
+      else if ($status === 'update') {
+        $this->stmt_updateTag->execute(array(':id' => $tag['id'],
+                                             ':value' => $tag['value'],
+                                             ':needsrev' => $tag['needs_revision']));
       }
     }
   }
