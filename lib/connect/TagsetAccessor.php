@@ -93,6 +93,10 @@ class TagsetAccessor {
                                 . "WHERE `id`=?");
     $stmt->execute(array($this->id));
     $metadata = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$metadata) {  // illegal ID
+      $this->error("Couldn't find tagset with ID {$this->id}");
+      return;
+    }
     $this->name = $metadata['name'];
     $this->tsclass = strtolower($metadata['class']);
     $this->settype = strtolower($metadata['set_type']);
@@ -150,6 +154,15 @@ class TagsetAccessor {
     return count($this->tags_by_value);
   }
 
+  public function contains($value) {
+    return isset($this->tags_by_value[$value]);
+  }
+
+  public function getID() { return $this->id; }
+  public function getName() { return $this->name; }
+  public function getSetType() { return $this->settype; }
+  public function getClass() { return $this->tsclass; }
+
   /** Return a list of all tags.
    *
    * @return An associative array containing all tags of this tagset.
@@ -206,9 +219,17 @@ class TagsetAccessor {
    *
    * @return True if tag was successfully added, false otherwise.
    */
-  public function addTag($value, $needs_rev) {
+  public function addTag($value, $needs_rev=false) {
     $value = trim($value);
     if (empty($value) || !$this->checkTag($value)) return false;
+    if ($this->contains($value)) {
+      if (isset($this->tags_by_value[$value]['status'])
+          && $this->tags_by_value[$value]['status'] === 'delete') {
+        $this->tags_by_value[$value]['status'] === 'update';
+      }
+      $this->setRevisionFlagForTag($value, $needs_rev);
+      return true;
+    }
     $needs_rev = $this->convertNeedsRev($needs_rev);
     $tag = array('value' => $value,
                  'needs_revision' => $needs_rev,
@@ -231,6 +252,7 @@ class TagsetAccessor {
     if (!isset($tag['status'])) {
       $tag['status'] = 'update';
     }
+    $this->has_changed = true;
     return true;
   }
 
@@ -248,11 +270,12 @@ class TagsetAccessor {
     }
     $tag = $this->tags_by_value[$value];
     $tag['value'] = $nvalue;
-    $this->tags_by_value[$nvalue] = $tag;
-    unset($this->tags_by_value[$value]);
     if (!isset($tag['status'])) {
       $tag['status'] = 'update';
     }
+    $this->tags_by_value[$nvalue] = $tag;
+    unset($this->tags_by_value[$value]);
+    $this->has_changed = true;
     return true;
   }
 
@@ -272,7 +295,13 @@ class TagsetAccessor {
         return true;
       }
     }
-    $tag['status'] = 'delete';
+    if (isset($tag['status']) && $tag['status'] === 'new') {
+      unset($this->tags_by_value[$value]);
+    }
+    else {
+      $tag['status'] = 'delete';
+    }
+    $this->has_changed = true;
     return true;
   }
 
