@@ -185,10 +185,6 @@ class TagsetAccessor {
       $this->error("Tag is longer than 255 characters: {$value}");
       return false;
     }
-    if (isset($this->tags_by_value[$value])) {
-      $this->error("Tag already exists: {$value}");
-      return false;
-    }
     // only for POS:
     if ($this->tsclass === 'pos' && $this->check_pos) {
       $parts = $this->splitPOS($value);
@@ -203,7 +199,7 @@ class TagsetAccessor {
         $old = $this->feature_count[$parts[0]];
         $new = count($parts);
         $this->error("POS tag has inconsistent attribute count "
-                    . "(now {$now}, expected {$old}): {$value}");
+                    . "(now {$new}, expected {$old}): {$value}");
         return false;
       }
     }
