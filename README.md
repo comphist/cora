@@ -11,7 +11,7 @@ CorA is a web-based annotation tool for non-standard language data.
 
 This list is probably still incomplete.
 
-* PHP 5.x+ with the following extensions: (**TODO:** find out which version exactly the minimum required)
+* PHP 5.3+ with the following extensions: (**TODO:** find out which version exactly the minimum required)
     * dom
     * json
     * libxml
