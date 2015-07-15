@@ -44,18 +44,6 @@ class TagsetAccessor {
       $this->loadTagset();
   }
 
-  protected function error($message) {
-    $this->errors[] = $message;
-  }
-
-  public function getErrors() {
-    return $this->errors;
-  }
-
-  public function hasErrors() {
-    return count($this->errors) > 0;
-  }
-
   /**********************************************
    ********* SQL Statement Preparations *********
    **********************************************/
@@ -77,12 +65,25 @@ class TagsetAccessor {
     $this->stmt_updateTag = $this->dbo->prepare($stmt);
   }
 
-  /**********************************************/
+  /**********************************************
+   ********* Private/protected functions ********
+   **********************************************/
 
   private function convertNeedsRev($value) {
     if ($value === true || $value === '1' || $value === 1)
       return 1;
     return 0;
+  }
+
+  private function splitPOS($value) {
+    if (substr($value, -1) === '.' && substr_count($value, '.') === 1) {
+      return array($value);
+    }
+    return explode('.', $value);
+  }
+
+  protected function error($message) {
+    $this->errors[] = $message;
   }
 
   /** Retrieves tagset information from the database. */
@@ -111,11 +112,42 @@ class TagsetAccessor {
     }
   }
 
-  private function splitPOS($value) {
-    if (substr($value, -1) === '.' && substr_count($value, '.') === 1) {
-      return array($value);
+  protected function executeCommitChanges() {
+    $this->prepareCommitStatements();
+    foreach ($this->tags_by_value as $value => $tag) {
+      if (!isset($tag['status']))
+        continue;
+      $status = $tag['status'];
+      if ($status === 'new') {
+        $this->stmt_insertTag->execute(array(':value' => $tag['value'],
+                                             ':needsrev' => $tag['needs_revision'],
+                                             ':tagset' => $this->id));
+      }
+      else if ($status === 'delete') {
+        $this->stmt_deleteTag->execute(array(':id' => $tag['id']));
+      }
+      else if ($status === 'update') {
+        $this->stmt_updateTag->execute(array(':id' => $tag['id'],
+                                             ':value' => $tag['value'],
+                                             ':needsrev' => $tag['needs_revision']));
+      }
     }
-    return explode('.', $value);
+  }
+
+  /**********************************************
+   ********* Public functions *******************
+   **********************************************/
+
+  public function getErrors() {
+    return $this->errors;
+  }
+
+  public function hasErrors() {
+    return count($this->errors) > 0;
+  }
+
+  public function count() {
+    return count($this->tags_by_value);
   }
 
   /** Return a list of all tags.
@@ -247,29 +279,6 @@ class TagsetAccessor {
     }
     return true;
   }
-
-  protected function executeCommitChanges() {
-    $this->prepareCommitStatements();
-    foreach ($this->tags_by_value as $value => $tag) {
-      if (!isset($tag['status']))
-        continue;
-      $status = $tag['status'];
-      if ($status === 'new') {
-        $this->stmt_insertTag->execute(array(':value' => $tag['value'],
-                                             ':needsrev' => $tag['needs_revision'],
-                                             ':tagset' => $this->id));
-      }
-      else if ($status === 'delete') {
-        $this->stmt_deleteTag->execute(array(':id' => $tag['id']));
-      }
-      else if ($status === 'update') {
-        $this->stmt_updateTag->execute(array(':id' => $tag['id'],
-                                             ':value' => $tag['value'],
-                                             ':needsrev' => $tag['needs_revision']));
-      }
-    }
-  }
-
 }
 
 ?>
