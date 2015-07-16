@@ -235,11 +235,11 @@
     * @param string $tagset The id of the tagset to be retrieved
     */
    public function getTagsetByValue($tagset) {
-     $qs = "SELECT `value`, `id` FROM tag WHERE `tagset_id`=:tagsetid";
-     $stmt = $this->dbo->prepare($qs);
-     $stmt->bindValue(':tagsetid', $tagset, PDO::PARAM_INT);
-     $stmt->execute();
-     return $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+     $tagset = new TagsetAccessor($this->dbo, $tagset);
+     return array_map(
+       function($tag) { return $tag['id']; },
+       $tagset->entries()
+     );
    }
 
    /** Perform a search within a document.
