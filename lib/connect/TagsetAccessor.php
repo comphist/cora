@@ -81,6 +81,7 @@ class TagsetAccessor {
 
   protected function error($message) {
     $this->errors[] = $message;
+    return false;
   }
 
   /** Retrieves tagset information from the database. */
@@ -91,8 +92,7 @@ class TagsetAccessor {
     $stmt->execute(array($this->id));
     $metadata = $stmt->fetch(PDO::FETCH_ASSOC);
     if (!$metadata) {  // illegal ID
-      $this->error("Couldn't find tagset with ID {$this->id}");
-      return;
+      return $this->error("Couldn't find tagset with ID {$this->id}");
     }
     $this->name = $metadata['name'];
     $this->tsclass = strtolower($metadata['class']);
@@ -145,7 +145,7 @@ class TagsetAccessor {
       }
       if (isset($feature_count[$parts[0]])) {
         if ($feature_count[$parts[0]] !== count($parts)) {
-          $old = $this->feature_count[$parts[0]];
+          $old = $feature_count[$parts[0]];
           $new = count($parts);
           $this->error("POS tag has inconsistent attribute count "
                       . "(now {$new}, expected {$old}): {$value}");
@@ -184,6 +184,16 @@ class TagsetAccessor {
   public function getSetType() { return $this->settype; }
   public function getClass() { return $this->tsclass; }
 
+  public function getTag($value) {
+    if ($this->contains($value))
+      return $this->tags_by_value[$value];
+    return null;
+  }
+
+  public function needsCommit() {
+    return $this->has_changed;
+  }
+
   /** Return a list of all tags.
    *
    * @return An associative array containing all tags of this tagset.
@@ -203,8 +213,7 @@ class TagsetAccessor {
    */
   public function checkTag($value) {
     if (strlen($value) > 255) {
-      $this->error("Tag is longer than 255 characters: {$value}");
-      return false;
+      return $this->error("Tag is longer than 255 characters: {$value}");
     }
     return true;
   }
@@ -223,10 +232,9 @@ class TagsetAccessor {
     if ($this->contains($value)) {
       if (isset($this->tags_by_value[$value]['status'])
           && $this->tags_by_value[$value]['status'] === 'delete') {
-        $this->tags_by_value[$value]['status'] === 'update';
+        $this->tags_by_value[$value]['status'] = 'update';
       }
-      $this->setRevisionFlagForTag($value, $needs_rev);
-      return true;
+      return $this->setRevisionFlagForTag($value, $needs_rev);
     }
     $needs_rev = $this->convertNeedsRev($needs_rev);
     $tag = array('value' => $value,
@@ -241,15 +249,19 @@ class TagsetAccessor {
    */
   public function setRevisionFlagForTag($value, $needs_rev) {
     if (!isset($this->tags_by_value[$value])) {
-      $this->error("Tried to change non-existing tag: {$value}");
-      return false;
+      return $this->error("Tried to change non-existing tag: {$value}");
     }
     $tag = &$this->tags_by_value[$value];
-    $needs_rev = $this->convertNeedsRev($needs_rev);
-    $tag['needs_revision'] = $needs_rev;
-    if (!isset($tag['status'])) {
+    if (isset($tag['status'])) {
+      if ($tag['status'] === 'delete') {
+        return $this->error("Tried to change already-deleted tag: {$value}");
+      }
+    }
+    else {
       $tag['status'] = 'update';
     }
+    $needs_rev = $this->convertNeedsRev($needs_rev);
+    $tag['needs_revision'] = $needs_rev;
     $this->has_changed = true;
     return true;
   }
@@ -257,20 +269,27 @@ class TagsetAccessor {
   /** Modifies a tag value in-place.
    */
   public function changeTag($value, $nvalue) {
-    $value = trim($value);
+    $nvalue = trim($nvalue);
     if (!isset($this->tags_by_value[$value])) {
-      $this->error("Tried to change non-existing tag: {$value}");
-      return false;
+      return $this->error("Tried to change non-existing tag: {$value}");
+    }
+    else if (isset($this->tags_by_value[$nvalue])) {
+      return $this->error("Tried to change to already-existing tag: {$nvalue}");
     }
     else if ($value === $nvalue || empty($value)
-             || !$this->checkTag($value)) {
+             || empty($nvalue) || !$this->checkTag($nvalue)) {
       return false;
     }
     $tag = $this->tags_by_value[$value];
-    $tag['value'] = $nvalue;
-    if (!isset($tag['status'])) {
+    if (isset($tag['status'])) {
+      if ($tag['status'] === 'delete') {
+        return $this->error("Tried to change already-deleted tag: {$value}");
+      }
+    }
+    else {
       $tag['status'] = 'update';
     }
+    $tag['value'] = $nvalue;
     $this->tags_by_value[$nvalue] = $tag;
     unset($this->tags_by_value[$value]);
     $this->has_changed = true;
@@ -285,6 +304,10 @@ class TagsetAccessor {
       return false;
     }
     $tag = &$this->tags_by_value[$value];
+    if (isset($tag['status']) && $tag['status'] === 'new') {
+      unset($this->tags_by_value[$value]);
+      return true;
+    }
     if ($this->settype === 'closed') {
       // closed-class tagsets can link to tag entries
       $this->stmt_checkTagLinks->execute(array(':id' => $tag['id']));
@@ -293,12 +316,7 @@ class TagsetAccessor {
         return true;
       }
     }
-    if (isset($tag['status']) && $tag['status'] === 'new') {
-      unset($this->tags_by_value[$value]);
-    }
-    else {
-      $tag['status'] = 'delete';
-    }
+    $tag['status'] = 'delete';
     $this->has_changed = true;
     return true;
   }
@@ -306,7 +324,7 @@ class TagsetAccessor {
   /** Commits all changes to the database.
    */
   public function commitChanges() {
-    if (!$this->has_changed) return true;
+    if (!$this->needsCommit()) return true;
     if (!$this->checkPOSConsistency()) return false;
     try {
       $this->dbo->beginTransaction();
