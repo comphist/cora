@@ -77,7 +77,6 @@
               embedJS("gui/js/request/CoraRequest.js", true);
               embedJS("gui/js/settings.js", true);
               embedJS("gui/js/MultiSelect.js", true);
-              embedJS("gui/js/baseBox.js", true);
               embedJS("gui/js/ProgressBar.js", true);
               // embedJS("gui/js/dragtable_hack.js", true);
               embedJS("gui/js/iFrameFormRequest.js", true);
