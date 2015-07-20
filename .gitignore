@@ -12,3 +12,4 @@ pqp
 doc/html
 doc/latex
 doc/mkdocs/site
+/build/
