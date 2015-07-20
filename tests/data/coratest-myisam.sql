@@ -467,4 +467,4 @@ CREATE TABLE `notices` (
 
 -- Dump completed on 2013-02-06  4:25:47
 
-GRANT UPDATE,INSERT,DELETE,SELECT ON coratest.* TO 'cora'@'localhost' IDENTIFIED BY 'trustthetext';
+GRANT ALL PRIVILEGES ON coratest.* TO 'cora'@'localhost' IDENTIFIED BY 'trustthetext';
