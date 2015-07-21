@@ -4,14 +4,15 @@ add_sources(
   Meio.Autocomplete.css
   MultiSelect.css
   open-iconic.min.css
-  screen.scss
 )
 
-# TODO: the directory handling is messed up atm
+configure_file(screen.scss "${CMAKE_CURRENT_BINARY_DIR}/screen.scss" COPYONLY)
+file(RELATIVE_PATH _relPath "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
+set(CORA_CURRENT_WEB_DIR "${CORA_WEB_DIR}/${_relPath}")
 add_custom_target(
   web-scss
-  COMMAND ${SASS_EXECUTABLE} --scss screen.scss screen.css
-  WORKING_DIRECTORY "${CORA_WEB_DIR}/gui/css"
+  COMMAND ${SASS_EXECUTABLE} --scss screen.scss "${CORA_CURRENT_WEB_DIR}/screen.css"
+  WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
   COMMENT "Pre-compiling SCSS stylesheet..."
 )
 add_dependencies(web web-scss)
