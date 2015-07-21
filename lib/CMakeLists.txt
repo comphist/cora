@@ -1,0 +1,30 @@
+add_sources(
+  automaticAnnotation.php
+  commandHandler.php
+  connect.php
+  contentModel.php
+  documentModel.php
+  exporter.php
+  globals.php
+  requestHandler.php
+  sessionHandler.php
+  xmlHandler.php
+)
+
+add_sources(
+  annotation/AutomaticAnnotator.php
+  annotation/DualRFTaggerAnnotator.php
+  annotation/Lemmatizer.php
+  annotation/RFTaggerAnnotator.php
+)
+
+add_sources(
+  connect/DocumentAccessor.php
+  connect/DocumentCreator.php
+  connect/DocumentReader.php
+  connect/DocumentWriter.php
+  connect/ProjectAccessor.php
+  connect/SearchQuery.php
+  connect/TagsetAccessor.php
+  connect/TagsetCreator.php
+)

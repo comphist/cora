@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(CorA NONE)
 set(CMAKE_PROJECT_VERSION 1.2)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules")
 
 # modelled after https://github.com/kogmbh/WebODF/blob/master/webodf/CMakeLists.txt
 
@@ -19,8 +20,6 @@ endif()
 #########################################################
 ## Find installed dependencies
 #########################################################
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules")
 
 find_package(PHP5 5.3 COMPONENTS Runtime REQUIRED)
 
@@ -50,6 +49,7 @@ ExternalProject_Add(
     DOWNLOAD_DIR ${EXTERNALS_DOWNLOAD_DIR}
     URL "http://dl.google.com/closure-compiler/compiler-20150505.tar.gz"
     URL_MD5 dea8e282c316316daeb39fcd5708d369
+    LOG_DOWNLOAD 1
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
     INSTALL_COMMAND ""
@@ -62,11 +62,33 @@ ExternalProject_Add(
     DOWNLOAD_DIR ${EXTERNALS_DOWNLOAD_DIR}
     URL "https://github.com/yui/yuicompressor/releases/download/v2.4.8/yuicompressor-2.4.8.zip"
     URL_MD5 44f20ece35d889c1c658eb5297cd20ee
+    LOG_DOWNLOAD 1
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
     INSTALL_COMMAND ""
 )
 set(YUICOMP_JAR ${CMAKE_BINARY_DIR}/yuicompressor-2.4.8.jar)
+
+#########################################################
+## Files belonging in the web directory
+#########################################################
+
+set(CORA_WEB_DIR "${CMAKE_CURRENT_BINARY_DIR}/www")
+file(MAKE_DIRECTORY ${CORA_WEB_DIR})
+
+include(AddSources)
+add_sources(content.php gui.php index.php news.php request.php)
+add_sources(project_specific_hacks.php)
+add_subdirectory(lib)
+
+# ... include subdirectories ...
+
+foreach(SRC ${SRCS})
+  configure_file("${SRC}" "${CORA_WEB_DIR}/${SRC}" COPYONLY)
+endforeach()
+
+# TODO: figure out installation step, could include sth. like
+# install(DIRECTORY ${CORA_WEB_DIR} DESTINATION ???)
 
 #########################################################
 ## Documentation
