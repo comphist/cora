@@ -4,13 +4,17 @@ set(CMAKE_PROJECT_VERSION 1.2)
 
 # modelled after https://github.com/kogmbh/WebODF/blob/master/webodf/CMakeLists.txt
 
-message(STATUS "Source: ${CorA_SOURCE_DIR}")
-message(STATUS "Target: ${CorA_BINARY_DIR}")
-
 # Require separate build dir
 if (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
   message(FATAL_ERROR "Source and target directory must be different.")
 endif (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
+
+option(DEBUG_MODE "Debug mode" OFF)
+if(DEBUG_MODE)
+  set(DEBUG_MODE_YESNO YES)
+else()
+  set(DEBUG_MODE_YESNO NO)
+endif()
 
 #########################################################
 ## Find installed dependencies
