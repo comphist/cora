@@ -79,6 +79,7 @@ file(MAKE_DIRECTORY ${CORA_WEB_DIR})
 include(AddSources)
 add_sources(content.php gui.php index.php news.php request.php)
 add_sources(project_specific_hacks.php)
+add_subdirectory(gui)
 add_subdirectory(lib)
 
 # ... include subdirectories ...
