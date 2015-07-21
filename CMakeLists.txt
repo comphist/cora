@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8.12)
-project(CorA)
+project(CorA NONE)
+set(CMAKE_PROJECT_VERSION 1.2)
 
 # modelled after https://github.com/kogmbh/WebODF/blob/master/webodf/CMakeLists.txt
 
@@ -21,9 +22,6 @@ find_package(PHP5 5.3 COMPONENTS Runtime REQUIRED)
 
 # Needed for Closure Compiler / YUICompressor
 find_package(Java COMPONENTS Runtime REQUIRED)
-
-# For documentation
-find_package(Doxygen)
 
 #########################################################
 ## Download stuff that is not commonly installed/packaged
@@ -66,3 +64,41 @@ ExternalProject_Add(
 )
 set(YUICOMP_JAR ${CMAKE_BINARY_DIR}/yuicompressor-2.4.8.jar)
 
+#########################################################
+## Documentation
+#########################################################
+
+add_custom_target(docs)
+
+# For API documentation
+find_package(Doxygen)
+
+if(DOXYGEN_FOUND)
+  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in"
+                 "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
+                 @ONLY)
+  add_custom_target(docs-api
+    ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Generating API documentation..."
+    )
+  add_dependencies(docs docs-api)
+endif()
+
+# For user documentation
+find_package(mkdocs 0.14)
+
+if(MKDOCS_FOUND)
+  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/doc/mkdocs/mkdocs.yml.in"
+                 "${CMAKE_CURRENT_BINARY_DIR}/mkdocs.yml")
+  add_custom_target(docs-user
+    ${MKDOCS_EXECUTABLE} build
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Generating user documentation..."
+    )
+  add_dependencies(docs docs-user)
+endif()
+
+if(DOXYGEN_FOUND OR MKDOCS_FOUND)
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/docs)
+endif()
