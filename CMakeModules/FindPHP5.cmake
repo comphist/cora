@@ -80,7 +80,7 @@ if(PHP5_EXECUTABLE)
         string(REGEX REPLACE "PHP ([0-9]+\\.[0-9]+\\.[0-9_.]+).*"
                "\\1" PHP5_VERSION_STRING "${var}")
       else()
-        if(NOT PHP5_FAIL_QUIETLY)
+        if(NOT PHP5_FIND_QUIETLY)
           message(WARNING "regex not supported: {$var}.")
         endif()
       endif()
