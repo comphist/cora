@@ -22,6 +22,7 @@ endif()
 #########################################################
 
 find_package(PHP5 5.3 COMPONENTS Runtime REQUIRED)
+find_package(Sass 3.4.13 REQUIRED)
 
 # Needed for Closure Compiler / YUICompressor
 find_package(Java COMPONENTS Runtime REQUIRED)
@@ -75,6 +76,7 @@ set(YUICOMP_JAR ${CMAKE_BINARY_DIR}/yuicompressor-2.4.8.jar)
 
 set(CORA_WEB_DIR "${CMAKE_CURRENT_BINARY_DIR}/www")
 file(MAKE_DIRECTORY ${CORA_WEB_DIR})
+add_custom_target(web ALL)
 
 include(AddSources)
 add_sources(content.php gui.php index.php news.php request.php)
