@@ -45,7 +45,7 @@
 }
 .mBox.Modal.mBoxLoading .mBoxContent {
 	min-height:11px;
-	background:url('images/mBox-Loader.gif') center center no-repeat;
+	background:url('../images/mbox/mBox-Loader.gif') center center no-repeat;
 }
 .mBox.Modal .mBoxTitle {
 	position:relative;
@@ -99,7 +99,7 @@
 	position:absolute;
 	top:3px;
 	left:3px;
-	background:url('images/mBox-Sprites.png') 0px 0px no-repeat;
+	background:url('../images/mbox/mBox-Sprites.png') 0px 0px no-repeat;
 }
 .mBox.Modal .mBoxClose:hover {
 	border-color:#c0c0c0;
@@ -144,7 +144,7 @@
 	color:#555555;
 	font-size:16px;
 	padding:30px 30px 30px 75px;
-	background:url('images/mBox-Sprites.png') #fff 20px -1078px no-repeat;
+	background:url('../images/mbox/mBox-Sprites.png') #fff 20px -1078px no-repeat;
         max-width:40em;
 }
 .mBox.Modal.Confirm .mBoxButtonContainer {
@@ -158,7 +158,7 @@
     font-size:16px;
     padding:30px 30px 30px 75px;
     background-color:#fff;
-    background-image:url('images/mBox-Sprites.png');
+    background-image:url('../images/mbox/mBox-Sprites.png');
     background-repeat:no-repeat;
     max-width:31em;
 }

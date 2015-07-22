@@ -20,5 +20,5 @@
 }
 .mBox.Core.mBoxLoading .mBoxContent {
 	min-height:11px;
-	background:url('images/mBox-Loader.gif') center center no-repeat;
+	background:url('../images/mbox/mBox-Loader.gif') center center no-repeat;
 }

@@ -34,7 +34,7 @@
 }
 .mBox.Tooltip.mBoxLoading .mBoxContent {
 	min-height:11px;
-	background:url('images/mBox-Loader.gif') center center no-repeat;
+	background:url('../images/mbox/mBox-Loader.gif') center center no-repeat;
 }
 .mBox.Tooltip .mBoxTitle {
 	color:#505050;
@@ -60,7 +60,7 @@
 	border-top-right-radius:5px;
 }
 .mBox.Tooltip .mBoxPointer {
-	background:url('images/mBoxTooltip-Sprites.png') no-repeat;
+	background:url('../images/mbox/mBoxTooltip-Sprites.png') no-repeat;
 }
 .mBox.Tooltip .mBoxPointerTop {
 	width:17px;

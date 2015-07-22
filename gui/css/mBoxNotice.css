@@ -31,7 +31,7 @@
 .mBox.Notice .mBoxNoticeNotice,
 .mBox.Notice .mBoxNoticeAttention {
 	padding-left:70px;
-	background-image:url('images/mBox-Sprites.png');
+	background-image:url('../images/mbox/mBox-Sprites.png');
 	background-repeat:no-repeat;
 }
 

@@ -61,6 +61,3 @@ add_sources(
   mbox/mForm.Element.js
   mbox/mForm.Element.Select.js
 )
-
-# TODO: this is a bit more involved!!
-add_sources_glob(mbox/assets/*)
