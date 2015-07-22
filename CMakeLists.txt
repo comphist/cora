@@ -85,7 +85,7 @@ ExternalProject_Add(
     BUILD_COMMAND ""
     INSTALL_COMMAND ""
 )
-set(YUICOMP_JAR ${CMAKE_BINARY_DIR}/yuicompressor-2.4.8.jar)
+set(YUICOMP_JAR ${CMAKE_BINARY_DIR}/YUICompressor-prefix/src/YUICompressor/yuicompressor-2.4.8.jar)
 
 #########################################################
 ## Files belonging in the web directory
