@@ -163,7 +163,9 @@ class DocumentAccessor {
    */
   protected function preloadTagset($tagset) {
     $accessor = new TagsetAccessor($this->dbo, $tagset['id']);
-    $this->tagsets[$tagset['class']]['tags'] = array_values($accessor->entries());
+    $values = array_values($accessor->entries());
+    natcasesort($values);
+    $this->tagsets[$tagset['class']]['tags'] = $values;
   }
 
   /** Returns a list of tagsets linked to the associated file.
