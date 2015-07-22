@@ -164,7 +164,6 @@ class DocumentAccessor {
   protected function preloadTagset($tagset) {
     $accessor = new TagsetAccessor($this->dbo, $tagset['id']);
     $values = array_values($accessor->entries());
-    natcasesort($values);
     $this->tagsets[$tagset['class']]['tags'] = $values;
   }
 
