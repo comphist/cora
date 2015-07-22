@@ -10,12 +10,22 @@ if (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
   message(FATAL_ERROR "Source and target directory must be different.")
 endif (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
 
+#########################################################
+## Options
+#########################################################
+
 option(DEBUG_MODE "Debug mode" OFF)
 if(DEBUG_MODE)
   set(DEBUG_MODE_YESNO YES)
+  set(MINIFY_CSS_DEFAULT NO)
+  set(MINIFY_JS_DEFAULT NO)
 else()
   set(DEBUG_MODE_YESNO NO)
+  set(MINIFY_CSS_DEFAULT YES)
+  set(MINIFY_JS_DEFAULT YES)
 endif()
+option(WITH_MINIFY_CSS "Minification of CSS files" ${MINIFY_CSS_DEFAULT})
+option(WITH_MINIFY_JS "Minification of JavaScript files" ${MINIFY_JS_DEFAULT})
 
 #########################################################
 ## Find installed dependencies
@@ -27,6 +37,12 @@ find_package(Sass 3.4.13 REQUIRED)
 # Needed for Closure Compiler / YUICompressor
 find_package(Java COMPONENTS Runtime REQUIRED)
 
+# For API documentation
+find_package(Doxygen)
+
+# For user documentation
+find_package(mkdocs 0.14)
+
 #########################################################
 ## Download stuff that is not commonly installed/packaged
 #########################################################
@@ -35,12 +51,12 @@ find_package(Java COMPONENTS Runtime REQUIRED)
 # requirements by evaluating environment variable
 # $CorA_DOWNLOAD_DIR
 # defaults to "./downloads" in the build directory.
-if ( IS_DIRECTORY $ENV{CorA_DOWNLOAD_DIR} )
-    SET ( EXTERNALS_DOWNLOAD_DIR $ENV{CorA_DOWNLOAD_DIR} )
-else ( IS_DIRECTORY $ENV{CorA_DOWNLOAD_DIR} )
-    SET ( EXTERNALS_DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads )
-endif ( IS_DIRECTORY $ENV{CorA_DOWNLOAD_DIR} )
-MESSAGE ( STATUS "External downloads will be stored/expected in: ${EXTERNALS_DOWNLOAD_DIR}" )
+if(IS_DIRECTORY $ENV{CorA_DOWNLOAD_DIR})
+  set(EXTERNALS_DOWNLOAD_DIR $ENV{CorA_DOWNLOAD_DIR})
+else(IS_DIRECTORY $ENV{CorA_DOWNLOAD_DIR})
+  set(EXTERNALS_DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads)
+endif(IS_DIRECTORY $ENV{CorA_DOWNLOAD_DIR})
+message(STATUS "External downloads will be stored/expected in: ${EXTERNALS_DOWNLOAD_DIR}")
 
 include (ExternalProject)
 
@@ -84,8 +100,6 @@ add_sources(project_specific_hacks.php)
 add_subdirectory(gui)
 add_subdirectory(lib)
 
-# ... include subdirectories ...
-
 foreach(SRC ${SRCS})
   configure_file("${SRC}" "${CORA_WEB_DIR}/${SRC}" COPYONLY)
 endforeach()
@@ -99,9 +113,6 @@ endforeach()
 
 add_custom_target(docs)
 
-# For API documentation
-find_package(Doxygen)
-
 if(DOXYGEN_FOUND)
   configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in"
                  "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
@@ -113,9 +124,6 @@ if(DOXYGEN_FOUND)
     )
   add_dependencies(docs docs-api)
 endif()
-
-# For user documentation
-find_package(mkdocs 0.14)
 
 if(MKDOCS_FOUND)
   configure_file("${CMAKE_CURRENT_SOURCE_DIR}/doc/mkdocs/mkdocs.yml.in"
