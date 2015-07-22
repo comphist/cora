@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8.12)
 project(CorA NONE)
 set(CMAKE_PROJECT_VERSION 1.2)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules")
+include(Cat)
 
 # modelled after https://github.com/kogmbh/WebODF/blob/master/webodf/CMakeLists.txt
 
@@ -49,13 +50,13 @@ find_package(mkdocs 0.14)
 
 # allow specification of a directory with pre-downloaded
 # requirements by evaluating environment variable
-# $CorA_DOWNLOAD_DIR
+# $CORA_DOWNLOAD_DIR
 # defaults to "./downloads" in the build directory.
-if(IS_DIRECTORY $ENV{CorA_DOWNLOAD_DIR})
-  set(EXTERNALS_DOWNLOAD_DIR $ENV{CorA_DOWNLOAD_DIR})
-else(IS_DIRECTORY $ENV{CorA_DOWNLOAD_DIR})
+if(IS_DIRECTORY $ENV{CORA_DOWNLOAD_DIR})
+  set(EXTERNALS_DOWNLOAD_DIR $ENV{CORA_DOWNLOAD_DIR})
+else(IS_DIRECTORY $ENV{CORA_DOWNLOAD_DIR})
   set(EXTERNALS_DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads)
-endif(IS_DIRECTORY $ENV{CorA_DOWNLOAD_DIR})
+endif(IS_DIRECTORY $ENV{CORA_DOWNLOAD_DIR})
 message(STATUS "External downloads will be stored/expected in: ${EXTERNALS_DOWNLOAD_DIR}")
 
 include (ExternalProject)
