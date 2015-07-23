@@ -1,9 +1,10 @@
-# Although we're not doing any minification yet, these source files are listed
-# in the order required for this step
+file(RELATIVE_PATH CORA_CURRENT_REL_PATH "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
+set(CORA_CURRENT_WEB_DIR "${CORA_WEB_DIR}/${CORA_CURRENT_REL_PATH}")
+file(MAKE_DIRECTORY "${CORA_CURRENT_WEB_DIR}")
 
 # should compile to master.min.js
 # TODO: can we separate the "plugin" files from CorA proper?
-add_sources(
+set(JS_SOURCES_MASTER
   request/CoraRequestErrors.js
   request/CoraRequest.js
   settings.js
@@ -44,13 +45,13 @@ add_sources(
 )
 
 # should compile to admin.min.js
-add_sources(
+set(JS_SOURCES_ADMIN
   datepicker.js
   admin.js
 )
 
 # should compile to mbox.min.js
-add_sources(
+set(JS_SOURCES_MBOX
   mbox/mBox.Core.js
   mbox/mBox.Modal.js
   mbox/mBox.Notice.js
@@ -61,3 +62,55 @@ add_sources(
   mbox/mForm.Element.js
   mbox/mForm.Element.Select.js
 )
+
+if(WITH_MINIFY_JS)
+  # Only use simple optimizations because our code isn't properly prepared for
+  # advanced optimization (yet?)
+  set(CLOSURE_COMPILATION_LEVEL "SIMPLE_OPTIMIZATIONS")
+  add_custom_command(
+    OUTPUT "${CORA_CURRENT_WEB_DIR}/master.min.js"
+    COMMAND ${Java_JAVA_EXECUTABLE} -jar ${CLOSURE_JAR}
+            --js_output_file "${CORA_CURRENT_WEB_DIR}/master.min.js"
+            --language_in ECMASCRIPT5
+            --compilation_level ${CLOSURE_COMPILATION_LEVEL}
+            --warning_level DEFAULT
+            ${JS_SOURCES_MASTER}
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    DEPENDS ClosureCompiler ${JS_SOURCES_MASTER}
+    COMMENT "Compressing master.js"
+    )
+  add_custom_command(
+    OUTPUT "${CORA_CURRENT_WEB_DIR}/admin.min.js"
+    COMMAND ${Java_JAVA_EXECUTABLE} -jar ${CLOSURE_JAR}
+            --js_output_file "${CORA_CURRENT_WEB_DIR}/admin.min.js"
+            --language_in ECMASCRIPT5
+            --compilation_level ${CLOSURE_COMPILATION_LEVEL}
+            --warning_level DEFAULT
+            ${JS_SOURCES_ADMIN}
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    DEPENDS ClosureCompiler ${JS_SOURCES_ADMIN}
+    COMMENT "Compressing admin.js"
+    )
+  add_custom_command(
+    OUTPUT "${CORA_CURRENT_WEB_DIR}/mbox.min.js"
+    COMMAND ${Java_JAVA_EXECUTABLE} -jar ${CLOSURE_JAR}
+            --js_output_file "${CORA_CURRENT_WEB_DIR}/mbox.min.js"
+            --compilation_level ${CLOSURE_COMPILATION_LEVEL}
+            --warning_level QUIET
+            --third_party
+            ${JS_SOURCES_MBOX}
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    DEPENDS ClosureCompiler ${JS_SOURCES_MBOX}
+    COMMENT "Compressing mbox.js"
+    )
+  add_custom_target(
+    web-minify-js
+    DEPENDS "${CORA_CURRENT_WEB_DIR}/master.min.js"
+            "${CORA_CURRENT_WEB_DIR}/admin.min.js"
+            "${CORA_CURRENT_WEB_DIR}/mbox.min.js"
+    )
+  add_dependencies(web web-minify-js)
+else()
+  # no minification? just configure everything into the web directory
+  add_sources(${JS_SOURCES_MASTER} ${JS_SOURCES_ADMIN} ${JS_SOURCES_MBOX})
+endif()
