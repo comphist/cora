@@ -22,13 +22,9 @@ list(APPEND CSS_SOURCES
 if(WITH_MINIFY_CSS)
   # configure to binary dir
   set(SASS_TARGET_DIR ${CMAKE_CURRENT_BINARY_DIR})
-  # concatenate stuff that does NOT go through to Sass
-  set(NO_SASS_FILE "${CMAKE_CURRENT_BINARY_DIR}/master-no-scss.css")
-  file(WRITE "${NO_SASS_FILE}.in" "")
-  cat_multiple("${CMAKE_CURRENT_BINARY_DIR}/master-no-scss.css" ${CSS_SOURCES})
-  configure_file("${NO_SASS_FILE}.in" "${NO_SASS_FILE}" COPYONLY)
-  # the web-minify-css target takes care of actually putting stuff in the
-  # web directory
+  foreach(SRC ${CSS_SOURCES})
+    configure_file(${SRC} "${CMAKE_CURRENT_BINARY_DIR}/${SRC}" COPYONLY)
+  endforeach()
 else()
   # no minification? just configure everything into the web directory
   set(SASS_TARGET_DIR ${CORA_CURRENT_WEB_DIR})
@@ -36,28 +32,37 @@ else()
 endif()
 
 configure_file(screen.scss "${CMAKE_CURRENT_BINARY_DIR}/screen.scss" COPYONLY)
-add_custom_target(
-  web-scss
+add_custom_command(
+  OUTPUT "${SASS_TARGET_DIR}/screen.css"
   COMMAND ${SASS_EXECUTABLE} --scss screen.scss "${SASS_TARGET_DIR}/screen.css"
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+  DEPENDS screen.scss
   COMMENT "Pre-compiling SCSS stylesheet"
 )
+add_custom_target(web-scss DEPENDS "${SASS_TARGET_DIR}/screen.css")
 add_dependencies(web web-scss)
 
 if(WITH_MINIFY_CSS)
-  add_custom_target(
-    web-concatenate-css
-    COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_SOURCE_DIR}/concatenate.cmake"
-    DEPENDS web-scss
+  list(INSERT CSS_SOURCES 0 screen.css)
+  add_custom_command(
+    OUTPUT "${CORA_CURRENT_WEB_DIR}/master.min.css"
+    COMMAND ${CMAKE_COMMAND}
+            -DOUTFILE="master.css"
+            -DINFILES="${CSS_SOURCES}"
+            -P "${CMAKE_CURRENT_SOURCE_DIR}/concatenate.cmake"
+    COMMAND ${CMAKE_COMMAND}
+            -E echo "-- Compressing master.css"
+    COMMAND ${Java_JAVA_EXECUTABLE} -jar ${YUICOMP_JAR}
+            --type css
+            -o "${CORA_CURRENT_WEB_DIR}/master.min.css"
+            "master.css"
+    DEPENDS web-scss YUICompressor ${CSS_SOURCES}
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-    COMMENT "Concatenating CSS files"
+    COMMENT "Compressing CSS files"
     )
   add_custom_target(
     web-minify-css
-    COMMAND ${Java_JAVA_EXECUTABLE} -jar ${YUICOMP_JAR} --type css -o "${CORA_CURRENT_WEB_DIR}/master.min.css" "${CMAKE_CURRENT_BINARY_DIR}/master.css"
-    DEPENDS web-concatenate-css YUICompressor "${CMAKE_CURRENT_BINARY_DIR}/master.css"
-    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-    COMMENT "Compressing CSS files"
+    DEPENDS "${CORA_CURRENT_WEB_DIR}/master.min.css"
     )
   add_dependencies(web web-minify-css)
 endif()
