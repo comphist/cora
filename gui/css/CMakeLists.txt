@@ -5,14 +5,13 @@ set(CORA_CURRENT_WEB_DIR "${CORA_WEB_DIR}/${CORA_CURRENT_REL_PATH}")
 ## CSS files that are always loaded separately
 #########################################################
 
-configure_file(datepicker.css "${CORA_CURRENT_WEB_DIR}/datepicker.css" COPYONLY)
+configure_all(${CORA_CURRENT_WEB_DIR} datepicker.css open-iconic.min.css)
+
 set_with_cache_buster(
   CORA_HREF_CSS_ADMIN "Relative path to admin-related CSS file"
   "${CORA_CURRENT_REL_PATH}/datepicker.css"
   datepicker.css
   )
-
-configure_file(open-iconic.min.css "${CORA_CURRENT_WEB_DIR}/open-iconic.min.css" COPYONLY)
 set_with_cache_buster(
   CORA_HREF_CSS_OPENICONIC "Relative path to Open Iconic CSS file"
   "${CORA_CURRENT_REL_PATH}/open-iconic.min.css"
@@ -45,9 +44,7 @@ else()
   list(APPEND CSS_SOURCES master.css)
 endif()
 
-foreach(SRC ${CSS_SOURCES})
-  configure_file("${SRC}" "${CONFIGURE_TARGET_DIR}/${SRC}" COPYONLY)
-endforeach()
+configure_all(${CONFIGURE_TARGET_DIR} ${CSS_SOURCES})
 set_with_cache_buster(
   CORA_HREF_CSS_MASTER "Relative path to master CSS file"
   "${CORA_CURRENT_REL_PATH}/${CSS_MASTER_FILENAME}"

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.12)
 project(CorA NONE)
 set(CMAKE_PROJECT_VERSION 1.2)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules")
-include(Cat)
+include(ConfigureAll)
 
 # modelled after https://github.com/kogmbh/WebODF/blob/master/webodf/CMakeLists.txt
 
