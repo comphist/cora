@@ -1,5 +1,11 @@
 macro(configure_all _target)
   foreach(_src ${ARGN})
+    configure_file("${_src}" "${_target}/${_src}")
+  endforeach()
+endmacro()
+
+macro(configure_all_copyonly _target)
+  foreach(_src ${ARGN})
     configure_file("${_src}" "${_target}/${_src}" COPYONLY)
   endforeach()
 endmacro()

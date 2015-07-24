@@ -12,7 +12,7 @@ endif()
 ## MooTools files, always included separately
 #########################################################
 
-configure_all(
+configure_all_copyonly(
   "${CORA_CURRENT_WEB_DIR}"
   mootools-core-1.4.5-full-compat-yc.js
   mootools-more-1.4.0.1-min.js
@@ -74,7 +74,7 @@ set(JS_SOURCES_MASTER
   MultiSelect.js
 )
 
-configure_all(${CONFIGURE_TARGET_DIR} ${JS_SOURCES_MASTER})
+configure_all_copyonly(${CONFIGURE_TARGET_DIR} ${JS_SOURCES_MASTER})
 
 #########################################################
 ## JavaScript files only needed for admin functionality
@@ -86,7 +86,7 @@ set(JS_SOURCES_ADMIN
   admin.js
 )
 
-configure_all(${CONFIGURE_TARGET_DIR} ${JS_SOURCES_ADMIN})
+configure_all_copyonly(${CONFIGURE_TARGET_DIR} ${JS_SOURCES_ADMIN})
 
 #########################################################
 ## mBox/mForm MooTools plugin
@@ -105,7 +105,7 @@ set(JS_SOURCES_MBOX
   mbox/mForm.Element.Select.js
 )
 
-configure_all(${CONFIGURE_TARGET_DIR} ${JS_SOURCES_MBOX})
+configure_all_copyonly(${CONFIGURE_TARGET_DIR} ${JS_SOURCES_MBOX})
 
 #########################################################
 ## Minification
