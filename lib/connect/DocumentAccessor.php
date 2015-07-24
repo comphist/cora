@@ -162,8 +162,9 @@ class DocumentAccessor {
    * reference.
    */
   protected function preloadTagset($tagset) {
-    $tagset = new TagsetAccessor($this->dbo, $tagset['id']);
-    $this->tagsets[$tagset['class']]['tags'] = array_values($tagset->entries());
+    $accessor = new TagsetAccessor($this->dbo, $tagset['id']);
+    $values = array_values($accessor->entries());
+    $this->tagsets[$tagset['class']]['tags'] = $values;
   }
 
   /** Returns a list of tagsets linked to the associated file.
