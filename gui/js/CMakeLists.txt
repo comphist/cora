@@ -2,6 +2,11 @@ file(RELATIVE_PATH CORA_CURRENT_REL_PATH "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_
 set(CORA_CURRENT_WEB_DIR "${CORA_WEB_DIR}/${CORA_CURRENT_REL_PATH}")
 file(MAKE_DIRECTORY "${CORA_CURRENT_WEB_DIR}")
 
+add_sources(
+  mootools-core-1.4.5-full-compat-yc.js
+  mootools-more-1.4.0.1-min.js
+)
+
 # should compile to master.min.js
 # TODO: can we separate the "plugin" files from CorA proper?
 set(JS_SOURCES_MASTER
