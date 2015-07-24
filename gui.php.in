@@ -10,20 +10,16 @@
     <title><?php echo TITLE . " (" . LONGTITLE . ") " . VERSION; ?></title>
     <meta name="description" content="<?php echo DESCRIPTION; ?>" />
     <meta name="keywords" content="<?php echo KEYWORDS; ?>" />
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,700,400,600' rel='stylesheet' type='text/css'>
+
+    <!-- **************** Cascading Style Sheets **************** -->
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,700,400,600" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="@CORA_HREF_CSS_MASTER@" media="all" />
+    <link rel="stylesheet" type="text/css" href="@CORA_HREF_CSS_OPENICONIC@" media="all" />
+    <?php if($_SESSION['admin']): ?>
+      <link rel="stylesheet" type="text/css" href="@CORA_HREF_CSS_ADMIN@" media="all" />
+    <?php endif; ?>
 
     <?php
-    /**************** Cascading Style Sheets ****************/
-      $master_css = file_exists(dirname(__FILE__)."/gui/css/master.min.css")
-                    ? "gui/css/master.min.css"
-                    : "gui/css/master.css";
-      embedCSS($master_css, "all", true);
-      embedCSS("gui/css/open-iconic.min.css", "all", true);
-      if($_SESSION['admin'])
-          embedCSS("gui/css/datepicker.css", "all", true);
-      //// this is currently not working:
-      // embedCSS("gui/css/print.css", "print", false);
-
     /********************** JavaScript **********************/
     ?>
     <script type="text/javascript">

@@ -1,14 +1,29 @@
 file(RELATIVE_PATH CORA_CURRENT_REL_PATH "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
 set(CORA_CURRENT_WEB_DIR "${CORA_WEB_DIR}/${CORA_CURRENT_REL_PATH}")
 
-# These are currently always loaded separately, so we just add them as sources:
-add_sources(
-  datepicker.css
-  open-iconic.min.css
-)
+#########################################################
+## CSS files that are always loaded separately
+#########################################################
 
-set(CSS_SOURCES "")
-list(APPEND CSS_SOURCES
+configure_file(datepicker.css "${CORA_CURRENT_WEB_DIR}/datepicker.css" COPYONLY)
+set_with_cache_buster(
+  CORA_HREF_CSS_ADMIN "Relative path to admin-related CSS file"
+  "${CORA_CURRENT_REL_PATH}/datepicker.css"
+  datepicker.css
+  )
+
+configure_file(open-iconic.min.css "${CORA_CURRENT_WEB_DIR}/open-iconic.min.css" COPYONLY)
+set_with_cache_buster(
+  CORA_HREF_CSS_OPENICONIC "Relative path to Open Iconic CSS file"
+  "${CORA_CURRENT_REL_PATH}/open-iconic.min.css"
+  open-iconic.min.css
+  )
+
+#########################################################
+## CSS files that can be minified
+#########################################################
+
+set(CSS_SOURCES
   mBoxCore.css
   mBoxModal.css
   mBoxNotice.css
@@ -21,26 +36,45 @@ list(APPEND CSS_SOURCES
 
 if(WITH_MINIFY_CSS)
   # configure to binary dir
-  set(SASS_TARGET_DIR ${CMAKE_CURRENT_BINARY_DIR})
+  set(CONFIGURE_TARGET_DIR ${CMAKE_CURRENT_BINARY_DIR})
+  set(CSS_MASTER_FILENAME "master.min.css")
 else()
   # no minification? just configure everything into the web directory
-  set(SASS_TARGET_DIR ${CORA_CURRENT_WEB_DIR})
-  add_sources(master.css ${CSS_SOURCES})
+  set(CONFIGURE_TARGET_DIR ${CORA_CURRENT_WEB_DIR})
+  set(CSS_MASTER_FILENAME "master.css")
+  list(APPEND CSS_SOURCES master.css)
 endif()
+
+foreach(SRC ${CSS_SOURCES})
+  configure_file("${SRC}" "${CONFIGURE_TARGET_DIR}/${SRC}" COPYONLY)
+endforeach()
+set_with_cache_buster(
+  CORA_HREF_CSS_MASTER "Relative path to master CSS file"
+  "${CORA_CURRENT_REL_PATH}/${CSS_MASTER_FILENAME}"
+  screen.scss ${CSS_SOURCES}
+  )
+
+#########################################################
+## Run Sass to convert .scss -> .css
+#########################################################
 
 configure_file(screen.scss "${CMAKE_CURRENT_BINARY_DIR}/screen.scss" COPYONLY)
 add_custom_command(
-  OUTPUT "${SASS_TARGET_DIR}/screen.css"
-  COMMAND ${SASS_EXECUTABLE} --scss screen.scss "${SASS_TARGET_DIR}/screen.css"
+  OUTPUT "${CONFIGURE_TARGET_DIR}/screen.css"
+  COMMAND ${SASS_EXECUTABLE} --scss screen.scss "${CONFIGURE_TARGET_DIR}/screen.css"
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
   DEPENDS screen.scss
   COMMENT "Pre-compiling SCSS stylesheet"
 )
-add_custom_target(web-scss DEPENDS "${SASS_TARGET_DIR}/screen.css")
+add_custom_target(web-scss DEPENDS "${CONFIGURE_TARGET_DIR}/screen.css")
 add_dependencies(web web-scss)
 
+#########################################################
+## Minification
+#########################################################
+
 if(WITH_MINIFY_CSS)
-  list(INSERT CSS_SOURCES 0 "${SASS_TARGET_DIR}/screen.css")
+  list(INSERT CSS_SOURCES 0 "${CONFIGURE_TARGET_DIR}/screen.css")
   add_custom_command(
     OUTPUT "${CORA_CURRENT_WEB_DIR}/master.min.css"
     COMMAND ${CMAKE_COMMAND}

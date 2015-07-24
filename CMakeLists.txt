@@ -96,10 +96,13 @@ file(MAKE_DIRECTORY ${CORA_WEB_DIR})
 add_custom_target(web ALL)
 
 include(AddSources)
-add_sources(content.php gui.php index.php news.php request.php)
+include(SetWithCacheBuster)
+add_sources(content.php index.php news.php request.php)
 add_sources(project_specific_hacks.php)
 add_subdirectory(gui)
 add_subdirectory(lib)
+
+configure_file(gui.php.in "${CORA_WEB_DIR}/gui.php" @ONLY)
 
 foreach(SRC ${SRCS})
   configure_file("${SRC}" "${CORA_WEB_DIR}/${SRC}" COPYONLY)
