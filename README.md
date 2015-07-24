@@ -32,7 +32,7 @@ Additional build dependencies:
 
 Optional build dependencies:
 
-* PHPUnit (for PHP unit tests)
+* PHPUnit 3.7+ with DBUnit extension (for PHP unit tests)
 
 * Doxygen (for API documentation)
 

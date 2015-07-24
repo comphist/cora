@@ -44,6 +44,9 @@ find_package(Doxygen)
 # For user documentation
 find_package(mkdocs 0.14)
 
+# For unit testing
+find_package(PHPUnit 3.7)
+
 #########################################################
 ## Download stuff that is not commonly installed/packaged
 #########################################################
@@ -91,7 +94,8 @@ set(YUICOMP_JAR ${CMAKE_BINARY_DIR}/YUICompressor-prefix/src/YUICompressor/yuico
 ## Files belonging in the web directory
 #########################################################
 
-set(CORA_WEB_DIR "${CMAKE_CURRENT_BINARY_DIR}/www")
+set(CORA_WEB_DIR "${CMAKE_CURRENT_BINARY_DIR}/www"
+    CACHE PATH "Path where all web-related files will be built")
 file(MAKE_DIRECTORY ${CORA_WEB_DIR})
 add_custom_target(web ALL)
 
@@ -142,4 +146,13 @@ endif()
 
 if(DOXYGEN_FOUND OR MKDOCS_FOUND)
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/docs)
+endif()
+
+#########################################################
+## Testing
+#########################################################
+
+enable_testing()
+if(PHPUNIT_FOUND)
+  add_subdirectory(tests)
 endif()

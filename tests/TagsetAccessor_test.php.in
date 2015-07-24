@@ -1,6 +1,6 @@
 <?php
 require_once 'DB_fixture.php';
-require_once '../lib/connect/TagsetAccessor.php';
+require_once '@CORA_WEB_DIR@/lib/connect/TagsetAccessor.php';
 
 class Cora_Tests_TagsetAccessor_test extends Cora_Tests_DbTestCase {
   private $dbo;

@@ -1,6 +1,6 @@
 macro(configure_all _target)
   foreach(_src ${ARGN})
-    configure_file("${_src}" "${_target}/${_src}")
+    configure_file("${_src}.in" "${_target}/${_src}" @ONLY)
   endforeach()
 endmacro()
 
