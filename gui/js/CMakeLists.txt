@@ -2,12 +2,37 @@ file(RELATIVE_PATH CORA_CURRENT_REL_PATH "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_
 set(CORA_CURRENT_WEB_DIR "${CORA_WEB_DIR}/${CORA_CURRENT_REL_PATH}")
 file(MAKE_DIRECTORY "${CORA_CURRENT_WEB_DIR}")
 
-add_sources(
+if(WITH_MINIFY_JS)
+  set(CONFIGURE_TARGET_DIR ${CMAKE_CURRENT_BINARY_DIR})
+else()
+  set(CONFIGURE_TARGET_DIR ${CORA_CURRENT_WEB_DIR})
+endif()
+
+#########################################################
+## MooTools files, always included separately
+#########################################################
+
+configure_all(
+  "${CORA_CURRENT_WEB_DIR}"
   mootools-core-1.4.5-full-compat-yc.js
   mootools-more-1.4.0.1-min.js
-)
+  )
 
-# should compile to master.min.js
+set(
+  CORA_HREF_JS_MOOTOOLS_CORE
+  "${CORA_CURRENT_REL_PATH}/mootools-core-1.4.5-full-compat-yc.js"
+  CACHE STRING "Relative path to MooTools core library" FORCE
+  )
+set(
+  CORA_HREF_JS_MOOTOOLS_MORE
+  "${CORA_CURRENT_REL_PATH}/mootools-more-1.4.0.1-min.js"
+  CACHE STRING "Relative path to MooTools-More library" FORCE
+  )
+
+#########################################################
+## Core JavaScript files
+#########################################################
+
 # TODO: can we separate the "plugin" files from CorA proper?
 set(JS_SOURCES_MASTER
   request/CoraRequestErrors.js
@@ -49,11 +74,23 @@ set(JS_SOURCES_MASTER
   MultiSelect.js
 )
 
+configure_all(${CONFIGURE_TARGET_DIR} ${JS_SOURCES_MASTER})
+
+#########################################################
+## JavaScript files only needed for admin functionality
+#########################################################
+
 # should compile to admin.min.js
 set(JS_SOURCES_ADMIN
   datepicker.js
   admin.js
 )
+
+configure_all(${CONFIGURE_TARGET_DIR} ${JS_SOURCES_ADMIN})
+
+#########################################################
+## mBox/mForm MooTools plugin
+#########################################################
 
 # should compile to mbox.min.js
 set(JS_SOURCES_MBOX
@@ -68,6 +105,12 @@ set(JS_SOURCES_MBOX
   mbox/mForm.Element.Select.js
 )
 
+configure_all(${CONFIGURE_TARGET_DIR} ${JS_SOURCES_MBOX})
+
+#########################################################
+## Minification
+#########################################################
+
 if(WITH_MINIFY_JS)
   # Only use simple optimizations because our code isn't properly prepared for
   # advanced optimization (yet?)
@@ -80,7 +123,7 @@ if(WITH_MINIFY_JS)
             --compilation_level ${CLOSURE_COMPILATION_LEVEL}
             --warning_level DEFAULT
             ${JS_SOURCES_MASTER}
-    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
     DEPENDS ClosureCompiler ${JS_SOURCES_MASTER}
     COMMENT "Compressing master.js"
     )
@@ -92,7 +135,7 @@ if(WITH_MINIFY_JS)
             --compilation_level ${CLOSURE_COMPILATION_LEVEL}
             --warning_level DEFAULT
             ${JS_SOURCES_ADMIN}
-    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
     DEPENDS ClosureCompiler ${JS_SOURCES_ADMIN}
     COMMENT "Compressing admin.js"
     )
@@ -104,7 +147,7 @@ if(WITH_MINIFY_JS)
             --warning_level QUIET
             --third_party
             ${JS_SOURCES_MBOX}
-    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
     DEPENDS ClosureCompiler ${JS_SOURCES_MBOX}
     COMMENT "Compressing mbox.js"
     )
@@ -115,7 +158,4 @@ if(WITH_MINIFY_JS)
             "${CORA_CURRENT_WEB_DIR}/mbox.min.js"
     )
   add_dependencies(web web-minify-js)
-else()
-  # no minification? just configure everything into the web directory
-  add_sources(${JS_SOURCES_MASTER} ${JS_SOURCES_ADMIN} ${JS_SOURCES_MBOX})
 endif()

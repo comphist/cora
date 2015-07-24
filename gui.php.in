@@ -45,10 +45,9 @@
           }
         ?>
     </script>
+    <script type="text/javascript" src="@CORA_HREF_JS_MOOTOOLS_CORE@"></script>
+    <script type="text/javascript" src="@CORA_HREF_JS_MOOTOOLS_MORE@"></script>
     <?php
-      embedJS("gui/js/mootools-core-1.4.5-full-compat-yc.js");
-      embedJS("gui/js/mootools-more-1.4.0.1-min.js");
-
       if($_SESSION['loggedIn']) {
           include("project_specific_hacks.php");
 
