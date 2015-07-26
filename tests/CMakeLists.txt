@@ -1,4 +1,19 @@
-# Set options
+#########################################################
+## Set test-specific cache variables
+#########################################################
+
+string(RANDOM LENGTH 14 _random_password)
+
+set(CORA_TESTDB_NAME "${CORA_DB_NAME}_test"
+    CACHE STRING "Name of the CorA unit test database")
+set(CORA_TESTDB_ROOT "${CORA_DB_USER}_test"
+    CACHE STRING "Name of the database user used by CorA unit tests")
+set(CORA_TESTDB_ROOTPW "${_random_password}"
+    CACHE STRING "Password of the database user used by CorA unit tests")
+
+#########################################################
+## Configure PHPUnit
+#########################################################
 set(PHPUNIT_OPTIONS
   --configuration phpunit.xml
 )
@@ -19,11 +34,12 @@ set(PHP_TESTS
 #  list(APPEND PHP_TESTS DBInterface_Expensive_test.php)
 #endif()
 
-configure_all("${CMAKE_CURRENT_BINARY_DIR}" ${PHP_TESTS} phpunit.xml)
-configure_all_copyonly("${CMAKE_CURRENT_BINARY_DIR}"
-  DB_fixture.php
-)
+configure_all("${CMAKE_CURRENT_BINARY_DIR}" ${PHP_TESTS} phpunit.xml DB_fixture.php)
 file(COPY data DESTINATION .)
+
+#########################################################
+## Add PHPUnit tests
+#########################################################
 
 foreach(TEST ${PHP_TESTS})
   add_test(phpunit-${TEST}

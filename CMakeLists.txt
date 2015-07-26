@@ -125,14 +125,6 @@ endforeach()
 # install(DIRECTORY ${CORA_WEB_DIR} DESTINATION ???)
 
 #########################################################
-## Database
-#########################################################
-
-message(STATUS "Using database '${CORA_DB_NAME}' at '${CORA_DB_SERVER}'"
-               " with user '${CORA_DB_USER}'")
-configure_file(coradb.sql.in "${CMAKE_CURRENT_BINARY_DIR}/coradb.sql")
-
-#########################################################
 ## Documentation
 #########################################################
 
@@ -173,3 +165,11 @@ enable_testing()
 if(PHPUNIT_FOUND)
   add_subdirectory(tests)
 endif()
+
+#########################################################
+## Database
+#########################################################
+
+message(STATUS "Using database '${CORA_DB_NAME}' at '${CORA_DB_SERVER}'"
+               " with user '${CORA_DB_USER}'")
+configure_file(coradb.sql.in "${CMAKE_CURRENT_BINARY_DIR}/coradb.sql")

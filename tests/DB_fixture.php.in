@@ -2,7 +2,6 @@
 /** 02/2013 Florian Petran
  *  Abstract fixture for all Cora Database Tests
  */
-require_once "PHPUnit/Extensions/Database/TestCase.php";
 
 /** Base class for all Database Related Tests
  *
@@ -42,7 +41,7 @@ abstract class Cora_Tests_DbTestCase
     /** Create the coratest db and fill it with structure.
      */
     public static function setUpBeforeClass() {
-        $mysqlcall = "mysql -uroot -p{$GLOBALS["DB_ROOTPW"]}";
+        $mysqlcall = "mysql -u{$GLOBALS["DB_ROOTUSER"]} -p{$GLOBALS["DB_ROOTPW"]}";
         system("echo CREATE DATABASE IF NOT EXISTS {$GLOBALS["DB_DBNAME"]} | ".$mysqlcall);
         system($mysqlcall." {$GLOBALS["DB_DBNAME"]} < data/coratest-myisam.sql" );
     }
@@ -51,7 +50,7 @@ abstract class Cora_Tests_DbTestCase
      */
     public static function tearDownAFterClass() {
         system("echo DROP DATABASE {$GLOBALS["DB_DBNAME"]} |"
-              ." mysql -uroot -p{$GLOBALS["DB_ROOTPW"]}");
+              ." mysql -u{$GLOBALS["DB_ROOTUSER"]} -p{$GLOBALS["DB_ROOTPW"]}");
     }
 }
 
@@ -94,7 +93,7 @@ class Cora_Tests_DbTestCase_FKAware
     /** Create the coratest db and fill it with structure.
      */
     public static function setUpBeforeClass() {
-        $mysqlcall = "mysql -uroot -p{$GLOBALS["DB_ROOTPW"]}";
+        $mysqlcall = "mysql -u{$GLOBALS["DB_ROOTUSER"]} -p{$GLOBALS["DB_ROOTPW"]}";
         system("echo CREATE DATABASE {$GLOBALS["DB_DBNAME"]} | ".$mysqlcall);
         system($mysqlcall." {$GLOBALS["DB_DBNAME"]} < data/coratest-innodb.sql" );
     }
