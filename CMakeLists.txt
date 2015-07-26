@@ -12,7 +12,7 @@ if (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
 endif (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
 
 #########################################################
-## Options
+## Options and other cache variables
 #########################################################
 
 option(DEBUG_MODE "Debug mode" OFF)
@@ -27,6 +27,17 @@ else()
 endif()
 option(WITH_MINIFY_CSS "Minification of CSS files" ${MINIFY_CSS_DEFAULT})
 option(WITH_MINIFY_JS "Minification of JavaScript files" ${MINIFY_JS_DEFAULT})
+
+set(CORA_WEB_DIR "${CMAKE_CURRENT_BINARY_DIR}/www"
+    CACHE PATH "Path where all web-related files will be built")
+set(CORA_DB_NAME "cora"
+    CACHE STRING "Name of the CorA database")
+set(CORA_DB_SERVER "localhost"
+    CACHE STRING "Database server used by CorA")
+set(CORA_DB_USER "cora"
+    CACHE STRING "Name of the database user used by CorA")
+set(CORA_DB_PASSWORD "trustthetext"
+    CACHE STRING "Password of the database user used by CorA")
 
 #########################################################
 ## Find installed dependencies
@@ -94,8 +105,6 @@ set(YUICOMP_JAR ${CMAKE_BINARY_DIR}/YUICompressor-prefix/src/YUICompressor/yuico
 ## Files belonging in the web directory
 #########################################################
 
-set(CORA_WEB_DIR "${CMAKE_CURRENT_BINARY_DIR}/www"
-    CACHE PATH "Path where all web-related files will be built")
 file(MAKE_DIRECTORY ${CORA_WEB_DIR})
 add_custom_target(web ALL)
 
@@ -114,6 +123,14 @@ endforeach()
 
 # TODO: figure out installation step, could include sth. like
 # install(DIRECTORY ${CORA_WEB_DIR} DESTINATION ???)
+
+#########################################################
+## Database
+#########################################################
+
+message(STATUS "Using database '${CORA_DB_NAME}' at '${CORA_DB_SERVER}'"
+               " with user '${CORA_DB_USER}'")
+configure_file(coradb.sql.in "${CMAKE_CURRENT_BINARY_DIR}/coradb.sql")
 
 #########################################################
 ## Documentation

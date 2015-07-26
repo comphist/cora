@@ -1,3 +1,6 @@
+file(RELATIVE_PATH CORA_CURRENT_REL_PATH "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
+set(CORA_CURRENT_WEB_DIR "${CORA_WEB_DIR}/${CORA_CURRENT_REL_PATH}")
+
 add_sources(
   automaticAnnotation.php
   commandHandler.php
@@ -5,7 +8,6 @@ add_sources(
   contentModel.php
   documentModel.php
   exporter.php
-  globals.php
   requestHandler.php
   sessionHandler.php
   xmlHandler.php
@@ -28,3 +30,5 @@ add_sources(
   connect/TagsetAccessor.php
   connect/TagsetCreator.php
 )
+
+configure_file(globals.php.in "${CORA_CURRENT_WEB_DIR}/globals.php" @ONLY)

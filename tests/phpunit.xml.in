@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit>
     <php>
-        <var name="DB_DSN" value="mysql:dbname=coratest;host=localhost"/>
-        <var name="DB_USER" value="cora"/>
-        <var name="DB_PASSWD" value="trustthetext"/>
+        <var name="DB_DSN" value="mysql:dbname=coratest;host=@CORA_DB_SERVER@"/>
+        <var name="DB_USER" value="@CORA_DB_USER@"/>
+        <var name="DB_PASSWD" value="@CORA_DB_PASSWORD@"/>
         <var name="DB_DBNAME" value="coratest"/>
-        <var name="DB_ROOTPW" value="Hrv89SQL7tsu"/>
+        <var name="DB_ROOTPW" value="root"/>
     </php>
     <testsuites>
         <testsuite name="Cora Tests">

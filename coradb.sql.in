@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.5.28, for Linux (x86_64)
 --
--- Host: localhost    Database: cora
+-- Host: ${CORA_DB_SERVER}    Database: ${CORA_DB_NAME}
 -- ------------------------------------------------------
 -- Server version	5.5.28
 
@@ -15,8 +15,8 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-CREATE DATABASE IF NOT EXISTS `cora`;
-USE cora;
+CREATE DATABASE IF NOT EXISTS `${CORA_DB_NAME}`;
+USE ${CORA_DB_NAME};
 
 --
 -- Table structure for table `user`
@@ -460,7 +460,7 @@ CREATE TABLE `notices` (
 
 -- Dump completed on 2013-01-14 17:08:11
 
-GRANT SELECT,DELETE,UPDATE,INSERT ON cora.* TO 'cora'@'localhost' IDENTIFIED BY 'trustthetext';
+GRANT SELECT,DELETE,UPDATE,INSERT ON ${CORA_DB_NAME}.* TO '${CORA_DB_USER}'@'${CORA_DB_SERVER}' IDENTIFIED BY '${CORA_DB_PASSWORD}';
 -- GRANT SELECT ON cora.* TO 'corauser'@'localhost' IDENTIFIED BY 'mistrusttheuser';
 -- GRANT DELETE ON cora.locks TO 'corauser'@'localhost';
 -- GRANT INSERT ON cora.tag_suggestions TO 'corauser'@'localhost';

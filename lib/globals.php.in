@@ -1,13 +1,13 @@
 <?php
 
 /** The database server to connect to. */
-define( "DB_SERVER",   "localhost" );
+define( "DB_SERVER", "@CORA_DB_SERVER@" );
 /** The username for database login. */
-define( "DB_USER",     "cora"      );
+define( "DB_USER", "@CORA_DB_USER@" );
 /** The password for database login. */
-define( "DB_PASSWORD", "trustthetext" );
+define( "DB_PASSWORD", "@CORA_DB_PASSWORD@" );
 /** The name of the database. */
-define( "MAIN_DB",     "cora"      );
+define( "MAIN_DB", "@CORA_DB_NAME@" );
 
 /* Globals */
 define( "TITLE",              "CorA"	                  );
