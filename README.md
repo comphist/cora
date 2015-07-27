@@ -40,8 +40,6 @@ Optional build dependencies:
 
 ### Installing/configuring CorA ###
 
-**TODO:** there is much work to do before CorA can be deployed elsewhere without losing your sanity
-
 To build CorA, do:
 
     mkdir <build-dir> && cd <build-dir>
@@ -71,7 +69,15 @@ Run `make docs` to generate documentation in `<build-dir>/docs/api/` and
 generating documentation is missing (see above), the respective documentation is
 silently skipped.
 
-**TODO:** there are no targets to run tests or to install/configure CorA yet.
+**Installation** is not yet automated.  To install CorA for the first time, run
+`<build-dir>/coradb.sql` against your MySQL instance (requires MySQL root
+permissions), then run `php <build-dir>/bin/cora_create_user.php -a` to create a
+first user account with administrator rights.
 
-PHP unit tests can be run via `phpunit` from the `tests/` subdirectory, though
-the test coverage is still pretty miserable at this point.
+**Be careful!** If you're updating from an older version, running the
+`coradb.sql` script **will delete all CorA-related data in your database!**
+There is no automated mechanism for updating CorA yet, either.
+
+Run `make test` to perform unit tests.  Some of these tests require access to a
+MySQL test database (automatically granted by the `coradb.sql` script) and will
+fail if you did not create the database yet.
