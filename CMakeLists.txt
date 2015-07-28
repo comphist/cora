@@ -111,7 +111,6 @@ add_custom_target(web ALL)
 include(AddSources)
 include(SetWithCacheBuster)
 add_sources(content.php index.php news.php request.php)
-add_sources(project_specific_hacks.php)
 add_subdirectory(gui)
 add_subdirectory(lib)
 

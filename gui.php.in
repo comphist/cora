@@ -49,8 +49,6 @@
     <script type="text/javascript" src="@CORA_HREF_JS_MOOTOOLS_MORE@"></script>
     <?php
       if($_SESSION['loggedIn']) {
-          include("project_specific_hacks.php");
-
           if(file_exists(dirname(__FILE__) . "/gui/js/mbox.min.js")) {
               embedJS("gui/js/mbox.min.js", true);
           } else {
