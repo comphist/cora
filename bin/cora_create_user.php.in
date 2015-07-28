@@ -28,7 +28,7 @@ else {
   $user = rtrim(fgets(STDIN), PHP_EOL);
 }
 if ($dbi->getUserByName($user)) {
-  echo "User '${user}' already exists.", PHP_EOL;
+  echo "User '{$user}' already exists.", PHP_EOL;
   exit(1);
 }
 if (!$user) {
@@ -70,10 +70,10 @@ $status = $dbi->createUser($user, $pw, $admin);
 
 if ($status == 1) {
   $wwo = ($admin ? "with" : "without");
-  echo "Successfully created user '${user}' ${wwo} administrator rights.", PHP_EOL;
+  echo "Successfully created user '{$user}' {$wwo} administrator rights.", PHP_EOL;
 }
 else {
-  echo "Error creating user '${user}'.", PHP_EOL;
+  echo "Error creating user '{$user}'.", PHP_EOL;
   exit(1);
 }
 
