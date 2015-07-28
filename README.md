@@ -70,9 +70,10 @@ generating documentation is missing (see above), the respective documentation is
 silently skipped.
 
 **Installation** is not yet automated.  To install CorA for the first time, run
-`<build-dir>/coradb.sql` against your MySQL instance (requires MySQL root
-permissions), then run `php <build-dir>/bin/cora_create_user.php -a` to create a
-first user account with administrator rights.
+both `<build-dir>/coradb.sql` and `<build-dir>/coradb-data.sql` against your
+MySQL instance (requires MySQL root permissions), then run `php
+<build-dir>/bin/cora_create_user.php -a` to create a first user account with
+administrator rights.
 
 **Be careful!** If you're updating from an older version, running the
 `coradb.sql` script **will delete all CorA-related data in your database!**

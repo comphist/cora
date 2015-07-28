@@ -176,6 +176,7 @@ endif()
 message(STATUS "Using database '${CORA_DB_NAME}' at '${CORA_DB_SERVER}'"
                " with user '${CORA_DB_USER}'")
 configure_file(coradb.sql.in "${CMAKE_CURRENT_BINARY_DIR}/coradb.sql")
+configure_file(coradb-data.sql.in "${CMAKE_CURRENT_BINARY_DIR}/coradb-data.sql")
 
 #########################################################
 ## Scripts/executables
