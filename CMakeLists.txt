@@ -46,8 +46,10 @@ set(CORA_DB_PASSWORD "trustthetext"
 find_package(PHP5 5.3 COMPONENTS Runtime REQUIRED)
 find_package(Sass 3.4.13 REQUIRED)
 
-# Needed for Closure Compiler / YUICompressor
-find_package(Java COMPONENTS Runtime REQUIRED)
+if(WITH_MINIFY_CSS OR WITH_MINIFY_JS)
+  # Needed for Closure Compiler / YUICompressor
+  find_package(Java COMPONENTS Runtime REQUIRED)
+endif()
 
 # For API documentation
 find_package(Doxygen)
@@ -86,6 +88,7 @@ ExternalProject_Add(
     BUILD_COMMAND ""
     INSTALL_COMMAND ""
 )
+set_target_properties(ClosureCompiler PROPERTIES EXCLUDE_FROM_ALL TRUE)
 set(CLOSURE_JAR ${CMAKE_BINARY_DIR}/ClosureCompiler-prefix/src/ClosureCompiler/compiler.jar)
 
 # YUI Compressor
@@ -99,6 +102,7 @@ ExternalProject_Add(
     BUILD_COMMAND ""
     INSTALL_COMMAND ""
 )
+set_target_properties(YUICompressor PROPERTIES EXCLUDE_FROM_ALL TRUE)
 set(YUICOMP_JAR ${CMAKE_BINARY_DIR}/YUICompressor-prefix/src/YUICompressor/yuicompressor-2.4.8.jar)
 
 #########################################################
