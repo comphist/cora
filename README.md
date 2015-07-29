@@ -24,7 +24,7 @@ CorA is a web-based annotation tool for non-standard language data.
 
 * CMake 2.8.12+
 
-* Sass 3.4.13+
+* Sass 3.2+
 
 * Java runtime environment; for running:
     * YUICompressor (for compressing CSS; can be downloaded automatically during build)

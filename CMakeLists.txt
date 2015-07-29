@@ -49,7 +49,7 @@ message(STATUS "Minification of JavaScript files: ${WITH_MINIFY_JS}")
 
 find_package(PHP5 5.3 COMPONENTS Runtime REQUIRED)
 find_package(MySQL 5.5 REQUIRED)
-find_package(Sass 3.4.13 REQUIRED)
+find_package(Sass 3.2 REQUIRED)
 
 if(WITH_MINIFY_CSS OR WITH_MINIFY_JS)
   # Needed for Closure Compiler / YUICompressor
