@@ -466,5 +466,3 @@ CREATE TABLE `notices` (
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2013-02-06  4:25:47
-
-GRANT ALL PRIVILEGES ON coratest.* TO 'cora'@'localhost' IDENTIFIED BY 'trustthetext';

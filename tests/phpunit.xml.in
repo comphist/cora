@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit>
+    <php>
+        <var name="DB_DSN" value="mysql:dbname=@CORA_TESTDB_NAME@;host=@CORA_DB_SERVER@"/>
+        <var name="DB_USER" value="@CORA_DB_USER@"/>
+        <var name="DB_PASSWD" value="@CORA_DB_PASSWORD@"/>
+        <var name="DB_DBNAME" value="@CORA_TESTDB_NAME@"/>
+        <var name="DB_ROOTUSER" value="@CORA_TESTDB_ROOT@"/>
+        <var name="DB_ROOTPW" value="@CORA_TESTDB_ROOTPW@"/>
+    </php>
+    <testsuites>
+        <testsuite name="Cora Tests">
+            <directory>.</directory>
+            <file>AutomaticAnnotator_test.php</file>
+            <file>CoraDocument_test.php</file>
+            <file>DBInterface_test.php</file>
+            <file>Exporter_test.php</file>
+            <file>Menu_test.php</file>
+            <file>TagsetAccessor_test.php</file>
+            <file>XMLHandler_test.php</file>
+        </testsuite>
+    </testsuites>
+</phpunit>
