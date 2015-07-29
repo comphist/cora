@@ -29,7 +29,7 @@ To create the CorA database structure from scratch, do:
 
         cat coradb.sql coradb-data.sql | mysql -uroot -p
 
-2. Run `php <build-dir>/bin/cora_create_user.php -a` to create a first ucer
+2. Run `php <build-dir>/bin/cora_create_user.php -a` to create a first user
    account with administrator rights.  You can define username and password via
    `-u username -p password`, but if you don't, the script will prompt you for
    it.
