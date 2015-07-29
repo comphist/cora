@@ -39,6 +39,10 @@ set(CORA_DB_USER "cora"
 set(CORA_DB_PASSWORD "trustthetext"
     CACHE STRING "Password of the database user used by CorA")
 
+message(STATUS "Debug mode: ${DEBUG_MODE}")
+message(STATUS "Minification of CSS files: ${WITH_MINIFY_CSS}")
+message(STATUS "Minification of JavaScript files: ${WITH_MINIFY_JS}")
+
 #########################################################
 ## Find installed dependencies
 #########################################################
@@ -164,13 +168,17 @@ else()
 endif()
 
 if(PERL_FOUND)
+  set(NATURALDOCS_FLAGS
+    -i "${CMAKE_CURRENT_SOURCE_DIR}/gui/js"
+    -xi "${CMAKE_CURRENT_SOURCE_DIR}/gui/js/mbox"
+    -o HTML "${CMAKE_CURRENT_BINARY_DIR}/docs/api-js"
+    -p "${CMAKE_CURRENT_BINARY_DIR}/NaturalDocs-config"
+    )
+  if(NOT DEBUG_MODE)
+    list(APPEND NATURALDOCS_FLAGS --quiet)
+  endif()
   add_custom_target(docs-js
-    ${PERL_EXECUTABLE} ${NATURALDOCS_PL}
-                       -i "${CMAKE_CURRENT_SOURCE_DIR}/gui/js"
-                       -xi "${CMAKE_CURRENT_SOURCE_DIR}/gui/js/mbox"
-                       -o HTML "${CMAKE_CURRENT_BINARY_DIR}/docs/api-js"
-                       -p "${CMAKE_CURRENT_BINARY_DIR}/NaturalDocs-config"
-                       --quiet
+    ${PERL_EXECUTABLE} ${NATURALDOCS_PL} ${NATURALDOCS_FLAGS}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     DEPENDS NaturalDocs
     COMMENT "Generating API documentation (JavaScript)"
