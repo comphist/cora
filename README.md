@@ -27,14 +27,17 @@ Additional build dependencies:
 * Sass 3.4.13+
 
 * Java runtime environment; for running:
-    * YUICompressor (for compressing CSS -- can be downloaded automatically during build)
-    * Closure Compiler (for compressing JS -- can be downloaded automatically during build)
+    * YUICompressor (for compressing CSS; can be downloaded automatically during build)
+    * Closure Compiler (for compressing JS; can be downloaded automatically during build)
 
 Optional build dependencies:
 
 * PHPUnit 3.7+ with DBUnit extension (for PHP unit tests)
 
-* Doxygen (for API documentation)
+* Doxygen (for API documentation of PHP files)
+
+* Perl 5.8+; for running:
+    * NaturalDocs 1.52 (for API documentation of JavaScript files; can be downloaded automatically during build)
 
 * mkdocs 0.14+ (for user documentation)
 

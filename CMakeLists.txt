@@ -54,6 +54,7 @@ endif()
 
 # For API documentation
 find_package(Doxygen)
+find_package(Perl 5.8 COMPONENTS Runtime)
 
 # For user documentation
 find_package(mkdocs 0.14)
@@ -80,31 +81,45 @@ include (ExternalProject)
 
 # Closure Compiler
 ExternalProject_Add(
-    ClosureCompiler
-    DOWNLOAD_DIR ${EXTERNALS_DOWNLOAD_DIR}
-    URL "http://dl.google.com/closure-compiler/compiler-20150505.tar.gz"
-    URL_MD5 dea8e282c316316daeb39fcd5708d369
-    LOG_DOWNLOAD 1
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
+  ClosureCompiler
+  DOWNLOAD_DIR ${EXTERNALS_DOWNLOAD_DIR}
+  URL "http://dl.google.com/closure-compiler/compiler-20150505.tar.gz"
+  URL_MD5 dea8e282c316316daeb39fcd5708d369
+  LOG_DOWNLOAD 1
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ""
+  INSTALL_COMMAND ""
 )
 set_target_properties(ClosureCompiler PROPERTIES EXCLUDE_FROM_ALL TRUE)
 set(CLOSURE_JAR ${CMAKE_BINARY_DIR}/ClosureCompiler-prefix/src/ClosureCompiler/compiler.jar)
 
 # YUI Compressor
 ExternalProject_Add(
-    YUICompressor
-    DOWNLOAD_DIR ${EXTERNALS_DOWNLOAD_DIR}
-    URL "https://github.com/yui/yuicompressor/releases/download/v2.4.8/yuicompressor-2.4.8.zip"
-    URL_MD5 44f20ece35d889c1c658eb5297cd20ee
-    LOG_DOWNLOAD 1
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
+  YUICompressor
+  DOWNLOAD_DIR ${EXTERNALS_DOWNLOAD_DIR}
+  URL "https://github.com/yui/yuicompressor/releases/download/v2.4.8/yuicompressor-2.4.8.zip"
+  URL_MD5 44f20ece35d889c1c658eb5297cd20ee
+  LOG_DOWNLOAD 1
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ""
+  INSTALL_COMMAND ""
 )
 set_target_properties(YUICompressor PROPERTIES EXCLUDE_FROM_ALL TRUE)
 set(YUICOMP_JAR ${CMAKE_BINARY_DIR}/YUICompressor-prefix/src/YUICompressor/yuicompressor-2.4.8.jar)
+
+# NaturalDocs
+ExternalProject_Add(
+  NaturalDocs
+  DOWNLOAD_DIR ${EXTERNALS_DOWNLOAD_DIR}
+  URL "http://downloads.sourceforge.net/project/naturaldocs/Stable%20Releases/1.52/NaturalDocs-1.52.zip"
+  URL_MD5 68e3982acae57b6befdf9e75b420fd80
+  LOG_DOWNLOAD 1
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ""
+  INSTALL_COMMAND ""
+)
+set_target_properties(NaturalDocs PROPERTIES EXCLUDE_FROM_ALL TRUE)
+set(NATURALDOCS_PL ${CMAKE_BINARY_DIR}/NaturalDocs-prefix/src/NaturalDocs/NaturalDocs)
 
 #########################################################
 ## Files belonging in the web directory
@@ -138,12 +153,29 @@ if(DOXYGEN_FOUND)
   configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in"
                  "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
                  @ONLY)
-  add_custom_target(docs-api
+  add_custom_target(docs-php
     ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    COMMENT "Generating API documentation..."
+    COMMENT "Generating API documentation (PHP)"
     )
-  add_dependencies(docs docs-api)
+  add_dependencies(docs docs-php)
+endif()
+
+if(PERL_FOUND)
+  add_custom_target(docs-js
+    ${PERL_EXECUTABLE} ${NATURALDOCS_PL}
+                       -i "${CMAKE_CURRENT_SOURCE_DIR}/gui/js"
+                       -xi "${CMAKE_CURRENT_SOURCE_DIR}/gui/js/mbox"
+                       -o HTML "${CMAKE_CURRENT_BINARY_DIR}/docs/api-js"
+                       -p "${CMAKE_CURRENT_BINARY_DIR}/NaturalDocs-config"
+                       --quiet
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    DEPENDS NaturalDocs
+    COMMENT "Generating API documentation (JavaScript)"
+    )
+  add_dependencies(docs docs-js)
+  file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/docs/api-js")
+  file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/NaturalDocs-config")
 endif()
 
 if(MKDOCS_FOUND)
@@ -152,13 +184,13 @@ if(MKDOCS_FOUND)
   add_custom_target(docs-user
     ${MKDOCS_EXECUTABLE} build
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    COMMENT "Generating user documentation..."
+    COMMENT "Generating user documentation"
     )
   add_dependencies(docs docs-user)
 endif()
 
 if(DOXYGEN_FOUND OR MKDOCS_FOUND)
-  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/docs)
+  file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/docs")
 endif()
 
 #########################################################
