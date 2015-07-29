@@ -159,6 +159,8 @@ if(DOXYGEN_FOUND)
     COMMENT "Generating API documentation (PHP)"
     )
   add_dependencies(docs docs-php)
+else()
+  message(STATUS "SKIPPING generation of API documentation for PHP (Doxygen not found)")
 endif()
 
 if(PERL_FOUND)
@@ -176,6 +178,8 @@ if(PERL_FOUND)
   add_dependencies(docs docs-js)
   file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/docs/api-js")
   file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/NaturalDocs-config")
+else()
+  message(STATUS "SKIPPING generation of API documentation for JavaScript (Perl not found)")
 endif()
 
 if(MKDOCS_FOUND)
@@ -187,6 +191,8 @@ if(MKDOCS_FOUND)
     COMMENT "Generating user documentation"
     )
   add_dependencies(docs docs-user)
+else()
+  message(STATUS "SKIPPING generation of user documentation (mkdocs not found)")
 endif()
 
 if(DOXYGEN_FOUND OR MKDOCS_FOUND)
@@ -200,6 +206,8 @@ endif()
 enable_testing()
 if(PHPUNIT_FOUND)
   add_subdirectory(tests)
+else()
+  message(STATUS "SKIPPING PHP-based tests (PHPUnit not found)")
 endif()
 
 #########################################################
