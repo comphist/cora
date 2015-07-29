@@ -2,13 +2,11 @@
 ## Set test-specific cache variables
 #########################################################
 
-string(RANDOM LENGTH 14 _random_password)
-
 set(CORA_TESTDB_NAME "${CORA_DB_NAME}_test"
     CACHE STRING "Name of the CorA unit test database")
 set(CORA_TESTDB_ROOT "${CORA_DB_USER}_test"
     CACHE STRING "Name of the database user used by CorA unit tests")
-set(CORA_TESTDB_ROOTPW "${_random_password}"
+set(CORA_TESTDB_ROOTPW "mistrustthecode"
     CACHE STRING "Password of the database user used by CorA unit tests")
 
 #########################################################
