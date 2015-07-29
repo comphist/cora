@@ -144,6 +144,12 @@ foreach(SRC ${SRCS})
   configure_file("${SRC}" "${CORA_WEB_DIR}/${SRC}" COPYONLY)
 endforeach()
 
+# TODO: legacy functionality --- this file is referenced on the "help" tab, so
+# needs to be copied over, but this should be changed at some point
+file(MAKE_DIRECTORY "${CORA_WEB_DIR}/doc")
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/doc/cora-guide.pdf"
+     DESTINATION "${CORA_WEB_DIR}/doc")
+
 # TODO: figure out installation step, could include sth. like
 # install(DIRECTORY ${CORA_WEB_DIR} DESTINATION ???)
 
