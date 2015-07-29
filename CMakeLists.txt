@@ -3,6 +3,8 @@ project(CorA NONE)
 set(CMAKE_PROJECT_VERSION 1.2)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules")
 include(ConfigureAll)
+include(SetCurrentWebDir)
+include(SetWithCacheBuster)
 
 # modelled after https://github.com/kogmbh/WebODF/blob/master/webodf/CMakeLists.txt
 
@@ -132,17 +134,16 @@ set(NATURALDOCS_PL ${CMAKE_BINARY_DIR}/NaturalDocs-prefix/src/NaturalDocs/Natura
 file(MAKE_DIRECTORY ${CORA_WEB_DIR})
 add_custom_target(web ALL)
 
-include(AddSources)
-include(SetWithCacheBuster)
-add_sources(content.php index.php news.php request.php)
 add_subdirectory(gui)
 add_subdirectory(lib)
 
+configure_all_copyonly(${CORA_WEB_DIR}
+  content.php
+  index.php
+  news.php
+  request.php
+  )
 configure_file(gui.php.in "${CORA_WEB_DIR}/gui.php" @ONLY)
-
-foreach(SRC ${SRCS})
-  configure_file("${SRC}" "${CORA_WEB_DIR}/${SRC}" COPYONLY)
-endforeach()
 
 # TODO: legacy functionality --- this file is referenced on the "help" tab, so
 # needs to be copied over, but this should be changed at some point

@@ -1,7 +1,6 @@
-file(RELATIVE_PATH CORA_CURRENT_REL_PATH "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
-set(CORA_CURRENT_WEB_DIR "${CORA_WEB_DIR}/${CORA_CURRENT_REL_PATH}")
+set_current_web_dir()
 
-add_sources(
+configure_all_copyonly(${CORA_CURRENT_WEB_DIR}
   automaticAnnotation.php
   commandHandler.php
   connect.php
@@ -13,14 +12,14 @@ add_sources(
   xmlHandler.php
 )
 
-add_sources(
+configure_all_copyonly(${CORA_CURRENT_WEB_DIR}
   annotation/AutomaticAnnotator.php
   annotation/DualRFTaggerAnnotator.php
   annotation/Lemmatizer.php
   annotation/RFTaggerAnnotator.php
 )
 
-add_sources(
+configure_all_copyonly(${CORA_CURRENT_WEB_DIR}
   connect/DocumentAccessor.php
   connect/DocumentCreator.php
   connect/DocumentReader.php
