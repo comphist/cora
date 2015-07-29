@@ -1,6 +1,6 @@
 set_current_web_dir()
 
-configure_all_copyonly(${CORA_CURRENT_WEB_DIR}
+set(LOCAL_PHP_SOURCES
   admin.php
   edit.php
   file.php
@@ -9,7 +9,9 @@ configure_all_copyonly(${CORA_CURRENT_WEB_DIR}
   menu.php
   search.php
   settings.php
-)
+  )
+configure_all_copyonly(${CORA_CURRENT_WEB_DIR} ${LOCAL_PHP_SOURCES})
+add_sources(CORA_PHP_SOURCES ${LOCAL_PHP_SOURCES})
 
 add_subdirectory(css)
 add_subdirectory(js)

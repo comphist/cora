@@ -1,6 +1,6 @@
 set_current_web_dir()
 
-configure_all_copyonly(${CORA_CURRENT_WEB_DIR}
+set(LOCAL_PHP_SOURCES
   automaticAnnotation.php
   commandHandler.php
   connect.php
@@ -10,16 +10,10 @@ configure_all_copyonly(${CORA_CURRENT_WEB_DIR}
   requestHandler.php
   sessionHandler.php
   xmlHandler.php
-)
-
-configure_all_copyonly(${CORA_CURRENT_WEB_DIR}
   annotation/AutomaticAnnotator.php
   annotation/DualRFTaggerAnnotator.php
   annotation/Lemmatizer.php
   annotation/RFTaggerAnnotator.php
-)
-
-configure_all_copyonly(${CORA_CURRENT_WEB_DIR}
   connect/DocumentAccessor.php
   connect/DocumentCreator.php
   connect/DocumentReader.php
@@ -30,4 +24,7 @@ configure_all_copyonly(${CORA_CURRENT_WEB_DIR}
   connect/TagsetCreator.php
 )
 
+configure_all_copyonly(${CORA_CURRENT_WEB_DIR} ${LOCAL_PHP_SOURCES})
 configure_file(globals.php.in "${CORA_CURRENT_WEB_DIR}/globals.php" @ONLY)
+
+add_sources(CORA_PHP_SOURCES ${LOCAL_PHP_SOURCES} globals.php)

@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.8.12)
 project(CorA NONE)
 set(CMAKE_PROJECT_VERSION 1.2)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules")
+
+include(AddSources)
 include(ConfigureAll)
 include(SetCurrentWebDir)
 include(SetWithCacheBuster)
@@ -134,16 +136,19 @@ set(NATURALDOCS_PL ${CMAKE_BINARY_DIR}/NaturalDocs-prefix/src/NaturalDocs/Natura
 file(MAKE_DIRECTORY ${CORA_WEB_DIR})
 add_custom_target(web ALL)
 
-add_subdirectory(gui)
-add_subdirectory(lib)
-
-configure_all_copyonly(${CORA_WEB_DIR}
+set(CORA_PHP_SOURCES "")
+add_sources(CORA_PHP_SOURCES
   content.php
   index.php
   news.php
   request.php
   )
+configure_all_copyonly(${CORA_WEB_DIR} ${CORA_PHP_SOURCES})
+add_subdirectory(gui)
+add_subdirectory(lib)
+
 configure_file(gui.php.in "${CORA_WEB_DIR}/gui.php" @ONLY)
+add_sources(CORA_PHP_SOURCES gui.php)
 
 # TODO: legacy functionality --- this file is referenced on the "help" tab, so
 # needs to be copied over, but this should be changed at some point
