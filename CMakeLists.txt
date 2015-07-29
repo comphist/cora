@@ -220,6 +220,21 @@ if(DOXYGEN_FOUND OR MKDOCS_FOUND)
 endif()
 
 #########################################################
+## Linting
+#########################################################
+
+add_custom_target(lint-php
+  COMMENT "Checking PHP sources for syntax errors")
+foreach(CORA_PHP_SRC ${CORA_PHP_SOURCES})
+  add_custom_command(TARGET lint-php POST_BUILD
+    COMMAND ${PHP5_EXECUTABLE} -l ${CORA_PHP_SRC}
+    WORKING_DIRECTORY ${CORA_WEB_DIR}
+    )
+endforeach()
+
+add_custom_target(lint DEPENDS lint-php)
+
+#########################################################
 ## Testing
 #########################################################
 
