@@ -104,7 +104,9 @@ if ($mode === 'update') {
     show_status($done, $total);
   }
   foreach ($oldlist as $value => $tag) {
-    $tagset->deleteOrMarkTag($value);
+    if ($tag['needs_revision'] == 0) {
+      $tagset->deleteOrMarkTag($value);
+    }
     $done++;
     show_status($done, $total);
   }
