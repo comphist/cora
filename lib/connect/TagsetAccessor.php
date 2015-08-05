@@ -136,11 +136,14 @@ class TagsetAccessor {
     foreach ($this->tags_by_value as $value => $tag) {
       if (isset($tag['status']) && $tag['status'] === 'delete')
         continue;  // do not look at deleted tags
+      if (isset($tag['needs_revision']) && $tag['needs_revision'] == 1)
+        continue;  // do not look at "illegal" tags either
       $parts = $this->splitPOS($value);
       foreach ($parts as $part) {
         if (strlen($part) < 1) {
           $this->error("POS tag has empty attributes: {$value}");
           $consistent = false;
+          break;
         }
       }
       if (isset($feature_count[$parts[0]])) {
