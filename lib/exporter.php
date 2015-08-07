@@ -10,7 +10,6 @@
 
 require_once( "documentModel.php" );
 require_once( "xmlHandler.php" );
-//require_once( "pqp/classes/PhpQuickProfiler.php" );
 
 /** Data formats used for exporting. */
 class ExportType {

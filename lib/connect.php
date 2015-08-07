@@ -5,9 +5,6 @@
   *
   * @author Marcel Bollmann
   * @date January 2012
-  *
-  * @todo Database access information should be moved outside of the
-  * web server directory!
   */
 
  /* The database settings. */

@@ -8,7 +8,6 @@
  */
 
 require_once( "documentModel.php" );
-//require_once( "pqp/classes/PhpQuickProfiler.php" );
 
 /** Provides functions specific to handling CorA-XML format. */
 class XMLHandler {

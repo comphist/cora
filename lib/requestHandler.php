@@ -7,8 +7,6 @@
  * @date January 2012
  */
 
-// @todo App is not 100% secured against SQL injection at the moment.
-
 /** Handles all GET and POST requests.
  */
 class RequestHandler {
@@ -19,7 +17,7 @@ class RequestHandler {
    * @param SessionHandler $sessionHandler The SessionHandler object
    * that will be used to perform the requests.
    */
-  function __construct( $sessionHandler ) {
+  function __construct($sessionHandler) {
     $this->sh = $sessionHandler;
   }
 
@@ -43,7 +41,7 @@ class RequestHandler {
    * page, and should only be needed in a few circumstances, e.g.\ a
    * user logging in, or changing the language setting.
    */
-  public function handleRequests( $get, $post ) {
+  public function handleRequests($get, $post) {
     if(array_key_exists("action", $post)) {
       switch ( $post["action"] ) {
       	case "login":
