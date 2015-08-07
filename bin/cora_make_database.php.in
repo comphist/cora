@@ -1,0 +1,104 @@
+<?php
+require_once __DIR__."/@CORA_REL_WEB_DIR@/lib/cfg.php";
+require_once __DIR__."/@CORA_REL_WEB_DIR@/lib/install.php";
+
+$DBPATH = __DIR__."/@CORA_REL_DB_DIR@";
+$NOTWIN = (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN');
+
+// Parse options
+$options = getopt("oh");
+if (array_key_exists("h", $options)) {
+?>
+
+Prepares a script to create/update the CorA database.
+
+    Usage:
+    <?php echo $argv[0]; ?> [-o <outfile>] [-u <username> -p <password>]
+
+    If this is your first-time installation of Cora, or if no user account
+    with administrator rights exists, a new account with the credentials
+    <username> and <password> will be created.  If those are not given,
+    the script for prompt for them.
+
+    The resulting script will be written to <outfile>; if <outfile> is not
+    given, it defaults to "make_coradb.sql".
+
+<?php
+    exit;
+}
+
+if (array_key_exists("u", $options) && array_key_exists("p", $options)) {
+  $admin = array('user' => $options['u'], 'password' => $options['p']);
+}
+if (array_key_exists("o", $options)) {
+  $outfile = $options["o"];
+} else {
+  $outfile = "make_coradb.sql";
+}
+$out = fopen($outfile, "w");
+
+// Global functions
+function promptForAdminUser($installer) {
+  global $NOTWIN;
+  $user = null;
+  $pass = null;
+  echo "Enter the desired name and password for the first administrator account.\n";
+  echo "You can use this account to login into CorA for the first time.\n";
+  while(!$user) {
+    echo "Username: ";
+    $user = trim(fgets(STDIN));
+    if (!$installer->isValidAccountName($user)) {
+      echo "This username is not valid, or a user with that name already exists.\n";
+      $user = null;
+    }
+  }
+  while(!$pass) {
+    echo "Password: ";
+    if ($NOTWIN) { system('stty -echo'); }
+    $pass = rtrim(fgets(STDIN), PHP_EOL);
+    if ($NOTWIN) { system('stty echo'); echo PHP_EOL; }
+    if (!$pass) {
+      echo "Password cannot be empty.\n";
+    }
+  }
+  return array("user" => $user, "password" => $pass);
+}
+
+// Try connecting to the database
+$dbinfo = Cfg::get('dbinfo');
+echo "Connecting to database '{$dbinfo['DBNAME']}'@'{$dbinfo['HOST']}' ";
+echo "with user '{$dbinfo['USER']}': ";
+$installer = new InstallHelper($dbinfo);
+$can_connect = $installer->canConnect();
+echo ($can_connect ? "success" : "failed");
+echo "\n";
+
+if ($can_connect) {
+  echo "Cannot do anything to check database correctness yet.\n";
+  // TODO: check versioning
+  // TODO: verify system user
+  // TODO: check for admin user
+}
+else { // !$can_connect
+  echo str_repeat("=", 80) . "\n";
+  echo "Assuming first-time installation!\n";
+  echo "If you are NOT setting up CorA for the first time, ABORT THIS SCRIPT NOW\n";
+  echo "and check the settings in your configuration file.\n";
+  echo str_repeat("=", 80) . "\n\n";
+  fwrite($out, $installer->generateSQLforDatabaseCreation());
+  fwrite($out, file_get_contents($DBPATH."/coradb.sql"));
+  fwrite($out, $installer->generateSQLforFirstTimeInit());
+  $admin = promptForAdminUser($installer);
+  fwrite($out, $installer->generateSQLforAccount($admin));
+}
+
+$success = fclose($out);
+
+if ($success) {
+  echo "\nSuccessfully generated '$outfile'!\n";
+  echo "Run the generated script against your MySQL instance, e.g. by executing";
+  echo "\n\n    mysql -uroot -p <$outfile\n\n";
+  echo "to commit these changes to your database.\n";
+}
+
+?>
