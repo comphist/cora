@@ -49,7 +49,7 @@
    }
 
    /** Return the hash of a given password string. */
-   private function hashPassword($pw) {
+   public static function hashPassword($pw) {
      return password_hash($pw, PASSWORD_DEFAULT,
                           ['cost' => Cfg::get('password_cost')]);
    }
@@ -298,7 +298,7 @@
      if(!empty($user)) { // username already exists
        return false;
      }
-     $hashpw = $this->hashPassword($password);
+     $hashpw = self::hashPassword($password);
      $adm = $admin ? 1 : 0;
      $qs = "INSERT INTO users (name, password, admin) "
        . "  VALUES (:name, :pw, {$adm})";
@@ -317,7 +317,7 @@
     * @return 1 if successful, 0 otherwise
     */
    public function changePassword($uid, $password) {
-     $hashpw = $this->hashPassword($password);
+     $hashpw = self::hashPassword($password);
      $qs = "UPDATE users SET password=:pw WHERE `id`=:uid";
      $stmt = $this->dbo->prepare($qs);
      $stmt->bindValue(':uid', $uid, PDO::PARAM_INT);
