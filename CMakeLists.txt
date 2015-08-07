@@ -42,6 +42,10 @@ set(CORA_DB_USER "cora"
     CACHE STRING "Name of the database user used by CorA")
 set(CORA_DB_PASSWORD "trustthetext"
     CACHE STRING "Password of the database user used by CorA")
+set(CORA_DEFAULT_LANGUAGE "de"
+    CACHE STRING "Default GUI language for new CorA users")
+set(CORA_EXTERNAL_PARAM_DIR "/var/lib/cora"
+    CACHE STRING "Directory for external parametrization files")
 
 message(STATUS "Debug mode: ${DEBUG_MODE}")
 message(STATUS "Minification of CSS files: ${WITH_MINIFY_CSS}")
