@@ -3,11 +3,11 @@
 #########################################################
 
 set(CORA_TESTDB_NAME "${CORA_DB_NAME}_test"
-    CACHE STRING "Name of the CorA unit test database")
+    CACHE INTERNAL "Name of the CorA unit test database" FORCE)
 set(CORA_TESTDB_ROOT "${CORA_DB_USER}_test"
-    CACHE STRING "Name of the database user used by CorA unit tests")
-set(CORA_TESTDB_ROOTPW "mistrustthecode"
-    CACHE STRING "Password of the database user used by CorA unit tests")
+    CACHE INTERNAL "Name of the database user used by CorA unit tests" FORCE)
+set(CORA_TESTDB_ROOTPW "${CORA_DB_PASSWORD}_test"
+    CACHE INTERNAL "Password of the database user used by CorA unit tests" FORCE)
 
 #########################################################
 ## Configure PHPUnit
