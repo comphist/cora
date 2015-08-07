@@ -1,5 +1,4 @@
-file(RELATIVE_PATH CORA_CURRENT_REL_PATH "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
-set(CORA_CURRENT_WEB_DIR "${CORA_WEB_DIR}/${CORA_CURRENT_REL_PATH}")
+set_current_web_dir()
 file(MAKE_DIRECTORY "${CORA_CURRENT_WEB_DIR}")
 
 if(WITH_MINIFY_JS)
@@ -21,12 +20,12 @@ configure_all_copyonly(
 set(
   CORA_HREF_JS_MOOTOOLS_CORE
   "${CORA_CURRENT_REL_PATH}/mootools-core-1.4.5-full-compat-yc.js"
-  CACHE STRING "Relative path to MooTools core library" FORCE
+  CACHE INTERNAL "Relative path to MooTools core library" FORCE
   )
 set(
   CORA_HREF_JS_MOOTOOLS_MORE
   "${CORA_CURRENT_REL_PATH}/mootools-more-1.4.0.1-min.js"
-  CACHE STRING "Relative path to MooTools-More library" FORCE
+  CACHE INTERNAL "Relative path to MooTools-More library" FORCE
   )
 
 #########################################################

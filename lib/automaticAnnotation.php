@@ -9,7 +9,7 @@
  */
 
 //require_once( "documentModel.php" );
-require_once( "globals.php" );
+require_once( "cfg.php" );
 require_once( "exporter.php" );
 require_once( "annotation/AutomaticAnnotator.php" );
 require_once( "annotation/RFTaggerAnnotator.php" );
@@ -35,7 +35,7 @@ class AutomaticAnnotationWrapper {
   protected $train_single_file = false; /**< Hack to make training work on
                                              current file only. */
 
-  protected $paramdir = EXTERNAL_PARAM_DIR;
+  protected $paramdir = null;
 
   private $tagger_objects = array("RFTagger"     => "RFTaggerAnnotator",
                                   "DualRFTagger" => "DualRFTaggerAnnotator",
@@ -57,7 +57,7 @@ class AutomaticAnnotationWrapper {
       throw new Exception("Project ID cannot be empty.");
     }
     $this->projectid = $projectid;
-
+    $this->paramdir = Cfg::get('external_param_dir');
     $this->instantiateTagger();
   }
 

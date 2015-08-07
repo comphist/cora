@@ -2,7 +2,11 @@ cmake_minimum_required(VERSION 2.8.12)
 project(CorA NONE)
 set(CMAKE_PROJECT_VERSION 1.2)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules")
+
+include(AddSources)
 include(ConfigureAll)
+include(SetCurrentWebDir)
+include(SetWithCacheBuster)
 
 # modelled after https://github.com/kogmbh/WebODF/blob/master/webodf/CMakeLists.txt
 
@@ -30,14 +34,23 @@ option(WITH_MINIFY_JS "Minification of JavaScript files" ${MINIFY_JS_DEFAULT})
 
 set(CORA_WEB_DIR "${CMAKE_CURRENT_BINARY_DIR}/www"
     CACHE PATH "Path where all web-related files will be built")
-set(CORA_DB_NAME "cora"
+# Note: CORA_INSTANCE_NAME affects the default DB name and user,
+#       as well as the name of the PHP session variable.  Could be useful
+#       if you want to run multiple instances of CorA on the same server.
+set(CORA_INSTANCE_NAME "cora"
+    CACHE STRING "Name of the CorA instance")
+set(CORA_DB_NAME "${CORA_INSTANCE_NAME}"
     CACHE STRING "Name of the CorA database")
 set(CORA_DB_SERVER "localhost"
     CACHE STRING "Database server used by CorA")
-set(CORA_DB_USER "cora"
+set(CORA_DB_USER "${CORA_INSTANCE_NAME}"
     CACHE STRING "Name of the database user used by CorA")
 set(CORA_DB_PASSWORD "trustthetext"
     CACHE STRING "Password of the database user used by CorA")
+set(CORA_DEFAULT_LANGUAGE "de"
+    CACHE STRING "Default GUI language for new CorA users")
+set(CORA_EXTERNAL_PARAM_DIR "/var/lib/cora"
+    CACHE STRING "Directory for external parametrization files")
 
 message(STATUS "Debug mode: ${DEBUG_MODE}")
 message(STATUS "Minification of CSS files: ${WITH_MINIFY_CSS}")
@@ -132,17 +145,19 @@ set(NATURALDOCS_PL ${CMAKE_BINARY_DIR}/NaturalDocs-prefix/src/NaturalDocs/Natura
 file(MAKE_DIRECTORY ${CORA_WEB_DIR})
 add_custom_target(web ALL)
 
-include(AddSources)
-include(SetWithCacheBuster)
-add_sources(content.php index.php news.php request.php)
+set(CORA_PHP_SOURCES "")
+add_sources(CORA_PHP_SOURCES
+  content.php
+  index.php
+  news.php
+  request.php
+  )
+configure_all_copyonly(${CORA_WEB_DIR} ${CORA_PHP_SOURCES})
 add_subdirectory(gui)
 add_subdirectory(lib)
 
 configure_file(gui.php.in "${CORA_WEB_DIR}/gui.php" @ONLY)
-
-foreach(SRC ${SRCS})
-  configure_file("${SRC}" "${CORA_WEB_DIR}/${SRC}" COPYONLY)
-endforeach()
+add_sources(CORA_PHP_SOURCES gui.php)
 
 # TODO: legacy functionality --- this file is referenced on the "help" tab, so
 # needs to be copied over, but this should be changed at some point
@@ -152,6 +167,13 @@ file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/doc/cora-guide.pdf"
 
 # TODO: figure out installation step, could include sth. like
 # install(DIRECTORY ${CORA_WEB_DIR} DESTINATION ???)
+
+#########################################################
+## Configuration file
+#########################################################
+
+configure_file(config.php.in "${CORA_WEB_DIR}/config.php" @ONLY)
+add_sources(CORA_PHP_SOURCES config.php)
 
 #########################################################
 ## Documentation
@@ -212,6 +234,21 @@ endif()
 if(DOXYGEN_FOUND OR MKDOCS_FOUND)
   file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/docs")
 endif()
+
+#########################################################
+## Linting
+#########################################################
+
+add_custom_target(lint-php
+  COMMENT "Checking PHP sources for syntax errors")
+foreach(CORA_PHP_SRC ${CORA_PHP_SOURCES})
+  add_custom_command(TARGET lint-php POST_BUILD
+    COMMAND ${PHP5_EXECUTABLE} -l ${CORA_PHP_SRC}
+    WORKING_DIRECTORY ${CORA_WEB_DIR}
+    )
+endforeach()
+
+add_custom_target(lint DEPENDS lint-php)
 
 #########################################################
 ## Testing

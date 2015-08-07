@@ -9,7 +9,7 @@ ini_set('memory_limit', '536870912');
  * then outputs a JSON object string (depending on the nature of the request).
  */
 
-require_once( "lib/globals.php" );
+require_once( "lib/cfg.php" );
 require_once"lib/connect.php";
 require_once"lib/xmlHandler.php";
 require_once"lib/commandHandler.php";
@@ -17,7 +17,7 @@ require_once( "lib/sessionHandler.php" );
 require_once( "lib/requestHandler.php" );
 require_once( "lib/exporter.php" );
 
-$dbi = new DBInterface(DB_SERVER, DB_USER, DB_PASSWORD, MAIN_DB);
+$dbi = new DBInterface(Cfg::get('dbinfo'));
 $exp = new Exporter($dbi);
 $xml = new XMLHandler($dbi);
 $ch = new CommandHandler();

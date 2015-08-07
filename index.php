@@ -20,7 +20,7 @@
 header( "Content-Type: text/html; charset=utf-8" );
 
 /* Includes */
-require_once( "lib/globals.php" );
+require_once( "lib/cfg.php" );
 require_once( "lib/connect.php" );      // provides DB interface
 require_once"lib/xmlHandler.php";
 require_once( "lib/requestHandler.php" );
@@ -34,7 +34,7 @@ $menu; /**< A Menu object containing the menu items and references to
             content.php. */
 
 /* Initiate session */
-$dbi = new DBInterface(DB_SERVER, DB_USER, DB_PASSWORD, MAIN_DB);
+$dbi = new DBInterface(Cfg::get('dbinfo'));
 $xml = new XMLHandler($dbi);
 $exp = new Exporter($dbi);
 $sh = new CoraSessionHandler($dbi, $xml, $exp);

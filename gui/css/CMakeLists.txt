@@ -1,5 +1,4 @@
-file(RELATIVE_PATH CORA_CURRENT_REL_PATH "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
-set(CORA_CURRENT_WEB_DIR "${CORA_WEB_DIR}/${CORA_CURRENT_REL_PATH}")
+set_current_web_dir()
 
 #########################################################
 ## CSS files that are always loaded separately
