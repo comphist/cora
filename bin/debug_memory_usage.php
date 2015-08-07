@@ -1,10 +1,10 @@
 <?php
 $CORA_DIR = dirname(__FILE__) . "/../";
 $DEVNULL = fopen("/dev/null", "a");
-require_once( $CORA_DIR . "lib/globals.php" );
+require_once( $CORA_DIR . "lib/cfg.php" );
 require_once( $CORA_DIR . "lib/connect.php" );
 require_once( $CORA_DIR . "lib/exporter.php" );
-$dbi = new DBInterface(DB_SERVER, DB_USER, DB_PASSWORD, MAIN_DB);
+$dbi = new DBInterface(Cfg::get('dbinfo'));
 $exp = new Exporter($dbi);
 
 memprof_enable();

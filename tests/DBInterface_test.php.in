@@ -76,11 +76,13 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
     protected $expected;
 
     protected function setUp() {
-      //$this->dbi = new DBInterface($this);
-      $this->dbi = new DBInterface('localhost',
-				   $GLOBALS["DB_USER"],
-				   $GLOBALS["DB_PASSWD"],
-				   $GLOBALS["DB_DBNAME"]);
+      $dbinfo = array(
+        'HOST' => 'localhost',
+        'USER' => $GLOBALS["DB_USER"],
+        'PASSWORD' => $GLOBALS["DB_PASSWD"],
+        'DBNAME' => $GLOBALS["DB_DBNAME"]
+      );
+      $this->dbi = new DBInterface($dbinfo);
       $this->expected = get_DBInterface_expected();
       parent::setUp();
     }

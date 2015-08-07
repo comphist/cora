@@ -2,14 +2,22 @@
 /** @file gui.php
  * Display the graphical user interface.
  */
+
+function _gui_make_title() {
+  $title = Cfg::get('title');
+  $longtitle = Cfg::get('longtitle');
+  $version = Cfg::get('version');
+  return "$title ($longtitle) $version";
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en" xml:lang="en">
   <head>
     <meta charset="utf-8" />
-    <title><?php echo TITLE . " (" . LONGTITLE . ") " . VERSION; ?></title>
-    <meta name="description" content="<?php echo DESCRIPTION; ?>" />
-    <meta name="keywords" content="<?php echo KEYWORDS; ?>" />
+    <title><?php echo _gui_make_title(); ?></title>
+    <meta name="description" content="<?php echo Cfg::get('description'); ?>" />
+    <meta name="keywords" content="<?php echo Cfg::get('keywords'); ?>" />
 
     <!-- **************** Cascading Style Sheets **************** -->
     <link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,700,400,600" rel="stylesheet" type="text/css">
@@ -145,8 +153,8 @@ NOTLOGGEDIN;
     <!-- header -->
       <div id="header" class="no-print">
         <div id="titlebar">
-          <span class="cora-title"><?php echo TITLE; ?></span>
-          <span class="cora-version"><?php echo VERSION; ?></span>
+          <span class="cora-title"><?php echo Cfg::get('title'); ?></span>
+          <span class="cora-version"><?php echo Cfg::get('version'); ?></span>
           <span id="currentfile"></span>
         </div>
         <?php include( "gui/menu.php" ); ?>

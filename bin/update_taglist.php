@@ -2,10 +2,13 @@
 require_once 'cli_status_bar.php';
 
 $CORA_DIR = dirname(__FILE__) . "/../";
-require_once( $CORA_DIR . "lib/globals.php" );
+require_once( $CORA_DIR . "lib/cfg.php" );
 require_once( $CORA_DIR . "lib/connect/TagsetAccessor.php" );
-$dbo = new PDO('mysql:host='.DB_SERVER.';dbname='.MAIN_DB.';charset=utf8',
-	       DB_USER, DB_PASSWORD);
+$dbinfo = Cfg::get('dbinfo');
+$dbo = new PDO('mysql:host='.$dbinfo['HOST']
+              .';dbname='.$dbinfo['DBNAME']
+              .';charset=utf8',
+               $dbinfo['USER'], $dbinfo['PASSWORD']);
 
 function exactly_one_of($list, $opts) {
   $count = 0;

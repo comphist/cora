@@ -34,11 +34,16 @@ option(WITH_MINIFY_JS "Minification of JavaScript files" ${MINIFY_JS_DEFAULT})
 
 set(CORA_WEB_DIR "${CMAKE_CURRENT_BINARY_DIR}/www"
     CACHE PATH "Path where all web-related files will be built")
-set(CORA_DB_NAME "cora"
+# Note: CORA_INSTANCE_NAME affects the default DB name and user,
+#       as well as the name of the PHP session variable.  Could be useful
+#       if you want to run multiple instances of CorA on the same server.
+set(CORA_INSTANCE_NAME "cora"
+    CACHE STRING "Name of the CorA instance")
+set(CORA_DB_NAME "${CORA_INSTANCE_NAME}"
     CACHE STRING "Name of the CorA database")
 set(CORA_DB_SERVER "localhost"
     CACHE STRING "Database server used by CorA")
-set(CORA_DB_USER "cora"
+set(CORA_DB_USER "${CORA_INSTANCE_NAME}"
     CACHE STRING "Name of the database user used by CorA")
 set(CORA_DB_PASSWORD "trustthetext"
     CACHE STRING "Password of the database user used by CorA")
@@ -162,6 +167,13 @@ file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/doc/cora-guide.pdf"
 
 # TODO: figure out installation step, could include sth. like
 # install(DIRECTORY ${CORA_WEB_DIR} DESTINATION ???)
+
+#########################################################
+## Configuration file
+#########################################################
+
+configure_file(config.php.in "${CORA_WEB_DIR}/config.php" @ONLY)
+add_sources(CORA_PHP_SOURCES config.php)
 
 #########################################################
 ## Documentation

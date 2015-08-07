@@ -11,7 +11,7 @@
   */
 
  /* The database settings. */
- require_once 'globals.php';
+ require_once 'cfg.php';
  require_once 'documentModel.php';
  require_once 'commandHandler.php';
  require_once 'connect/DocumentAccessor.php';
@@ -38,18 +38,23 @@
 
    /** Create a new DBInterface.
     *
-    * Also sets the default database to the MAIN_DB constant.
+    * @param array $dbinfo An associative array expected to contain at least
+    *                      HOST, USER, PASSWORD, and DBNAME.
     */
-   function __construct($db_server, $db_user, $db_password, $db_name) {
-     $this->dbo = new PDO('mysql:host='.$db_server.';dbname='.$db_name.';charset=utf8',
-			  $db_user, $db_password);
+   function __construct($dbinfo) {
+     $this->dbo = new PDO('mysql:host='.$dbinfo['HOST']
+                         .';dbname='.$dbinfo['DBNAME']
+                         .';charset=utf8',
+			  $dbinfo['USER'],
+                          $dbinfo['PASSWORD']);
      $this->dbo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-     $this->db = $db_name;
+     $this->db = $dbinfo['DBNAME'];
    }
 
    /** Return the hash of a given password string. */
    private function hashPassword($pw) {
-     return password_hash($pw, PASSWORD_DEFAULT, ['cost' => CORA_PASSWORD_COST]);
+     return password_hash($pw, PASSWORD_DEFAULT,
+                          ['cost' => Cfg::get('password_cost')]);
    }
 
    /** Verify password.
@@ -78,7 +83,7 @@
      if($data && $this->verifyPassword($pw, $data['password'])) {
        if (password_needs_rehash($data['password'],
                                  PASSWORD_DEFAULT,
-                                 ['cost' => CORA_PASSWORD_COST])) {
+                                 ['cost' => Cfg::get('password_cost')])) {
          $this->changePassword($data['id'], $pw);
        }
        return $data;

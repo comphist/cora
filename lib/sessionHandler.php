@@ -7,6 +7,7 @@
  * @date January 2012
  */
 
+require_once( "cfg.php" );
 require_once( "connect.php" );
 require_once( "xmlHandler.php" );
 require_once( "commandHandler.php" );
@@ -33,14 +34,14 @@ class CoraSessionHandler {
    * defaults for various session values if required.
    */
   function __construct($db, $xml, $exp) {
-    session_name("PHPSESSID_CORA");
+    session_name(strtoupper(Cfg::get('session_name')));
     session_start();
 
     $this->db = $db;
     $this->xml = $xml;
     $this->exporter = $exp;
 
-    $defaults = array( "lang"        => DEFAULT_LANGUAGE,
+    $defaults = array( "lang"        => Cfg::get('default_language'),
 		       "loggedIn"    => false,
 		       "admin"       => false,
 		       "failedLogin" => false,

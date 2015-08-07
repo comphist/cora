@@ -11,10 +11,13 @@
  * @date September 2014
  */
 
-require_once '../lib/globals.php';
+require_once '../lib/cfg.php';
 
-$dbo = new PDO('mysql:host='.DB_SERVER.';dbname='.MAIN_DB.';charset=utf8',
-               DB_USER, DB_PASSWORD);
+$dbinfo = Cfg::get('dbinfo');
+$dbo = new PDO('mysql:host='.$dbinfo['HOST']
+              .';dbname='.$dbinfo['DBNAME']
+              .';charset=utf8',
+               $dbinfo['USER'], $dbinfo['PASSWORD']);
 $dbo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 $stmt_fetchTagset = $dbo->prepare("SELECT `id`, `value` FROM tag "

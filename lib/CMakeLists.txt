@@ -2,6 +2,7 @@ set_current_web_dir()
 
 set(LOCAL_PHP_SOURCES
   automaticAnnotation.php
+  cfg.php
   commandHandler.php
   connect.php
   contentModel.php
@@ -25,6 +26,5 @@ set(LOCAL_PHP_SOURCES
 )
 
 configure_all_copyonly(${CORA_CURRENT_WEB_DIR} ${LOCAL_PHP_SOURCES})
-configure_file(globals.php.in "${CORA_CURRENT_WEB_DIR}/globals.php" @ONLY)
 
-add_sources(CORA_PHP_SOURCES ${LOCAL_PHP_SOURCES} globals.php)
+add_sources(CORA_PHP_SOURCES ${LOCAL_PHP_SOURCES})
