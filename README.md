@@ -9,7 +9,7 @@ CorA is a web-based annotation tool for non-standard language data.
 
 ## Dependencies ##
 
-### Runtime dependencies ###
+To host CorA on your own machine, you need at least the following:
 
 * A web server, such as Apache
 
@@ -20,41 +20,30 @@ CorA is a web-based annotation tool for non-standard language data.
 
 * MySQL (**TODO:** which version?)
 
-### Additional build dependencies ###
-
-* CMake 2.8.12+
-
-* Sass 3.2+
-
-* Java runtime environment; for running:
-    * YUICompressor (for compressing CSS; can be downloaded automatically during build)
-    * Closure Compiler (for compressing JS; can be downloaded automatically during build)
-
-### Optional build dependencies ###
-
-* PHPUnit 3.7+ with DBUnit extension (for PHP unit tests)
-
-* Doxygen (for API documentation of PHP files)
-
-* Perl 5.8+; for running:
-    * NaturalDocs 1.52 (for API documentation of JavaScript files; can be downloaded automatically during build)
-
-* mkdocs 0.14+ (for user documentation)
+If you plan to build CorA yourself, further dependencies are needed; see
+INSTALL.md for details.
 
 ## Installing CorA ##
 
-For detailed information about building and installing CorA, refer to INSTALL.md.
+The easy way to install CorA is to simply download a zip file from
+<https://bitbucket.org/mbollmann/cora/downloads> containing all the required
+files. (**TODO:** there are none available yet.)  If you want to modify parts of
+the source code, run unit tests, etc., you should follow the instructions in
+INSTALL.md instead.
 
-### The short version ###
+Extract the contents of that package to a local directory, then perform the
+following steps:
 
-To build CorA, do:
+1. Check if the configuration options in `www/config.php` are set correctly.
+   This file contains the database credentials, default language, external
+   directories to use, etc.; it comes with sensible default settings and
+   typically includes descriptions for each of them.  If necessary, adjust this
+   file before continuing.
 
-    mkdir <build-dir> && cd <build-dir>
-    cmake <cora-source-dir>
-    make
+2. Run `bin/make_database.php` from a terminal and follow the instructions on
+   the screen.
 
-If the build completes successfully, the directory `<build-dir>/www/` holds all
-files that should be served by your web server.
+3. Copy the contents of the `www/` directory to the desired location of your web
+   server.
 
-**Important:** Database creation is not yet automated and must be performed
-  manually after the build.  See INSTALL.md for instructions.
+That's it!

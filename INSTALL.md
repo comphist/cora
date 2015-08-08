@@ -1,7 +1,34 @@
 # Installing CorA #
 
+These instructions assume that you want to build CorA from the source tree
+yourself.  In general, you only need to do this if you want to modify parts of
+the source code.  For the "easy" way to install CorA, refer to README.md.
+
+## Dependencies ##
+
 Before installing CorA, make sure that all required **dependencies** are
-installed (see README.md for a full list).
+installed.  Besides the runtime dependencies listed in README.md, you need:
+
+* CMake 2.8.12+
+
+* Sass 3.2+
+
+* Java runtime environment; for running:
+    * YUICompressor (for compressing CSS; can be downloaded automatically during build)
+    * Closure Compiler (for compressing JS; can be downloaded automatically during build)
+
+The following dependencies are **optional**:
+
+* PHPUnit 3.7+ with DBUnit extension (for PHP unit tests)
+
+* Doxygen (for API documentation of PHP files)
+
+* mkdocs 0.14+ (for user documentation)
+
+* Perl 5.8+; for running:
+    * NaturalDocs 1.52 (for API documentation of JavaScript files; can be downloaded automatically during build)
+
+## Build Instructions ##
 
 To build CorA, create a new directory where the build should be generated, then
 call CMake to configure CorA into this directory.  If CMake finishes without
@@ -16,29 +43,24 @@ For example, on a Linux-based system you could do:
 If the build completes successfully, the directory `<build-dir>/www/` holds all
 files that should be served by your web server.
 
-## First-time Installation ##
+## Database Installation/Migration ##
 
-If you're installing CorA for the first time, you need to create the CorA
-database on your MySQL server.  We're working on making this process more
-convenient, but right now, this needs to be **done manually.**
+In addition to setting up the web directory, you need to make sure that the
+database is properly set up for the current version of CorA.  If you're
+installing CorA for the first time, or you are upgrading from an older version
+with a different database schema, you need to make the appropriate changes on
+your MySQL server.
 
-To create the CorA database structure from scratch, do:
+Run `make database` to check if your database needs to be updated, and
+automatically create a script that performs these updates.  On a first time
+installation, this will also ask you for a username and password to be used for
+the first administrator account in CorA.
 
-1. Run `<build-dir>/coradb.sql` and `<build-dir>/coradb-data.sql` against your
-   MySQL instance (requires MySQL root permissions), for example by doing:
+If an update is required, you will find a script `make_coradb.sql` in your build
+directory, which has to be run against the MySQL server instance you're using,
+e.g. by calling:
 
-        cat coradb.sql coradb-data.sql | mysql -uroot -p
-
-2. Run `php <build-dir>/bin/cora_create_user.php -a` to create a first user
-   account with administrator rights.  You can define username and password via
-   `-u username -p password`, but if you don't, the script will prompt you for
-   it.
-
-**ATTENTION!** If you're already running an (older) instance of CorA on your
-  server, performing the above steps will **delete all CorA-related data in your
-  database!** Only perform these steps during a first-time installation of CorA.
-  Support for updating CorA when the database structure has changed will be
-  added in the future.
+    mysql -uroot -p <make_coradb.sql
 
 ## Generating Documentation ##
 
