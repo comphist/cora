@@ -273,3 +273,14 @@ add_subdirectory(db)
 #########################################################
 
 add_subdirectory(bin)
+
+add_custom_command(
+  OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/make_coradb.sql"
+  COMMAND ${PHP5_EXECUTABLE}
+          "${CMAKE_CURRENT_BINARY_DIR}/bin/make_database.php"
+          -o "${CMAKE_CURRENT_BINARY_DIR}/make_coradb.sql"
+  WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+  DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/bin/make_database.php"
+  COMMENT "Preparing script to create/update the database"
+)
+add_custom_target(database DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/make_coradb.sql")
