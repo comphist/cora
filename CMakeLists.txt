@@ -169,11 +169,12 @@ file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/doc/cora-guide.pdf"
 # install(DIRECTORY ${CORA_WEB_DIR} DESTINATION ???)
 
 #########################################################
-## Configuration file
+## Configuration files
 #########################################################
 
 configure_file(config.php.in "${CORA_WEB_DIR}/config.php" @ONLY)
-add_sources(CORA_PHP_SOURCES config.php)
+configure_file(version.php "${CORA_WEB_DIR}/version.php" COPYONLY)
+add_sources(CORA_PHP_SOURCES config.php version.php)
 
 #########################################################
 ## Documentation

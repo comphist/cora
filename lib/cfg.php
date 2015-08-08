@@ -16,7 +16,9 @@ class Cfg {
   private static $options;
 
   private static function load_opts() {
-    self::$options = include CORA_CONFIG_FILE;
+    $options = include CORA_CONFIG_FILE;
+    $version = include dirname(__FILE__) . "/../version.php";
+    self::$options = array_merge($options, $version);
   }
 
   /** Accesses a configuration variable.
