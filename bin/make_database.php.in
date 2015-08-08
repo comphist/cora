@@ -7,7 +7,7 @@ $DBMIGRPATH = "$DBPATH/migration";
 $NOTWIN = (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN');
 
 // Parse options
-$options = getopt("oh");
+$options = getopt("o:u:p:h");
 if (array_key_exists("h", $options)) {
 ?>
 
@@ -28,8 +28,12 @@ Prepares a script to create/update the CorA database.
     exit;
 }
 
-if (array_key_exists("u", $options) && array_key_exists("p", $options)) {
-  $admin = array('user' => $options['u'], 'password' => $options['p']);
+$admin = array();
+if (array_key_exists("u", $options)) {
+  $admin['user'] = $options['u'];
+}
+if (array_key_exists("p", $options)) {
+  $admin['password'] = $options['p'];
 }
 if (array_key_exists("o", $options)) {
   $outfile = $options["o"];
@@ -39,14 +43,12 @@ if (array_key_exists("o", $options)) {
 $output = array();
 
 // Global functions
-function promptForAdminUser($installer) {
+function promptForAdminUser($installer, $admin) {
   global $NOTWIN;
-  $user = null;
-  $pass = null;
-  echo "Enter the desired name and password for the first administrator account.\n";
-  echo "You can use this account to login into CorA for the first time.\n";
+  $user = isset($admin['user']) ? $admin['user'] : null;
+  $pass = isset($admin['password']) ? $admin['password'] : null;
   while(!$user) {
-    echo "Username: ";
+    echo "Choose a username: ";
     $user = trim(fgets(STDIN));
     if (!$installer->isValidAccountName($user)) {
       echo "This username is not valid, or a user with that name already exists.\n";
@@ -54,7 +56,7 @@ function promptForAdminUser($installer) {
     }
   }
   while(!$pass) {
-    echo "Password: ";
+    echo "Choose a password: ";
     if ($NOTWIN) { system('stty -echo'); }
     $pass = rtrim(fgets(STDIN), PHP_EOL);
     if ($NOTWIN) { system('stty echo'); echo PHP_EOL; }
@@ -62,6 +64,8 @@ function promptForAdminUser($installer) {
       echo "Password cannot be empty.\n";
     }
   }
+  echo "Creating an account for user '$user' with administrator rights.\n";
+  echo "You can use this account to login into CorA for the first time.\n";
   return array("user" => $user, "password" => $pass);
 }
 
@@ -128,7 +132,7 @@ else { // !$can_connect
   echo "If you are NOT setting up CorA for the first time, ABORT THIS SCRIPT NOW\n";
   echo "and check the settings in your configuration file.\n";
   echo str_repeat("=", 80) . "\n\n";
-  $admin = promptForAdminUser($installer);
+  $admin = promptForAdminUser($installer, $admin);
   $output = array(
     $installer->generateSQLforDatabaseCreation(),
     file_get_contents($DBPATH."/coradb.sql"),
