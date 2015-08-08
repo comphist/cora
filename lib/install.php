@@ -73,6 +73,14 @@ class InstallHelper {
     return true;
   }
 
+  /** Gets the current database version string.
+   */
+  public function getDBVersion() {
+    if (!$this->can_connect) return null;
+    return $this->dbo->query("SELECT `version` FROM versioning ORDER BY `id` DESC LIMIT 1",
+                             PDO::FETCH_COLUMN, 0);
+  }
+
   /** Generate SQL string to create the database. */
   public function generateSQLforDatabaseCreation() {
     $sql = "CREATE DATABASE IF NOT EXISTS `".$this->dbinfo['DBNAME']."`;\n"

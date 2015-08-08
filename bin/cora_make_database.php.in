@@ -3,6 +3,7 @@ require_once __DIR__."/@CORA_REL_WEB_DIR@/lib/cfg.php";
 require_once __DIR__."/@CORA_REL_WEB_DIR@/lib/install.php";
 
 $DBPATH = __DIR__."/@CORA_REL_DB_DIR@";
+$DBMIGRPATH = "$DBPATH/migration";
 $NOTWIN = (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN');
 
 // Parse options
@@ -35,7 +36,7 @@ if (array_key_exists("o", $options)) {
 } else {
   $outfile = "make_coradb.sql";
 }
-$out = fopen($outfile, "w");
+$output = array();
 
 // Global functions
 function promptForAdminUser($installer) {
@@ -64,6 +65,24 @@ function promptForAdminUser($installer) {
   return array("user" => $user, "password" => $pass);
 }
 
+function findMigrationPath($from, $to) {
+  global $DBMIGRPATH;
+  $path = array();
+  while ($from != $to) {
+    $prefix = "$DBMIGRPATH/{$from}-to-";
+    $migration = glob("{$prefix}*");
+    if (!$migration) return false;
+    $migration = $migration[0];
+    if (substr($migration, -4) != ".sql") return false;
+    $from = substr($migration, strlen($prefix), -4);
+    $path[] = $migration;
+    if (count($path) > 1000) { // endless loop protection
+      return false;
+    }
+  }
+  return $path;
+}
+
 // Try connecting to the database
 $dbinfo = Cfg::get('dbinfo');
 echo "Connecting to database '{$dbinfo['DBNAME']}'@'{$dbinfo['HOST']}' ";
@@ -74,10 +93,34 @@ echo ($can_connect ? "success" : "failed");
 echo "\n";
 
 if ($can_connect) {
-  echo "Cannot do anything to check database correctness yet.\n";
-  // TODO: check versioning
-  // TODO: verify system user
-  // TODO: check for admin user
+  // Database migration
+  echo "Checking database version: ";
+  $curr_version = $installer->getDBVersion();
+  $req_version = Cfg::get("db_version");
+  echo "'$curr_version' (required: '$req_version')\n";
+  if ($curr_version != $req_version) {
+    echo "Searching for an automatic migration path in '$DBMIGRPATH'...";
+    $path = findMigrationPath($curr_version, $req_version);
+    echo "\n";
+    if (!$path) {
+      echo "Could NOT find an upgrade path from '$curr_version' to '$req_version'\n\n";
+      echo <<<TEXT
+Database update is required, but cannot be performed automatically.  Maybe the
+directory for the database migration scripts is wrong or corrupted, or your
+CorA database contains invalid versioning information.  You may need to perform
+the database migration manually.
+
+TEXT;
+      exit(1);
+    }
+    foreach ($path as $filename) {
+      $output[] = file_get_contents($filename);
+    }
+  }
+  // Verify system user
+  if (!$installer->correctSystemUser()) {
+    $installer->fixSystemUser();
+  }
 }
 else { // !$can_connect
   echo str_repeat("=", 80) . "\n";
@@ -86,21 +129,32 @@ else { // !$can_connect
   echo "and check the settings in your configuration file.\n";
   echo str_repeat("=", 80) . "\n\n";
   $admin = promptForAdminUser($installer);
-
-  fwrite($out, $installer->generateSQLforDatabaseCreation());
-  fwrite($out, file_get_contents($DBPATH."/coradb.sql"));
-  fwrite($out, $installer->generateSQLforFirstTimeInit());
-  fwrite($out, $installer->generateSQLforAccount($admin));
-  fwrite($out, $installer->generateSQLforVersionString());
+  $output = array(
+    $installer->generateSQLforDatabaseCreation(),
+    file_get_contents($DBPATH."/coradb.sql"),
+    $installer->generateSQLforFirstTimeInit(),
+    $installer->generateSQLforAccount($admin),
+    $installer->generateSQLforVersionString()
+  );
 }
 
-$success = fclose($out);
+if (!$output) {
+  echo "No database update required.\n";
+}
+else {
+  $fh = fopen($outfile, "w");
+  foreach ($output as $outstring) {
+    fwrite($fh, $outstring);
+    fwrite($fh, "\n");
+  }
+  $success = fclose($fh);
 
-if ($success) {
-  echo "\nSuccessfully generated '$outfile'!\n";
-  echo "Run the generated script against your MySQL instance, e.g. by executing";
-  echo "\n\n    mysql -uroot -p <$outfile\n\n";
-  echo "to commit these changes to your database.\n";
+  if ($success) {
+    echo "\nSuccessfully generated '$outfile'!\n";
+    echo "Run the generated script against your MySQL instance, e.g. by executing";
+    echo "\n\n    mysql -uroot -p <$outfile\n\n";
+    echo "to commit these changes to your database.\n";
+  }
 }
 
 ?>
