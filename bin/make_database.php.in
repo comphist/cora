@@ -121,6 +121,7 @@ TEXT;
     foreach ($path as $filename) {
       $output[] = file_get_contents($filename);
     }
+    $output[] = $installer->generateSQLforVersionString();
   }
   // Verify system user
   if (!$installer->correctSystemUser()) {
