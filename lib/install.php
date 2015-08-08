@@ -115,6 +115,22 @@ SQL;
     return $sql;
   }
 
+  /** Generate SQL string to insert versioning information.
+   *
+   * If no version string is given, the one from the current configuration
+   * will be used.
+   */
+  public function generateSQLforVersionString($version=false) {
+    if (!$version) {
+      $version = Cfg::get("db_version");
+    }
+    $sql = <<<SQL
+INSERT INTO `versioning` (`version`, `time`) VALUES ("$version", NOW());
+
+SQL;
+    return $sql;
+  }
+
 }
 
 ?>

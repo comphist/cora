@@ -20,8 +20,8 @@ Prepares a script to create/update the CorA database.
     <username> and <password> will be created.  If those are not given,
     the script for prompt for them.
 
-    The resulting script will be written to <outfile>; if <outfile> is not
-    given, it defaults to "make_coradb.sql".
+    The resulting SQL script will be written to <outfile>; if <outfile>
+    is not given, it defaults to "make_coradb.sql".
 
 <?php
     exit;
@@ -85,11 +85,13 @@ else { // !$can_connect
   echo "If you are NOT setting up CorA for the first time, ABORT THIS SCRIPT NOW\n";
   echo "and check the settings in your configuration file.\n";
   echo str_repeat("=", 80) . "\n\n";
+  $admin = promptForAdminUser($installer);
+
   fwrite($out, $installer->generateSQLforDatabaseCreation());
   fwrite($out, file_get_contents($DBPATH."/coradb.sql"));
   fwrite($out, $installer->generateSQLforFirstTimeInit());
-  $admin = promptForAdminUser($installer);
   fwrite($out, $installer->generateSQLforAccount($admin));
+  fwrite($out, $installer->generateSQLforVersionString());
 }
 
 $success = fclose($out);
