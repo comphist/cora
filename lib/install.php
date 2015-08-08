@@ -77,8 +77,9 @@ class InstallHelper {
    */
   public function getDBVersion() {
     if (!$this->can_connect) return null;
-    return $this->dbo->query("SELECT `version` FROM versioning ORDER BY `id` DESC LIMIT 1",
-                             PDO::FETCH_COLUMN, 0);
+    $q = $this->dbo->query("SELECT `version` FROM versioning ORDER BY `id` DESC LIMIT 1");
+    if (!$q) return null;
+    return $q->fetchColumn();
   }
 
   /** Generate SQL string to create the database. */
