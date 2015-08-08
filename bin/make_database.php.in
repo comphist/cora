@@ -117,6 +117,7 @@ the database migration manually.
 TEXT;
       exit(1);
     }
+    $output[] = "USE `".Cfg::get('dbinfo')['DBNAME']."`;\n";
     foreach ($path as $filename) {
       $output[] = file_get_contents($filename);
     }
