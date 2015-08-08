@@ -266,12 +266,7 @@ endif()
 ## Database
 #########################################################
 
-message(STATUS "Using database '${CORA_DB_NAME}' at '${CORA_DB_SERVER}'"
-               " with user '${CORA_DB_USER}'")
-set(CORA_DB_DIR "${CMAKE_CURRENT_BINARY_DIR}/db"
-    CACHE INTERNAL "Path to database directory" FORCE)
-configure_file(db/coradb.sql.in "${CORA_DB_DIR}/coradb.sql")
-configure_file(db/coradb-data.sql.in "${CORA_DB_DIR}/coradb-data.sql")
+add_subdirectory(db)
 
 #########################################################
 ## Scripts/executables
