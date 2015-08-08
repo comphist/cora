@@ -10,7 +10,8 @@ SCRIPT_CONV=/usr/local/bin/convert_coraxml.py
 
 echo "~BEGIN CHECK"
 OUTPUT_CHECK=$($RUBY $SCRIPT_CHECK -C "$1" 2>&1)
-if [ $? -gt 0 ]; then
+grep -q "^ERROR" <<< "$OUTPUT_CHECK"
+if [ $? -eq 0 ]; then
     echo "~ERROR CHECK"
     echo "Die Prüfung der Transkription hat Fehler ergeben:"
     echo "$OUTPUT_CHECK" | head -n 200

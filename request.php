@@ -9,7 +9,7 @@ ini_set('memory_limit', '536870912');
  * then outputs a JSON object string (depending on the nature of the request).
  */
 
-require_once "lib/globals.php";
+require_once "lib/cfg.php";
 require_once "lib/connect.php";
 require_once "lib/localeHandler.php";
 require_once "lib/sessionHandler.php";
@@ -21,7 +21,7 @@ $sh;   /**< An instance of the SessionHandler object. */
 $rq;   /**< An instance of the RequestHandler object. */
 
 /* Initiate session */
-$dbi = new DBInterface(DB_SERVER, DB_USER, DB_PASSWORD, MAIN_DB);
+$dbi = new DBInterface(Cfg::get('dbinfo'));
 $lh = new LocaleHandler();
 $sh = new CoraSessionHandler($dbi, $lh);
 $rq = new RequestHandler($sh);

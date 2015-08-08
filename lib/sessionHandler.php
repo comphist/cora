@@ -7,6 +7,7 @@
  * @date January 2012
  */
 
+require_once( "cfg.php" );
 require_once( "connect.php" );
 require_once( "xmlHandler.php" );
 require_once( "commandHandler.php" );
@@ -32,14 +33,14 @@ class CoraSessionHandler {
    * defaults for various session values if required.
    */
   function __construct(DBInterface $db, LocaleHandler $lh) {
-    session_name("PHPSESSID_CORA");
+    session_name(strtoupper(Cfg::get('session_name')));
     session_start();
 
     $this->db = $db;
     $this->lh = $lh;
 
-    $defaults = array( "locale"      => null,
-                       "loggedIn"    => false,
+    $defaults = array( "locale"      => Cfg::get('default_language'),
+		       "loggedIn"    => false,
 		       "admin"       => false,
 		       "failedLogin" => false,
 		       "currentName" => null,
@@ -94,8 +95,8 @@ class CoraSessionHandler {
   }
 
   /** Wraps DBInterface::getTagset(). */
-  public function getTagset($tagset, $limit) {
-    $data = $this->db->getTagset($tagset, $limit);
+  public function getTagset($tagset) {
+    $data = $this->db->getTagset($tagset);
     return array('success' => true, 'data' => $data);
   }
 

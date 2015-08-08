@@ -7,6 +7,8 @@
  * @date May 2015
  */
 
+require_once "cfg.php";
+
 /** Contains locale-specific data and functions.
  */
 class LocaleHandler {
@@ -75,6 +77,9 @@ class LocaleHandler {
   public function defaultLocale() {
     if (count($this->supported) == 0)
       return null;
+    $default = Cfg::get("default_language");
+    if (in_array($this->supported, $default))
+      return $default;
     return $this->supported[0];
   }
 

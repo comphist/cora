@@ -1,0 +1,17 @@
+This directory is intended for SQL scripts that migrate the database from one
+version to the next.
+
+Files MUST follow the naming scheme
+
+    <origin>-to-<target>.sql
+
+and
+
+    revert-<origin>-to-<target>.sql
+
+where <origin> and <target> are database version strings as found in
+"version.php".
+
+For each <origin>, there MUST NEVER BE more than one migration script, and the
+<target> is always expected to be the immediately succeeding version of the
+database.

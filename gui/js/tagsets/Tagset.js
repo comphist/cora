@@ -124,6 +124,9 @@ var Tagset = new Class({
                          function(e){return (e.needs_revision == 0);}),
             function(e) {return e.value;}
         );
+        this.tags.sort(function (a, b) {
+            return a.toLowerCase().localeCompare(b.toLowerCase());
+        });
         this.processed = true;
     },
 

@@ -7,8 +7,6 @@
  * @date January 2012
  */
 
-// @todo App is not 100% secured against SQL injection at the moment.
-
 /** Handles all GET and POST requests.
  */
 class RequestHandler {
@@ -19,7 +17,7 @@ class RequestHandler {
    * @param SessionHandler $sessionHandler The SessionHandler object
    * that will be used to perform the requests.
    */
-  function __construct( $sessionHandler ) {
+  function __construct($sessionHandler) {
     $this->sh = $sessionHandler;
   }
 
@@ -41,7 +39,7 @@ class RequestHandler {
    * page, and should only be needed in a few circumstances, e.g.\ a
    * user logging in.
    */
-  public function handleRequests( $get, $post ) {
+  public function handleRequests($get, $post) {
     if(array_key_exists("action", $post)) {
       switch ( $post["action"] ) {
       	case "login":
@@ -211,7 +209,7 @@ class RequestHandler {
 	return $this->sh->getImportStatus();
 
       case "fetchTagset":
-	return $this->sh->getTagset($get["tagset_id"], $get["limit"]);
+	return $this->sh->getTagset($get["tagset_id"]);
 
       case "changeTagsetsForFile":
         return $this->sh->changeTagsetsForFile($get["file_id"],
@@ -340,8 +338,9 @@ class RequestHandler {
    *
    * @param object $response Object that will be returned to the
    *                         user in JSON-encoded form
+   * @param string $via If set to 'iframe', wrap response in HTML
    */
-  private function releaseConnection($response) {
+  private function releaseConnection($response, $via) {
     // see:
     // <http://stackoverflow.com/questions/138374/close-a-connection-early>
     // <http://php.net/manual/en/features.connection-handling.php#93441>
@@ -352,7 +351,16 @@ class RequestHandler {
     header("Content-Encoding: none\r\n");
     ignore_user_abort(true);
     ob_start();
-    echo json_encode($response);
+    if ($via && $via === 'iframe') {
+      header("Content-Type: text/html\r\n");
+      echo '<pre class="json">';
+      echo json_encode($response);
+      echo '</pre>';
+    }
+    else {
+      header('Content-Type: application/json\r\n');
+      echo json_encode($response);
+    }
     $response_size = ob_get_length();
     header("Content-Length: " . $response_size);
     ob_end_flush();
@@ -376,7 +384,8 @@ class RequestHandler {
       return array("errors"=>array("Fehler beim Upload: ".$errmsg));
     }
 
-    $this->releaseConnection(array("success" => true));
+    if(!isset($post['via'])) { $post['via'] = null; }
+    $this->releaseConnection(array("success" => true), $post['via']);
 
     // from here on, the client connection should be closed
     $data = $_FILES['transFile'];

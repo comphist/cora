@@ -12,7 +12,7 @@
             <value>i1</value>
             <value>importtest</value>
             <value>1</value>
-            <value></value>
+            <null/>
             <value>Importtest header</value>
         </row>
     </table>
@@ -71,13 +71,13 @@
             <value>8</value>
             <value>3</value>
             <value>1</value>
-            <value></value>
+            <null/>
         </row>
         <row>
             <value>9</value>
             <value>3</value>
             <value>2</value>
-            <value></value>
+            <null/>
         </row>
     </table>
     <table name="inserted_token">
@@ -453,7 +453,7 @@
             <value>7</value>
             <value>bla bla kommentar</value>
             <value>K</value>
-            <value></value>
+            <null/>
         </row>
     </table>
     <table name="inserted_mod2error">

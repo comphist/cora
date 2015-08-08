@@ -1179,7 +1179,7 @@ cora.tagsetEditor = {
 		    textarea.empty().appendText(output);
                 },
                 onComplete: function() { spinner.hide(); }
-            }).get({'tagset_id': tagset, 'limit': 'none'});
+            }).get({'tagset_id': tagset});
         });
     },
 

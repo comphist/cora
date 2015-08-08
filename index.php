@@ -14,11 +14,13 @@
 header( "Content-Type: text/html; charset=utf-8" );
 
 /* Includes */
-require_once "lib/globals.php";
-require_once "lib/connect.php";      // provides DB interface
+require_once "lib/cfg.php";
+require_once "lib/connect.php";
 require_once "lib/localeHandler.php";
-require_once "lib/sessionHandler.php";
+require_once "lib/xmlHandler.php";
 require_once "lib/requestHandler.php";
+require_once "lib/sessionHandler.php";
+require_once "lib/exporter.php";
 
 $dbi;  /**< An instance of the DBInterface object. */
 $lh;   /**< An instance of the LocaleHandler object. */
@@ -29,15 +31,15 @@ $menu; /**< A Menu object containing the menu items and references to
             content.php. */
 
 /* Initiate session */
-$dbi = new DBInterface(DB_SERVER, DB_USER, DB_PASSWORD, MAIN_DB);
+$dbi = new DBInterface(Cfg::get('dbinfo'));
 $lh = new LocaleHandler();
 $sh = new CoraSessionHandler($dbi, $lh);
 $rq = new RequestHandler($sh);
 $rq->handleRequests($_GET, $_POST);
 
 /* Define site content */
-include( "content.php" );
+include "content.php";
 /* Load the actual HTML page */
-include( "gui.php" );
+include "gui.php";
 
 ?>

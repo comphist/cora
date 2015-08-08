@@ -1,0 +1,47 @@
+<?php
+/** @file config.php
+ * This is the main CorA configuration file.
+ *
+ * You may edit this file to suit your needs.
+ */
+
+// do not remove the following line
+if (!defined('CORA_CONFIG_FILE')) { return; }
+
+return array(
+  /** This array should contain all the info required to connect to a CorA
+  database instance. */
+  "dbinfo" => array(
+    /** The database server to connect to. */
+    "HOST" => '@CORA_DB_SERVER@',
+    /** The username for database login. */
+    "USER" => '@CORA_DB_USER@',
+    /** The password for database login. */
+    "PASSWORD" => '@CORA_DB_PASSWORD@',
+    /** The name of the database. */
+    "DBNAME" => '@CORA_DB_NAME@'
+  ),
+
+  /** Default interface language for new users. */
+  "default_language" => '@CORA_DEFAULT_LANGUAGE@',
+
+  /** Directory to store external parametrizations for automatic annotators
+      (e.g., tagger parametrizations that have been learned from certain
+      projects. */
+  "external_param_dir" => '@CORA_EXTERNAL_PARAM_DIR@',
+
+  /** Cost of the password-encryption algorithm. */
+  "password_cost" => 12,
+
+  /** Options describing this CorA instance. */
+  "title" => "CorA",
+  "version" => "1.2",
+  "longtitle" => "Corpus Annotator",
+  "description" => "A corpus annotation tool for non-standard language varieties.",
+  "keywords" => "annotation,corpus,POS",
+
+  /** PHP session name; affects cookie name in browser. */
+  "session_name" => 'PHPSESSID_@CORA_INSTANCE_NAME@'
+);
+
+?>

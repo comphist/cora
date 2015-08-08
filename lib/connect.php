@@ -5,13 +5,10 @@
   *
   * @author Marcel Bollmann
   * @date January 2012
-  *
-  * @todo Database access information should be moved outside of the
-  * web server directory!
   */
 
  /* The database settings. */
- require_once 'globals.php';
+ require_once 'cfg.php';
  require_once 'documentModel.php';
  require_once 'commandHandler.php';
  require_once 'connect/DocumentAccessor.php';
@@ -38,18 +35,23 @@
 
    /** Create a new DBInterface.
     *
-    * Also sets the default database to the MAIN_DB constant.
+    * @param array $dbinfo An associative array expected to contain at least
+    *                      HOST, USER, PASSWORD, and DBNAME.
     */
-   function __construct($db_server, $db_user, $db_password, $db_name) {
-     $this->dbo = new PDO('mysql:host='.$db_server.';dbname='.$db_name.';charset=utf8',
-			  $db_user, $db_password);
+   function __construct($dbinfo) {
+     $this->dbo = new PDO('mysql:host='.$dbinfo['HOST']
+                         .';dbname='.$dbinfo['DBNAME']
+                         .';charset=utf8',
+			  $dbinfo['USER'],
+                          $dbinfo['PASSWORD']);
      $this->dbo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-     $this->db = $db_name;
+     $this->db = $dbinfo['DBNAME'];
    }
 
    /** Return the hash of a given password string. */
-   private function hashPassword($pw) {
-     return password_hash($pw, PASSWORD_DEFAULT, ['cost' => CORA_PASSWORD_COST]);
+   public static function hashPassword($pw) {
+     return password_hash($pw, PASSWORD_DEFAULT,
+                          ['cost' => Cfg::get('password_cost')]);
    }
 
    /** Verify password.
@@ -78,7 +80,7 @@
      if($data && $this->verifyPassword($pw, $data['password'])) {
        if (password_needs_rehash($data['password'],
                                  PASSWORD_DEFAULT,
-                                 ['cost' => CORA_PASSWORD_COST])) {
+                                 ['cost' => Cfg::get('password_cost')])) {
          $this->changePassword($data['id'], $pw);
        }
        return $data;
@@ -204,24 +206,12 @@
     * This function retrieves all valid tags of a given tagset.
     *
     * @param string $tagset The id of the tagset to be retrieved
-    * @param string $limit String argument containing "none" or "legal",
-    *                 indicating whether tags marked with "needs_revision"
-    *                 should be included or not
     *
     * @return An associative @em array containing the tagset information.
     */
-   public function getTagset($tagset, $limit="none") {
-     $tags = array();
-     $qs  = "SELECT `id`, `value`, `needs_revision` FROM tag "
-       . "    WHERE `tagset_id`=:tagsetid";
-     if($limit=='legal') {
-       $qs .= " AND `needs_revision`=0";
-     }
-     $qs .= " ORDER BY `value`";
-     $stmt = $this->dbo->prepare($qs);
-     $stmt->bindValue(':tagsetid', $tagset, PDO::PARAM_INT);
-     $stmt->execute();
-     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+   public function getTagset($tagset) {
+     $tagset = new TagsetAccessor($this->dbo, $tagset);
+     return array_values($tagset->entries());
    }
 
    /** Fetch all tagsets for a given file.
@@ -247,11 +237,11 @@
     * @param string $tagset The id of the tagset to be retrieved
     */
    public function getTagsetByValue($tagset) {
-     $qs = "SELECT `value`, `id` FROM tag WHERE `tagset_id`=:tagsetid";
-     $stmt = $this->dbo->prepare($qs);
-     $stmt->bindValue(':tagsetid', $tagset, PDO::PARAM_INT);
-     $stmt->execute();
-     return $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+     $tagset = new TagsetAccessor($this->dbo, $tagset);
+     return array_map(
+       function($tag) { return $tag['id']; },
+       $tagset->entries()
+     );
    }
 
    /** Perform a search within a document.
@@ -308,7 +298,7 @@
      if(!empty($user)) { // username already exists
        return false;
      }
-     $hashpw = $this->hashPassword($password);
+     $hashpw = self::hashPassword($password);
      $adm = $admin ? 1 : 0;
      $qs = "INSERT INTO users (name, password, admin) "
        . "  VALUES (:name, :pw, {$adm})";
@@ -327,7 +317,7 @@
     * @return 1 if successful, 0 otherwise
     */
    public function changePassword($uid, $password) {
-     $hashpw = $this->hashPassword($password);
+     $hashpw = self::hashPassword($password);
      $qs = "UPDATE users SET password=:pw WHERE `id`=:uid";
      $stmt = $this->dbo->prepare($qs);
      $stmt->bindValue(':uid', $uid, PDO::PARAM_INT);
@@ -2067,7 +2057,7 @@
   /** Add a list of tags as a new tagset.
    */
   public function importTagList($taglist, $cls, $settype, $name) {
-    $creator = new TagsetCreator($this, $this->dbo, $cls, $settype, $name);
+    $creator = new TagsetCreator($this->dbo, $cls, $settype, $name);
     $creator->addTaglist($taglist);
     if ($creator->hasErrors()) {
       return array('success' => false, 'errors' => $creator->getErrors());
