@@ -4,6 +4,6 @@ set(CORA_DB_DIR "${CMAKE_CURRENT_BINARY_DIR}"
     CACHE INTERNAL "Path to database directory" FORCE)
 
 configure_file(coradb.sql.in "${CORA_DB_DIR}/coradb.sql")
-configure_all_copyonly("${CORA_DB_DIR}/migration"
+configure_all_copyonly("${CORA_DB_DIR}"
   migration/README
 )
