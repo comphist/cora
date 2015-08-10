@@ -1304,23 +1304,8 @@ window.addEvent('domready', function() {
     cora.tagsetEditor.initialize();
     cora.annotatorEditor.initialize();
 
-    $('adminViewCollapseAll').addEvent('click',
-        function(e){
-            e.stop();
-            $$('div#adminDiv .clappable').each(function (clappable) {
-                clappable.addClass('clapp-hidden');
-		clappable.getElement('div').hide();
-            });
-        });
-    $('adminViewExpandAll').addEvent('click',
-        function(e){
-            e.stop();
-            $$('div#adminDiv .clappable').each(function (clappable) {
-                clappable.removeClass('clapp-hidden');
-		clappable.getElement('div').show();
-            });
-        });
-
+    gui.addToggleEventCollapseAll('adminViewCollapseAll', 'div#adminDiv');
+    gui.addToggleEventExpandAll('adminViewExpandAll', 'div#adminDiv');
 });
 
 

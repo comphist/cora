@@ -181,6 +181,41 @@ var gui = {
             }
 	});
     },
+
+    /* Function: addToggleEventCollapseAll
+
+       Enable an element to collapse all clappables when clicked.
+     */
+    addToggleEventCollapseAll: function(activator, region) {
+        $(activator).addEvent(
+            'click',
+            function(e) {
+                e.stop();
+                $$(region + ' .clappable').each(function (clappable) {
+                    clappable.addClass('clapp-hidden');
+                    clappable.getElement('div').hide();
+                });
+            }
+        );
+    },
+
+    /* Function: addToggleEventExpandAll
+
+       Enable an element to expand all clappables when clicked.
+     */
+    addToggleEventExpandAll: function(activator, region) {
+        $(activator).addEvent(
+            'click',
+            function(e) {
+                e.stop();
+                $$(region + ' .clappable').each(function (clappable) {
+                    clappable.removeClass('clapp-hidden');
+                    clappable.getElement('div').show();
+                });
+            }
+        );
+    },
+
     /* Function: _addKeyboardShortcuts
 
        Sets up keyboard shortcuts used within the application.

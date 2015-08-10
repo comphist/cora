@@ -887,24 +887,8 @@ cora.fileManager = {
             e.stop();
             cora.projects.performUpdate();
         });
-        $('fileViewCollapseAll').addEvent(
-            'click',
-            function(e){
-                e.stop();
-                $$('div#files .clappable').each(function (clappable) {
-                    clappable.addClass('clapp-hidden');
-		    clappable.getElement('div').hide();
-                });
-            });
-        $('fileViewExpandAll').addEvent(
-            'click',
-            function(e){
-                e.stop();
-                $$('div#files .clappable').each(function (clappable) {
-                    clappable.removeClass('clapp-hidden');
-		    clappable.getElement('div').show();
-                });
-            });
+        gui.addToggleEventCollapseAll('fileViewCollapseAll', 'div#files');
+        gui.addToggleEventExpandAll('fileViewExpandAll', 'div#files');
     },
 
     /* Function: isFileOpened
