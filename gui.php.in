@@ -92,6 +92,11 @@ function _gui_make_title() {
       <div id="footer">&copy; 2012&mdash;2015 Marcel Bollmann, Florian Petran, Sprachwissenschaftliches Institut, Ruhr-Universität Bochum</div>
     </div>
 
+    <!-- loading screen -->
+    <div id="loading" class="no-print">
+      <span>CorA is loading...</span>
+    </div>
+
     <!-- templates -->
     <?php if($_SESSION['loggedIn']): ?>
     <div class="templateHolder">

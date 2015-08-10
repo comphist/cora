@@ -27,6 +27,7 @@ var cora = {
             startTab: default_tab,
             showNews: true
         });
+        $('loading').hide();
         $('main').show();
         $('menuRight').show();
         $$('#menu ul').setStyle('visibility', 'visible');

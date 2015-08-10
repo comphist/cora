@@ -14,6 +14,7 @@ var gui = {changeTab: function() {}};
     }
     chain.wait(function() {
         $('loginTabButton').set('active', 'true');
+        $('loading').hide();
         $('main').show();
         $$('#menu ul').setStyle('visibility', 'visible');
 

@@ -303,6 +303,19 @@ ol {
     }
 }
 
+#loading {
+    min-width: 40em;
+    width: auto !important;
+    padding-top: 25em;
+    text-align: center;
+
+    span {
+        font-size: 3em;
+        font-weight: bold;
+        text-shadow: 0 2px 2px #cccccc;
+    }
+}
+
 /* Clappables */
 
 div.clappable div {
