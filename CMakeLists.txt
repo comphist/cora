@@ -4,6 +4,7 @@ set(CMAKE_PROJECT_VERSION 1.2)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules")
 
 include(AddSources)
+include(Cat)
 include(ConfigureAll)
 include(SetCurrentWebDir)
 include(SetWithCacheBuster)

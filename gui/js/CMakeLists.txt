@@ -33,11 +33,17 @@ set(
 #########################################################
 
 configure_all_copyonly(
-  "${CORA_CURRENT_WEB_DIR}"
+  "${CONFIGURE_TARGET_DIR}"
   LAB.js
   main.js
   main.login.js
   )
+set(JS_SOURCES_MAIN       LAB.js main.js)
+set(JS_SOURCES_MAIN_LOGIN LAB.js main.login.js)
+if(NOT WITH_MINIFY_JS)
+  cat_multiple("${CORA_CURRENT_WEB_DIR}/main.js"       ${JS_SOURCES_MAIN})
+  cat_multiple("${CORA_CURRENT_WEB_DIR}/main.login.js" ${JS_SOURCES_MAIN_LOGIN})
+endif()
 
 # TODO: can we separate the "plugin" files from CorA proper?
 set(JS_SOURCES_MASTER
@@ -193,11 +199,37 @@ if(WITH_MINIFY_JS)
     DEPENDS ClosureCompiler ${JS_SOURCES_MBOX}
     COMMENT "Compressing mbox.js"
     )
+  add_custom_command(
+    OUTPUT "${CORA_CURRENT_WEB_DIR}/main.js"
+    COMMAND ${Java_JAVA_EXECUTABLE} -jar ${CLOSURE_JAR}
+            --js_output_file "${CORA_CURRENT_WEB_DIR}/main.js"
+            --compilation_level ${CLOSURE_COMPILATION_LEVEL}
+            --warning_level QUIET
+            --third_party
+            ${JS_SOURCES_MAIN}
+    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+    DEPENDS ClosureCompiler ${JS_SOURCES_MAIN}
+    COMMENT "Compressing main.js"
+    )
+  add_custom_command(
+    OUTPUT "${CORA_CURRENT_WEB_DIR}/main.login.js"
+    COMMAND ${Java_JAVA_EXECUTABLE} -jar ${CLOSURE_JAR}
+            --js_output_file "${CORA_CURRENT_WEB_DIR}/main.login.js"
+            --compilation_level ${CLOSURE_COMPILATION_LEVEL}
+            --warning_level QUIET
+            --third_party
+            ${JS_SOURCES_MAIN_LOGIN}
+    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+    DEPENDS ClosureCompiler ${JS_SOURCES_MAIN_LOGIN}
+    COMMENT "Compressing main.login.js"
+    )
   add_custom_target(
     web-minify-js
     DEPENDS "${CORA_CURRENT_WEB_DIR}/master.min.js"
             "${CORA_CURRENT_WEB_DIR}/admin.min.js"
             "${CORA_CURRENT_WEB_DIR}/mbox.min.js"
+            "${CORA_CURRENT_WEB_DIR}/main.js"
+            "${CORA_CURRENT_WEB_DIR}/main.login.js"
     )
   add_dependencies(web web-minify-js)
 endif()

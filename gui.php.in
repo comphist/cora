@@ -65,7 +65,6 @@ function _gui_make_title() {
           }
         ?>
     </script>
-    <script type="text/javascript" src="gui/js/LAB.js"></script>
     <?php $jsMain = ($_SESSION['loggedIn'] ? 'gui/js/main.js' : 'gui/js/main.login.js'); ?>
     <script type="text/javascript" src="<?php echo $jsMain; ?>"></script>
   </head>
