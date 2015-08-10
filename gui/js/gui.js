@@ -120,7 +120,7 @@ var gui = {
     serverNoticeQueue: [],
     serverNoticeShowing: false,
 
-    initialize: function() {
+    initialize: function(options) {
 	this._addKeyboardShortcuts();
 	this.addToggleEvents($$('.clappable'));
 	this._activateKeepalive();
@@ -130,6 +130,16 @@ var gui = {
         if (btn) {
             btn.addEvent('click', this.logout.bind(this));
         }
+
+        if (options.startHidden) {
+            options.startHidden.each(function(tab) {
+                this.hideTabButton(tab);
+            }.bind(this));
+        }
+        if (options.startTab)
+            this.changeTab(options.startTab);
+        if (options.showNews)
+            this.showNews();
     },
 
     /* Function: addToggleEvents
@@ -332,7 +342,7 @@ var gui = {
         return this;
     },
 
-    /* Function: hideTab
+    /* Function: hideTabButton
 
        Hides a tab in the menu.
 

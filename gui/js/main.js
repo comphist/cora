@@ -16,19 +16,20 @@ var cora = {
     }
     chain.wait(function() {
         Locale.use("de-DE");
-        gui.initialize();
-
         cora.settings.initialize();
         cora.tagsets.performUpdate();
         cora.fileImporter.initialize();
         cora.fileManager.initialize();
         cora.projects.onUpdate(cora.fileManager.render.bind(cora.fileManager));
         cora.projects.performUpdate();
-
-        gui.hideTabButton('edit');
-        gui.hideTabButton('search');
-        gui.changeTab(default_tab);
-        gui.showNews();
+        gui.initialize({
+            startHidden: ['edit', 'search', 'admin'],
+            startTab: default_tab,
+            showNews: true
+        });
+        $('main').show();
+        $('menuRight').show();
+        $$('#menu ul').setStyle('visibility', 'visible');
     });
 
     if (userdata.admin) {
@@ -43,6 +44,7 @@ var cora = {
             cora.annotatorEditor.initialize();
             gui.addToggleEventCollapseAll('adminViewCollapseAll', 'div#adminDiv');
             gui.addToggleEventExpandAll('adminViewExpandAll', 'div#adminDiv');
+            gui.showTabButton('admin');
         });
     }
 }());
