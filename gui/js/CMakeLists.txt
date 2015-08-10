@@ -32,6 +32,13 @@ set(
 ## Core JavaScript files
 #########################################################
 
+configure_all_copyonly(
+  "${CORA_CURRENT_WEB_DIR}"
+  LAB.js
+  main.js
+  main.login.js
+  )
+
 # TODO: can we separate the "plugin" files from CorA proper?
 set(JS_SOURCES_MASTER
   request/CoraRequestErrors.js

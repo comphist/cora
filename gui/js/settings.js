@@ -257,11 +257,3 @@ cora.isAdmin = function() {
     var admin = cora.settings.get('admin');
     return (Boolean(admin) && admin !== '0');
 };
-
-// ***********************************************************************
-// ********** DOMREADY BINDINGS ******************************************
-// ***********************************************************************
-
-window.addEvent('domready', function() {
-    cora.settings.initialize();
-});

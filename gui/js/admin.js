@@ -1292,22 +1292,3 @@ cora.initAdminLogging = function(editor) {
         console.log("DataTable: user set progress marker to '"+num+"'");
     });
 };
-
-// ***********************************************************************
-// ********** DOMREADY BINDINGS ******************************************
-// ***********************************************************************
-
-window.addEvent('domready', function() {
-    cora.noticeEditor.initialize();
-    cora.projects.onInit(cora.userEditor.initialize.bind(cora.userEditor));
-    cora.projectEditor.initialize();
-    cora.tagsetEditor.initialize();
-    cora.annotatorEditor.initialize();
-
-    gui.addToggleEventCollapseAll('adminViewCollapseAll', 'div#adminDiv');
-    gui.addToggleEventExpandAll('adminViewExpandAll', 'div#adminDiv');
-});
-
-
-//    var mask = new Mask();
-//    mask.show();

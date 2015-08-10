@@ -1361,15 +1361,8 @@ cora.currentHasTagset = function(cls) {
 };
 
 /*************************************************************************
- ************ DOMREADY BINDINGS ******************************************
+ ************ ONPOPSTATE BINDINGS ****************************************
  *************************************************************************/
-
-window.addEvent('domready', function() {
-    cora.fileImporter.initialize();
-    cora.fileManager.initialize();
-    cora.projects.onUpdate(cora.fileManager.render.bind(cora.fileManager));
-    cora.projects.performUpdate();
-});
 
 /* Make browser back/forward buttons usable (somewhat). */
 window.onpopstate = function(event) {

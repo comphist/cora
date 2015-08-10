@@ -31,7 +31,19 @@ function _gui_make_title() {
     /********************** JavaScript **********************/
     ?>
     <script type="text/javascript">
-        var cora = {strings: {}};
+        var _srcs = {
+          framework: [
+            '@CORA_HREF_JS_MOOTOOLS_CORE@',
+            '@CORA_HREF_JS_MOOTOOLS_MORE@'
+          ],
+          main: [
+            'gui/js/mbox.min.js?abcd',
+            'gui/js/master.min.js'
+          ],
+          admin: [
+            'gui/js/admin.min.js'
+          ]
+        };
         var default_tab = "<?php echo $menu->getDefaultItem(); ?>";
         <?php
           if($_SESSION['loggedIn']) {
@@ -53,100 +65,12 @@ function _gui_make_title() {
           }
         ?>
     </script>
-    <script type="text/javascript" src="@CORA_HREF_JS_MOOTOOLS_CORE@"></script>
-    <script type="text/javascript" src="@CORA_HREF_JS_MOOTOOLS_MORE@"></script>
-    <?php
-      if($_SESSION['loggedIn']) {
-          if(file_exists(dirname(__FILE__) . "/gui/js/mbox.min.js")) {
-              embedJS("gui/js/mbox.min.js", true);
-          } else {
-              embedJS("gui/js/mbox/mBox.Core.js", true);
-              embedJS("gui/js/mbox/mBox.Modal.js", true);
-              embedJS("gui/js/mbox/mBox.Notice.js", true);
-              embedJS("gui/js/mbox/mBox.Modal.Confirm.js", true);
-              embedJS("gui/js/mbox/mBox.Tooltip.js", true);
-              embedJS("gui/js/mbox/mForm.Core.js", true);
-              embedJS("gui/js/mbox/mForm.Submit.js", true);
-              embedJS("gui/js/mbox/mForm.Element.js", true);
-              embedJS("gui/js/mbox/mForm.Element.Select.js", true);
-          }
-
-          if(file_exists(dirname(__FILE__) . "/gui/js/master.min.js")) {
-              embedJS("gui/js/master.min.js", true);
-          } else {
-              embedJS("gui/js/request/CoraRequestErrors.js", true);
-              embedJS("gui/js/request/CoraRequest.js", true);
-              embedJS("gui/js/settings.js", true);
-              embedJS("gui/js/MultiSelect.js", true);
-              embedJS("gui/js/ProgressBar.js", true);
-              // embedJS("gui/js/dragtable_hack.js", true);
-              embedJS("gui/js/iFrameFormRequest.js", true);
-              embedJS("gui/js/Meio.Autocomplete.js", true);
-              embedJS("gui/js/gui.js", true);
-              embedJS("gui/js/tagsets.js", true);
-              embedJS("gui/js/tagsets/Tagset.js", true);
-              embedJS("gui/js/tagsets/SplitClassTagset.js", true);
-              embedJS("gui/js/tagsets/POS.js", true);
-              embedJS("gui/js/tagsets/Norm.js", true);
-              embedJS("gui/js/tagsets/NormBroad.js", true);
-              embedJS("gui/js/tagsets/NormType.js", true);
-              embedJS("gui/js/tagsets/LemmaAutocomplete.js", true);
-              embedJS("gui/js/tagsets/Lemma.js", true);
-              embedJS("gui/js/tagsets/LemmaSugg.js", true);
-              embedJS("gui/js/tagsets/LemmaPOS.js", true);
-              embedJS("gui/js/tagsets/Boundary.js", true);
-              embedJS("gui/js/tagsets/Comment.js", true);
-              embedJS("gui/js/tagsets/TagsetFactory.js", true);
-              embedJS("gui/js/file.js", true);
-              embedJS("gui/js/edit/DataSource.js", true);
-              embedJS("gui/js/edit/DataTableNavigation.js", true);
-              embedJS("gui/js/edit/DataTableProgressBar.js", true);
-              embedJS("gui/js/edit/DataTableDropdownMenu.js", true);
-              embedJS("gui/js/edit/DataTable.js", true);
-              embedJS("gui/js/edit/FlagHandler.js", true);
-              embedJS("gui/js/edit/LineJumper.js", true);
-              embedJS("gui/js/edit/TokenSearcher.js", true);
-              embedJS("gui/js/edit/SearchResults.js", true);
-              embedJS("gui/js/edit/HorizontalTextPreview.js", true);
-              embedJS("gui/js/edit/PageModel.js", true);
-              embedJS("gui/js/edit/EditorModelUndo.js", true);
-              embedJS("gui/js/edit/EditorModel.js", true);
-              embedJS("gui/js/edit.js", true);
-          }
-
-          if($_SESSION['admin']) {
-              if(file_exists(dirname(__FILE__) . "/gui/js/admin.min.js"))
-                  embedJS("gui/js/admin.min.js", true);
-              else {
-                  embedJS("gui/js/datepicker.js", true);
-                  embedJS("gui/js/admin.js", true);
-              }
-          }
-      } else {  // not logged in
-echo <<<NOTLOGGEDIN
-    <script type="text/javascript">
-      var gui = {changeTab: function() {}};
-      var onLoad = function() {
-          $('loginTabButton').set('active', 'true');
-
-          var uri = new URI();
-          if(uri.parsed && uri.parsed.query) {
-              var fid = uri.parsed.query.parseQueryString()["f"];
-              var form = document.getElement('#loginDiv form');
-              if(fid && form) {
-                  form.set('action', form.get('action') + "?f=" + fid);
-              } else {
-                  history.replaceState({}, "", "./");
-              }
-          }
-      };
-    </script>
-NOTLOGGEDIN;
-      }
-    ?>
+    <script type="text/javascript" src="gui/js/LAB.js"></script>
+    <?php $jsMain = ($_SESSION['loggedIn'] ? 'gui/js/main.js' : 'gui/js/main.login.js'); ?>
+    <script type="text/javascript" src="<?php echo $jsMain; ?>"></script>
   </head>
   <?php flush(); ?>
-  <body onload="onLoad();"<?php if($_SESSION['loggedIn']): ?> onbeforeunload="return onBeforeUnload();"<?php endif; ?>>
+  <body <?php if($_SESSION['loggedIn']): ?> onbeforeunload="return onBeforeUnload();"<?php endif; ?>>
     <div id="overlay"></div>
     <div id="spin-overlay"></div>
 
