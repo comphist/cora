@@ -1,10 +1,3 @@
-
-/*************************************************************************
- ************ Global Variables *******************************************
- *************************************************************************/
-
-var debugMode = false;
-
 /*************************************************************************
  ************ Projects and Files *****************************************
  *************************************************************************/
@@ -883,7 +876,35 @@ cora.fileManager = {
                 }
             }.bind(this)
         );
+        this._prepareFileViewEvents();
         this._prepareFileExportEvents();
+    },
+
+    /* Function: _prepareFileViewEvents
+     */
+    _prepareFileViewEvents: function() {
+        $('fileViewRefresh').addEvent('click', function (e) {
+            e.stop();
+            cora.projects.performUpdate();
+        });
+        $('fileViewCollapseAll').addEvent(
+            'click',
+            function(e){
+                e.stop();
+                $$('div#files .clappable').each(function (clappable) {
+                    clappable.addClass('clapp-hidden');
+		    clappable.getElement('div').hide();
+                });
+            });
+        $('fileViewExpandAll').addEvent(
+            'click',
+            function(e){
+                e.stop();
+                $$('div#files .clappable').each(function (clappable) {
+                    clappable.removeClass('clapp-hidden');
+		    clappable.getElement('div').show();
+                });
+            });
     },
 
     /* Function: isFileOpened
@@ -1346,28 +1367,6 @@ window.addEvent('domready', function() {
     cora.fileImporter.initialize();
     cora.fileManager.initialize();
     cora.projects.onUpdate(cora.fileManager.render.bind(cora.fileManager));
-
-    $('fileViewRefresh').addEvent('click', function (e) {
-        e.stop();
-        cora.projects.performUpdate();
-    });
-    $('fileViewCollapseAll').addEvent('click',
-        function(e){
-            e.stop();
-            $$('div#files .clappable').each(function (clappable) {
-                clappable.addClass('clapp-hidden');
-		clappable.getElement('div').hide();
-            });
-        });
-    $('fileViewExpandAll').addEvent('click',
-        function(e){
-            e.stop();
-            $$('div#files .clappable').each(function (clappable) {
-                clappable.removeClass('clapp-hidden');
-		clappable.getElement('div').show();
-            });
-        });
-
     cora.projects.performUpdate();
 
     // Opens a file based on query string or server-side open file
