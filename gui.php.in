@@ -37,11 +37,11 @@ function _gui_make_title() {
             '@CORA_HREF_JS_MOOTOOLS_MORE@'
           ],
           main: [
-            'gui/js/mbox.min.js?abcd',
-            'gui/js/master.min.js'
+            '@CORA_HREF_JS_MBOX@',
+            '@CORA_HREF_JS_MASTER@'
           ],
           admin: [
-            'gui/js/admin.min.js'
+            '@CORA_HREF_JS_ADMIN@'
           ]
         };
         var default_tab = "<?php echo $menu->getDefaultItem(); ?>";

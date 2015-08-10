@@ -80,6 +80,18 @@ set(JS_SOURCES_MASTER
   MultiSelect.js
 )
 
+if(WITH_MINIFY_JS)
+  set_with_cache_buster(
+    CORA_HREF_JS_MASTER "Relative path to main JS file(s)"
+    "${CORA_CURRENT_REL_PATH}/master.min.js" ${JS_SOURCES_MASTER}
+    )
+else()
+  set_list_with_cache_buster(
+    CORA_HREF_JS_MASTER "Relative path to main JS file(s)"
+    "${CORA_CURRENT_REL_PATH}" ${JS_SOURCES_MASTER}
+    )
+endif()
+
 configure_all_copyonly(${CONFIGURE_TARGET_DIR} ${JS_SOURCES_MASTER})
 
 #########################################################
@@ -91,6 +103,18 @@ set(JS_SOURCES_ADMIN
   datepicker.js
   admin.js
 )
+
+if(WITH_MINIFY_JS)
+  set_with_cache_buster(
+    CORA_HREF_JS_ADMIN "Relative path to admin JS file(s)"
+    "${CORA_CURRENT_REL_PATH}/admin.min.js" ${JS_SOURCES_ADMIN}
+    )
+else()
+  set_list_with_cache_buster(
+    CORA_HREF_JS_ADMIN "Relative path to admin JS file(s)"
+    "${CORA_CURRENT_REL_PATH}" ${JS_SOURCES_ADMIN}
+    )
+endif()
 
 configure_all_copyonly(${CONFIGURE_TARGET_DIR} ${JS_SOURCES_ADMIN})
 
@@ -110,6 +134,18 @@ set(JS_SOURCES_MBOX
   mbox/mForm.Element.js
   mbox/mForm.Element.Select.js
 )
+
+if(WITH_MINIFY_JS)
+  set_with_cache_buster(
+    CORA_HREF_JS_MBOX "Relative path to mBox JS file(s)"
+    "${CORA_CURRENT_REL_PATH}/mbox.min.js" ${JS_SOURCES_MBOX}
+    )
+else()
+  set_list_with_cache_buster(
+    CORA_HREF_JS_MBOX "Relative path to mBox JS file(s)"
+    "${CORA_CURRENT_REL_PATH}" ${JS_SOURCES_MBOX}
+    )
+endif()
 
 configure_all_copyonly(${CONFIGURE_TARGET_DIR} ${JS_SOURCES_MBOX})
 
