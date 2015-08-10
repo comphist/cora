@@ -848,6 +848,7 @@ cora.fileManager = {
     initialize: function() {
         this.content = $('files');
         this._prepareEvents();
+        this._autoOpen();
     },
 
     /* Function: _prepareEvents
@@ -889,6 +890,22 @@ cora.fileManager = {
         });
         gui.addToggleEventCollapseAll('fileViewCollapseAll', 'div#files');
         gui.addToggleEventExpandAll('fileViewExpandAll', 'div#files');
+    },
+
+    /* Function: _autoOpen
+
+       Opens a file automatically, if desired, based on URL query string or
+       whether a file is opened on server-side.
+     */
+    _autoOpen: function() {
+        var fid = null;
+        var uri = new URI();
+        if(uri.parsed && uri.parsed.query) {  // ?f=... in query string?
+            fid = uri.parsed.query.parseQueryString()["f"];
+        }
+        fid = fid || cora.settings.get('currentFileId');  // file open on server-side?
+        history.replaceState({}, "", "./");
+        if(fid) this.openFile(fid);
     },
 
     /* Function: isFileOpened
@@ -1352,17 +1369,6 @@ window.addEvent('domready', function() {
     cora.fileManager.initialize();
     cora.projects.onUpdate(cora.fileManager.render.bind(cora.fileManager));
     cora.projects.performUpdate();
-
-    // Opens a file based on query string or server-side open file
-    var fid = null;
-    var uri = new URI();
-    if(uri.parsed && uri.parsed.query) {  // ?f=... in query string?
-        fid = uri.parsed.query.parseQueryString()["f"];
-    }
-    fid = fid || cora.settings.get('currentFileId');  // file open on server-side?
-    history.replaceState({}, "", "./");
-    if(fid)
-        cora.fileManager.openFile(fid);
 });
 
 /* Make browser back/forward buttons usable (somewhat). */
