@@ -100,22 +100,14 @@ SQL;
     return $sql;
   }
 
-  /** Generate SQL string to create data and grants for first-time installation.
-   *
-   * Adds the system user and creates grants for the CorA user on the database.
+  /** Generate SQL string to create necessary user grants.
    */
-  public function generateSQLforFirstTimeInit() {
+  public function generateSQLforGrants() {
     $dbname = $this->dbinfo['DBNAME'];
     $dbuser = $this->dbinfo['USER'];
     $dbhost = $this->dbinfo['HOST'];
     $dbpass = $this->dbinfo['PASSWORD'];
     $sql = <<<SQL
-LOCK TABLES `users` WRITE;
-/*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` ( `id`, `name`, `password`, `admin` ) VALUES ( 1, "system", "", 1 );
-/*!40000 ALTER TABLE `users` ENABLE KEYS */;
-UNLOCK TABLES;
-
 GRANT SELECT,DELETE,UPDATE,INSERT ON {$dbname}.* TO '{$dbuser}'@'{$dbhost}' IDENTIFIED BY '{$dbpass}';
 GRANT CREATE,DROP ON {$dbname}_test.* TO '{$dbuser}_test'@'{$dbhost}' IDENTIFIED BY '{$dbpass}_test';
 GRANT ALL PRIVILEGES ON {$dbname}_test.* TO '{$dbuser}'@'{$dbhost}' IDENTIFIED BY '{$dbpass}';
