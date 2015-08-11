@@ -24,7 +24,7 @@ $rq;   /**< An instance of the RequestHandler object. */
 $dbi = new DBInterface(Cfg::get('dbinfo'));
 $lh = new LocaleHandler();
 $sh = new CoraSessionHandler($dbi, $lh);
-$rq = new RequestHandler($sh);
+$rq = new RequestHandler($sh, $lh);
 
 if ($_SESSION["loggedIn"]) {
   $rq->handleJSONRequest($_GET, $_POST);

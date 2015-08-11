@@ -3,7 +3,6 @@
  * The login page.
  */
 
-$_ = $lh;
 ?>
 
 <div id="loginDiv" class="content">

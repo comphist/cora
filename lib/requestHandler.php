@@ -11,14 +11,18 @@
  */
 class RequestHandler {
   private $sh; /**< Reference to a SessionHandler object. */
+  private $lh;  /**< Reference to a LocaleHandler object. */
 
   /** Create a new RequestHandler.
    *
    * @param SessionHandler $sessionHandler The SessionHandler object
    * that will be used to perform the requests.
+   * @param LocaleHandler $localeHandler The LocaleHandler object
+   * that will be used to localize strings.
    */
-  function __construct($sessionHandler) {
+  function __construct($sessionHandler, $localeHandler) {
     $this->sh = $sessionHandler;
+    $this->lh = $localeHandler;
   }
 
   /** Handle requests sent to index.php.

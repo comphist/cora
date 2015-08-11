@@ -13,9 +13,9 @@
 /* Generate a button for each menu entry */
 foreach( $menu->getItems() as $item ) {
    $tooltipID = $menu->getItemTooltip($item);
-   $tooltip = $lh($tooltipID);
+   $tooltip = $_($tooltipID);
    $transID = $menu->getItemCaption($item);
-   $text = $lh($transID);
+   $text = $_($transID);
 echo <<<MENUITEM
       <li class="tabButton" id="{$item}TabButton" data-trans-title-id="{$tooltipID}" title="{$tooltip}" active="false">
          <a onclick="gui.changeTab('$item');" data-trans-id="{$transID}">$text</a>
@@ -30,7 +30,7 @@ MENUITEM;
 <div id="menuRight">
   <div class="btn-toolbar-dark">
     <span class="btn-toolbar-entry when-file-open-only" id="closeButton"><span class="oi" aria-hidden="true"></span>
-      <span data-trans-id="Toolbar.closeFile"><?= $lh("Toolbar.closeFile"); ?></span>
+      <span data-trans-id="Toolbar.closeFile"><?= $_("Toolbar.closeFile"); ?></span>
     </span>
     <span class="btn-toolbar-entry" id="logoutButton"><span class="oi" data-glyph="account-logout" aria-hidden="true"></span> Logout</span>
   </div>

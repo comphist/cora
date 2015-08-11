@@ -33,8 +33,9 @@ $menu; /**< A Menu object containing the menu items and references to
 /* Initiate session */
 $dbi = new DBInterface(Cfg::get('dbinfo'));
 $lh = new LocaleHandler();
+$_ = $lh;
 $sh = new CoraSessionHandler($dbi, $lh);
-$rq = new RequestHandler($sh);
+$rq = new RequestHandler($sh, $lh);
 $rq->handleRequests($_GET, $_POST);
 
 /* Define site content */
