@@ -4,6 +4,7 @@ function(cat IN_FILE OUT_FILE)
 endfunction()
 
 function(cat_multiple OUT_FILE) # args...
+  file(WRITE ${OUT_FILE} "")
   foreach(IN_FILE ${ARGN})
     cat(${IN_FILE} ${OUT_FILE})
   endforeach()

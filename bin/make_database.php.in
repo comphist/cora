@@ -138,8 +138,9 @@ else { // !$can_connect
   $output = array(
     $installer->generateSQLforDatabaseCreation(),
     file_get_contents($DBPATH."/coradb.sql"),
-    $installer->generateSQLforFirstTimeInit(),
+    file_get_contents($DBPATH."/coradb-data.sql"),
     $installer->generateSQLforAccount($admin),
+    $installer->generateSQLforGrants(),
     $installer->generateSQLforVersionString()
   );
 }

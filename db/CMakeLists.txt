@@ -5,6 +5,7 @@ set(CORA_DB_DIR "${CMAKE_CURRENT_BINARY_DIR}"
 
 configure_file(coradb.sql.in "${CORA_DB_DIR}/coradb.sql")
 configure_all_copyonly("${CORA_DB_DIR}"
+  coradb-data.sql
   migration/README
   migration/revert-1-to-2.sql
 )

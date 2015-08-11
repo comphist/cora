@@ -1292,37 +1292,3 @@ cora.initAdminLogging = function(editor) {
         console.log("DataTable: user set progress marker to '"+num+"'");
     });
 };
-
-// ***********************************************************************
-// ********** DOMREADY BINDINGS ******************************************
-// ***********************************************************************
-
-window.addEvent('domready', function() {
-    cora.noticeEditor.initialize();
-    cora.projects.onInit(cora.userEditor.initialize.bind(cora.userEditor));
-    cora.projectEditor.initialize();
-    cora.tagsetEditor.initialize();
-    cora.annotatorEditor.initialize();
-
-    $('adminViewCollapseAll').addEvent('click',
-        function(e){
-            e.stop();
-            $$('div#adminDiv .clappable').each(function (clappable) {
-                clappable.addClass('clapp-hidden');
-		clappable.getElement('div').hide();
-            });
-        });
-    $('adminViewExpandAll').addEvent('click',
-        function(e){
-            e.stop();
-            $$('div#adminDiv .clappable').each(function (clappable) {
-                clappable.removeClass('clapp-hidden');
-		clappable.getElement('div').show();
-            });
-        });
-
-});
-
-
-//    var mask = new Mask();
-//    mask.show();

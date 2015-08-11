@@ -15,9 +15,9 @@ var gui = {
     currentLocale: null,
     availableLocales: {},
 
-    initialize: function(locale) {
-        if (locale)
-            this.useLocale(locale);
+    initialize: function(options) {
+        if (options.locale)
+            this.useLocale(options.locale);
 
 	this._addKeyboardShortcuts();
 	this.addToggleEvents($$('.clappable'));
@@ -27,6 +27,16 @@ var gui = {
         if (btn) {
             btn.addEvent('click', this.logout.bind(this));
         }
+
+        if (options.startHidden) {
+            options.startHidden.each(function(tab) {
+                this.hideTabButton(tab);
+            }.bind(this));
+        }
+        if (options.startTab)
+            this.changeTab(options.startTab);
+        if (options.showNews)
+            this.showNews();
     },
 
     /* Function: addToggleEvents
@@ -78,6 +88,41 @@ var gui = {
             }
 	});
     },
+
+    /* Function: addToggleEventCollapseAll
+
+       Enable an element to collapse all clappables when clicked.
+     */
+    addToggleEventCollapseAll: function(activator, region) {
+        $(activator).addEvent(
+            'click',
+            function(e) {
+                e.stop();
+                $$(region + ' .clappable').each(function (clappable) {
+                    clappable.addClass('clapp-hidden');
+                    clappable.getElement('div').hide();
+                });
+            }
+        );
+    },
+
+    /* Function: addToggleEventExpandAll
+
+       Enable an element to expand all clappables when clicked.
+     */
+    addToggleEventExpandAll: function(activator, region) {
+        $(activator).addEvent(
+            'click',
+            function(e) {
+                e.stop();
+                $$(region + ' .clappable').each(function (clappable) {
+                    clappable.removeClass('clapp-hidden');
+                    clappable.getElement('div').show();
+                });
+            }
+        );
+    },
+
     /* Function: _addKeyboardShortcuts
 
        Sets up keyboard shortcuts used within the application.
@@ -259,7 +304,7 @@ var gui = {
         return this;
     },
 
-    /* Function: hideTab
+    /* Function: hideTabButton
 
        Hides a tab in the menu.
 
@@ -732,22 +777,3 @@ var gui = {
 
 /** Alias for localization function. */
 var _ = gui.localizeText;
-
-/** Perform initialization. Adds JavaScript events to interactive
- * navigation elements, e.g.\ clappable div containers, and selects
- * the default tab.
- */
-window.addEvent('domready', function() {
-    gui.initialize(cora.settings.get("locale"));
-
-    // default item defined in content.php, variable set in gui.php
-    gui.changeTab(default_tab);
-    gui.showNews();
-});
-
-window.onbeforeunload = function() {
-    if (cora.editor !== null && cora.editor.hasUnsavedChanges()) {
-        cora.editor.save();
-	return ("Es gibt noch ungespeicherte Änderungen, die verloren gehen könnten, wenn Sie fortfahren!");
-    }
-}

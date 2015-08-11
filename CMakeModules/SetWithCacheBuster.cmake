@@ -13,8 +13,6 @@
 # HASHFILE(s) should be relative to CMAKE_CURRENT_SOURCE_DIR.
 
 function(set_with_cache_buster VARNAME DESC PATH HASHFILE)
-  message(STATUS "Generating hash value for ${PATH}")
-
   file(MD5 "${CMAKE_CURRENT_SOURCE_DIR}/${HASHFILE}" HASH)
   if(ARGN)
     set(HASHES "${HASH}")
@@ -25,4 +23,14 @@ function(set_with_cache_buster VARNAME DESC PATH HASHFILE)
     string(MD5 HASH "${HASHES}")
   endif()
   set(${VARNAME} "${PATH}?${HASH}" CACHE INTERNAL "${DESC}" FORCE)
+endfunction()
+
+function(set_list_with_cache_buster VARNAME DESC RELPATH)
+  set(SRCS_WITH_CB "")
+  foreach(_HASHFILE ${ARGN})
+    file(MD5 "${CMAKE_CURRENT_SOURCE_DIR}/${_HASHFILE}" CURRENT_HASH)
+    list(APPEND SRCS_WITH_CB "${RELPATH}/${_HASHFILE}?${CURRENT_HASH}")
+  endforeach()
+  string(REPLACE ";" "','" SRCS "${SRCS_WITH_CB}")
+  set(${VARNAME} "${SRCS}" CACHE INTERNAL "${DESC}" FORCE)
 endfunction()

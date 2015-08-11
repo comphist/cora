@@ -7,8 +7,3 @@
  */
 
 cora.editor = null;
-
-window.addEvent('domready',function(){
-    gui.hideTabButton('edit');
-    gui.hideTabButton('search');
-});
