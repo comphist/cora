@@ -6,6 +6,36 @@ var cora = {
 (function() {
     var idx, len, chain;
 
+    var initialize = function() {
+        Locale.use("de-DE");
+        gui.initialize({
+            startHidden: ['edit', 'search', 'admin'],
+            startTab: default_tab,
+            showNews: true
+        });
+        $$('#menu ul').setStyle('visibility', 'visible');
+        $('main').show();
+        $('loading').hide();
+        $('menuRight').show();
+        cora.fileManager.initialize();
+        cora.projects.onUpdate(cora.fileManager.render.bind(cora.fileManager));
+        cora.projects.performUpdate();
+        cora.settings.initialize();
+        cora.fileImporter.initialize();
+        cora.tagsets.performUpdate();
+    };
+
+    var initialize_admin = function() {
+        cora.noticeEditor.initialize();
+        cora.projects.onInit(cora.userEditor.initialize.bind(cora.userEditor));
+        cora.projectEditor.initialize();
+        cora.tagsetEditor.initialize();
+        cora.annotatorEditor.initialize();
+        gui.addToggleEventCollapseAll('adminViewCollapseAll', 'div#adminDiv');
+        gui.addToggleEventExpandAll('adminViewExpandAll', 'div#adminDiv');
+        gui.showTabButton('admin');
+    };
+
     $LAB.setGlobalDefaults({AlwaysPreserveOrder: true});
     chain = $LAB;
     for (idx = 0, len = _srcs.framework.length; idx < len; ++idx) {
@@ -15,22 +45,10 @@ var cora = {
         chain = chain.script(_srcs.main[idx]);
     }
     chain.wait(function() {
-        Locale.use("de-DE");
-        cora.settings.initialize();
-        cora.tagsets.performUpdate();
-        cora.fileImporter.initialize();
-        cora.fileManager.initialize();
-        cora.projects.onUpdate(cora.fileManager.render.bind(cora.fileManager));
-        cora.projects.performUpdate();
-        gui.initialize({
-            startHidden: ['edit', 'search', 'admin'],
-            startTab: default_tab,
-            showNews: true
-        });
-        $('loading').hide();
-        $('main').show();
-        $('menuRight').show();
-        $$('#menu ul').setStyle('visibility', 'visible');
+        if (document.readyState == "complete")
+            initialize();
+        else
+            window.addEvent('domready', initialize);
     });
 
     if (userdata.admin) {
@@ -38,14 +56,10 @@ var cora = {
             chain = chain.script(_srcs.admin[idx]);
         }
         chain = chain.wait(function() {
-            cora.noticeEditor.initialize();
-            cora.projects.onInit(cora.userEditor.initialize.bind(cora.userEditor));
-            cora.projectEditor.initialize();
-            cora.tagsetEditor.initialize();
-            cora.annotatorEditor.initialize();
-            gui.addToggleEventCollapseAll('adminViewCollapseAll', 'div#adminDiv');
-            gui.addToggleEventExpandAll('adminViewExpandAll', 'div#adminDiv');
-            gui.showTabButton('admin');
+            if (document.readyState == "complete")
+                initialize_admin();
+            else
+                window.addEvent('domready', initialize_admin);
         });
     }
 }());

@@ -7,12 +7,7 @@ var gui = {changeTab: function() {}};
 (function() {
     var idx, len, chain;
 
-    $LAB.setGlobalDefaults({AlwaysPreserveOrder: true});
-    chain = $LAB;
-    for (idx = 0, len = _srcs.framework.length; idx < len; ++idx) {
-        chain = chain.script(_srcs.framework[idx]);
-    }
-    chain.wait(function() {
+    var initialize = function() {
         $('loginTabButton').set('active', 'true');
         $('loading').hide();
         $('main').show();
@@ -28,6 +23,18 @@ var gui = {changeTab: function() {}};
                 history.replaceState({}, "", "./");
             }
         }
+    };
+
+    $LAB.setGlobalDefaults({AlwaysPreserveOrder: true});
+    chain = $LAB;
+    for (idx = 0, len = _srcs.framework.length; idx < len; ++idx) {
+        chain = chain.script(_srcs.framework[idx]);
+    }
+    chain.wait(function() {
+        if (document.readyState == "complete")
+            initialize();
+        else
+            window.addEvent('domready', initialize);
     });
 
     // pre-load the rest anyway, but without the initializing stuff
