@@ -21,6 +21,7 @@ endif()
 
 set(PHP_TESTS
   AutomaticAnnotator_test.php
+  Cfg_test.php
   CoraDocument_test.php
   DBInterface_test.php
   Exporter_test.php
