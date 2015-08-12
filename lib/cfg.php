@@ -65,7 +65,10 @@ class Cfg {
     if (array_key_exists($var, self::$user_options)) {
       return self::$user_options[$var];
     }
-    return self::$default_options[$var];
+    if (array_key_exists($var, self::$default_options)) {
+      return self::$default_options[$var];
+    }
+    return null;
   }
 
   /** Set a configuration variable
