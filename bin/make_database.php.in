@@ -69,24 +69,6 @@ function promptForAdminUser($installer, $admin) {
   return array("user" => $user, "password" => $pass);
 }
 
-function findMigrationPath($from, $to) {
-  global $DBMIGRPATH;
-  $path = array();
-  while ($from != $to) {
-    $prefix = "$DBMIGRPATH/{$from}-to-";
-    $migration = glob("{$prefix}*");
-    if (!$migration) return false;
-    $migration = $migration[0];
-    if (substr($migration, -4) != ".sql") return false;
-    $from = substr($migration, strlen($prefix), -4);
-    $path[] = $migration;
-    if (count($path) > 1000) { // endless loop protection
-      return false;
-    }
-  }
-  return $path;
-}
-
 // Try connecting to the database
 $dbinfo = Cfg::get('dbinfo');
 echo "Connecting to database '{$dbinfo['DBNAME']}'@'{$dbinfo['HOST']}' ";
@@ -104,7 +86,7 @@ if ($can_connect) {
   echo "'$curr_version' (required: '$req_version')\n";
   if ($curr_version != $req_version) {
     echo "Searching for an automatic migration path in '$DBMIGRPATH'...";
-    $path = findMigrationPath($curr_version, $req_version);
+    $path = $installer->findMigrationPath($curr_version, $req_version, $DBMIGRPATH);
     echo "\n";
     if (!$path) {
       echo "Could NOT find an upgrade path from '$curr_version' to '$req_version'\n\n";

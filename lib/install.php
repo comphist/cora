@@ -73,8 +73,30 @@ class InstallHelper {
     return true;
   }
 
-  /** Gets the current database version string.
+  /** Search for SQL files that specify how to migrate from one schema version
+   *  to another.
+   *
+   * @return A list of filenames containing the SQL files for the migration,
+   *    or 'false' if unsuccessful.
    */
+  public function findMigrationPath($from, $to, $filepath) {
+    $path = array();
+    while ($from != $to) {
+      $prefix = "{$filepath}/{$from}-to-";
+      $migration = glob("{$prefix}*");
+      if (!$migration) return false;
+      $migration = $migration[0];
+      if (substr($migration, -4) != ".sql") return false;
+      $from = substr($migration, strlen($prefix), -4);
+      $path[] = $migration;
+      if (count($path) > 1000) { // endless loop protection
+        return false;
+      }
+    }
+    return $path;
+  }
+
+  /** Gets the current database version string.  */
   public function getDBVersion() {
     if (!$this->can_connect) return null;
     $q = $this->dbo->query("SELECT `version` FROM versioning ORDER BY `id` DESC LIMIT 1");
