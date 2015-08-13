@@ -107,17 +107,3 @@ You can use the following switches for CMake to influence the build process:
   to the web browser, and also compresses the data using Closure Compiler.
   **Strongly recommended** for productive use.  Default is ON unless building in
   debug mode.
-
-* `-DCORA_DB_NAME=...` sets the name of the database used by CorA.  Default is
-  'cora'.  This could potentially be changed to run multiple installations of
-  CorA in parallel on the same server.
-
-* `-DCORA_DB_SERVER=...` sets the host of the database used by CorA.  Default is
-  'localhost'.
-
-* `-DCORA_DB_USER=...` sets the name of the database user used by all requests.
-  Default is 'cora'.
-
-* `-DCORA_DB_PASSWORD=...` sets the password for the CorA database user.
-  Default is 'trustthetext'.  (**TODO:** this will potentially change in the
-  future.)

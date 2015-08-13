@@ -13,35 +13,34 @@ return array(
   database instance. */
   "dbinfo" => array(
     /** The database server to connect to. */
-    "HOST" => '@CORA_DB_SERVER@',
+    "HOST" => '127.0.0.1',
     /** The username for database login. */
-    "USER" => '@CORA_DB_USER@',
+    "USER" => 'cora',
     /** The password for database login. */
-    "PASSWORD" => '@CORA_DB_PASSWORD@',
+    "PASSWORD" => 'trustthetext',
     /** The name of the database. */
-    "DBNAME" => '@CORA_DB_NAME@'
+    "DBNAME" => 'cora'
   ),
 
   /** Default interface language for new users. */
-  "default_language" => '@CORA_DEFAULT_LANGUAGE@',
+  "default_language" => 'en-US',
 
   /** Directory to store external parametrizations for automatic annotators
       (e.g., tagger parametrizations that have been learned from certain
       projects. */
-  "external_param_dir" => '@CORA_EXTERNAL_PARAM_DIR@',
+  "external_param_dir" => '/var/lib/cora/',
 
   /** Cost of the password-encryption algorithm. */
   "password_cost" => 12,
 
   /** Options describing this CorA instance. */
   "title" => "CorA",
-  "version" => "1.2",
   "longtitle" => "Corpus Annotator",
   "description" => "A corpus annotation tool for non-standard language varieties.",
   "keywords" => "annotation,corpus,POS",
 
   /** PHP session name; affects cookie name in browser. */
-  "session_name" => 'PHPSESSID_@CORA_INSTANCE_NAME@'
+  "session_name" => 'PHPSESSID_CORA'
 );
 
 ?>
