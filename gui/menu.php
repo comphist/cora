@@ -37,6 +37,7 @@ MENUITEM;
 </div>
 
 <div id="connectionInfo">
-  <p>angemeldet als '<span class="username"><?php echo $_SESSION['user']; ?></span>'<span class="oi connected" data-glyph="pulse" aria-hidden="true"></p>
+  <p>
+  	<span data-trans-id="Menu.loggedInAs"><?= $lh("Menu.loggedInAs"); ?></span> '<span class="username"><?php echo $_SESSION['user']; ?></span>'<span class="oi connected" data-glyph="pulse" aria-hidden="true"></p>
 </div>
 <?php endif; ?>

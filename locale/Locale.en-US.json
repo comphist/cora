@@ -22,7 +22,8 @@
          "help": "Help",
          "helpTooltip": "Information about using CorA",
          "login": "Login",
-         "loginTooltip": "Login to CorA"
+         "loginTooltip": "Login to CorA",
+         "loggedInAs": "logged in as"
      },
      "Toolbar": {
          "closeFile": "Close File"

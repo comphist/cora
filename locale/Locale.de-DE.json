@@ -21,7 +21,8 @@
          "help": "Hilfe",
          "helpTooltip": "Hilfe zur Benutzung von CorA",
          "login": "Anmeldung",
-         "loginTooltip": "In CorA anmelden"
+         "loginTooltip": "In CorA anmelden",
+         "loggedInAs" : "eingeloggt als"
      },
      "Toolbar": {
          "closeFile": "Datei schließen"
