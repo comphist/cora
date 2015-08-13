@@ -51,11 +51,11 @@ installing CorA for the first time, or you are upgrading from an older version
 with a different database schema, you need to make the appropriate changes on
 your MySQL server.
 
-Run `make database` to check if your database needs to be updated, and
-automatically create a script that performs these updates.  On a first time
-installation, this will also ask you for a username and password to be used for
-the first administrator account in CorA.
+Usually, CorA can do this automatically for you: Just navigate to
+`www/db/configure_db.php` in your web browser and follow the instructions on the
+page.
 
+Alternatively, you can run the command-line script `bin/make_database.php`.
 If an update is required, you will find a script `make_coradb.sql` in your build
 directory, which has to be run against the MySQL server instance you're using,
 e.g. by calling:

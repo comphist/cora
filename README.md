@@ -34,16 +34,24 @@ INSTALL.md instead.
 Extract the contents of that package to a local directory, then perform the
 following steps:
 
-1. Check if the configuration options in `www/config.php` are set correctly.
-   This file contains the database credentials, default language, external
-   directories to use, etc.; it comes with sensible default settings and
-   typically includes descriptions for each of them.  If necessary, adjust this
-   file before continuing.
+1. Copy the contents of the `www/` subdirectory to the desired location of your
+   web server.
 
-2. Run `bin/make_database.php` from a terminal and follow the instructions on
-   the screen.
+2. In your web browser, navigate to `db/configure_db.php` in the location
+   where CorA is served by your web server.  If your web server is set up
+   correctly, this page will guide you through the database installation or
+   upgrade process.
 
-3. Copy the contents of the `www/` directory to the desired location of your web
-   server.
+3. Log-in to your CorA instance.  On a first-time installation, use the
+   username "admin" with password "admin".
+
+**IMPORTANT:**
+
++ After the database installation, make sure to **delete the**
+  `db/` **subdirectory from your web server!** Anyone with access to this
+  directory can potentially execute arbitrary commands on your server!
+
++ Make sure to **change the default password** of the "admin" account
+  immediately after you login for the first time.
 
 That's it!
