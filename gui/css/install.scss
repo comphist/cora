@@ -1,0 +1,57 @@
+/***************************************************************************/
+/***** STYLES SPECIFIC TO THE INSTALLER PAGE *******************************/
+/***************************************************************************/
+
+#dbConfDiv {
+  .big {
+    font-weight: 900;
+    font-size: 140%;
+    padding-left: .7em; /* em-based padding is stupid */
+  }
+  .note {
+    font-style: italic;
+    font-size: 90%;
+  }
+  .success {
+    color: green;
+  }
+  .error, .warn {
+    color: red;
+  }
+
+  div.configure-form {
+    font-size: 1.5em;
+    max-width: 55em;
+
+    div.error {
+      padding: .5em;
+      border: 1px solid red;
+      border-radius: 2px;
+    }
+
+    form {
+      padding-top: 1em;
+      p {
+        padding-top: .2em;
+        padding-bottom: .2em;
+      }
+      label {
+        width: 12em;
+      }
+      input[type="submit"] {
+        margin: 1.5em 0 0 2em;
+      }
+    }
+  }
+
+  table.configure-results {
+    td {
+      &.success {
+        font-weight: 600;
+      }
+      &.error {
+        font-weight: 600;
+      }
+    }
+  }
+}

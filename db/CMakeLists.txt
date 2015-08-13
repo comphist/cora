@@ -5,7 +5,6 @@ set(CORA_DB_DIR "${CORA_WEB_DIR}/db"
 
 configure_file(configure_db.php.in "${CORA_DB_DIR}/configure_db.php")
 configure_all_copyonly("${CORA_DB_DIR}"
-  configure_db.js
   coradb.sql
   coradb-data.sql
   migration/README
