@@ -24,6 +24,10 @@
          "login": "Login",
          "loginTooltip": "Login to CorA"
      },
+     "Toolbar": {
+         "closeFile": "Close File"
+     },
+     
      "Forms": {
          "buttonLogin": "Login",
          "msgFailedLogin": "Login failed.  Please check your credentials.",
