@@ -25,11 +25,10 @@ INSTALL.md for details.
 
 ## Installing CorA ##
 
-The easy way to install CorA is to simply download a zip file from
-<https://bitbucket.org/mbollmann/cora/downloads> containing all the required
-files. (**TODO:** there are none available yet.)  If you want to modify parts of
-the source code, run unit tests, etc., you should follow the instructions in
-INSTALL.md instead.
+The easy way to install CorA is to simply
+[download an archive containing a prepared build](https://bitbucket.org/mbollmann/cora/downloads).
+If you want to modify parts of the source code, run unit tests, etc., you should
+follow the instructions in INSTALL.md instead.
 
 Extract the contents of that package to a local directory, then perform the
 following steps:
