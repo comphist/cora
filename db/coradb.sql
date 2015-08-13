@@ -21,7 +21,7 @@ CREATE TABLE `users` (
     `admin` boolean NOT NULL DEFAULT 0,
     `email` varchar(255) DEFAULT NULL,
     `comment` varchar(255) DEFAULT NULL,
-    `locale` varchar(10) DEFAULT "@CORA_DEFAULT_LANGUAGE@",
+    `locale` varchar(10) DEFAULT "en-US",
     `lines_per_page` int(11) NOT NULL DEFAULT 30,
     `lines_context` int(11) NOT NULL DEFAULT 5,
     `columns_order` varchar(255) DEFAULT NULL,
