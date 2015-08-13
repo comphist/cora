@@ -42,7 +42,8 @@ class Cora_Tests_Cfg_test extends PHPUnit_Framework_TestCase {
   public function testSaveUserSettings() {
     Cfg::set("default_language", "xy-XY");
     Cfg::set("longtitle", "My fancy long title");
-    $this->assertGreaterThan(0, Cfg::save_user_opts($this->tmpfile));
+    Cfg::save_user_opts($this->tmpfile);
+    $this->assertTrue(file_exists($this->tmpfile));
     $datafile = file_get_contents($this->tmpfile);
     $this->assertEquals("<?php ", substr($datafile, 0, 6));
     $saved_opts = eval(substr($datafile, 6));

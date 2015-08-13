@@ -46,10 +46,13 @@ class Cfg {
    */
   public static function save_user_opts($filename=null) {
     if ($filename === null) { $filename = self::$user_config_file; }
-    return file_put_contents(
+    $status = file_put_contents(
       $filename,
       '<?php return ' . var_export(self::$user_options, true) . ';'
     );
+    if (!$status) {
+      throw RuntimeException("Couldn't write user configuration to disk.");
+    }
   }
 
   /** Access a configuration variable
