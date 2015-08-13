@@ -21,13 +21,14 @@ CREATE TABLE `users` (
     `admin` boolean NOT NULL DEFAULT 0,
     `email` varchar(255) DEFAULT NULL,
     `comment` varchar(255) DEFAULT NULL,
+    `locale` varchar(10) DEFAULT "en-US",
     `lines_per_page` int(11) NOT NULL DEFAULT 30,
     `lines_context` int(11) NOT NULL DEFAULT 5,
     `columns_order` varchar(255) DEFAULT NULL,
     `columns_hidden` varchar(255) DEFAULT NULL,
     `show_error` boolean NOT NULL DEFAULT 1,
     `text_preview` varchar(255) DEFAULT "utf",
-    `lastactive` timestamp,
+    `lastactive` timestamp DEFAULT 0,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -50,8 +51,8 @@ DROP TABLE IF EXISTS `project`;
 CREATE TABLE `project` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `name` varchar(255) NOT NULL,
-    `cmd_edittoken` varchar(255),
-    `cmd_import` varchar(255),
+    `cmd_edittoken` varchar(255) DEFAULT '',
+    `cmd_import` varchar(255) DEFAULT '',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -109,9 +110,9 @@ DROP TABLE IF EXISTS `comment`;
 CREATE TABLE `comment` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `tok_id` bigint(20) NOT NULL,
-  `value` varchar(255) NOT NULL,
+  `value` varchar(255) DEFAULT '',
   `comment_type` char(1) NOT NULL,
-  `subtok_id` bigint(20),
+  `subtok_id` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `tok_id` (`tok_id`),
   CONSTRAINT `comment_ibfk_1` FOREIGN KEY (`tok_id`) REFERENCES `token` (`id`) ON DELETE CASCADE
@@ -129,8 +130,8 @@ CREATE TABLE `dipl` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `tok_id` bigint(20) NOT NULL,
   `line_id` int(11) NOT NULL,
-  `utf` varchar(255) NOT NULL,
-  `trans` varchar(255) NOT NULL,
+  `utf` varchar(255) DEFAULT '',
+  `trans` varchar(255) DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `tok_id` (`tok_id`),
   KEY `line_id` (`line_id`),
@@ -167,9 +168,9 @@ DROP TABLE IF EXISTS `modern`;
 CREATE TABLE `modern` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `tok_id` bigint(20) NOT NULL,
-  `trans` varchar(255) NOT NULL,
-  `ascii` varchar(255) NOT NULL,
-  `utf` varchar(255) NOT NULL,
+  `trans` varchar(255) DEFAULT '',
+  `ascii` varchar(255) DEFAULT '',
+  `utf` varchar(255) DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `tok_id` (`tok_id`),
   CONSTRAINT `modern_ibfk_1` FOREIGN KEY (`tok_id`) REFERENCES `token` (`id`) ON DELETE CASCADE
@@ -186,7 +187,7 @@ DROP TABLE IF EXISTS `page`;
 CREATE TABLE `page` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `num` int(11) NOT NULL,
-  `name` varchar(16) NOT NULL,
+  `name` varchar(16) DEFAULT '',
   `side` char(1) DEFAULT NULL,
   `text_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
@@ -244,7 +245,7 @@ CREATE TABLE `tag_suggestion` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `score` float DEFAULT NULL,
   `selected` boolean NOT NULL DEFAULT 0,
-  `source` enum('user','auto') NOT NULL,
+  `source` enum('user','auto') NOT NULL DEFAULT 'user',
   `tag_id` bigint(20) NOT NULL,
   `mod_id` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
@@ -287,10 +288,10 @@ CREATE TABLE `text` (
   `project_id` int(11) NOT NULL,
   `created` timestamp DEFAULT CURRENT_TIMESTAMP,
   `creator_id` int(11) NOT NULL,
-  `changed` timestamp,
-  `changer_id` int(11) NOT NULL,
+  `changed` timestamp DEFAULT 0,
+  `changer_id` int(11) DEFAULT NULL,
   `currentmod_id` bigint(20) DEFAULT NULL,
-  `fullfile` text,
+  `fullfile` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `creator_id` (`creator_id`),
   KEY `changer_id` (`changer_id`),
@@ -364,7 +365,7 @@ DROP TABLE IF EXISTS `tagger`;
 
 CREATE TABLE `tagger` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
-    `class_name` varchar(255) NOT NULL,
+    `class_name` varchar(255) DEFAULT '',
     `display_name` varchar(255) NOT NULL,
     `trainable` boolean NOT NULL DEFAULT 0,
     PRIMARY KEY (`id`)
@@ -409,7 +410,7 @@ CREATE TABLE `tagger_options` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `tagger_id` int(11) NOT NULL,
     `opt_key` varchar(255) NOT NULL,
-    `opt_value` varchar(255),
+    `opt_value` varchar(255) DEFAULT NULL,
     PRIMARY KEY (`id`),
     KEY `tagger_id` (`tagger_id`),
     CONSTRAINT `tagger_options_ibfk_1` FOREIGN KEY (`tagger_id`) REFERENCES `tagger` (`id`) ON DELETE CASCADE
