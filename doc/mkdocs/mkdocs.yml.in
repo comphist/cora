@@ -4,7 +4,7 @@ repo_url: https://bitbucket.org/mbollmann/cora/
 theme: readthedocs
 pages:
   - Home: index.md
-  - Installing CorA: setup.md
+  - Installation and Configuration: setup.md
   - Administrating your CorA instance: admin.md
   - Using the web interface: using.md
   - Annotation layers: layers.md

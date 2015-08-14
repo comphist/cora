@@ -18,7 +18,7 @@ To host CorA on your own machine, you need at least the following:
     * json
     * libxml
 
-* MySQL (**TODO:** which version?)
+* MySQL 5.5+ (**TODO:** which version?)
 
 If you plan to build CorA yourself, further dependencies are needed; see
 INSTALL.md for details.
@@ -33,12 +33,11 @@ follow the instructions in INSTALL.md instead.
 Extract the contents of that package to a local directory, then perform the
 following steps:
 
-1. Copy the contents of the `www/` subdirectory to the desired location of your
-   web server.
+1. Copy the contents of the `www/` subdirectory to your web server directory.
 
-2. In your web browser, navigate to `db/configure_db.php` in the location
-   where CorA is served by your web server.  If your web server is set up
-   correctly, this page will guide you through the database installation or
+2. Open your web browser and navigate to `<cora>/db/configure_db.php`, where
+   `<cora>` is the URL of your web server directory.  If your web server is set
+   up correctly, this page will guide you through the database installation or
    upgrade process.
 
 3. Log-in to your CorA instance.  On a first-time installation, use the

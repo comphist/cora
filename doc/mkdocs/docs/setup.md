@@ -1,29 +1,58 @@
-# Installing CorA
+# Installation
 
-At this point, there is no easy way to deploy and install CorA yet.
+Before installation, please make sure your system fulfills the
+[requirements for running CorA](index.md#requirements).
 
-**TODO:** Fill this section with content as soon as a proper deployment process
-  exists for CorA.
+## The easy way
 
-### What must be done to install CorA?
+The easy (and recommended) way to install CorA is to simply
+[download a prepared build][download_url].  Extract the contents of the archive
+to a local directory, then perform the following steps:
 
-+ **Create the main database structure:** this can be done by executing the
-    MySQL script `coradb.sql` that is part of the repository.
+1. Copy the contents of the `www/` subdirectory to your web server directory.
 
-+ **Create the first admin user** so he/she can log in to the web interface;
-  AFAIK there is currently no way to do that outside the MySQL console!
+2. Open your web browser and navigate to `<cora>/db/configure_db.php`, where
+   `<cora>` is the URL of your web server directory.  If your web server is set
+   up correctly, this page will guide you through the database installation.
 
-+ **Set passwords for the database users;** currently hardcoded in `globals.php`
-  and `coradb.sql`.
+3. If the database installation succeeded, you can now login to your CorA
+   instance.  On a first-time installation, use the username *"admin"* with
+   password *"admin"* to login, but **make sure to change this password** when
+   you login for the first time.
 
-+ **Configure variables** such as the database server (if it's not `localhost`)
-    or the directory for parameter files (currently `/var/lib/cora`).
+You can follow the same process when updating to a newer version of CorA.
+Copying the files from an archive will *not* reset any configuration options
+you've set, and the `db/configure_db.php` page is capable of upgrading your
+database to a newer version, if needed.
 
-+ **Compress JavaScript/CSS files** in a similar fashion to the current
-  `bin/compress.sh` (which contains hardcoded paths and no error handling)
+**IMPORTANT:** You should make absolutely sure that no-one except you can access
+  the `db/` subdirectory.  Anyone with access to this directory can potentially
+  **execute arbitrary commands** on your server!  We recommend setting very
+  restrictive access permissions in your web server while you install CorA, and
+  deleting the `db/` directory afterwards since it is no longer needed.
 
-+ **Run unit tests.** Not strictly necessary of course, but should probably be
-  part of an automatic deployment process.
+## The hard way
 
-+ **Copy files to a web server directory;** note that not all files should be
-  copied, e.g. the `bin/` or `tests/` directories.
+If you'd like to modify any part of the CorA source code, run the unit tests, or
+build the API documentation, you need to
+[clone the git repository][git_repo] on your local
+machine.  CorA uses [CMake](http://www.cmake.org/) to automate the necessary
+tasks.  This process is described in more detail in the `INSTALL.md` file in the
+repository.
+
+
+# Configuration
+
+General configuration options of CorA are stored in PHP files in the web
+directory.  `config.defaults.php` contains a list of all possible configuration
+options along with their default settings.  This file should *not* be modified
+directly; instead, create or modify `config.php` and override any of the options
+as you see fit.
+
+Be aware that these configuration files **contain sensitive information** such
+as the database password used by CorA.  Setting restrictive permissions on these
+files is therefore recommended.
+
+
+[git_repo]: https://bitbucket.org/mbollmann/cora/
+[download_url]: https://bitbucket.org/mbollmann/cora/downloads

@@ -21,11 +21,11 @@ and [administrating](admin.md) the tool.
 To run your own instance of CorA on a server machine, you need:
 
 * A web server, such as [Apache](http://httpd.apache.org/)
-* [PHP 5.3](http://www.php.net/) or higher, with the following extensions:
+* [PHP 5.3](http://www.php.net/) or newer, with the following extensions:
     * dom
     * json
     * libxml
-* [MySQL](http://www.mysql.com/)
+* [MySQL 5.5](http://www.mysql.com/) or newer
 
 To access an existing CorA instance on a web server, you only need:
 
