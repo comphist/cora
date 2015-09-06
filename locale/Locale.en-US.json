@@ -34,6 +34,37 @@
          "msgFailedLogin": "Login failed.  Please check your credentials.",
          "password": "Password",
          "username": "Username"
+     },
+     "SettingsTab": {
+        "language" : "Language",
+        "changePassword" : "Change password...",
+        "numberOfLines" : "Number of lines",
+        "linesPerPage" : "Lines per page:",
+        "overlappingLines" : "Overlapping lines:",
+        "applyLineSettings" : "Apply line settings",
+        "visibleCols" : "Columns to display",
+        "horizontalPreview" : "Horizontal preview",
+        "turnOff" : "Off",
+        "editSupport" : "Editing support",
+        "highlightErrorTags" : "Highlight erroneous tags",
+        "editorLanguage" : {
+            "english" : "English",
+            "german" : "German"
+        },
+        "columnOptions" : {
+            "lineNo" : "Line number",
+            "transTok" : "Token (Trans)",
+            "utfTok" : "Token (UTF)",
+            "norm" : "Normalization",
+            "mod" : "Modernization",
+            "modType" : "Modernization type",
+            "pos" : "POS tag",
+            "morph" : "Morphology tag",
+            "lemma" : "Lemma",
+            "lemmaLink" : "Lemma link",
+            "lemmaTag" : "Lemma tag",
+            "comment" : "Comment"
+        }
      }
  }
 }
