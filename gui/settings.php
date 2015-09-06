@@ -8,64 +8,154 @@
 <div id="settingsDiv" class="content">
   <div class="panel">
     <div class="btn-toolbar">
-      <span class="btn-toolbar-entry" id="changePasswordLink">Passwort ändern...</span>
+      <span class="btn-toolbar-entry" id="changePasswordLink">
+        <span data-trans-id="SettingsTab.changePassword">
+          <?=$lh("SettingsTab.changePassword"); ?>
+        </span>
+      </span>
     </div>
 
     <div>
       <div id="editorLanguageSettings">
-        <h4>Sprache</h4>
+        <h4>
+          <span data-trans-id="SettingsTab.language">
+            <?=$lh("SettingsTab.language");?>
+          </span>
+        </h4>
         <p>
-          <input type="radio" name="language" value="en-US" id="lang_en" /><label for="lang_en">Englisch</label>
-          <input type="radio" name="language" value="de-DE" id="lang_de" /><label for="lang_de">Deutsch</label>
+          <input type="radio" name="language" value="en-US" id="lang_en" />
+          <label for="lang_en">
+            <span data-trans-id="SettingsTab.editorLanguage.english">
+              <?=$lh("SettingsTab.editorLanguage.english");?>
+            </span>
+          </label>
+          <input type="radio" name="language" value="de-DE" id="lang_de" />
+          <label for="lang_de">
+            <span data-trans-id="SettingsTab.editorLanguage.german">
+            <?=$lh("SettingsTab.editorLanguage.german");?>
+            </span>
+          </label>
         </p>
       </div>
 
       <div id="editorSettingsNumberOfLines">
-        <h4>Zeilenanzahl</h4>
+        <h4>
+          <span data-trans-id="SettingsTab.numberOfLines">
+            <?=$lh("SettingsTab.numberOfLines"); ?>
+          </span>
+          
+        </h4>
         <form action="request.php" id="editLineSettings" method="get" accept-charset="utf-8">
           <p>
-            <label for="noPageLines">Zeilen pro Seite:</label>
+            <label for="noPageLines">
+              <span data-trans-id="SettingsTab.linesPerPage">
+                <?=$lh("SettingsTab.linesPerPage"); ?>
+              </span>
+              
+
+            </label>
             <input type="text" name="noPageLines" value="<?php echo $_SESSION['noPageLines'];?>" size="2" maxlength="3" data-number="" />
           </p>
           <p>
-            <label for="contextLines">Überlappende Zeilen:</label>
+            <label for="contextLines">
+              <span data-trans-id="SettingsTab.overlappingLines">
+                <?=$lh("SettingsTab.overlappingLines"); ?>
+              </span>
+
+            </label>
             <input type="text" name="contextLines" value="<?php echo $_SESSION['contextLines'];?>" size="2" maxlength="2" data-number="" />
           </p>
-          <p><input type="submit" value="Zeilen-Einstellungen übernehmen" /></p>
+          <p>
+            <input type="submit" value="Zeilen-Einstellungen übernehmen" />
+          </p>
         </form>
       </div>
 
       <div id="editorSettingsHiddenColumns">
-        <h4>Sichtbare Spalten</h4>
+        <h4 data-trans-id="SettingsTab.visibleCols">
+          <?=$lh("SettingsTab.visibleCols"); ?>
+        </h4>
         <p>
-          <input type="checkbox" name="displayedColumns" id="eshc-tokenid" value="tokenid" checked="yes" /><label for="eshc-tokenid">Zeilennummer</label>
-          <input type="checkbox" name="displayedColumns" id="eshc-tok_trans" value="tok_trans" checked="yes" /><label for="eshc-tok_trans">Token (Trans)</label>
-          <input type="checkbox" name="displayedColumns" id="eshc-token" value="token" checked="yes" /><label for="eshc-token">Token (UTF)</label>
-          <input type="checkbox" name="displayedColumns" id="eshc-norm" value="norm" checked="yes" /><label for="eshc-norm">Normalisierung</label>
-          <input type="checkbox" name="displayedColumns" id="eshc-norm_broad" value="norm_broad" checked="yes" /><label for="eshc-norm_broad">Modernisierung</label>
-          <input type="checkbox" name="displayedColumns" id="eshc-norm_type" value="norm_type" checked="yes" /><label for="eshc-norm_type">Modernisierungstyp</label>
-          <input type="checkbox" name="displayedColumns" id="eshc-pos" value="pos" checked="yes" /><label for="eshc-pos">POS-Tag</label>
-          <input type="checkbox" name="displayedColumns" id="eshc-morph" value="morph" checked="yes" /><label for="eshc-morph">Morphologie-Tag</label>
-          <input type="checkbox" name="displayedColumns" id="eshc-lemma" value="lemma" checked="yes" /><label for="eshc-lemma">Lemma</label>
-          <input type="checkbox" name="displayedColumns" id="eshc-lemma_sugg" value="lemma_sugg" checked="yes" /><label for="eshc-lemma_sugg">Lemma-Link</label>
-          <input type="checkbox" name="displayedColumns" id="eshc-lemmapos" value="lemmapos" checked="yes" /><label for="eshc-lemmapos">Lemma-Tag</label>
-          <input type="checkbox" name="displayedColumns" id="eshc-comment" value="comment" checked="yes" /><label for="eshc-comment">Kommentar</label>
+          <input type="checkbox" name="displayedColumns" id="eshc-tokenid" value="tokenid" checked="yes" />
+            <label for="eshc-tokenid" data-trans-id="SettingsTab.columnOptions.lineNo">
+              <?=$lh("SettingsTab.columnOptions.lineNo"); ?>
+            </label>
+          <input type="checkbox" name="displayedColumns" id="eshc-tok_trans" value="tok_trans" checked="yes" />
+            <label for="eshc-tok_trans" data-trans-id="SettingsTab.columnOptions.transTok">
+              <?=$lh("SettingsTab.columnOptions.transTok"); ?>
+            </label>
+          <input type="checkbox" name="displayedColumns" id="eshc-token" value="token" checked="yes" />
+            <label for="eshc-token" data-trans-id="SettingsTab.columnOptions.utfTok">
+              <?=$lh("SettingsTab.columnOptions.utfTok"); ?>
+            </label>
+          <input type="checkbox" name="displayedColumns" id="eshc-norm" value="norm" checked="yes" />
+            <label for="eshc-norm" data-trans-id="SettingsTab.columnOptions.norm">
+              <?=$lh("SettingsTab.columnOptions.norm"); ?>
+            </label>
+          <input type="checkbox" name="displayedColumns" id="eshc-norm_broad" value="norm_broad" checked="yes" />
+            <label for="eshc-norm_broad" data-trans-id="SettingsTab.columnOptions.mod">
+              <?=$lh("SettingsTab.columnOptions.mod"); ?>
+            </label>
+          <input type="checkbox" name="displayedColumns" id="eshc-norm_type" value="norm_type" checked="yes" />
+            <label for="eshc-norm_type" data-trans-id="SettingsTab.columnOptions.modType">
+              <?=$lh("SettingsTab.columnOptions.modType"); ?>
+            </label>
+          <input type="checkbox" name="displayedColumns" id="eshc-pos" value="pos" checked="yes" />
+            <label for="eshc-pos" data-trans-id="SettingsTab.columnOptions.pos">
+              <?=$lh("SettingsTab.columnOptions.pos"); ?>
+            </label>
+          <input type="checkbox" name="displayedColumns" id="eshc-morph" value="morph" checked="yes" />
+            <label for="eshc-morph" data-trans-id="SettingsTab.columnOptions.morph">
+              <?=$lh("SettingsTab.columnOptions.morph"); ?>
+            </label>
+          <input type="checkbox" name="displayedColumns" id="eshc-lemma" value="lemma" checked="yes" />
+            <label for="eshc-lemma" data-trans-id="SettingsTab.columnOptions.lemma">
+              <?=$lh("SettingsTab.columnOptions.lemma"); ?>
+            </label>
+          <input type="checkbox" name="displayedColumns" id="eshc-lemma_sugg" value="lemma_sugg" checked="yes" />
+            <label for="eshc-lemma_sugg" data-trans-id="SettingsTab.columnOptions.lemmaLink">
+              <?=$lh("SettingsTab.columnOptions.lemmaLink"); ?>
+            </label>
+          <input type="checkbox" name="displayedColumns" id="eshc-lemmapos" value="lemmapos" checked="yes" />
+            <label for="eshc-lemmapos" data-trans-id="SettingsTab.columnOptions.lemmaTag">
+              <?=$lh("SettingsTab.columnOptions.lemmaTag"); ?>
+            </label>
+          <input type="checkbox" name="displayedColumns" id="eshc-comment" value="comment" checked="yes" />
+            <label for="eshc-comment" data-trans-id="SettingsTab.columnOptions.comment">
+              <?=$lh("SettingsTab.columnOptions.comment"); ?>
+            </label>
         </p>
       </div>
 
       <div id="editorSettingsTextPreview">
-        <h4>Horizontale Textvorschau</h4>
+        <h4 data-trans-id="SettingsTab.horizontalPreview">
+          <?=$lh("SettingsTab.horizontalPreview"); ?>
+        </h4>
         <p>
-          <input type="radio" name="es_text_preview" value="off" id="estp-off" /><label for="estp-off">Aus</label>
-          <input type="radio" name="es_text_preview" value="trans" id="estp-trans" /><label for="estp-trans">Token (Trans)</label>
-          <input type="radio" name="es_text_preview" value="utf" id="estp-utf" /><label for="estp-utf">Token (UTF)</label>
+          <input type="radio" name="es_text_preview" value="off" id="estp-off" />
+            <label for="estp-off" data-trans-id="SettingsTab.turnOff">
+              <?=$lh("SettingsTab.turnOff"); ?>
+            </label>
+          <input type="radio" name="es_text_preview" value="trans" id="estp-trans" />
+            <label for="estp-trans" data-trans-id="SettingsTab.columnOptions.transTok">
+              <?=$lh("SettingsTab.columnOptions.transTok"); ?>
+            </label>
+          <input type="radio" name="es_text_preview" value="utf" id="estp-utf" />
+            <label for="estp-utf" data-trans-id="SettingsTab.columnOptions.utfTok">
+              <?=$lh("SettingsTab.columnOptions.utfTok"); ?>
+            </label>
         </p>
       </div>
 
       <div id="editorSettingsInputAids">
-        <h4>Editierhilfen</h4>
+        <h4 data-trans-id="SettingsTab.editSupport">
+          <?=$lh("SettingsTab.editSupport"); ?>
+        </h4>
         <p>
-          <input type="checkbox" name="show_error" value="show_error" checked="yes" id="esia-showerror" /><label for="esia-showerror">Fehlerhafte Tags hervorheben</label>
+          <input type="checkbox" name="show_error" value="show_error" checked="yes" id="esia-showerror" />
+            <label for="esia-showerror" data-trans-id="SettingsTab.highlightErrorTags">
+              <?=$lh("SettingsTab.highlightErrorTags"); ?>
+            </label>
         </p>
       </div>
     </div>
