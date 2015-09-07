@@ -25,6 +25,7 @@ set(PHP_TESTS
   CoraDocument_test.php
   DBInterface_test.php
   DocumentAccessor_test.php
+  DocumentCreator_test.php
   Exporter_test.php
   Menu_test.php
   TagsetAccessor_test.php
@@ -35,7 +36,7 @@ if(DEBUG_MODE)
 endif()
 
 configure_file(phpunit.xml.in "${CMAKE_CURRENT_BINARY_DIR}/phpunit.xml" @ONLY)
-configure_all_copyonly("${CMAKE_CURRENT_BINARY_DIR}" ${PHP_TESTS} DB_fixture.php)
+configure_all_copyonly("${CMAKE_CURRENT_BINARY_DIR}" ${PHP_TESTS} DB_fixture.php DocumentAccessor_mocks.php)
 file(COPY data DESTINATION .)
 
 #########################################################

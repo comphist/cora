@@ -1,18 +1,7 @@
 <?php
 require_once 'DB_fixture.php';
+require_once 'DocumentAccessor_mocks.php';
 require_once "{$GLOBALS['CORA_WEB_DIR']}/lib/connect/DocumentAccessor.php";
-
-class Cora_Tests_DBInterface_Mock {
-  public function getTagsetsForFile($fileid) {
-    if ($fileid == 3) {
-      return array(
-        array('id' => 1, 'name' => 'ImportTest', 'class' => 'pos', 'set_type' => 'closed'),
-        array('id' => 2, 'name' => 'NormTest', 'class' => 'norm', 'set_type' => 'open'),
-        array('id' => 3, 'name' => 'LemmaTest', 'class' => 'lemma', 'set_type' => 'open')
-      );
-    }
-  }
-}
 
 class Cora_Tests_DocumentAccessor_test extends Cora_Tests_DbTestCase {
   private $dbo;
