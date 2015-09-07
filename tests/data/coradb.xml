@@ -3646,6 +3646,14 @@
                 <field name="tag_id">218</field>
                 <field name="mod_id">8</field>
         </row>
+	<row>
+		<field name="id">12</field>
+		<field name="score" xsi:nil="true"/>
+		<field name="selected">0</field>
+		<field name="source">auto</field>
+		<field name="tag_id">513</field>
+		<field name="mod_id">5</field>
+	</row>
 	</table_data>
 </database>
 </mysqldump>
