@@ -79,7 +79,7 @@ class DocumentAccessor {
    **********************************************/
 
   private function prepare_isValidModID() {
-    $stmt = "SELECT modern.id FROM modern "
+    $stmt = "SELECT COUNT(*) FROM modern "
       . " LEFT JOIN token     ON   modern.tok_id=token.id "
       . " LEFT JOIN text      ON   token.text_id=text.id "
       . "     WHERE text.id={$this->fileid} "
@@ -98,7 +98,8 @@ class DocumentAccessor {
   }
 
   private function prepare_getCoraComment() {
-    $stmt = "SELECT modern.id, comment.id AS comment_id, token.id AS token_id"
+    $stmt = "SELECT modern.id, comment.id AS comment_id, "
+      . "           comment.value AS value, token.id AS token_id"
       . "      FROM modern"
       . " LEFT JOIN token   ON modern.tok_id=token.id"
       . " LEFT JOIN comment ON comment.tok_id=token.id"
@@ -116,7 +117,7 @@ class DocumentAccessor {
    */
   public function isValidModID($modid) {
     $this->stmt_isValidModID->execute(array($modid));
-    return $this->stmt_isValidModID->fetch();
+    return ($this->stmt_isValidModID->fetchColumn() == 1);
   }
 
   /** Retrieve selected annotations for a given mod ID.

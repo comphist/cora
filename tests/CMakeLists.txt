@@ -24,14 +24,15 @@ set(PHP_TESTS
   Cfg_test.php
   CoraDocument_test.php
   DBInterface_test.php
+  DocumentAccessor_test.php
   Exporter_test.php
   Menu_test.php
   TagsetAccessor_test.php
   XMLHandler_test.php
 )
-#if(DEBUG_MODE)
-#  list(APPEND PHP_TESTS DBInterface_Expensive_test.php)
-#endif()
+if(DEBUG_MODE)
+  list(APPEND PHP_TESTS DBInterface_Expensive_test.php)
+endif()
 
 configure_file(phpunit.xml.in "${CMAKE_CURRENT_BINARY_DIR}/phpunit.xml" @ONLY)
 configure_all_copyonly("${CMAKE_CURRENT_BINARY_DIR}" ${PHP_TESTS} DB_fixture.php)
