@@ -77,7 +77,7 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
 
     protected function setUp() {
       $dbinfo = array(
-        'HOST' => 'localhost',
+        'HOST' => $GLOBALS["DB_HOST"],
         'USER' => $GLOBALS["DB_USER"],
         'PASSWORD' => $GLOBALS["DB_PASSWD"],
         'DBNAME' => $GLOBALS["DB_DBNAME"]

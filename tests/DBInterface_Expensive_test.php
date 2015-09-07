@@ -24,7 +24,7 @@ class Cora_Tests_DBInterface_FK_test extends Cora_Tests_DbTestCase_FKAware {
 
     protected function setUp() {
       $dbinfo = array(
-        'HOST' => 'localhost',
+        'HOST' => $GLOBALS["DB_HOST"],
         'USER' => $GLOBALS["DB_USER"],
         'PASSWORD' => $GLOBALS["DB_PASSWD"],
         'DBNAME' => $GLOBALS["DB_DBNAME"]

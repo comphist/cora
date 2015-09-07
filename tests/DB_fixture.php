@@ -9,10 +9,11 @@ $dbinfo = Cfg::get('dbinfo');
 $testsuffix = Cfg::get('test_suffix');
 $GLOBALS['DB_USER'] = $dbinfo['USER'];
 $GLOBALS['DB_PASSWD'] = $dbinfo['PASSWORD'];
+$GLOBALS['DB_HOST'] = $dbinfo['HOST'];
 $GLOBALS['DB_DBNAME'] = "{$dbinfo['DBNAME']}_{$testsuffix}";
 $GLOBALS['DB_ROOTUSER'] = "{$dbinfo['USER']}_{$testsuffix}";
 $GLOBALS['DB_ROOTPW'] = "{$dbinfo['PASSWORD']}_{$testsuffix}";
-$GLOBALS['DB_DSN'] = "mysql:dbname={$GLOBALS['DB_DBNAME']};host={$dbinfo['HOST']}";
+$GLOBALS['DB_DSN'] = "mysql:dbname={$GLOBALS['DB_DBNAME']};host={$GLOBALS['DB_HOST']}";
 
 /** Base class for all Database Related Tests
  *
