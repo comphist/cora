@@ -158,11 +158,9 @@ class DocumentReader extends DocumentAccessor {
     return $this->stmt_getDiplLayoutInfo->fetch(PDO::FETCH_ASSOC);
   }
 
-  /** Retrieve layout information for a given token.
+  /** Retrieve all annotations for a given token.
    *
    * @param int $tokid ID of the token
-   * @return an @em array with layout information for the first dipl
-   *         of the given token
    */
   public function getAllAnnotations($modid) {
     $this->stmt_getAllAnnotations->execute(array(':modid' => $modid));
