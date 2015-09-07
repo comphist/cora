@@ -49,7 +49,10 @@ return array(
   "keywords" => "annotation,corpus,POS",
 
   /** PHP session name; affects cookie name in browser. */
-  "session_name" => 'PHPSESSID_CORA'
+  "session_name" => 'PHPSESSID_CORA',
+
+  /** Suffix for database user/password/name used for unit tests. */
+  "test_suffix" => "test"
 );
 
 ?>

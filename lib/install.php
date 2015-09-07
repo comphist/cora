@@ -234,10 +234,11 @@ SQL;
     $dbuser = $this->dbinfo['USER'];
     $dbhost = $this->dbinfo['HOST'];
     $dbpass = $this->dbinfo['PASSWORD'];
+    $test = Cfg::get('test_suffix');
     $sql = <<<SQL
 GRANT SELECT,DELETE,UPDATE,INSERT ON {$dbname}.* TO '{$dbuser}'@'{$dbhost}' IDENTIFIED BY '{$dbpass}';
-GRANT CREATE,DROP ON {$dbname}_test.* TO '{$dbuser}_test'@'{$dbhost}' IDENTIFIED BY '{$dbpass}_test';
-GRANT ALL PRIVILEGES ON {$dbname}_test.* TO '{$dbuser}'@'{$dbhost}' IDENTIFIED BY '{$dbpass}';
+GRANT CREATE,DROP ON {$dbname}_{$test}.* TO '{$dbuser}_{$test}'@'{$dbhost}' IDENTIFIED BY '{$dbpass}_{$test}';
+GRANT ALL PRIVILEGES ON {$dbname}_{$test}.* TO '{$dbuser}'@'{$dbhost}' IDENTIFIED BY '{$dbpass}';
 
 SQL;
     return $sql;
