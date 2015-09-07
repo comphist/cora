@@ -227,20 +227,34 @@ SQL;
     return $sql;
   }
 
+  /** Helper function to generate SQL string to create necessary user grants.
+   */
+  private function generateSQLforGrants_with($dbname, $dbuser, $dbpass, $thishost) {
+    $test = Cfg::get('test_suffix');
+    $sql = <<<SQL
+GRANT SELECT,DELETE,UPDATE,INSERT ON {$dbname}.* TO '{$dbuser}'@'{$thishost}' IDENTIFIED BY '{$dbpass}';
+GRANT CREATE,DROP,REFERENCES ON {$dbname}_{$test}.* TO '{$dbuser}_{$test}'@'{$thishost}' IDENTIFIED BY '{$dbpass}_{$test}';
+GRANT ALL PRIVILEGES ON {$dbname}_{$test}.* TO '{$dbuser}'@'{$thishost}' IDENTIFIED BY '{$dbpass}';
+
+SQL;
+    return $sql;
+  }
+
   /** Generate SQL string to create necessary user grants.
    */
   public function generateSQLforGrants() {
     $dbname = $this->dbinfo['DBNAME'];
     $dbuser = $this->dbinfo['USER'];
-    $dbhost = $this->dbinfo['HOST'];
     $dbpass = $this->dbinfo['PASSWORD'];
-    $test = Cfg::get('test_suffix');
-    $sql = <<<SQL
-GRANT SELECT,DELETE,UPDATE,INSERT ON {$dbname}.* TO '{$dbuser}'@'{$dbhost}' IDENTIFIED BY '{$dbpass}';
-GRANT CREATE,DROP ON {$dbname}_{$test}.* TO '{$dbuser}_{$test}'@'{$dbhost}' IDENTIFIED BY '{$dbpass}_{$test}';
-GRANT ALL PRIVILEGES ON {$dbname}_{$test}.* TO '{$dbuser}'@'{$dbhost}' IDENTIFIED BY '{$dbpass}';
-
-SQL;
+    if ($this->dbinfo['HOST'] === '127.0.0.1' || $this->dbinfo['HOST'] === 'localhost') {
+      $thishost = $this->dbinfo['HOST'];
+    } else {
+      $thishost = gethostname();
+    }
+    $sql = $this->generateSQLforGrants_with($dbname, $dbuser, $dbpass, $thishost);
+    if ($thishost !== 'localhost') {
+      $sql .= $this->generateSQLforGrants_with($dbname, $dbuser, $dbpass, 'localhost');
+    }
     return $sql;
   }
 
