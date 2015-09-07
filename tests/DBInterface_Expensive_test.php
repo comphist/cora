@@ -1,7 +1,7 @@
 <?php
 require_once"DB_fixture.php";
 
-require_once"@CORA_WEB_DIR@/lib/connect.php";
+require_once"{$GLOBALS['CORA_WEB_DIR']}/lib/connect.php";
 
 /** tests for DBInterface that need foreign keys.
  *

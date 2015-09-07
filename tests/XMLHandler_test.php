@@ -1,7 +1,6 @@
 <?php
 require_once"data/test_data.php";
-
-require_once"@CORA_WEB_DIR@/lib/xmlHandler.php";
+require_once"{$GLOBALS['CORA_WEB_DIR']}/lib/xmlHandler.php";
 
 /**
  *

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit>
     <php>
+        <var name="CORA_WEB_DIR" value="@CORA_WEB_DIR@"/>
         <var name="MYSQL_EXEC" value="@MYSQL_EXECUTABLE@"/>
     </php>
     <testsuites>

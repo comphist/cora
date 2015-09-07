@@ -33,7 +33,8 @@ set(PHP_TESTS
 #  list(APPEND PHP_TESTS DBInterface_Expensive_test.php)
 #endif()
 
-configure_all("${CMAKE_CURRENT_BINARY_DIR}" ${PHP_TESTS} phpunit.xml DB_fixture.php)
+configure_file(phpunit.xml.in "${CMAKE_CURRENT_BINARY_DIR}/phpunit.xml" @ONLY)
+configure_all_copyonly("${CMAKE_CURRENT_BINARY_DIR}" ${PHP_TESTS} DB_fixture.php)
 file(COPY data DESTINATION .)
 
 #########################################################

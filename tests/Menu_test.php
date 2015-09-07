@@ -1,5 +1,5 @@
 <?php
-require_once"@CORA_WEB_DIR@/lib/contentModel.php";
+require_once"{$GLOBALS['CORA_WEB_DIR']}/lib/contentModel.php";
 
 /** Test Menu class
  *  02/2013 Florian Petran

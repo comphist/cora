@@ -3,7 +3,7 @@
  *  Abstract fixture for all Cora Database Tests
  */
 
-require_once '@CORA_WEB_DIR@/lib/cfg.php';
+require_once "{$GLOBALS['CORA_WEB_DIR']}/lib/cfg.php";
 
 $dbinfo = Cfg::get('dbinfo');
 $testsuffix = Cfg::get('test_suffix');

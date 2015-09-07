@@ -2,7 +2,7 @@
 require_once"DB_fixture.php";
 require_once"data/test_data.php";
 
-require_once"@CORA_WEB_DIR@/lib/connect.php";
+require_once"{$GLOBALS['CORA_WEB_DIR']}/lib/connect.php";
 
 /** CoraDocument Mock for insertNewDocument test
  *
