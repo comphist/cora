@@ -7,6 +7,7 @@
         <var name="DB_DBNAME" value="@CORA_TESTDB_NAME@"/>
         <var name="DB_ROOTUSER" value="@CORA_TESTDB_ROOT@"/>
         <var name="DB_ROOTPW" value="@CORA_TESTDB_ROOTPW@"/>
+        <var name="MYSQL_EXEC" value="@MYSQL_EXECUTABLE@"/>
     </php>
     <testsuites>
         <testsuite name="Cora Tests">
