@@ -41,6 +41,7 @@ if (isset($_POST['action_exec_install'])) {
     $installer->installDB(__DIR__, $dbinfo_root);
     $installer->setDBInfo($dbinfo);
     Cfg::save_user_opts();
+    $force_reinstall = false;
   }
   catch (Exception $ex) {
     $error_code = $ex->getMessage();
