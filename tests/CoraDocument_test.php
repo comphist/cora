@@ -23,6 +23,8 @@ class Cora_Tests_CoraDocument_test extends PHPUnit_Framework_TestCase {
         $this->cd->setTokens($this->test_data["tokens"],
                              $this->test_data["dipls"],
                              $this->test_data["mods"]);
+        $this->cd->setShiftTags($this->test_data["shifttags"]);
+        $this->cd->setComments($this->test_data["comments"]);
     }
 
     /////////////// custom asserts //////////////////////////////////////////
@@ -104,7 +106,13 @@ class Cora_Tests_CoraDocument_test extends PHPUnit_Framework_TestCase {
                      array('range' => array('t1', 't2'), 'type' => 'rub'),
                      array('range' => array('t3', 't3'), 'type' => 'title')
                  ))
-                 ->addComment("", "t1", "Hier grosser Tintenfleck", "K")
+                 ->setComments(array(
+                     array('parent_db_id' => "",
+                           'parent_xml_id' => "t1",
+                           'text' => "Hier grosser Tintenfleck",
+                           'type' => "K",
+                           'subtok_db_id' => null, 'subtok_xml_id' => null)
+                 ))
                  ->fillTokenIDs("8")
                  ->fillDiplIDs("10")
                  ->fillModernIDs("5")

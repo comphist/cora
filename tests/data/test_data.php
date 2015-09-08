@@ -863,7 +863,20 @@ function get_CoraDocument_data() {
                               'ascii' => '', // XXX
                               'utf' => '', // XXX
                               'trans' => '(.)')
-                )
+                ),
+        "shifttags" => array(
+                           array("type_letter" => "Ü",
+                                 "db_range" => array(9, 9),
+                                 "range" => array("t3", "t3")
+                           )
+                ),
+        "comments" => array(
+                          array("parent_db_id" => 8,
+                                "parent_xml_id" => "t2",
+                                "text" => "yay foo bar whoo",
+                                "type" => 'K'
+                          )
+                ),
     );
 }
 
