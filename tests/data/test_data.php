@@ -604,6 +604,15 @@ function get_XMLHandler_initial() {
  */
 function get_CoraDocument_data() {
     return array(
+        "metadata" => array(
+                          "id" => 447,
+                          "sigle" => 't1',
+                          "name" => 'testdocument',
+                          "project_id" => 1,
+                          "currentmod_id" => 19,
+                          "header" => "test\nheader\nfoo\n\tbar",
+                          "idlist" => array(15, 16, 17, 18, 19, 20)
+        ),
         "pages" => array( // page
                         array( "xml_id" => "p1",
                                "side" => 'v',
