@@ -31,7 +31,7 @@ set(PHP_TESTS
   TagsetAccessor_test.php
   XMLHandler_test.php
 )
-if(DEBUG_MODE)
+if(WITH_EXPENSIVE_TESTS)
   list(APPEND PHP_TESTS DBInterface_Expensive_test.php)
 endif()
 
