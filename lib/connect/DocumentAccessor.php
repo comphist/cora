@@ -70,8 +70,12 @@ class DocumentAccessor {
    *  depend on this ID can be recreated if the ID changes.
    */
   protected function setFileID($id) {
-      $this->fileid = $id;
-      $this->prepare_isValidModID();
+    $this->fileid = $id;
+    $this->prepare_isValidModID();
+  }
+
+  public function getFileID($id) {
+    return $this->fileid;
   }
 
   /**********************************************
