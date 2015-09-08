@@ -224,7 +224,7 @@ class CoraDocument {
     unset($mod);
     // comments sometimes refer to moderns as well
     foreach($this->comments as &$comment) {
-      if(!is_null($comment['subtok_xml_id']))
+      if(isset($comment['subtok_xml_id']))
         $comment['subtok_db_id'] = $xmltodb[$comment['subtok_xml_id']];
     }
     unset($comment);
