@@ -8,8 +8,11 @@
         <testsuite name="Cora Tests">
             <directory>.</directory>
             <file>AutomaticAnnotator_test.php</file>
+            <file>Cfg_test.php</file>
             <file>CoraDocument_test.php</file>
             <file>DBInterface_test.php</file>
+            <file>DocumentAccessor_test.php</file>
+            <file>DocumentCreator_test.php</file>
             <file>Exporter_test.php</file>
             <file>Menu_test.php</file>
             <file>TagsetAccessor_test.php</file>
