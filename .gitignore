@@ -14,3 +14,4 @@ doc/html
 doc/latex
 doc/mkdocs/site
 /build/
+/cmake-downloads/

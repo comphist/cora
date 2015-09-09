@@ -36,12 +36,15 @@ option(WITH_MINIFY_CSS "Minification of CSS files" ${MINIFY_CSS_DEFAULT})
 option(WITH_MINIFY_JS "Minification of JavaScript files" ${MINIFY_JS_DEFAULT})
 option(WITH_EXPENSIVE_TESTS "Include potentially more time-consuming tests" ${EXPENSIVE_TESTS_DEFAULT})
 
+set(EXTERNALS_DOWNLOAD_DIR "${CMAKE_BINARY_DIR}/downloads"
+    CACHE PATH "Directory where external downloads will be stored")
 set(CORA_WEB_DIR "${CMAKE_CURRENT_BINARY_DIR}/www"
     CACHE PATH "Path where all web-related files will be built")
 
 message(STATUS "Debug mode: ${DEBUG_MODE}")
 message(STATUS "Minification of CSS files: ${WITH_MINIFY_CSS}")
 message(STATUS "Minification of JavaScript files: ${WITH_MINIFY_JS}")
+message(STATUS "External downloads will be stored/expected in: ${EXTERNALS_DOWNLOAD_DIR}")
 
 #########################################################
 ## Find installed dependencies
@@ -69,17 +72,6 @@ find_package(PHPUnit 3.7)
 #########################################################
 ## Download stuff that is not commonly installed/packaged
 #########################################################
-
-# allow specification of a directory with pre-downloaded
-# requirements by evaluating environment variable
-# $CORA_DOWNLOAD_DIR
-# defaults to "./downloads" in the build directory.
-if(IS_DIRECTORY $ENV{CORA_DOWNLOAD_DIR})
-  set(EXTERNALS_DOWNLOAD_DIR $ENV{CORA_DOWNLOAD_DIR})
-else(IS_DIRECTORY $ENV{CORA_DOWNLOAD_DIR})
-  set(EXTERNALS_DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads)
-endif(IS_DIRECTORY $ENV{CORA_DOWNLOAD_DIR})
-message(STATUS "External downloads will be stored/expected in: ${EXTERNALS_DOWNLOAD_DIR}")
 
 include (ExternalProject)
 
