@@ -28,6 +28,7 @@ class CoraDocument {
   private $fullname  = "";     /**< Document name */
   private $header    = "";     /**< Document header (free-format text) */
   private $internal = array("fileid"  => null,
+                            "projectid" => null,
 			    "currentmod_id" => null,
 			    "tagsets" => array()
 			    );
@@ -63,7 +64,6 @@ class CoraDocument {
     }
     $metadata = $openfile['data'];
     $instance = new self($metadata);
-    $instance->setHeader($metadata['header']);
 
     // Tokens
     $data = $db->getAllTokens($fileid);
@@ -463,11 +463,17 @@ class CoraDocument {
     if(isset($options['fullname']) && !empty($options['fullname'])) {
       $this->fullname = $options['fullname'];
     }
+    if(isset($options['header']) && !empty($options['header'])) {
+      $this->header = $options['header'];
+    }
     if(isset($options['currentmod_id']) && !empty($options['currentmod_id'])) {
       $this->internal['currentmod_id'] = $options['currentmod_id'];
     }
     if(isset($options['id']) && !empty($options['id'])) {
       $this->internal['fileid'] = $options['id'];
+    }
+    if(isset($options['projectid']) && !empty($options['projectid'])) {
+      $this->internal['projectid'] = $options['projectid'];
     }
     if(isset($options['tagsets']) && !empty($options['tagsets'])) {
       $this->internal['tagsets'] = $options['tagsets'];
@@ -512,6 +518,18 @@ class CoraDocument {
   }
   public function getComments() {
     return $this->comments;
+  }
+  public function getTagsetLinks() {
+    return $this->internal['tagsets'];
+  }
+  public function getFileID() {
+    return $this->internal['fileid'];
+  }
+  public function getProjectID() {
+    return $this->internal['projectid'];
+  }
+  public function getCurrentModID() {
+    return $this->internal['currentmod_id'];
   }
 
   /** Set shift tag information directly.
