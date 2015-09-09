@@ -44,6 +44,8 @@ class ProjectAccessor {
           . "LEFT JOIN `user2project` ON user2project.user_id=users.id "
           . "    WHERE user2project.project_id=:pid";
       $this->stmt_getUsers = $this->dbo->prepare($query);
+      $query = "SELECT `user_id` FROM `user2project` WHERE `project_id`=:pid";
+      $this->stmt_getUsersID = $this->dbo->prepare($query);
       $query = "INSERT INTO `user2project` (`project_id`, `user_id`) "
           . "VALUES (:pid, :uid)";
       $this->stmt_setUsers = $this->dbo->prepare($query);
@@ -117,6 +119,16 @@ class ProjectAccessor {
   public function getAssociatedUsers($pid) {
       $this->stmt_getUsers->execute(array(':pid' => $pid));
       return $this->stmt_getUsers->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  /** Fetch a list of users associated with a given project.
+   *
+   * @param string $pid The project ID
+   * @return An array of user IDs
+   */
+  public function getAssociatedUserIDs($pid) {
+      $this->stmt_getUsersID->execute(array(':pid' => $pid));
+      return $this->stmt_getUsersID->fetchAll(PDO::FETCH_COLUMN);
   }
 
   /** Set a new list of users associated with a given project.
@@ -218,5 +230,16 @@ class ProjectAccessor {
                     ':cmdedit' => $cmdedit,
                     ':cmdimport' => $cmdimport);
       $this->stmt_setSettings->execute($data);
+  }
+
+  /** Set project-specific settings.
+   *
+   * @param string $pid The project ID
+   * @param array $settings An associative array of settings
+   */
+  public function setSettingsArray($pid, $settings) {
+      $this->setSettings($pid,
+                         $settings['cmd_edittoken'],
+                         $settings['cmd_import']);
   }
 }
