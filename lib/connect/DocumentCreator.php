@@ -13,7 +13,7 @@ require_once('DocumentWriter.php');
  */
 class DocumentCreator extends DocumentWriter {
   protected $fullfile = null;
-  protected $tagset_links = null;
+  protected $tagset_links = array();
 
   /* Prepared SQL statements that are typically called multiple times */
   private $stmt_createText = null;
@@ -103,6 +103,8 @@ class DocumentCreator extends DocumentWriter {
   }
 
   /** Parses tagset links given in an option array.
+   *
+   * @param array $my_tagsets A list of tagset IDs
    */
   private function parseTagsetLinks($my_tagsets) {
       $this->tagset_links = array();
@@ -113,6 +115,20 @@ class DocumentCreator extends DocumentWriter {
               $this->tagset_links[] = $tagset;
           }
       }
+  }
+
+  /** Gets options from a CoraDocument instance and sets appropriate
+   *  class variables, if they haven't been defined yet.
+   */
+  private function fillOptionsFromDocument($doc) {
+      if (!isset($this->text_sigle))
+          $this->text_sigle = $doc->getSigle();
+      if (!isset($this->text_fullname))
+          $this->text_fullname = $doc->getName();
+      if (!isset($this->tagset_links))
+          $this->tagset_links = $doc->getTagsetLinks();
+      if (!isset($this->text_header))
+          $this->text_header = $doc->getHeader();
   }
 
   /** Creates tagset links in the database.
@@ -294,7 +310,10 @@ class DocumentCreator extends DocumentWriter {
    * @return True if import was successful, false otherwise
    */
   public function importDocument(&$doc) {
-      $this->text_header = $doc->getHeader();
+      $this->fillOptionsFromDocument($doc);
+      // Tagset information is normally retrieved in the ctor, but the tagset
+      // links might have been filled from the document now:
+      $this->retrieveTagsetInformation();
       $this->dbo->beginTransaction();
       try {
           $this->createNewText($_SESSION['user_id']);
