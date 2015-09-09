@@ -334,29 +334,8 @@
     * @return A status array
     */
    public function changeProjectUsers($pid, $userlist) {
-     try {
-       $this->dbo->beginTransaction();
-       $qs = "DELETE FROM user2project WHERE project_id=:pid";
-       $stmt = $this->dbo->prepare($qs);
-       $stmt->bindValue(':pid', $pid, PDO::PARAM_INT);
-       $stmt->execute();
-       if (!empty($userlist)) {
-	 $uid = null;
-	 $qs = "INSERT INTO user2project (project_id, user_id) "
-	   . "  VALUES (:pid, :uid)";
-	 $stmt = $this->dbo->prepare($qs);
-	 $stmt->bindValue(':pid', $pid, PDO::PARAM_INT);
-	 $stmt->bindParam(':uid', $uid, PDO::PARAM_INT);
-	 foreach ($userlist as $uid) {
-	   $stmt->execute();
-	 }
-       }
-       $this->dbo->commit();
-     }
-     catch(PDOException $ex) {
-       $this->dbo->rollBack();
-       throw $ex;
-     }
+     $pa = new ProjectAccessor($this, $this->dbo);
+     $pa->setAssociatedUsers($pid, $userlist);
    }
 
    /** Drop a user record from the database.

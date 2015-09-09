@@ -44,6 +44,11 @@ class ProjectAccessor {
           . "LEFT JOIN `user2project` ON user2project.user_id=users.id "
           . "    WHERE user2project.project_id=:pid";
       $this->stmt_getUsers = $this->dbo->prepare($query);
+      $query = "INSERT INTO `user2project` (`project_id`, `user_id`) "
+          . "VALUES (:pid, :uid)";
+      $this->stmt_setUsers = $this->dbo->prepare($query);
+      $query = "DELETE FROM `user2project` WHERE `project_id`=:pid";
+      $this->stmt_deleteUsers = $this->dbo->prepare($query);
       $query = "SELECT `tagset_id` FROM `text2tagset_defaults` "
           . "    WHERE text2tagset_defaults.project_id=:pid";
       $this->stmt_getDefaults = $this->dbo->prepare($query);
@@ -112,6 +117,28 @@ class ProjectAccessor {
   public function getAssociatedUsers($pid) {
       $this->stmt_getUsers->execute(array(':pid' => $pid));
       return $this->stmt_getUsers->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  /** Set a new list of users associated with a given project.
+   *
+   * @param string $pid The project ID
+   * @param array $idlist Array of user IDs
+   */
+  public function setAssociatedUsers($pid, $idlist) {
+      try {
+          $this->dbo->beginTransaction();
+          $this->stmt_deleteUsers->execute(array(':pid' => $pid));
+          $this->stmt_setUsers->bindValue(':pid', $pid, PDO::PARAM_INT);
+          $this->stmt_setUsers->bindParam(':uid', $uid, PDO::PARAM_INT);
+          foreach ($idlist as $uid) {
+              $this->stmt_setUsers->execute();
+          }
+          $this->dbo->commit();
+      }
+      catch(PDOException $ex) {
+          $this->dbo->rollBack();
+          throw $ex;
+      }
   }
 
   /** Fetch the default tagset links for a given project.
