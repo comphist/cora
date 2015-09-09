@@ -265,8 +265,9 @@ class XMLHandler {
    * name, tagset) for the document; if there is a conflict with
    * the same type of data being supplied in the XML file,
    * the @c $options array takes precedence
+   * @param string $uid User ID of the document's creator
    */
-  public function import($xmlfile, $options) {
+  public function import($xmlfile, $options, $uid) {
     // check for validity
     libxml_use_internal_errors(true);
     $doc = new DOMDocument('1.0', 'utf-8');
@@ -313,7 +314,7 @@ class XMLHandler {
     }
 
     // insert data into database
-    $status = $this->db->insertNewDocument($options, $data);
+    $status = $this->db->insertNewDocument($options, $data, $uid);
     if(!$status['success']){
         return array("success" => false,
                      "errors"  => $status['warnings']);

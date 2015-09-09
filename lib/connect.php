@@ -2090,14 +2090,15 @@
    *
    * @param array $options Metadata for the document
    * @param array $data A CoraDocument object
+   * @param string $uid User ID of the document's creator
    *
    * @return An associative array containing:
    *          -- 'success', which is true if the import was successful
    *          -- 'warnings', an array possibly containing warning messages
    */
-  public function insertNewDocument(&$options, &$data){
+  public function insertNewDocument(&$options, &$data, $uid){
       $dc = new DocumentCreator($this, $this->dbo, $options);
-      $success = $dc->importDocument($data);
+      $success = $dc->importDocument($data, $uid);
       return array('success' => $success,
                    'warnings' => $dc->getWarnings());
   }

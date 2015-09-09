@@ -81,7 +81,7 @@ class Cora_Tests_XMLHandler_test extends PHPUnit_Framework_TestCase {
             "tmp_name" => "data/cora-importtest.xml",
             "name" => "cora-importtest.xml"
         );
-        $this->xh->import($filename, $options);
+        $this->xh->import($filename, $options, 1);
 
         $this->assertEquals($this->test_data["options"],
                             $this->dbi->options);

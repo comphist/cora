@@ -306,17 +306,18 @@ class DocumentCreator extends DocumentWriter {
   /** Imports a new document into the database.
    *
    * @param CoraDocument $doc The document to be inserted
+   * @param string $uid User ID of the document's creator
    *
    * @return True if import was successful, false otherwise
    */
-  public function importDocument(&$doc) {
+  public function importDocument(&$doc, $uid) {
       $this->fillOptionsFromDocument($doc);
       // Tagset information is normally retrieved in the ctor, but the tagset
       // links might have been filled from the document now:
       $this->retrieveTagsetInformation();
       $this->dbo->beginTransaction();
       try {
-          $this->createNewText($_SESSION['user_id']);
+          $this->createNewText($uid);
           $this->createTagsetLinks();
           $this->createLayoutInformation($doc);
           $this->createTokens($doc);

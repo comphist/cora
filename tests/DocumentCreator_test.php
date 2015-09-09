@@ -35,11 +35,10 @@ class Cora_Tests_DocumentCreator_test extends Cora_Tests_DbTestCase {
 		     "tagsets" => array("1","2","3")
     );
     $data = new Cora_Tests_CoraDocument_Mock();
-    $_SESSION["user_id"] = 3;
     $expected = $this->createXMLDataset("data/inserted_document.xml");
 
     $this->obj = new DocumentCreator($this->dbi, $this->dbo, $options);
-    $this->assertTrue($this->obj->importDocument($data));
+    $this->assertTrue($this->obj->importDocument($data, 3));
     $this->assertEmpty($this->obj->getWarnings());
 
     $this->assertTablesEqual($expected->getTable("inserted_text"),
