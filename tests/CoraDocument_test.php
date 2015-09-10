@@ -110,8 +110,7 @@ class Cora_Tests_CoraDocument_test extends PHPUnit_Framework_TestCase {
                      array('parent_db_id' => "",
                            'parent_xml_id' => "t1",
                            'text' => "Hier grosser Tintenfleck",
-                           'type' => "K",
-                           'subtok_db_id' => null, 'subtok_xml_id' => null)
+                           'type' => "K")
                  ))
                  ->fillTokenIDs("8")
                  ->fillDiplIDs("10")

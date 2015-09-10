@@ -45,7 +45,6 @@ CREATE TABLE `comment` (
   `tok_id` bigint(20) NOT NULL,
   `value` varchar(255) NOT NULL,
   `comment_type` char(1) NOT NULL,
-  `subtok_id` bigint(20),
   PRIMARY KEY (`id`),
   KEY `tok_id` (`tok_id`),
   CONSTRAINT `comment_ibfk_1` FOREIGN KEY (`tok_id`) REFERENCES `token` (`id`) ON DELETE CASCADE

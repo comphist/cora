@@ -187,14 +187,6 @@
                 <field name="tok_id">3</field>
                 <field name="value">blablabla</field>
                 <field name="comment_type">K</field>
-                <field name="subtok_id">5</field>
-            </row>
-            <row>
-                <field name="id">2</field>
-                <field name="tok_id">3</field>
-                <field name="value">cora comment</field>
-                <field name="comment_type">C</field>
-                <field name="subtok_id">5</field>
             </row>
 	</table_data>
 	<table_data name="user2project">
@@ -462,6 +454,12 @@
             <field name="set_type">open</field>
             <field name="class">lemma</field>
         </row>
+        <row>
+            <field name="id">4</field>
+            <field name="name">Comment</field>
+            <field name="set_type">open</field>
+            <field name="class">comment</field>
+        </row>
 	</table_data>
 	<table_data name="text2tagset">
 	<row>
@@ -477,6 +475,11 @@
 	<row>
 		<field name="text_id">3</field>
 		<field name="tagset_id">3</field>
+		<field name="complete">0</field>
+	</row>
+	<row>
+		<field name="text_id">3</field>
+		<field name="tagset_id">4</field>
 		<field name="complete">0</field>
 	</row>
 	<row>
@@ -3564,6 +3567,12 @@
 		<field name="needs_revision">0</field>
 		<field name="tagset_id">2</field>
 	</row>
+	<row>
+		<field name="id">514</field>
+		<field name="value">cora comment</field>
+		<field name="needs_revision">0</field>
+		<field name="tagset_id">4</field>
+	</row>
 	</table_data>
 	<table_data name="tag_suggestion">
 	<row>
@@ -3652,6 +3661,14 @@
 		<field name="selected">0</field>
 		<field name="source">auto</field>
 		<field name="tag_id">513</field>
+		<field name="mod_id">5</field>
+	</row>
+	<row>
+		<field name="id">13</field>
+		<field name="score" xsi:nil="true"/>
+		<field name="selected">1</field>
+		<field name="source">user</field>
+		<field name="tag_id">514</field>
 		<field name="mod_id">5</field>
 	</row>
 	</table_data>
