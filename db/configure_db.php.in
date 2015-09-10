@@ -61,6 +61,9 @@ if (isset($_POST['action_exec_install']) && $can_connect) {
   catch (Exception $ex) {
     $error_code = $ex->getMessage();
   }
+  // re-check
+  $version_current = $installer->getDBVersion();
+  $migr_needed = ($version_current != $version_required);
 }
 $migr_possible = ($can_connect && $migr_needed && $migr_path);
 if (isset($_POST['action_exec_upgrade']) && $migr_possible) {
@@ -72,6 +75,9 @@ if (isset($_POST['action_exec_upgrade']) && $migr_possible) {
   catch (Exception $ex) {
     $error_code = $ex->getMessage();
   }
+  // re-check
+  $version_current = $installer->getDBVersion();
+  $migr_needed = ($version_current != $version_required);
 }
 
 // render page
