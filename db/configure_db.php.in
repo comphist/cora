@@ -34,9 +34,24 @@ $dbinfo_root['HOST'] = $dbinfo['HOST'];
 $installer = new InstallHelper($dbinfo);
 $installer->mysql_bin = $mysql_bin;
 
+// Get connectivity & version information
+$can_connect = $installer->canConnect();
+if ($can_connect) {
+  $version_current = $installer->getDBVersion();
+  $version_required = Cfg::get("db_version");
+  $migr_needed = ($version_current != $version_required);
+  if ($migr_needed) {
+    $migr_path = $installer->findMigrationPath(
+      $version_current,
+      $version_required,
+      __DIR__ . "/migration"
+    );
+  }
+}
+
 // Should we execute an action?
 $error_code = false;
-if (isset($_POST['action_exec_install'])) {
+if (isset($_POST['action_exec_install']) && $can_connect) {
   try {
     $installer->installDB(__DIR__, $dbinfo_root);
     $installer->setDBInfo($dbinfo);
@@ -47,7 +62,8 @@ if (isset($_POST['action_exec_install'])) {
     $error_code = $ex->getMessage();
   }
 }
-if (isset($_POST['action_exec_upgrade'])) {
+$migr_possible = ($can_connect && $migr_needed && $migr_path);
+if (isset($_POST['action_exec_upgrade']) && $migr_possible) {
   try {
     $installer->applyMigrationPath($migr_path, $dbinfo_root);
     $installer->setDBInfo($dbinfo);
@@ -107,22 +123,12 @@ if (isset($_POST['action_exec_upgrade'])) {
         <div class="panel">
           <table class="table-modern configure-results">
             <tbody>
-<?php
-$can_connect = $installer->canConnect();
-?>
               <tr>
                 <td>Database connection:</td>
                 <?= ($can_connect ?
                      "<td class=\"success\">established</td>" :
                      "<td class=\"error\">failed</td>") ?>
               </tr>
-<?php
-if ($can_connect) {
-  $version_current = $installer->getDBVersion();
-  $version_required = Cfg::get("db_version");
-  $migr_needed = ($version_current != $version_required);
-}
-?>
               <tr>
                 <td>Schema version (found):</td>
                 <?= ($can_connect ?
@@ -139,15 +145,6 @@ if ($can_connect) {
                        "<td class=\"success\">$version_required</td>") :
                      "<td>&mdash;</td>") ?>
               </tr>
-<?php
-if ($can_connect && $migr_needed) {
-  $migr_path = $installer->findMigrationPath(
-    $version_current,
-    $version_required,
-    __DIR__ . "/migration"
-  );
-}
-?>
               <tr>
                 <td>Automatic migration:</td>
                 <?= ($can_connect ?
