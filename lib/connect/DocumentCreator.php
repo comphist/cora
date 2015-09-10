@@ -80,8 +80,8 @@ class DocumentCreator extends DocumentWriter {
           . "              VALUES (:trans,  :utf,  :ascii,  :tokid)";
       $this->stmt_newMod = $this->dbo->prepare($stmt);
       $stmt = "INSERT INTO comment "
-          . "        (`tok_id`, `value`, `comment_type`, `subtok_id`)"
-          . " VALUES (:tokid,   :value,  :ctype,         :subtokid)";
+          . "        (`tok_id`, `value`, `comment_type`)"
+          . " VALUES (:tokid,   :value,  :ctype)";
       $this->stmt_newComm = $this->dbo->prepare($stmt);
   }
 
@@ -281,20 +281,12 @@ class DocumentCreator extends DocumentWriter {
   }
 
   /** Saves all comments.
-   *
-   * NOTE: This doesn't re-use DocumentWriter::saveComment since that
-   * function is very specific to 'C'-type comments only.
-   * This could be refactored someday, as it would also allow us
-   * to offer general comment editing to the user.
    */
   private function saveAllComments(&$comments) {
       foreach($comments as $comment) {
-          if(!array_key_exists('subtok_db_id', $comment))
-              $comment['subtok_db_id'] = null;
           $params = array(':tokid' => $comment['parent_db_id'],
                           ':value' => $comment['text'],
-                          ':ctype' => $comment['type'],
-                          ':subtokid' => $comment['subtok_db_id']);
+                          ':ctype' => $comment['type']);
           $this->stmt_newComm->execute($params);
       }
   }

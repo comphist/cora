@@ -15,7 +15,6 @@ class SearchQuery {
 
   private $tagsets;
   private $flags;
-  private $join_comment = false;
   private $condition_strings = array();
   public $condition_values = array();
   private $operator = " AND ";
@@ -42,16 +41,11 @@ class SearchQuery {
   }
 
   public function buildQueryString() {
-    // select all moderns in correct order, joining other info if required
     $sqlstr = "SELECT m.id FROM modern m"
-              . "  LEFT JOIN token ON token.id=m.tok_id ";
-    if($this->join_comment) {
-      $sqlstr .= "LEFT JOIN comment ON comment.subtok_id=m.id "
-                 . "                 AND comment.comment_type='C' ";
-    }
-    $sqlstr .= "      WHERE token.text_id={$this->fileid} AND ("
-               . implode($this->operator, $this->condition_strings)
-               . "    ) ORDER BY token.ordnr ASC, m.id ASC";
+            . "  LEFT JOIN token ON token.id=m.tok_id "
+            . "      WHERE token.text_id={$this->fileid} AND ("
+            . implode($this->operator, $this->condition_strings)
+            . "    ) ORDER BY token.ordnr ASC, m.id ASC";
     return $sqlstr;
   }
 
@@ -71,8 +65,6 @@ class SearchQuery {
       $this->addTokenCondition($field, $match, $value);
     } else if(substr($field, 0, 5) === "flag_") {
       $this->addFlagCondition($field, $match);
-    } else if($field === "comment") {
-      $this->addCommentCondition($field, $match, $value);
     } else {
       $this->addTagsetCondition($field, $match, $value);
     }
@@ -102,19 +94,6 @@ class SearchQuery {
       $sqlstr = "{$flagvalue} (SELECT * FROM mod2error f WHERE"
               . "              f.mod_id=m.id AND f.error_id={$errorid})";
       $this->condition_strings[] = $sqlstr;
-    }
-  }
-
-  protected function addCommentCondition($field, $match, $value) {
-    $this->join_comment = true;
-    if($match === "set") {
-      $this->condition_strings[] = "(comment.value IS NOT NULL AND comment.value!='')";
-    } else if($match === "nset") {
-      $this->condition_strings[] = "(comment.value IS NULL OR comment.value='')";
-    } else {
-      list($operand, $value) = $this->getOperandValue($match, $value);
-      $this->condition_strings[] = "comment.value{$operand}?";
-      $this->condition_values[] = $value;
     }
   }
 

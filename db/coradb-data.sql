@@ -12,6 +12,7 @@ INSERT INTO `tagset` (`name`, `class`, `set_type`) VALUES
        ('Normalization',     'norm',        'open'),
        ('Modernization',     'norm_broad',  'open'),
        ('Lemma',             'lemma',       'open'),
+       ('Comment',           'comment',     'open'),
        ('Secondary Comment', 'sec_comment', 'open');
 
 INSERT INTO `error_types` (`name`) VALUES

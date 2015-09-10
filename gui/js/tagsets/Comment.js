@@ -8,7 +8,7 @@ var CommentTagset = new Class({
     classname: 'Kommentar',
     eventString: 'input:relay(input.et-input-comment)',
     inputElement: '.editTable_comment input',
-    dataKey: 'comment',
+    dataKey: 'anno_comment',
 
     /* Constructor: Tagset
 
