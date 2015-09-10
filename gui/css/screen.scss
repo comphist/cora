@@ -995,10 +995,12 @@ table.editTable{
         &.editTable_lemma input {
             width: 13em;
         }
-        &.editTable_comment input {
-            width: 15em;
-            &:focus {
-                width: 30em;
+        &.editTable_comment, &.editTable_sec_comment {
+            input {
+                width: 15em;
+                &:focus {
+                    width: 30em;
+                }
             }
         }
         &.editTable_lemma_sugg {

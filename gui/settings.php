@@ -42,6 +42,7 @@
           <input type="checkbox" name="displayedColumns" id="eshc-lemma_sugg" value="lemma_sugg" checked="yes" /><label for="eshc-lemma_sugg">Lemma-Link</label>
           <input type="checkbox" name="displayedColumns" id="eshc-lemmapos" value="lemmapos" checked="yes" /><label for="eshc-lemmapos">Lemma-Tag</label>
           <input type="checkbox" name="displayedColumns" id="eshc-comment" value="comment" checked="yes" /><label for="eshc-comment">Kommentar</label>
+          <input type="checkbox" name="displayedColumns" id="eshc-sec_comment" value="sec_comment" checked="yes" /><label for="eshc-sec_comment">Sekundär-Kommentar</label>
         </p>
       </div>
 

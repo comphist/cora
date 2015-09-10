@@ -9,9 +9,10 @@ UNLOCK TABLES;
 -- Create entries for the open-class annotation layers
 
 INSERT INTO `tagset` (`name`, `class`, `set_type`) VALUES
-       ('Normalization', 'norm',       'open'),
-       ('Modernization', 'norm_broad', 'open'),
-       ('Lemma',         'lemma',      'open');
+       ('Normalization',     'norm',        'open'),
+       ('Modernization',     'norm_broad',  'open'),
+       ('Lemma',             'lemma',       'open'),
+       ('Secondary Comment', 'sec_comment', 'open');
 
 INSERT INTO `error_types` (`name`) VALUES
        ('general error'),
