@@ -284,16 +284,7 @@ cora.files = {
         options.onSuccess = function(status) {
             // tagset assocs?
             if(status.data && status.data.tagsets) {
-                this.tagsetsByID[fid] = {  // HACK for the time being
-                    // every file gets the comment "tagset" associated with it
-                    'comment': new CommentTagset({
-                        id: -1,
-                        shortname: '-1',
-                        longname: 'Kommentar',
-                        set_type: 'open',
-                        class: 'comment'
-                    })
-                };
+                this.tagsetsByID[fid] = {};
                 Object.each(status.data.tagsets, function(ts) {
                     this.tagsetsByID[fid][ts['class']] = cora.tagsets.get(ts.id);
                 }.bind(this));
@@ -1226,8 +1217,7 @@ cora.fileManager = {
             };
         fixed = [['trans', "Token (Transkription)"],
                  ['ascii', "Token (ASCII)"],
-                 ['utf', "Token (UTF)"],
-                 ['comment', "Kommentar"]];
+                 ['utf', "Token (UTF)"]];
         Array.each(fixed, function(elem) {
             makeMultiSelectEntry(div, elem[0], elem[1]);
         });

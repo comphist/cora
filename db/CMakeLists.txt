@@ -8,6 +8,8 @@ configure_all_copyonly("${CORA_DB_DIR}"
   migration/README
   migration/1-to-2.sql
   migration/2-to-3.sql
+  migration/3-to-4.sql
   migration/revert-1-to-2.sql
   migration/revert-2-to-3.sql
+  migration/revert-3-to-4.sql
 )

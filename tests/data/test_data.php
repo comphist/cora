@@ -44,6 +44,10 @@ function get_DBInterface_expected() {
 					  "name" => "LemmaTest",
 					  "class" => "lemma",
 					  "set_type" => "open"),
+			   "ts4" => array("id" => '4',
+					  "name" => "Comment",
+					  "class" => "comment",
+					  "set_type" => "open"),
 			   ),
         "texts" => array(
             "t1" => array("id" => "3",
@@ -128,7 +132,6 @@ function get_DBInterface_expected() {
                                         'score' => '0.97')
                             ),
                             'anno_pos' => 'VVFIN.3.Pl.Past.Konj',
-			     'comment' => null,
 			     'page_name' => '1',
 			     'page_side' => 'r',
 			     'col_name' => '',
@@ -144,7 +147,6 @@ function get_DBInterface_expected() {
                                        'score' => null)
                             ),
                             'anno_pos'    => "PPOSAT.Fem.Nom.Sg",
-			      'comment' => null,
 			     'page_name' => '1',
 			     'page_side' => 'r',
 			     'col_name' => '',
@@ -158,7 +160,6 @@ function get_DBInterface_expected() {
                             'suggestions' => array(array('pos' => 'VMINF',
                                                    'score' => null)),
                             'anno_pos' => 'VMINF',
-			      'comment' => null,
 			     'page_name' => '1',
 			     'page_side' => 'r',
 			     'col_name' => '',
@@ -176,7 +177,6 @@ function get_DBInterface_expected() {
                                       'score' => null)
                             ),
                             'anno_pos'    => 'VVFIN.3.Pl.Pres.Konj',
-			      'comment' => null,
 			     'page_name' => '1',
 			     'page_side' => 'r',
 			     'col_name' => '',
@@ -190,7 +190,7 @@ function get_DBInterface_expected() {
                             'suggestions' => array(),
                             'anno_pos'    => 'PDS.*.Gen.Pl',
                             'anno_lemma'  => 'lemma',
-			      'comment' => 'cora comment',
+			    'anno_comment' => 'cora comment',
 			     'page_name' => '1',
 			     'page_side' => 'r',
 			     'col_name' => '',
@@ -203,7 +203,6 @@ function get_DBInterface_expected() {
                             'full_trans'  => "vunf=\ntusent#vnd#vierhundert#vn-(=)\nsechzig",
                             'suggestions' => array(),
                             'anno_norm'   => 'norm',
-			      'comment' => null,
 			     'page_name' => '1',
 			     'page_side' => 'r',
 			     'col_name' => '',
@@ -216,7 +215,6 @@ function get_DBInterface_expected() {
                             'full_trans' => 'kunnen.(.)',
                             'suggestions' => Array (),
                             'anno_lemma' => 'deletedlemma',
-			      'comment' => null,
 			     'page_name' => '1',
 			     'page_side' => 'r',
 			     'col_name' => '',
@@ -229,7 +227,6 @@ function get_DBInterface_expected() {
                             'tok_id' => '5',
                             'full_trans' => 'kunnen.(.)',
                             'suggestions' => Array (),
-			      'comment' => null,
 			     'page_name' => '1',
 			     'page_side' => 'r',
 			     'col_name' => '',
@@ -243,7 +240,6 @@ function get_DBInterface_expected() {
                             'full_trans' => 'kunnen.(.)',
                             'suggestions' => Array (),
                             'anno_norm' => 'deletednorm',
-			      'comment' => null,
 			     'page_name' => '1',
 			     'page_side' => 'r',
 			     'col_name' => '',
@@ -551,17 +547,13 @@ function get_XMLHandler_expected() {
                 'parent_db_id' => null,
                 'parent_xml_id' => 't1',
                 'text' => "Hier grosser Tintenfleck",
-                'type' => 'K',
-                'subtok_db_id' => null,
-                'subtok_xml_id' => null
+                'type' => 'K'
             ),
             array(
                 'parent_db_id' => null,
                 'parent_xml_id' => 't2',
                 'text' => 'Beispielemendation',
-                'type' => 'E',
-                'subtok_db_id' => null,
-                'subtok_xml_id' => null
+                'type' => 'E'
             )
         ),
         "header" => "Testdatei. Freier Text hier. Alles moegliche an Kram steht da drin - alles zwischen +H und @H",
@@ -587,7 +579,6 @@ function get_XMLHandler_initial() {
                                         'score' => '0.97')
                             ),
                             'anno_pos' => 'VVFIN.3.Pl.Past.Konj',
-                            'comment' => null
                         ),
                     ),
     );
@@ -952,7 +943,6 @@ function get_Exporter_data() {
                                                    "trans" => "vnd",
                                                    "ascii" => "vnd",
                                                    "utf"   => "vnd",
-                                                   "comment" => "",
                                                    "verified" => 1,
                                                    "tags" => array(
                                                                    array("tag" => "DARTU",
@@ -973,7 +963,6 @@ function get_Exporter_data() {
                                                    "trans" => "jn",
                                                    "ascii" => "jn",
                                                    "utf"   => "jn",
-                                                   "comment" => "",
                                                    "verified" => 0,
                                                    "tags" => array(
                                                                    array("tag" => "PPER",
@@ -1004,7 +993,6 @@ function get_Exporter_data() {
                                                    "trans" => "gi\ebt",
                                                    "ascii" => "giebt",
                                                    "utf"   => "giēbt",
-                                                   "comment" => "",
                                                    "verified" => 1,
                                                    "tags" => array(
                                                                    array("tag" => "NE",

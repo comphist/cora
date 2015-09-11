@@ -39,15 +39,6 @@ class Cora_Tests_DocumentAccessor_test extends Cora_Tests_DbTestCase {
     $this->assertNotContains(478, $actual_ids, "Tag 478 is not linked to this mod");
   }
 
-  public function testGetCoraComment() {
-    $actual = $this->obj->getCoraComment(5);
-    $expected = array('id' => 5,
-                      'comment_id' => 2,
-                      'token_id' => 3,
-                      'value' => "cora comment");
-    $this->assertEquals($actual, $expected, $canonicalize=true);
-  }
-
   public function testGetSelectedAnnotationsByClass() {
     $actual = $this->obj->getSelectedAnnotationsByClass(5);
     $this->assertArrayHasKey('pos', $actual);

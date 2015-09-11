@@ -67,6 +67,7 @@ set(JS_SOURCES_MASTER
   tagsets/LemmaPOS.js
   tagsets/Boundary.js
   tagsets/Comment.js
+  tagsets/SecondaryComment.js
   tagsets/TagsetFactory.js
   file.js
   edit/DataSource.js

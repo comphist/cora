@@ -4,7 +4,7 @@
  */
 cora.supportedTagsets = ["pos", "morph", "norm", "norm_broad",
                          "norm_type", "lemma", "lemmapos", "lemma_sugg",
-                         "comment", "boundary"];
+                         "comment", "sec_comment", "boundary"];
 
 /* Array: cora.importableTagsets
 

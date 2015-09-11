@@ -14,7 +14,7 @@
             <value>4</value>
         </row>
         <row>
-            <value>15</value>
+            <value>16</value>
             <value>1</value>
             <value>user</value>
             <value>508</value>
@@ -35,10 +35,10 @@
             <value>5</value>
         </row>
         <row>
-            <value>17</value>
+            <value>18</value>
             <value>1</value>
             <value>user</value>
-            <value>514</value>
+            <value>515</value>
             <value>8</value>
         </row>
         <row>
@@ -56,14 +56,21 @@
             <value>5</value>
         </row>
         <row>
-            <value>14</value>
+            <value>13</value>
+            <value>1</value>
+            <value>user</value>
+            <value>514</value>
+            <value>5</value>
+        </row>
+        <row>
+            <value>15</value>
             <value>1</value>
             <value>user</value>
             <value>497</value>
             <value>3</value>
         </row>
         <row>
-            <value>16</value>
+            <value>17</value>
             <value>1</value>
             <value>user</value>
             <value>189</value>
@@ -89,12 +96,18 @@
         </row>
         <row>
             <value>514</value>
+            <value>cora comment</value>
+            <value>0</value>
+            <value>4</value>
+        </row>
+        <row>
+            <value>515</value>
             <value>bla</value>
             <value>0</value>
             <value>2</value>
         </row>
         <row>
-            <value>515</value>
+            <value>516</value>
             <value>blatest</value>
             <value>0</value>
             <value>3</value>
@@ -113,20 +126,11 @@
         <column>tok_id</column>
         <column>value</column>
         <column>comment_type</column>
-        <column>subtok_id</column>
         <row>
             <value>1</value>
             <value>3</value>
             <value>blablabla</value>
             <value>K</value>
-            <value>5</value>
-        </row>
-        <row>
-            <value>3</value>
-            <value>2</value>
-            <value>testcomment</value>
-            <value>C</value>
-            <value>2</value>
         </row>
     </table>
 </dataset>

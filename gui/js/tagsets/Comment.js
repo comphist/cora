@@ -7,6 +7,8 @@ var CommentTagset = new Class({
     Extends: Tagset,
     classname: 'Kommentar',
     eventString: 'input:relay(input.et-input-comment)',
+    inputElement: '.editTable_comment input',
+    dataKey: 'anno_comment',
 
     /* Constructor: Tagset
 
@@ -28,8 +30,7 @@ var CommentTagset = new Class({
      */
     getValues: function(data) {
         var result = {};
-        var key = "comment";
-        result[key] = data[key];
+        result[this.dataKey] = data[this.dataKey];
         return result;
     },
 
@@ -54,9 +55,9 @@ var CommentTagset = new Class({
      */
     fill: function(tr, data) {
         var ref = this;
-        var elem = tr.getElement('.editTable_comment input');
+        var elem = tr.getElement(this.inputElement);
         if (elem !== null) {
-            elem.set('value', data.comment);
+            elem.set('value', data[this.dataKey]);
         }
     },
 
@@ -73,7 +74,7 @@ var CommentTagset = new Class({
          value - New value of the annotation
      */
     update: function(tr, data, changes, cls, value) {
-        if (cls === "comment")
-            changes.comment = value;
+        if (cls === this.class)
+            changes[this.dataKey] = value;
     }
 });

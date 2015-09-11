@@ -147,6 +147,7 @@
         <th class="editTable_lemma_sugg et-anno"></th>
         <th class="editTable_lemmapos et-anno">Lemma-Tag</th>
         <th class="editTable_comment et-anno">Kommentar</th>
+        <th class="editTable_sec_comment et-anno">Sekundär-Kommentar</th>
         <th class="editTable_dropdown"></th>
       </tr>
     </thead>
@@ -196,6 +197,9 @@
         </td>
         <td class="editTable_comment et-anno">
           <input type="text" value="" maxlength="255" class="et-input-comment" />
+        </td>
+        <td class="editTable_sec_comment et-anno">
+          <input type="text" value="" maxlength="255" class="et-input-sec_comment" />
         </td>
         <td class="editTable_dropdown">
           <div class="editTableDropdown">

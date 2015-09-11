@@ -18,6 +18,8 @@ cora.tagsetFactory = {
         var cls = ts_class || data.class;
         if(cls == "comment")
             return new CommentTagset(data);
+        if(cls == "sec_comment")
+            return new SecondaryCommentTagset(data);
         if(cls == "pos")
             return new POSTagset(data);
         if(cls == "lemmapos")

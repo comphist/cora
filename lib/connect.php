@@ -1287,11 +1287,9 @@
      $verified = ($currentmod_id && $currentmod_id != null && !empty($currentmod_id));
 
      $qs = "SELECT token.id AS parent_tok_db_id, modern.id AS db_id, "
-       ."          modern.trans, modern.utf, modern.ascii, c1.value AS comment "
+       ."          modern.trans, modern.utf, modern.ascii "
        ."     FROM token "
        ."    INNER JOIN modern ON modern.tok_id=token.id "
-       ."     LEFT JOIN comment c1 ON  c1.tok_id=token.id "
-       ."           AND c1.subtok_id=modern.id AND c1.comment_type='C' "
        ."    WHERE token.text_id=:tid "
        ."    ORDER BY token.ordnr ASC, modern.id ASC";
      $stmt = $this->dbo->prepare($qs);
@@ -1672,11 +1670,10 @@
 	 return array("success" => false, "errors" => $errors);
        }
      }
-     // move any (non-internal) comments attached to this token
+     // move any comments attached to this token
      if($prevtokenid!==null || $nexttokenid!==null) {
        $commtokenid = ($prevtokenid===null ? $nexttokenid : $prevtokenid);
-       $qs  = "UPDATE comment SET `tok_id`=:ctokid ";
-       $qs .= "WHERE  `tok_id`=:tokid AND `comment_type`!='C' ";
+       $qs  = "UPDATE comment SET `tok_id`=:ctokid WHERE `tok_id`=:tokid";
        try {
 	 $stmt = $this->dbo->prepare($qs);
 	 $stmt->execute(array(':ctokid' => $commtokenid, ':tokid' => $tokenid));
@@ -1996,11 +1993,6 @@
 	 $this->dbo->rollBack();
 	 return array("success" => false, "errors" => $errors);
        }
-       // delete CorA comments attached to this modern token
-       $qs  = "DELETE FROM comment WHERE `tok_id`=:tokid AND `comment_type`='C' ";
-       $qs .= " AND `subtok_id` IN (" . implode(", ", $moddelete) . ")";
-       $stmt = $this->dbo->prepare($qs);
-       $stmt->execute(array(':tokid' => $tokenid));
        // if 'currentmod_id' is set to one of the deleted tokens, set it to something feasible
        $qs  = "SELECT currentmod_id FROM text WHERE `id`=:tid ";
        $qs .= "  AND `currentmod_id` IN (" . implode(", ", $moddelete) . ")";

@@ -223,6 +223,7 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
 						 $this->expected["tagsets"]["ts1"],
 						 $this->expected["tagsets"]["ts2"],
 						 $this->expected["tagsets"]["ts3"],
+						 $this->expected["tagsets"]["ts4"],
 								 ),
                                               "idlist" => array(
                                                  0 => '1', 1 => '2', 2 => '3',
@@ -386,16 +387,23 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
                                'class' => 'norm',
                                'shortname' => '2',
                                'longname' => 'NormTest',
+			       'set_type' => 'open'),
+                         array('id' => '4',
+                               'class' => 'comment',
+                               'shortname' => '4',
+                               'longname' => 'Comment',
 			       'set_type' => 'open'));
 
         $this->assertEquals($tagsets,
-                            $this->dbi->getTagsets(null));
+                            $this->dbi->getTagsets(null),
+                            "Reported tagsets",
+                            $delta = 0.0, $maxDepth = 10, $canonicalize = true);
         $this->assertEquals(array($tagsets[0]),
                             $this->dbi->getTagsets("pos"));
 
         // getTagsetsForFile returns a slightly different array,
         // so we can't use the expected array from above.
-        $this->assertEquals(array(array('id' => '1',
+        $tagsets_gtff = array(array('id' => '1',
                                         'class' => 'pos',
 					'name' => 'ImportTest',
 					'set_type' => 'closed'),
@@ -406,8 +414,16 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
                                   array('id' => '3',
                                         'class' => 'lemma',
 					'name' => 'LemmaTest',
-					'set_type' => 'open')),
-                            $this->dbi->getTagsetsForFile("3"));
+					'set_type' => 'open'),
+                                  array('id' => '4',
+                                        'class' => 'comment',
+					'name' => 'Comment',
+					'set_type' => 'open'));
+
+        $this->assertEquals($tagsets_gtff,
+                            $this->dbi->getTagsetsForFile("3"),
+                            "Reported tagsets for file 3",
+                            $delta = 0.0, $maxDepth = 10, $canonicalize = true);
 
         $lemma_tagset = array(array('id' => '512',
                                     'value' => 'deletedlemma',

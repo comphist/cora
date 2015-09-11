@@ -36,7 +36,6 @@ class DocumentAccessor {
   // SQL statements
   private $stmt_isValidModID = null;
   private $stmt_getSelectedAnnotations = null;
-  private $stmt_getCoraComment = null;
 
   /** Construct a new DocumentAccessor.
    *
@@ -51,7 +50,6 @@ class DocumentAccessor {
 
     $this->prepare_isValidModID();
     $this->prepare_getSelectedAnnotations();
-    $this->prepare_getCoraComment();
   }
 
   protected function warn($message) {
@@ -101,18 +99,6 @@ class DocumentAccessor {
     $this->stmt_getSelectedAnnotations = $this->dbo->prepare($stmt);
   }
 
-  private function prepare_getCoraComment() {
-    $stmt = "SELECT modern.id, comment.id AS comment_id, "
-      . "           comment.value AS value, token.id AS token_id"
-      . "      FROM modern"
-      . " LEFT JOIN token   ON modern.tok_id=token.id"
-      . " LEFT JOIN comment ON comment.tok_id=token.id"
-      . "                  AND comment.subtok_id=modern.id"
-      . "                  AND comment.comment_type='C'"
-      . "     WHERE modern.id=?";
-    $this->stmt_getCoraComment = $this->dbo->prepare($stmt);
-  }
-
   /**********************************************/
 
   /** Test whether a given mod ID belongs to the associated file.
@@ -131,15 +117,6 @@ class DocumentAccessor {
   public function getSelectedAnnotations($modid) {
     $this->stmt_getSelectedAnnotations->execute(array($modid));
     return $this->stmt_getSelectedAnnotations->fetchAll(PDO::FETCH_ASSOC);
-  }
-
-  /** Retrieve CorA-internal comment for a given mod ID.
-   *
-   * @param string $modid A mod ID
-   */
-  public function getCoraComment($modid) {
-    $this->stmt_getCoraComment->execute(array($modid));
-    return $this->stmt_getCoraComment->fetch(PDO::FETCH_ASSOC);
   }
 
   /** Retrieve selected annotations for a given mod ID and index them

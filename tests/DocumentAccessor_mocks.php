@@ -30,7 +30,8 @@ class Cora_Tests_DBInterface_Mock {
       return array(
         array('id' => 1, 'name' => 'ImportTest', 'class' => 'pos', 'set_type' => 'closed'),
         array('id' => 2, 'name' => 'NormTest', 'class' => 'norm', 'set_type' => 'open'),
-        array('id' => 3, 'name' => 'LemmaTest', 'class' => 'lemma', 'set_type' => 'open')
+        array('id' => 3, 'name' => 'LemmaTest', 'class' => 'lemma', 'set_type' => 'open'),
+        array('id' => 4, 'name' => 'Comment', 'class' => 'comment', 'set_type' => 'open')
       );
     } else {
       return array();

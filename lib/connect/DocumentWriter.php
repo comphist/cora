@@ -25,8 +25,6 @@ class DocumentWriter extends DocumentAccessor {
   private $stmt_checkFlag = null;
   private $stmt_insertFlag = null;
   private $stmt_deleteFlag = null;
-  private $stmt_insertComm = null;
-  private $stmt_deleteComm = null;
   private $stmt_insertShift = null;
   private $stmt_markLastPos = null;
 
@@ -76,13 +74,6 @@ class DocumentWriter extends DocumentAccessor {
     $this->stmt_insertFlag = $this->dbo->prepare($stmt);
     $stmt = "DELETE FROM mod2error WHERE `mod_id`=:modid AND `error_id`=:flagid";
     $this->stmt_deleteFlag = $this->dbo->prepare($stmt);
-    $stmt = "INSERT INTO comment"
-      . "           (`id`, `tok_id`, `value`, `comment_type`, `subtok_id`)"
-      . "    VALUES (:id,  :tokid,   :value,  :ctype,         :subtokid)"
-      . "    ON DUPLICATE KEY UPDATE `value`=VALUES(value)";
-    $this->stmt_insertComm = $this->dbo->prepare($stmt);
-    $stmt = "DELETE FROM comment WHERE `id`=:id";
-    $this->stmt_deleteComm = $this->dbo->prepare($stmt);
     $stmt = "INSERT INTO shifttags (`tok_from`, `tok_to`, `tag_type`) "
         . "                 VALUES (:tokfrom,   :tokto,   :type)";
     $this->stmt_insertShift = $this->dbo->prepare($stmt);
@@ -266,34 +257,6 @@ class DocumentWriter extends DocumentAccessor {
     }
   }
 
-  /** Save CorA-internal comment for a given mod.
-   *
-   * @param string $modid A mod ID
-   * @param string $value Comment text to save
-   */
-  protected function saveComment($modid, $value) {
-    $old_comment = $this->getCoraComment($modid);
-    if(empty($value)) {
-      if(!empty($old_comment['comment_id'])) {
-	$this->stmt_deleteComm->execute(array(':id' => $old_comment['comment_id']));
-      }
-    }
-    else {
-      /* -- If there already is a comment, the 'ON DUPLICATE KEY
-	 UPDATE' clause will ensure that it is overwritten.
-	 -- If no comment was previously set, $old_comment will still
-	 provide the 'token_id', while 'comment_id' being NULL will
-	 cause a new database record to be inserted.
-      */
-      $param = array(':id' => $old_comment['comment_id'],
-		     ':tokid' => $old_comment['token_id'],
-		     ':value' => $value,
-                     ':ctype' => 'C',
-		     ':subtokid' => $modid);
-      $this->stmt_insertComm->execute($param);
-    }
-  }
-
   /** Save a new shifttag annotation.
    *
    * @param string $tokfrom Starting token ID of the shifttag
@@ -329,10 +292,6 @@ class DocumentWriter extends DocumentAccessor {
 	else if(substr($property, 0, 5) === "flag_") {
 	  $flagtype = str_replace("_", " ", substr($property, 5));
 	  $this->saveFlag($id, $flagtype, $value);
-	}
-	// save comment
-	else if($property === "comment") {
-	  $this->saveComment($id, $value);
 	}
       }
     }

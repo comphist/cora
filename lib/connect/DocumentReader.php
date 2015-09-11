@@ -39,22 +39,16 @@ class DocumentReader extends DocumentAccessor {
    **********************************************/
 
   private function prepareReaderStatements() {
-    $stmt = "SELECT modern.id, modern.trans, modern.utf, "
-          . "       modern.tok_id, c1.value AS comment "
+    $stmt = "SELECT modern.id, modern.trans, modern.utf, modern.tok_id "
           . "FROM   modern "
           . "  LEFT JOIN token   ON modern.tok_id=token.id "
-          . "  LEFT JOIN comment c1 ON  c1.tok_id=token.id "
-          . "        AND c1.subtok_id=modern.id AND c1.comment_type='C' "
           . "WHERE  token.text_id=:tid "
           . "ORDER BY token.ordnr ASC, modern.id ASC "
           . "LIMIT  :offset, :count";
     $this->stmt_getLinesByRange = $this->dbo->prepare($stmt);
-    $stmt = "SELECT modern.id, modern.trans, modern.utf, "
-          . "       modern.tok_id, c1.value AS comment "
+    $stmt = "SELECT modern.id, modern.trans, modern.utf, modern.tok_id "
           . "FROM   modern "
           . "  LEFT JOIN token   ON modern.tok_id=token.id "
-          . "  LEFT JOIN comment c1 ON  c1.tok_id=token.id "
-          . "        AND c1.subtok_id=modern.id AND c1.comment_type='C' "
           . "WHERE  token.text_id=:tid AND modern.id=:mid";
     $this->stmt_getLinesByID = $this->dbo->prepare($stmt);
     $stmt = "SELECT d.trans, d.line_id FROM dipl d "
