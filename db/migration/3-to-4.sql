@@ -39,15 +39,20 @@ INSERT INTO `tag` (`value`, `tagset_id`)
 SET @tag_first_id = LAST_INSERT_ID();
 
 -- Link the inserted rows to their modern_ids in `tag_suggestion`
+-- NOTE: It's important that we enumerate the rows (with @tag_id) in the same
+--       order that they were inserted in; to do that, we need to wrap the
+--       SELECT in a sub-query, and only add the enumerator on the outer query;
+--       otherwise, MySQL will enumerate BEFORE applying the 'ORDER BY' clause!
 INSERT INTO `tag_suggestion` (`selected`, `tag_id`, `mod_id`)
        SELECT 1 AS `selected`,
               @tag_id := @tag_id + 1 AS `tag_id`,
-              `comment`.`subtok_id` AS `mod_id`
-       FROM `modern`
-       CROSS JOIN (SELECT @tag_id := @tag_first_id - 1) r
-       LEFT JOIN `comment` ON `comment`.`subtok_id`=`modern`.`id`
-       WHERE `comment`.`comment_type`='C'
-       ORDER BY `modern`.`id`;
+              x.`subtok_id` AS `mod_id`
+       FROM  (SELECT `comment`.`subtok_id`
+              FROM `modern`
+              LEFT JOIN `comment` ON `comment`.`subtok_id`=`modern`.`id`
+              WHERE `comment`.`comment_type`='C'
+              ORDER BY `modern`.`id`) x
+       CROSS JOIN (SELECT @tag_id := @tag_first_id - 1) r;
 
 -- Finally, drop the comments from `comment`
 -- NOTE: This will also drop comments with invalid `subtok_id`s (see above),
