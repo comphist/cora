@@ -1,48 +1,3 @@
-# Installation
-
-Before installation, please make sure your system fulfills the
-[requirements for running CorA](index.md#requirements).
-
-## The easy way
-
-The easy (and recommended) way to install CorA is to simply
-[download a prepared build][download_url].  Extract the contents of the archive
-to a local directory, then perform the following steps:
-
-1. Copy the contents of the `www/` subdirectory to your web server directory.
-
-2. Open your web browser and navigate to `<cora>/db/configure_db.php`, where
-   `<cora>` is the URL of your web server directory.  If your web server is set
-   up correctly, this page will guide you through the database installation.
-
-3. If the database installation succeeded, you can now login to your CorA
-   instance.  On a first-time installation, use the username *"admin"* with
-   password *"admin"* to login, but **make sure to change this password** when
-   you login for the first time.
-
-You can follow the same process when updating to a newer version of CorA.
-Copying the files from an archive will *not* reset any configuration options
-you've set, and the `db/configure_db.php` page is capable of upgrading your
-database to a newer version, if needed.
-
-**IMPORTANT:** You should make absolutely sure that no-one except you can access
-  the `db/` subdirectory.  Anyone with access to this directory can potentially
-  **execute arbitrary commands** on your server!  We recommend setting very
-  restrictive access permissions in your web server while you install CorA, and
-  deleting the `db/` directory afterwards since it is no longer needed.
-
-## The hard way
-
-If you'd like to modify any part of the CorA source code, run the unit tests, or
-build the API documentation, you need to
-[clone the git repository][git_repo] on your local
-machine.  CorA uses [CMake](http://www.cmake.org/) to automate the necessary
-tasks.  This process is described in more detail in the `INSTALL.md` file in the
-repository.
-
-
-# Configuration
-
 General configuration options of CorA are stored in PHP files in the web
 directory.  Be aware that these configuration files **contain sensitive
 information** such as the database password used by CorA.  Setting restrictive
@@ -53,7 +8,7 @@ along with their default settings.  **Do not modify** this file directly!
 Instead, create or modify `config.php`, which may contain a list of user-defined
 options that override any of the default settings.
 
-This is a list of configuration options you can currently use:
+## List of configuration options
 
 + `dbinfo` should return an array with information required for connecting to
   the database, namely:
@@ -92,8 +47,3 @@ This is a list of configuration options you can currently use:
 
 + `title` is the name of this CorA instance, used in the HTML title tag and
   displayed at the top of each page.
-
-
-
-[git_repo]: https://bitbucket.org/mbollmann/cora/
-[download_url]: https://bitbucket.org/mbollmann/cora/downloads

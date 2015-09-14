@@ -4,8 +4,14 @@ repo_url: https://bitbucket.org/mbollmann/cora/
 theme: readthedocs
 pages:
   - Home: index.md
-  - Installation and Configuration: setup.md
-  - Administrating your CorA instance: admin.md
+  - Installation and Configuration:
+      - 'Installation': setup-install.md
+      - 'Server-Side Configuration': setup-config.md
+  - Administrative Tasks:
+      - 'Managing User Accounts': admin-users.md
+      - 'Managing Projects': admin-projects.md
+      - 'Managing Tagsets': admin-tagsets.md
+      - 'Embedding External Annotation Tools': admin-taggers.md
   - Using the web interface: using.md
   - Annotation layers: layers.md
   - CorA XML file format: coraxml.md

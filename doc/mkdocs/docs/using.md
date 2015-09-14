@@ -31,5 +31,4 @@ clicking on the tab names.
 
 + The **"admin" tab** is only available if your account has administrator
   rights; its functionality is described in the
-  [section on administrating CorA](admin.md).
-
+  [section on administrating CorA](admin-users.md).
