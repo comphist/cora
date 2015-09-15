@@ -1,3 +1,13 @@
+Everyone who wants to access your CorA instance needs their own user account.
+Currently, user accounts need to be created individually by an administrator
+&mdash; is not possible for new users to create an account themselves.
+
+**IMPORTANT:** Do not share accounts!  In particular, do not use the same
+  account simultaneously on multiple machines or in multiple browsers!  Doing so
+  can lead to erratic and unexpected behaviour.
+
+- - -
+
 To manage user accounts, change to the tab "Administration" while logged in to
 CorA with an administrator account.
 
@@ -34,3 +44,7 @@ Here, you can:
 
 + **Delete a user account** by clicking on ![a red 'X'](img/icon-delete.png) at
   the end of the row.  Be careful, this action currently cannot be undone!
+
+If you want your users to be able to do anything meaningful in CorA, you have to
+[assign them to projects](admin-projects.md) first.  Users will only able to
+view or edit documents in projects that they've been assigned to.

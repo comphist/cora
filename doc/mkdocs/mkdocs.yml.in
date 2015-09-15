@@ -12,7 +12,9 @@ pages:
       - 'Managing Projects': admin-projects.md
       - 'Managing Tagsets': admin-tagsets.md
       - 'Embedding External Annotation Tools': admin-taggers.md
-  - Using the web interface: using.md
+  - Working on Documents:
+      - 'Using the web interface': using.md
+      - 'Editing Tokens': edittoken.md
   - Annotation layers: layers.md
   - CorA XML file format: coraxml.md
 docs_dir: ${CMAKE_SOURCE_DIR}/doc/mkdocs/docs/
