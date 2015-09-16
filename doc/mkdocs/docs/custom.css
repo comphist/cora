@@ -15,3 +15,7 @@ p.figure-caption.align-center {
   margin-top: -24px;
   margin-bottom: 24px;
 }
+
+.rst-content .section ul li p:last-child {
+  margin-bottom: 12px;
+}
