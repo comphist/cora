@@ -318,13 +318,21 @@ var gui = {
         if (this.serverNoticeShowing || this.serverNoticeQueue.length < 1)
             return;
         var notice = this.serverNoticeQueue.shift();
-        var n_type = (notice.type == 'alert') ? 'notice' : 'info';
+        var n_type = this.mapServerNoticeType(notice.type);
         this.serverNoticeShowing = true;
         this.showNotice(n_type, notice.text, true,
                         function() {
                             this.serverNoticeShowing = false;
                             this.processServerNotices();
                         }.bind(this));
+    },
+
+    /* Function: mapServerNoticeType
+
+       Maps a server notice type to mBox dialog type.
+     */
+    mapServerNoticeType: function(stype) {
+        return (stype == 'alert') ? 'notice' : 'info';
     },
 
     /* Function: showTab

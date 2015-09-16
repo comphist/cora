@@ -855,7 +855,17 @@ cora.noticeEditor = {
         new mBox.Modal({
             title: "Neue Server-Benachrichtigung erstellen",
             content: $('templateCreateNotice'),
-            buttons: [ {title: "Abbrechen", addClass: "mform"},
+            buttons: [ {title: "Vorschau", addClass: "mform button_left",
+                        event: function() {
+                            var stype = this.content
+                                            .getElement('select[name=noticetype]')
+                                            .getSelected()[0].get('value');
+                            gui.showNotice(gui.mapServerNoticeType(stype),
+                                           this.content
+                                               .getElement('textarea').get('value')
+                                          );
+                        }},
+                       {title: "Abbrechen", addClass: "mform"},
                        {title: "Erstellen", addClass: "mform button_green",
                         event: function() {
                             if(performRequest(this.content))
