@@ -2,6 +2,8 @@ site_name: ${CMAKE_PROJECT_NAME} ${CMAKE_PROJECT_VERSION} User Documentation
 site_author: Marcel Bollmann
 repo_url: https://bitbucket.org/mbollmann/cora/
 theme: readthedocs
+markdown_extensions:
+  - footnotes
 pages:
   - Home: index.md
   - Installation and Configuration:

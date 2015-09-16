@@ -9,7 +9,7 @@ To manage projects, change to the tab "Administration" while logged in to
 CorA with an administrator account.
 
 + **Create a new project** by clicking the "Add Project" button at the top of
-  the page.  You will be prompted for a name for the project, and can edit
+  the page.  You will be prompted for the project's name first, and can edit
   individual settings afterwards.
 
 You can manage existing projects in the "Project Management" section of the
