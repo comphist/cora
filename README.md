@@ -5,7 +5,11 @@ CorA is a web-based annotation tool for non-standard language data.
 * Current version: **1.2**
 * [CorA project website](http://www.linguistics.rub.de/comphist/resources/cora/)
 
-**TODO:** determine a license
+The source code of CorA is provided under the
+[MIT license](https://opensource.org/licenses/MIT).  See `LICENSE` for details.
+
+If you have any questions about this project, please contact Marcel Bollmann
+<bollmann@linguistics.rub.de>.
 
 ## Dependencies ##
 
@@ -21,9 +25,9 @@ To host CorA on your own machine, you need at least the following:
 * MySQL 5.5+ (**TODO:** which version?)
 
 If you plan to build CorA yourself, further dependencies are needed; see
-INSTALL.md for details.
+`INSTALL.md` for details.
 
-## Installing CorA ##
+## Installation ##
 
 The easy way to install CorA is to simply
 [download an archive containing a prepared build](https://bitbucket.org/mbollmann/cora/downloads).
@@ -53,3 +57,17 @@ following steps:
   immediately after you login for the first time.
 
 That's it!
+
+## Acknowledgements ##
+
+The following people have directly contributed to the source code of this
+project:
+
++ Marcel Bollmann <bollmann@linguistics.rub.de>
++ Florian Petran <petran@linguistics.rub.de>
+
+Many thanks to all users who provided feedback on this software!
+
+The development of this software was supported by
+[Deutsche Forschungsgemeinschaft (DFG)](http://www.dfg.de/), Grants
+Nos. 1558/1-1/2 and 1558/5-1.
