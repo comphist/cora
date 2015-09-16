@@ -2,7 +2,7 @@ Tagsets (or "annotation layers") can be of two types: *open* or *closed*.  In
 open annotation layers, annotations can be of any value and are typically
 entered in a text field.  Closed annotation layers, on the other hand, have a
 list of allowed values (= a "tagset" in the traditional sense), which are
-typically selected in a dropdown box &mdash; part-of-speech tags are a common
+typically selected in a dropdown box --- part-of-speech tags are a common
 example.  To use a closed annotation layer, you first need to provide this list
 of allowed values.
 
@@ -18,8 +18,8 @@ CorA with an administrator account.
 
 A tagset file is simply a **text file containing one tag per line.**
 
-In a tagset file, lines beginning with a caret (^) have a special meaning: the
-tag in this line will be marked as "needing correction".  This means that it
+In a tagset file, **lines beginning with a caret (^)** have a special meaning:
+the tag in this line will be marked as "needing correction".  This means that it
 will not be available for selection by the user, and will be marked in red when
 it occurs in a document.  However, it is still an accepted value when importing
 or automatically annotating a document.  This way, old/deprecated/temporary tag
@@ -49,3 +49,7 @@ one dot, and that dot is at the end of the line, it is considered to be part of
 the "base POS" tag.  This is because some part-of-speech tagsets define tags for
 punctuation that end on a dot (e.g., "$." in
 [STTS](http://www.isocat.org/rest/dcs/376)).
+
+*[POS]: part-of-speech
+
+*[STTS]: Stuttgart-Tübingen-TagSet

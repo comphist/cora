@@ -5,13 +5,15 @@ available: editing (modifying), adding, and deleting a token.  They can all be
 accessed by clicking on ![the dropdown icon](img/icon-dropdown.png) in the
 respective row in the editor.
 
-NOTE: To use this feature, a
-[token editing script](admin-projects.md#setting-a-token-editing-script) must
-first be defined by an administrator in the
-[project settings](admin-projects.md).
+!!! note "Note"
+    To use this feature, a
+    [token editing script](admin-projects.md#setting-a-token-editing-script)
+    must first be defined by an administrator in the
+    [project settings](admin-projects.md).
 
-**IMPORTANT:** All edit operations currently **cannot be undone** and should
-  therefore be used with caution!
+!!! danger "Danger"
+    All edit operations currently **cannot be undone** and should
+    therefore be used with caution!
 
 ### Editing (modifying) a token
 
@@ -27,8 +29,8 @@ retained if possible.
 
 Note that you can only edit **a single token at a time!** In particular, you
 **should not** include spaces etc. in the new token string to indicate token
-boundaries. If you want to split up an existing token &mdash; say, "foobar"
-&mdash; into two separate tokens "foo" and "bar", the correct way is to add a
+boundaries. If you want to split up an existing token --- say, "foobar"
+--- into two separate tokens "foo" and "bar", the correct way is to add a
 new token "foo", then change the existing token "foobar" to "bar".
 
 It is possible that the server-side script rejects the changes; e.g., it could

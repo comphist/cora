@@ -25,7 +25,7 @@ settings...", namely:
   [see below for details](#setting-an-import-script).
 
 + **User associations**: Select all users that should have access to this
-  project.  There is currently no fine-grained rights management &mdash; anyone
+  project.  There is currently no fine-grained rights management --- anyone
   with access to a project has read/write access to all files contained within.
 
 + **Default tagset associations**: Select all tagsets to be linked to new
@@ -34,14 +34,15 @@ settings...", namely:
   "File" tab, then click on "Tagsets..." to view and/or change all associated
   tagsets.
 
-**IMPORTANT:** When associating texts with tagsets, make absolutely sure that
-  your selection includes 1) a *maximum of one* tagset for each type; and 2)
-  *exactly one* tagset of type 'pos'.  *(The second restriction exists for
-  historical reasons, and might be dropped someday.)* The system currently does
-  not prevent you from creating associations that violate these criteria, but
-  CorA will not work properly otherwise.  To learn more about tagsets and what
-  the different types mean, refer to
-  [the section on annotation layers](layers.md).
+!!! attention "Attention"
+    When associating texts with tagsets, make absolutely sure that
+    your selection includes 1) a *maximum of one* tagset for each type; and 2)
+    *exactly one* tagset of type 'pos'.  *(The second restriction exists for
+    historical reasons, and might be dropped someday.)* The system currently
+    does not prevent you from creating associations that violate these criteria,
+    but CorA will not work properly otherwise.  To learn more about tagsets and
+    what the different types mean, refer to
+    [the section on annotation layers](layers.md).
 
 ## Setting a token editing script
 
@@ -118,6 +119,10 @@ While an import script is running, the user sees a progress dialog similar to
 this one:
 
 ![Dialog window while importing a file](img/dialog-import.png)
+{: .figure .align-center}
+
+Dialog window while importing a file
+{: .figure-caption .align-center}
 
 The contents of this window are **determined by the output of the import
 script.** Of the output that is written to STDOUT, CorA recognizes certain lines
@@ -141,3 +146,5 @@ For **a simple solution**, you can take a look at the
 a text file with one token per line and converts it into a simple CorA-XML
 document.  *(This doesn't use any of the advanced features, such as layout
 information, of the [CorA document model](document-model.md), though.)*
+
+*[JSON]: JavaScript Object Notation

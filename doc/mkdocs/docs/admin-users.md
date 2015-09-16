@@ -1,10 +1,11 @@
 Everyone who wants to access your CorA instance needs their own user account.
 Currently, user accounts need to be created individually by an administrator
-&mdash; is not possible for new users to create an account themselves.
+-- is not possible for new users to create an account themselves.
 
-**IMPORTANT:** Do not share accounts!  In particular, do not use the same
-  account simultaneously on multiple machines or in multiple browsers!  Doing so
-  can lead to erratic and unexpected behaviour.
+!!! attention "Attention"
+    Do not share accounts!  In particular, do not use
+    the same account simultaneously on multiple machines or in multiple
+    browsers!  Doing so can lead to erratic and unexpected behaviour.
 
 - - -
 

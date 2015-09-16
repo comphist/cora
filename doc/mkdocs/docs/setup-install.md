@@ -23,11 +23,12 @@ Copying the files from an archive will *not* reset any configuration options
 you've set, and the `db/configure_db.php` page is capable of upgrading your
 database to a newer version, if needed.
 
-**IMPORTANT:** You should make absolutely sure that no-one except you can access
-  the `db/` subdirectory.  Anyone with access to this directory can potentially
-  **execute arbitrary commands** on your server!  We recommend setting very
-  restrictive access permissions in your web server while you install CorA, and
-  deleting the `db/` directory afterwards since it is no longer needed.
+!!! danger "Danger"
+    You should make absolutely sure that no-one except you can access the `db/`
+    subdirectory.  Anyone with access to this directory can potentially
+    **execute arbitrary commands** on your server!  We recommend setting very
+    restrictive access permissions in your web server while you install CorA,
+    and deleting the `db/` directory afterwards since it is no longer needed.
 
 ## The hard way
 

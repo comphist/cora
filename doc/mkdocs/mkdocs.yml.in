@@ -3,7 +3,13 @@ site_author: Marcel Bollmann
 repo_url: https://bitbucket.org/mbollmann/cora/
 theme: readthedocs
 markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
   - footnotes
+  - sane_lists
+  - smarty
 pages:
   - Home: index.md
   - Installation and Configuration:

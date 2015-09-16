@@ -1,0 +1,17 @@
+p.align-center {
+  text-align: center;
+}
+
+p.figure.align-center {
+  margin-bottom: 24px;
+}
+
+p.figure-caption {
+  font-style: italic;
+  font-size: 95%;
+}
+
+p.figure-caption.align-center {
+  margin-top: -24px;
+  margin-bottom: 24px;
+}
