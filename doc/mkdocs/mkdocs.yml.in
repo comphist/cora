@@ -16,10 +16,11 @@ pages:
       - 'Installation': setup-install.md
       - 'Server-Side Configuration': setup-config.md
   - Administrative Tasks:
-      - 'Managing User Accounts': admin-users.md
-      - 'Managing Projects': admin-projects.md
-      - 'Managing Tagsets': admin-tagsets.md
-      - 'Embedding External Annotation Tools': admin-taggers.md
+      - 'User Accounts': admin-users.md
+      - 'Projects': admin-projects.md
+      - 'Tagsets': admin-tagsets.md
+      - 'External Annotation Tools': admin-taggers.md
+      - 'Server Notifications': admin-notices.md
   - Working on Documents:
       - 'Using the web interface': using.md
       - 'Editing Tokens': edittoken.md

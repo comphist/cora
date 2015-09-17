@@ -13,7 +13,8 @@ tools and call them directly from the GUI.
     This is a very powerful feature, but it's also one of the less
     developed ones.  Depending on the software that you want to use, setting it
     up for use within CorA might require a bit of work and knowledge of PHP
-    programming.
+    programming.  Also, many details of the implementation are still subject to
+    change.
 
 - - -
 
@@ -100,7 +101,7 @@ RFTagger
       + **wc**: path to RFTagger wordclass file (required)
 
 DualRFTagger
-:   Combines two instances of RFTaggerAnnotator: one using a provided parameter
+:   Combines two instances of RFTagger: one using a provided parameter
     file; the other one individually trained.  During annotation, both instances
     are called.  The tag returned by the individually trained model is chosen if
     either (a) the input token was already seen during training (with a number
@@ -115,7 +116,19 @@ DualRFTagger
 
 ### Writing your own interface
 
-**TODO!**
+If you'd like to integrate some external tool that is not covered by one of the
+interface classes above, you need to write your own PHP class for it.
+
+All annotation interfaces reside in `<cora-dir>/lib/annotation/`.  There is a
+base class "AutomaticAnnotator" (in `AutomaticAnnotator.php`) from which all
+other interfaces should inherit.  Place your custom interface, say, "FooTagger",
+in a file `FooTagger.php` in this directory.  You can then create a new
+annotator in CorA with a PHP class of "FooTagger" which uses this interface.
+
+Please refer to the code documentation for more details on what your custom
+class should implement.
+
+
 
 [rftagger]: http://www.cis.uni-muenchen.de/~schmid/tools/RFTagger/
 

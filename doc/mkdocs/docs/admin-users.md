@@ -43,8 +43,9 @@ Here, you can:
   for a user is purely for informational purposes.  Users cannot see the notes
   you've assigned to them.
 
-+ **Delete a user account** by clicking on ![a red 'X'](img/icon-delete.png) at
-  the end of the row.  Be careful, this action currently cannot be undone!
++ **Delete a user account** by clicking on the ![red 'X'](img/icon-delete.png)
+  symbol at the end of the row.  Be careful, this action currently cannot be
+  undone!
 
 If you want your users to be able to do anything meaningful in CorA, you have to
 [assign them to projects](admin-projects.md) first.  Users will only able to
