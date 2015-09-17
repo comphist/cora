@@ -17,7 +17,7 @@ admin page.  Individual settings can be changed by clicking on "Edit
 settings...", namely:
 
 + **Script for editing tokens**: The command to be run whenever
-  [a token is edited](edittoken.md);
+  [a token is edited](doc-edit.md);
   see [below for details](#setting-a-token-editing-script).
 
 + **Script for importing new texts**: The command used for importing new
@@ -46,7 +46,7 @@ settings...", namely:
 
 ## Setting a token editing script
 
-CorA offers the feature to [edit the document itself](edittoken.md) if the need
+CorA offers the feature to [edit the document itself](doc-edit.md) if the need
 arises.  In order to use this feature, a script that handles the editing must be
 set in the project settings.
 

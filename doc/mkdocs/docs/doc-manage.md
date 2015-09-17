@@ -23,7 +23,7 @@ On this tab, you can see all projects that you have access to, and all files
     the project's access settings), can always delete *any* file, and can
     forcibly close files opened by other users.
 
-### Importing a document
+## Importing a document
 
 There are two ways to import documents into CorA, both of which can be accessed
 by clicking on the respective button at the top of the page:
@@ -50,7 +50,7 @@ In both cases, you will be prompted for information about your document:
     Furthermore, administrators can **view and change the tagset links** of
     existing documents by clicking on "Tagsets..." in the document list.
 
-### Exporting a document
+## Exporting a document
 
 You can export any document by clicking on "Export..." in the document list.
 The following export formats are available:
@@ -70,4 +70,3 @@ Format", is planned but not yet available.
  format", which only exists for legacy reasons and might be removed at any time.
  It is functionally almost identical to "Export as CSV" with columns "Token
  (ASCII)", "Normalization", "Modernization", "Modernization Type".)*
- 

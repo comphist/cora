@@ -23,8 +23,8 @@ pages:
       - 'Server Notifications': admin-notices.md
   - Working on Documents:
       - 'Managing Documents': doc-manage.md
-      - 'Using the web interface': using.md
-      - 'Editing Tokens': edittoken.md
+      - 'Using the Editor': doc-annotate.md
+      - 'Editing Tokens': doc-edit.md
   - Further Information:
       - 'Annotation Layers': layers.md
       - 'Document Model': document-model.md

@@ -12,7 +12,7 @@ server**, you might want to start with the sections on
 
 + If you are a **user working with an existing CorA installation**, you might
   want to jump straight to the
-  [information on using the web interface](using.md).
+  [information on using the web interface](doc-annotate.md).
 
 ## Requirements
 
