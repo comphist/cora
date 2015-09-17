@@ -1,5 +1,11 @@
-Before installation, please make sure your system fulfills the
-[requirements for running CorA](index.md#requirements).
+To install and run your own instance of CorA on a server, you need:
+
+* A web server, such as [Apache](http://httpd.apache.org/)
+* [PHP 5.3](http://www.php.net/) or newer, with the following extensions:
+    * dom
+    * json
+    * libxml
+* [MySQL 5.5](http://www.mysql.com/) or newer
 
 ## The easy way
 

@@ -12,6 +12,7 @@ markdown_extensions:
   - smarty
 pages:
   - Home: index.md
+  - Introduction: intro.md
   - Installation and Configuration:
       - 'Installation': setup-install.md
       - 'Server-Side Configuration': setup-config.md
