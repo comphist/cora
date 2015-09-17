@@ -24,6 +24,9 @@ pages:
   - Working on Documents:
       - 'Managing Documents': doc-manage.md
       - 'Using the Editor': doc-annotate.md
+      - 'Customize the Editor': doc-customize.md
+      - 'Searching in a Document': doc-search.md
+      - 'Calling External Annotators': doc-taggers.md
       - 'Editing Tokens': doc-edit.md
   - Further Information:
       - 'Annotation Layers': layers.md
