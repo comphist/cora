@@ -1,6 +1,6 @@
 <?php
 
-/** @file RFTaggerAnnotator.php
+/** @file RFTagger.php
  * Wrapper class for the RFTagger.
  *
  * @author Marcel Bollmann
@@ -11,7 +11,7 @@ require_once( "AutomaticAnnotator.php" );
 
 /** Annotates POS tagsets by wrapping the RFTagger.
  */
-class RFTaggerAnnotator extends AutomaticAnnotator {
+class RFTagger extends AutomaticAnnotator {
     private $tmpfiles = array();
     private $minimum_span_size = 5;
     private $lowercase_all = false;

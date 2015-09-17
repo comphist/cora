@@ -1,6 +1,6 @@
 <?php
 
-/** @file DualRFTaggerAnnotator.php
+/** @file DualRFTagger.php
  * Combination of two RFTaggers.
  *
  * @author Marcel Bollmann
@@ -8,11 +8,11 @@
  */
 
 require_once( "AutomaticAnnotator.php" );
-require_once( "RFTaggerAnnotator.php" );
+require_once( "RFTagger.php" );
 
 /** Annotates POS tagsets using RFTagger and two distinct models.
  *
- * This tagger combines two instances of RFTaggerAnnotator: one using
+ * This tagger combines two instances of RFTagger: one using
  * a fixed, pre-computed model; another one individually retrainable.
  *
  * During annotation, it calls both instances.  The tag returned by the
@@ -22,7 +22,7 @@ require_once( "RFTaggerAnnotator.php" );
  * (b) the fixed model returned "?" as its tag.  Otherwise, the tag from the
  * fixed model is chosen.
  */
-class DualRFTaggerAnnotator extends AutomaticAnnotator {
+class DualRFTagger extends AutomaticAnnotator {
     private $fixedRFT;
     private $variableRFT;
     private $vocabulary = array();
@@ -31,8 +31,8 @@ class DualRFTaggerAnnotator extends AutomaticAnnotator {
 
     public function __construct($prfx, $opts) {
         parent::__construct($prfx, $opts);
-        $this->fixedRFT = new RFTaggerAnnotator($prfx, $opts);
-        $this->variableRFT = new RFTaggerAnnotator($prfx, $opts);
+        $this->fixedRFT = new RFTagger($prfx, $opts);
+        $this->variableRFT = new RFTagger($prfx, $opts);
         $this->variableRFT->setParameterFile(null);
 
         if(!array_key_exists("vocab", $this->options)) {
