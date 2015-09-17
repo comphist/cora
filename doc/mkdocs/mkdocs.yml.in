@@ -22,6 +22,7 @@ pages:
       - 'External Annotation Tools': admin-taggers.md
       - 'Server Notifications': admin-notices.md
   - Working on Documents:
+      - 'Managing Documents': doc-manage.md
       - 'Using the web interface': using.md
       - 'Editing Tokens': edittoken.md
   - Further Information:

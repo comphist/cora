@@ -16,8 +16,10 @@ Setting a server notification has the following effects:
 
 1. Users who are currently logged in to CorA will see the notification, usually
    within a minute or two.
+
 2. All users will see the notification once after they log in, for each time
    they log in.
+
 3. After the set expiration date, the notification will automatically be deleted
    and not shown to users anymore.
 
