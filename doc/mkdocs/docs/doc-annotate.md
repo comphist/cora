@@ -1,7 +1,8 @@
 When you've [opened a document](doc-manage.md) in CorA, you can switch to the
 tab "Edit", where you can view the document contents and make annotations.  The
-tab consists of a [**toolbar**](#the-toolbar) and an
-[**editor table**](#the-editor-table).
+tab consists of a [**toolbar**](#the-toolbar), the
+[**editor table**](#the-editor-table), and (optionally) a
+[**text preview**](#horizontal-text-preview).
 
 ## The toolbar
 
@@ -106,3 +107,21 @@ several hours' worth of work.
 If you want to discard any recent changes that you've made, you can always use
 the **undo button** (![undo button](img/editor-toolbar-undo.png){: .inline}) in
 the toolbar.
+
+## Horizontal text preview
+
+At the bottom of the page, you will find a text preview field that shows an
+excerpt from the currently opened document.  Contrary to the editor table, which
+shows one token per line, the text preview shows the text consecutively (or
+"horizontally").  This allows you to easily read the passage that you're
+currently annotating.
+
+While navigating within the editor table, the token corresponding to the row
+you're currently in is **highlighted** in the text preview.  Furthermore, the
+preview shows **up to 30 tokens before and after** the current page in the
+editor.  This allows you to, for example, set the number of displayed lines per
+page low enough so you don't need to scroll, but still see enough textual
+context to make informed decisions during annotation.
+
+You can [customize](doc-customize.md) which token representation is shown in the
+text preview, or turn it off completely.
