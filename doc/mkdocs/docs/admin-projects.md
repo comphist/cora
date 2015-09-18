@@ -118,7 +118,7 @@ An import script must:
 While an import script is running, the user sees a progress dialog similar to
 this one:
 
-![Dialog window while importing a file](img/dialog-import.png)
+![](img/dialog-import.png)
 {: .figure .align-center}
 
 Dialog window while importing a file

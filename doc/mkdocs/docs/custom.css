@@ -41,3 +41,10 @@ td.min-120 {
 .rst-content .section ul li p:last-child {
   margin-bottom: 12px;
 }
+
+/* footnotes */
+div.footnote li, div.footnote li p {
+  font-size: 12px;
+  line-height: 20px;
+  margin-bottom: 20px;
+}

@@ -1,10 +1,10 @@
-Tagsets (or "annotation layers") can be of two types: *open* or *closed*.  In
-open annotation layers, annotations can be of any value and are typically
-entered in a text field.  Closed annotation layers, on the other hand, have a
-list of allowed values (= a "tagset" in the traditional sense), which are
-typically selected in a dropdown box --- part-of-speech tags are a common
-example.  To use a closed annotation layer, you first need to provide this list
-of allowed values.
+[Tagsets (or "annotation layers")](layers.md) can be of two types: [*open*
+or *closed*](layers.md#open-vs-closed-layers).  In open annotation
+layers, annotations can be of any value and are typically entered in a text
+field.  Closed annotation layers, on the other hand, have a list of allowed
+values (= a "tagset" in the traditional sense), which are typically selected in
+a dropdown box --- part-of-speech tags are a common example.  To use a closed
+annotation layer, you first need to provide this list of allowed values.
 
 - - -
 

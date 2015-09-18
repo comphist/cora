@@ -41,6 +41,8 @@ In both cases, you will be prompted for information about your document:
 + A **name** for your document.
 + (Optionally) a **custom ID** for your document.
 
+<a name="tagset-links"></a>
+
 !!! note "Note"
     Administrators can also **specify the tagset links** for the
     document; normal users cannot, but instead have to rely on the
