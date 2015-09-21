@@ -48,3 +48,31 @@ div.footnote li, div.footnote li p {
   line-height: 20px;
   margin-bottom: 20px;
 }
+
+/* tokenization examples */
+table.tokenization {
+    margin: 20px auto;
+    border-spacing: 8px;
+}
+
+table.tokenization td.label, table.tokenization th.label {
+    font-variant: small-caps;
+}
+
+table.tokenization td.tok, table.tokenization th.tok {
+    font-family: serif;
+    font-size: large;
+    text-align: center;
+}
+
+table.tokenization tr.token-dipl td.tok {
+    //background-color: lightblue !important;
+}
+
+table.tokenization tr.token-tok td.tok {
+    //background-color: lightyellow !important;
+}
+
+table.tokenization tr.token-mod td.tok {
+    //background-color: lightgreen !important;
+}
