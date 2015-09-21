@@ -51,8 +51,8 @@ Name                                  | Type           | Class
 [Modernization](#modernization)       | norm_broad     | open
 [Modernization type](#modernization-type) | norm_type  | closed
 [Boundaries](#boundaries)             | boundary       | closed
-[Comments](#comments)                 | comment        | open
-[Secondary comments](#comments)       | sec_comment    | open
+[Comments](#comments-secondary-comments) | comment        | open
+[Secondary comments](#comments-secondary-comments) | sec_comment    | open
 
 ### Part-of-speech (POS)
 
@@ -85,8 +85,7 @@ can be [conveniently hidden](doc-customize.md) in this case.
 
 ### Lemmatization
 
-Lemma annotation in form of an open tagset, represented by a text box in the
-editor.
+Lemma annotation is an open annotation layer represented by a text box.
 
 Lemmatization always comes with a **lemma verification checkbox** that turns
 green when you click on it.  When entering a lemma, the system will search for
@@ -132,6 +131,105 @@ Special characters, such as accented letters, are conflated with their "simple"
 counterparts to a certain degree,[^conflation] so that entering 'a' in the lemma
 field would find auto-complete suggestions like 'à' or 'âme'.
 
+### Lemma part-of-speech
+
+Part-of-speech annotation for the lemmatization, in case you want to distinguish
+between POS annotation of the wordform versus the lemma.
+
+Like the usual [part-of-speech annotation](#part-of-speech-pos), this is a
+closed tagset and represented by a dropdown box, but with two important
+differences:
+
+1. It supports only one dropdown box (i.e., there is no such thing as "lemma
+   morphology").
+
+2. If the lemma part-of-speech is empty and the user selects a (token)
+   part-of-speech tag, the lemma POS field will auto-select the first entry
+   that *begins with the same string* as the selected POS tag. (For example, if
+   the user annotates part-of-speech with "VVIMP", the lemma POS field might
+   auto-select the tag "VV", if such a tag exists.)
+
+### Normalization
+
+Normalization is an open annotation layer represented by a text box, and
+intended for some kind of "standardized" form of the annotated token (e.g.,
+modern forms of historical words, tokens with corrected spelling, long forms of
+abbreviations, ...).
+
+There is no special functionality attached to the text field, except that it can
+be used as input for [external annotators](admin-taggers.md#tagger-interfaces)
+in place of the original token.
+
+### Modernization
+
+Modernization is an open annotation layer represented by a text box, and
+intended to be a "broader" form of [normalization](#normalization).
+
+As long as it's empty, the associated text box will show a grayed-out copy of
+the [normalization](#normalization) field.  This reflects our original intention
+that modernization only needs to be annotated if it would actually differ from
+normalization.  In practice, since it is a simple text box, you can use the
+field in any way you like.
+
+![](img/layers-norm_all.png)
+{: .figure .align-center}
+
+Normalization, modernization, and modernization type side-by-side
+{: .figure-caption .align-center}
+
+You can find more details about our own definition of "modernization" (as well
+as ["modernization type"](#modernization-type)) in the following paper:
+
+> Julia Krasselt, Marcel Bollmann, Stefanie Dipper, and Florian Petran
+> (2015). [Guidelines für die Normalisierung historischer deutscher Texte / Guidelines for Normalizing Historical German Texts.](http://www.linguistics.rub.de/bla/015-krasselt_etal2015.pdf)
+> *Bochumer Linguistische Arbeitsberichte:* 15.
+
+### Modernization type
+
+Modernization type is a closed tagset, represented as a dropdown box that is
+conditioned on [modernization](#modernization): it is only active when the
+modernization field is filled.
+
+!!! attention "Attention"
+    It is not particularly useful to have a "modernization
+    type" without "modernization", since the dropdown box will always be
+    disabled in this case.
+
+It can be used to specify the type of content in the modernization column.  You
+can find more details about our intended meaning of "modernization type" (as
+well as ["modernization"](#modernization)) in the following paper:
+
+> Julia Krasselt, Marcel Bollmann, Stefanie Dipper, and Florian Petran
+> (2015). [Guidelines für die Normalisierung historischer deutscher Texte / Guidelines for Normalizing Historical German Texts.](http://www.linguistics.rub.de/bla/015-krasselt_etal2015.pdf)
+> *Bochumer Linguistische Arbeitsberichte:* 15.
+
+### Boundaries
+
+Boundary annotation consists of a check box combined with a dropdown box; the
+dropdown box is only active when the checkbox is checked.
+
+![](img/layers-boundary.png)
+{: .figure .align-center}
+
+Boundary annotations
+{: .figure-caption .align-center}
+
+This layer is intended for marking structural boundaries, such as phrase,
+clause, or sentence boundaries.  Activating the checkbox marks the respective
+token as a boundary, while the dropdown box can be used to further specify the
+type of boundary.
+
+### Comments / Secondary comments
+
+Comments are represented by a text box that can be used in any way you wish.  It
+grows larger while active (e.g. by clicking into it), to make it easier to read
+and write longer comments.
+
+In case you'd like to distinguish between two types of comments (e.g. comments
+for internal use vs. comments to be included in a released corpus), there is
+another annotation layer for "secondary comments" which is functionally
+identical to "comments".
+
 
 
 [^tagsets]: This is for historical reasons: since POS annotation came first, and
@@ -144,5 +242,3 @@ really have a tagset in the usual sense).
 query, possibly depending on the MySQL version on the server, according to
 the ["utf8_general_ci"
 collation chart](http://collation-charts.org/mysql60/mysql604.utf8_general_ci.european.html).
-
-*[POS]: part-of-speech
