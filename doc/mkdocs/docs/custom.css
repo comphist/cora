@@ -64,15 +64,3 @@ table.tokenization td.tok, table.tokenization th.tok {
     font-size: large;
     text-align: center;
 }
-
-table.tokenization tr.token-dipl td.tok {
-    //background-color: lightblue !important;
-}
-
-table.tokenization tr.token-tok td.tok {
-    //background-color: lightyellow !important;
-}
-
-table.tokenization tr.token-mod td.tok {
-    //background-color: lightgreen !important;
-}

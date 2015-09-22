@@ -161,7 +161,7 @@ could have the following representations:
     </tbody>
 </table>
 
-Here is an overview of which tokenization layers supports which representations:
+Here is an overview of which representations are supported by the tokenization layers:
 
 <table class="tokenization">
     <thead>
@@ -183,10 +183,47 @@ Here is an overview of which tokenization layers supports which representations:
 </table>
 
 
-
 ## Layout
 
-This section is referenced in admin-projects.md.
+Layout information is intended as a way to preserve information about the
+original structure of a document.  This data is mainly just stored internally
+and shown in the ["Line"
+column of the editor table](doc-annotate.md#the-editor-table), but
+cannot be modified in any way within the web interface.
+
+[Diplomatic tokens](#tokenization) form the basis for layout information, since
+they represent the tokenization as found in the source document.  There are
+three levels of layout elements:
+
++ **Pages** are at the highest level of layout elements; they can be named with
+  up to 16 characters, so you aren't restricted to numbers, and can optionally
+  have a (one-character) "side" identifier (e.g., *r*ecto and *v*erso is
+  commonly used with historical documents).
+
++ **Columns** can subdivide pages and have a one-character name.
+
++ **Lines** can subdivide columns and have a name of up to five characters; they
+  are the lowest level of layout elements and point to individual diplomatic
+  tokens.
+
+Each document layout is made up of one or more *pages*; each page contains one
+or more *columns*; each column contains one or more *lines*; and each line
+contains one or more diplomatic tokens.  The dependency chain thus looks like
+this:
+
+*page* &#x2192; *column* &#x2192; *line* &#x2192; *diplomatic token*
+{: .figure .align-center}
+
+If you don't want or need all of these elements, that is fine, but you still
+need to include at least one of each type.  For example, if you don't need
+the 'column' element (since all of your pages have only a single column), you
+still need to have a "dummy" column element for each page in your document;
+you *cannot* have pages refer to lines directly.
+
+Likewise, if you don't want to use layout information at all, it's fine to
+create exactly one "dummy" element of each type and link all diplomatic tokens
+to the same 'line', but you cannot omit these elements altogether.
+
 
 
 [^1]: Of course, this is not the only way such cases can be handled.  We do not
