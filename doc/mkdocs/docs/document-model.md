@@ -6,11 +6,11 @@ reflects this model.
 
 The main design goal for this document model was to be suitable for historical
 documents and other non-standard data.  It tries to address the problem of
-[tokenization](#token-representation) by distinguishing between the appearance
+[tokenization](#tokenization) by distinguishing between the appearance
 in the original document and the desired units of annotation.  Furthermore, it
 keeps information about the original [document layout](#layout).
 
-## Token representation
+## Tokenization
 
 "Token" in a general sense is the name of a unit, usually roughly corresponding
 to a "word", that is processed by an NLP tool.  When working with non-standard
@@ -112,17 +112,77 @@ model, this would look like:
     <tr class="token-mod">
         <td class="label">modernized</td><td class="tok" colspan="2">oberczuge</td><td class="tok">mich</td>
     </tr>
+    <tr style="visibility: hidden;">
+        <td class="label"></td><td class="tok"></td><td class="tok"></td><td class="tok"></td>
+    </tr>
     </tbody>
 </table>
 
 Here, the relationship between the modernized "oberczuge" and the diplomatic
 tokens (i.e., that it consists of the first diplomatic token and parts of the
-second) is not expressed directly, but only indirect via their common "parent
+second) is not expressed directly, but only indirectly via their common "parent
 token" span that contains them.
 
 ### Token representations
 
-ascii vs utf vs trans
+Apart from the different tokenization layers described above, there are
+different *representations* of any given token as well.
+
++ **trans:** Originally for "transcription", this is the underlying base
+  representation of a token.  It is one of the forms that can be displayed in
+  the editor.  When [editing tokens](doc-edit.md), it is always the 'trans' form
+  of the parent token that is edited, and the other representations must
+  be *derivable* from that.
+
++ **utf:** Purely for viewing purposes, and one of the forms that can be
+  displayed in the editor.  This field can be used for a proper Unicode
+  representation of a token in case the 'trans' form encodes special
+  characters in some way.
+
++ **ascii:** Only for modernized tokens, this field is the opposite of 'utf' in
+  that it is intended to be a simple, ASCII representation of the token.  It is
+  used as input for external annotation tools.
+
+For example, if the transcription encodes the
+["long s" character](http://www.fileformat.info/info/unicode/char/17f/index.htm)
+'ſ' as '$' (e.g., for easier typing by the transcribers), a modernized token
+could have the following representations:
+
+<table class="tokenization">
+    <thead>
+        <tr>
+            <th class="label">trans</th><th class="label">utf</th><th class="label">ascii</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="tok">$prach</td><td class="tok">ſprach</td><td class="tok">sprach</td>
+        </tr>
+    </tbody>
+</table>
+
+Here is an overview of which tokenization layers supports which representations:
+
+<table class="tokenization">
+    <thead>
+        <tr>
+            <th></th><th class="label">trans</th><th class="label">utf</th><th class="label">ascii</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="label">parent token</td><td>&#x2713;</td><td>&mdash;</td><td>&mdash;</td>
+        </tr>
+        <tr>
+            <td class="label">diplomatic</td><td>&#x2713;</td><td>&#x2713;</td><td>&mdash;</td>
+        </tr>
+        <tr>
+            <td class="label">modernized</td><td>&#x2713;</td><td>&#x2713;</td><td>&#x2713;</td>
+        </tr>
+    </tbody>
+</table>
+
+
 
 ## Layout
 
