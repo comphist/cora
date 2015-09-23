@@ -141,6 +141,8 @@ as status indicators:
   floating point number between zero and one (e.g., "0.52" represents a progress
   of 52%).
 
+<a name="import-simple"></a>
+
 For **a simple solution**, you can take a look at the
 `bin/cora_import_one_token_per_line.sh` script in the repository, which accepts
 a text file with one token per line and converts it into a simple CorA-XML
