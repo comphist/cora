@@ -79,8 +79,9 @@ the columns that will *always* be present (if you haven't hidden them):
   the row: Can be used to call the [token editing features](doc-edit.md) or to
   quickly [search](doc-search.md) for similar tokens.
 
-**TODO: Refer to section on "annotation layers" for description of the other
-  columns?**
+Other columns are specific to certain annotation layers; please refer to the
+[list of annotation layers](layers.md#list-of-annotation-layers) for more
+information.
 
 ### Saving changes
 
