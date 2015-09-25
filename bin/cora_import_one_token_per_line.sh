@@ -26,7 +26,7 @@
 # It basically just wraps the make_coraxml.py script.
 
 PYTHON=/usr/bin/python
-SCRIPT_CONV=/usr/local/bin/make_coraxml.py
+SCRIPT_CONV=./make_coraxml.py
 
 # just a very basic sanity check, don't totally rely on this
 echo "~BEGIN CHECK"

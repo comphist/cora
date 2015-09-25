@@ -6,7 +6,7 @@ file(RELATIVE_PATH CORA_REL_DB_DIR "${CMAKE_CURRENT_BINARY_DIR}" "${CORA_DB_DIR}
 # CorA directory?
 configure_all("${CMAKE_CURRENT_BINARY_DIR}"
   cloning_tools.php
-  cora_create_user.php
+  create_user.php
   debug_memory_usage.php
   export_file.php
   make_database.php
