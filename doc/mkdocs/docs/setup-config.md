@@ -31,9 +31,6 @@ external_param_dir
     `/var/lib/cora/` regardless of host system (i.e., if you're running CorA on
     Windows, you definitely need to change this to something sensible).
 
-keywords
-:   Value of the meta keywords HTML tag on the web page.
-
 longtitle
 :   Long name of this CorA instance, currently only used in the
     HTML title tag.

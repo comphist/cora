@@ -17,7 +17,7 @@ function _gui_make_title() {
     <meta charset="utf-8" />
     <title><?php echo _gui_make_title(); ?></title>
     <meta name="description" content="<?php echo Cfg::get('description'); ?>" />
-    <meta name="keywords" content="<?php echo Cfg::get('keywords'); ?>" />
+    <meta name="robots" content="noindex" />
 
     <!-- **************** Cascading Style Sheets **************** -->
     <link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,700,400,600" rel="stylesheet" type="text/css">

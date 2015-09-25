@@ -47,7 +47,6 @@ return array(
   "title" => "CorA",
   "longtitle" => "Corpus Annotator",
   "description" => "A corpus annotation tool for non-standard language varieties.",
-  "keywords" => "annotation,corpus,POS",
 
   /** PHP session name; affects cookie name in browser. */
   "session_name" => 'PHPSESSID_CORA',
