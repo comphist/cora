@@ -117,7 +117,7 @@ Basically, a document consists of a set
 of tokens which can [distinguish different tokenization
 layers](document-model.md#tokenization) (i.e., tokenization in the source
 document vs. tokenization for annotation purposes) and [different string
-representations](document-model.md#token-representation) (e.g., a Unicode
+representations](document-model.md#token-representations) (e.g., a Unicode
 representation vs. a simplified ASCII string).  Furthermore, each text is
 required to have [layout information](document-model.md#layout) (i.e., which
 tokens belong to which pages/columns/lines in the source document).  You don't
