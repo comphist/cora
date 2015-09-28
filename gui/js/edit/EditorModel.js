@@ -92,31 +92,35 @@ var EditorModel = new Class({
         this.dataTable.addDropdownEntries([
             {name: 'Search',
              text: 'Suche ähnliche...',
-             action: this.searchSimilarTokens.bind(this)},
-            {name: 'Edit',
-             text: 'Token bearbeiten...',
-             action: this.editToken.bind(this)},
-            {name: 'Add',
-             text: 'Token hinzufügen...',
-             action: this.addToken.bind(this)},
-            {name: 'Delete',
-             text: 'Token löschen',
-             action: this.deleteToken.bind(this)}
+             action: this.searchSimilarTokens.bind(this)}
         ]);
-	this.dataTable.addEvent(
-	    'dblclick',  // triggers on <td> elements
-	    function(target, id) {
-		if (target.hasClass("editTable_token") ||
-		    target.hasClass("editTable_tok_trans")) {
-		    // we don't want text to get selected here:
-		    if (window.getSelection)
-			window.getSelection().removeAllRanges();
-		    else if (document.selection)
-			document.selection.empty();
-		    this.editToken(id);
-		}
-	    }.bind(this)
-	);
+        if (cora.files.supportsTokenEditing(fileid)) {
+            this.dataTable.addDropdownEntries([
+                {name: 'Edit',
+                 text: 'Token bearbeiten...',
+                 action: this.editToken.bind(this)},
+                {name: 'Add',
+                 text: 'Token hinzufügen...',
+                 action: this.addToken.bind(this)},
+                {name: 'Delete',
+                 text: 'Token löschen',
+                 action: this.deleteToken.bind(this)}
+            ]);
+	    this.dataTable.addEvent(
+	        'dblclick',  // triggers on <td> elements
+	        function(target, id) {
+		    if (target.hasClass("editTable_token") ||
+		        target.hasClass("editTable_tok_trans")) {
+		        // we don't want text to get selected here:
+		        if (window.getSelection)
+			    window.getSelection().removeAllRanges();
+		        else if (document.selection)
+			    document.selection.empty();
+		        this.editToken(id);
+		    }
+	        }.bind(this)
+	    );
+        } // endif cora.files.supportsTokenEditing(fileid)
 	this.dataTable.addEvent(
 	    'focus',  // triggers on contained <input> and <select> elements
 	    function(target, id) {

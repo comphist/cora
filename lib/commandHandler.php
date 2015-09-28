@@ -62,7 +62,8 @@ class CommandHandler {
   public function checkConvertToken($token, &$errors) {
     if(!array_key_exists('cmd_edittoken', $this->options)
        || empty($this->options['cmd_edittoken'])) {
-        return array("Kein Konvertierungsskript festgelegt!");
+        array_unshift($errors, "Kein Konvertierungsskript festgelegt!");
+        return array();
     }
 
     $tmpfname = $this->writeTokenToTmpfile($token);

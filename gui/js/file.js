@@ -145,6 +145,19 @@ cora.projects = {
 	    }
     	}).get();
         return this;
+    },
+
+    /* Function: supportsTokenEditing
+
+       Check if a token editing script is set for a project.
+
+       Parameters:
+         pid - ID of the project
+     */
+    supportsTokenEditing: function(pid) {
+        var idx = this.byID[pid];
+        if(idx == undefined) return false;
+        return !!(this.data[idx].settings.cmd_edittoken);
     }
 };
 
@@ -364,6 +377,17 @@ cora.files = {
             });
         }
         return false;
+    },
+
+    /* Function: supportsTokenEditing
+
+       Check if a token editing script is set for a given file.
+
+       Parameters:
+         fid - ID of the file
+     */
+    supportsTokenEditing: function(fid) {
+        return cora.projects.supportsTokenEditing(this.getProject(fid).id);
     }
 };
 
