@@ -191,6 +191,13 @@ var POSTagset = new Class({
             selected: 'selected',
             class: 'lineSuggestedTag'
         }), 'top');
+        if (split[0] !== null) {  // always allow empty value
+            select.grab(new Element('option', {
+                text: '',
+                value: '',
+                class: 'lineSuggestedTag'
+            }), 'top');
+        }
     },
 
     /* Function: fillMorph

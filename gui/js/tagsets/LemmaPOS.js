@@ -68,13 +68,21 @@ var LemmaPOSTagset = new Class({
     fill: function(tr, data) {
         var ref = this;
         var pos = tr.getElement('.editTable_lemmapos select');
+        var is_empty_suggestion = (typeof(data.anno_lemmapos) === "undefined");
         if(pos !== null) {
             pos.getElements('.lineSuggestedTag').destroy();
             pos.grab(new Element('option', {
-                text: (typeof(data.anno_lemmapos) === "undefined")
+                text: (is_empty_suggestion)
                           ? '' : data.anno_lemmapos,
                 value: data.anno_lemmapos,
                 selected: 'selected',
+                class: 'lineSuggestedTag'
+            }), 'top');
+        }
+        if (!is_empty_suggestion) {  // always allow empty value
+            pos.grab(new Element('option', {
+                text: '',
+                value: '',
                 class: 'lineSuggestedTag'
             }), 'top');
         }
