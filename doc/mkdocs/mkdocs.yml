@@ -1,5 +1,6 @@
-site_name: ${CMAKE_PROJECT_NAME} ${CMAKE_PROJECT_VERSION} User Documentation
+site_name: CorA User Documentation
 site_author: Marcel Bollmann
+copyright: © 2015 by Marcel Bollmann
 repo_url: https://bitbucket.org/mbollmann/cora/
 theme: readthedocs
 markdown_extensions:
@@ -33,6 +34,5 @@ pages:
       - 'Annotation Layers': layers.md
       - 'Document Model': document-model.md
       - 'CorA-XML File Format': coraxml.md
-docs_dir: ${CMAKE_SOURCE_DIR}/doc/mkdocs/docs/
-site_dir: ${CMAKE_BINARY_DIR}/docs/user/
+docs_dir: docs/
 strict: true

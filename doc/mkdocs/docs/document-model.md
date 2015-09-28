@@ -224,6 +224,28 @@ Likewise, if you don't want to use layout information at all, it's fine to
 create exactly one "dummy" element of each type and link all diplomatic tokens
 to the same 'line', but you cannot omit these elements altogether.
 
+## Further components
+
+The following section contains features of the document model that are currently
+supported, but not integrated into the web interface at this time.  Unless
+stated otherwise, they are supported during import/export (and kept in the
+database), but have no functional significance.  They exist mainly for
+historical reasons, and might be integrated in the user interface at some point,
+but until then, you should probably try to avoid using them.
+
+### Shift tags
+
+Shift tags act as a mark-up for a span of tokens.  They can be used to
+mark a certain range of tokens to be "foreign material" (e.g., Latin passages in
+an otherwise English text) or to have "rubricized letters".
+
+### Token-level comments
+
+Besides the ['comments' annotation
+layers](layers.md#comments-secondary-comments), there is
+support for comments on the token-level (i.e., the [virtual
+token](#tokenization) of this document model).  They can be given a
+one-letter "type" abbreviation that has no functional significance.
 
 
 [^1]: Of course, this is not the only way such cases can be handled.  We do not

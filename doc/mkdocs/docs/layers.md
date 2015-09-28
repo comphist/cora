@@ -231,6 +231,22 @@ another annotation layer for "secondary comments" which is functionally
 identical to "comments".
 
 
+## List of flags
+
+Flags are represented as checkboxes in the editor table that can be marked or
+unmarked.  They can be bound to annotation layers and only appear when that
+layer is present, but they are treated separately from other annotations.  Here
+is a list of the currently supported flags; follow the links to find out more
+about their intended usage.  The internal 'name' string is used when
+representing flags in [CorA-XML format](coraxml.md).
+
+Function                                                        | Name
+--------------------------------------------------------------- | --------------
+[Generic error marking ('E')](doc-annotate.md#the-editor-table) | general error
+[Lemma verification](#lemmatization)                            | lemma verified
+[Boundary marking](#boundaries)                                 | boundary
+
+
 
 [^tagsets]: This is for historical reasons: since POS annotation came first, and
 it is common to speak of a "POS tagset", the term "tagset" has been generalized
