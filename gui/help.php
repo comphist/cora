@@ -16,14 +16,6 @@
           <a href="doc/cora-guide.pdf" download="cora-guide.pdf">CorA Benutzerhandbuch, 27.01.2015 [PDF]</a>
         </li>
       </ul>
-      <p>
-        Sie können sich auch die Übersicht der letzten Änderungen in CorA nochmals ansehen:
-      </p>
-      <ul>
-        <li>
-          <a href="#" onclick="gui.showNews(true); return false;">Was ist neu in CorA?</a>
-        </li>
-      </ul>
 
       <h3>Ungeklärte Fragen?  Bugs gefunden?</h3>
       <p>
