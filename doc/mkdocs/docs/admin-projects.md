@@ -50,8 +50,8 @@ CorA offers the feature to [edit the document itself](doc-edit.md) if the need
 arises.  In order to use this feature, a script that handles the editing must be
 set in the project settings.
 
-Why is a script needed for this?  It's because of CorA's internal
-[document model](document-model.md) that distinguishes between tokens, "dipls",
+Why is a script needed for this?  It's because of CorA's internal [document
+model](document-model.md) that distinguishes between tokens, "dipls",
 and "mods": when you edit a token, the subordinated "dipl" and "mod" elements
 need to be updated as well.  In order to generate these child elements, and
 because this process is highly project-specific, CorA calls an external script
@@ -74,13 +74,13 @@ A token editing script must:
 ```
 
 In the returned object, `dipl_utf`, `dipl_trans`, `mod_trans`, `mod_ascii`, and
-`mod_utf` contain the values of the respective fields in the
-[document model](document-model.md).  Since there can be multiple dipl/mod
+`mod_utf` contain the values of the respective fields in the [document
+model](document-model.md).  Since there can be multiple dipl/mod
 elements for one token, values are always returned in an array.  All `dipl_*`
 arrays must have the same length; the same applies to all `mod_*` arrays.
 
-The `dipl_breaks` array specifies if
-[line breaks in the original document](document-model.md#layout) occur after any
+The `dipl_breaks` array specifies if [line breaks in the original
+document](document-model.md#layout) occur after any
 of the dipl elements.  A value of 1 in this array means that a line breaks
 occurs after the dipl element in this position, while a value of 0 indicates no
 line break.

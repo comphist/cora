@@ -19,8 +19,8 @@ Furthermore, the units that should be annotated might not be what is actually
 found in the text (e.g., when separating by whitespace), for a variety of
 reasons.
 
-In CorA, **a token is a virtual unit.** It exists purely as a container for two
-different types of tokenization:
+In CorA, **virtual tokens** exist purely as a container for two different types
+of tokenization:
 
 + **Diplomatic tokens** (sometimes called "dipl"s), which correspond to tokens as
   they appear in the source document.  [Layout information](#layout), which also
