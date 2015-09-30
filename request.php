@@ -30,6 +30,8 @@ ini_set('memory_limit', '536870912');
  * then outputs a JSON object string (depending on the nature of the request).
  */
 
+try {
+
 require_once "lib/cfg.php";
 require_once "lib/connect.php";
 require_once "lib/xmlHandler.php";
@@ -57,6 +59,12 @@ else if($_GET['do'] == "login") {
 else {
   header('Content-Type: application/json');
   echo json_encode(array('success' => false, 'errcode' => -1));
+}
+
+} /* Catch all unexpected errors */
+catch (Exception $ex) {
+  header('Content-Type: application/json');
+  echo json_encode(array('success' => false, 'errcode' => -2));
 }
 
 ?>

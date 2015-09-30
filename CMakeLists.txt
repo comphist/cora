@@ -136,6 +136,7 @@ add_subdirectory(gui)
 add_subdirectory(lib)
 
 configure_file(gui.php.in "${CORA_WEB_DIR}/gui.php" @ONLY)
+configure_file(error.php.in "${CORA_WEB_DIR}/error.php" @ONLY)
 add_sources(CORA_PHP_SOURCES gui.php)
 
 # TODO: legacy functionality --- this file is referenced on the "help" tab, so

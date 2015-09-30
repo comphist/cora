@@ -30,15 +30,11 @@
  *
  * @author Marcel Bollmann
  * @date   January 2012
- *
- * @note Languages are currently hardcoded (German and English); this
- * is reflected in database structure, the way language selection
- * works in gui.php, and some helper functions (e.g. in
- * sessionHandler.php). Further languages cannot be added without
- * considerable modifications.
  */
 
 header( "Content-Type: text/html; charset=utf-8" );
+
+try {
 
 /* Includes */
 require_once "lib/cfg.php";
@@ -66,5 +62,15 @@ $rq->handleRequests($_GET, $_POST);
 include "content.php";
 /* Load the actual HTML page */
 include "gui.php";
+
+} /* Catch all unexpected errors */
+catch (Exception $ex) {
+  if (file_exists("error.php")) {
+    include "error.php";
+  } else {
+    echo "<p>There was an error instantiating CorA.</p>";
+    echo "<p>Additionally, there was an error accessing the error page.</p>";
+  }
+}
 
 ?>

@@ -386,6 +386,18 @@ div.clappable.clapp-hidden span.clapp-status-hidden {
     display: inline;
 }
 
+body.no-javascript {
+  #menu ul {
+    visibility: visible !important;
+  }
+  #main {
+    display: block !important;
+  }
+  .content {
+    display: block !important;
+  }
+}
+
 /***************************************************************************/
 /***** TABLES **************************************************************/
 /***************************************************************************/
