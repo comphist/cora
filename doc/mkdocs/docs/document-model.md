@@ -5,8 +5,8 @@ your own texts into CorA.  The [CorA-XML file format](coraxml.md) closely
 reflects this model.
 
 The main design goal for this document model was to be suitable for historical
-documents and other non-standard data.  It tries to address the problem of
-[tokenization](#tokenization) by distinguishing between the appearance
+documents and other non-standard data.  It tries to address the problem
+of [tokenization](#tokenization) by distinguishing between the appearance
 in the original document and the desired units of annotation.  Furthermore, it
 keeps information about the original [document layout](#layout).
 
@@ -32,7 +32,7 @@ of tokenization:
   corresponds to one modernized token) and only they can actually carry
   annotations.
 
-The virtual "token" unit now acts as the **smallest overarching span** for any
+The "virtual token" unit now acts as the **smallest overarching span** for any
 set of diplomatic and modernized tokens.  This way, it connects the two
 tokenization layers and allows inference about the relationship between
 diplomatic and modernized tokens.
@@ -41,19 +41,22 @@ diplomatic and modernized tokens.
     It's important to note that the difference between "diplomatic"
     and "modernized" tokens is purely one of **tokenization.**
     In particular, "modernized" in this sense does *not* mean that the form of
-    the token (e.g. spelling) has been modified in any way.  The following
-    examples might make this clearer.
+    the token (e.g. spelling) has been modified in any way.
+    A modernization or standardization of spelling would usually be
+    considered to be a form of [annotation layer](layers.md#normalization)
+    in this model, not a property of the token itself.
+    The following examples might make this clearer.
 
 ### Some examples
 
-In the simplest case, parent/diplomatic/modernized tokens are all identical.
+In the simplest case, virtual/diplomatic/modernized tokens are all identical.
 It's not unusual if this is the case for the vast majority of tokens in your
 document:
 
 <table class="tokenization">
     <thead>
     <tr class="token-tok">
-        <th class="label">parent token</th><th class="tok">das</th>
+        <th class="label">virtual token</th><th class="tok">das</th>
     </tr>
     </thead>
     <tbody>
@@ -77,7 +80,7 @@ document model in the following way:
 <table class="tokenization">
     <thead>
     <tr class="token-tok">
-        <th class="label">parent token</th><th class="tok" colspan="2">soltu</th>
+        <th class="label">virtual token</th><th class="tok" colspan="2">soltu</th>
     </tr>
     </thead>
     <tbody>
@@ -89,6 +92,8 @@ document model in the following way:
     </tr>
     </tbody>
 </table>
+
+<a name="oberczugemich"></a>
 
 More complex cases are possible.  Let's take the (again, German) example "ober
 czugemich", which would correspond to modern German "überzeuge mich"
@@ -102,7 +107,7 @@ model, this would look like:
 <table class="tokenization">
     <thead>
     <tr class="token-tok">
-        <th class="label">parent token</th><th class="tok" colspan="3">ober czugemich</th>
+        <th class="label">virtual token</th><th class="tok" colspan="3">ober czugemich</th>
     </tr>
     </thead>
     <tbody>
@@ -120,7 +125,7 @@ model, this would look like:
 
 Here, the relationship between the modernized "oberczuge" and the diplomatic
 tokens (i.e., that it consists of the first diplomatic token and parts of the
-second) is not expressed directly, but only indirectly via their common "parent
+second) is not expressed directly, but only indirectly via their common "virtual
 token" span that contains them.
 
 ### Token representations
@@ -130,9 +135,7 @@ different *representations* of any given token as well.
 
 + **trans:** Originally for "transcription", this is the underlying base
   representation of a token.  It is one of the forms that can be displayed in
-  the editor.  When [editing tokens](doc-edit.md), it is always the 'trans' form
-  of the parent token that is edited, and the other representations must
-  be *derivable* from that.
+  the editor, and it is important as the basis for token editing (see below).
 
 + **utf:** Purely for viewing purposes, and one of the forms that can be
   displayed in the editor.  This field can be used for a proper Unicode
@@ -161,7 +164,13 @@ could have the following representations:
     </tbody>
 </table>
 
-Here is an overview of which representations are supported by the tokenization layers:
+When [editing tokens](doc-edit.md), it is always the 'trans' form of the virtual
+token that is edited, and the other representations must be *derivable* from
+that.  Examples for that include special character encodings (like the "long s"
+in the example above) or split marks for diplomatic/modernized tokens.  For
+example, to represent the [complex "oberczuge mich" example
+from above](#oberczugemich), the 'trans' form
+could include special characters to mark the token boundaries:
 
 <table class="tokenization">
     <thead>
@@ -171,7 +180,41 @@ Here is an overview of which representations are supported by the tokenization l
     </thead>
     <tbody>
         <tr>
-            <td class="label">parent token</td><td>&#x2713;</td><td>&mdash;</td><td>&mdash;</td>
+            <td class="label">virtual token</td><td class="tok">ober#czuge|mich</td><td class="tok"></td><td class="tok"></td>
+        </tr>
+        <tr>
+            <td class="label" rowspan="2">diplomatic tokens</td><td class="tok">ober#</td><td class="tok">ober</td><td class="tok"></td>
+        </tr>
+        <tr>
+            <td class="tok">czuge|mich</td><td class="tok">czugemich</td><td class="tok"></td>
+        </tr>
+        <tr>
+            <td class="label" rowspan="2">modernized tokens</td><td class="tok">ober#czuge|</td><td class="tok">oberczuge</td><td class="tok">oberczuge</td>
+        </tr>
+        <tr>
+            <td class="tok">mich</td><td class="tok">mich</td><td class="tok">mich</td>
+        </tr>
+    </tbody>
+</table>
+
+Note again that the 'trans' forms of the virtual/diplomatic/modernized tokens
+only differ in tokenization, and still include the special characters ('#' to
+mark diplomatic token boundaries, '|' to mark modernized token boundaries, but
+you are free to use different conventions), while the other representations can
+be anything you want, as long as they're derivable from 'trans'.
+
+Here is an overview of which representations are supported by the tokenization
+layers:
+
+<table class="tokenization">
+    <thead>
+        <tr>
+            <th></th><th class="label">trans</th><th class="label">utf</th><th class="label">ascii</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="label">virtual token</td><td>&#x2713;</td><td>&mdash;</td><td>&mdash;</td>
         </tr>
         <tr>
             <td class="label">diplomatic</td><td>&#x2713;</td><td>&#x2713;</td><td>&mdash;</td>
