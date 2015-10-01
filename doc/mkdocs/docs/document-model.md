@@ -22,10 +22,11 @@ reasons.
 In CorA, **virtual tokens** exist purely as a container for two different types
 of tokenization:
 
-+ **Diplomatic tokens** (sometimes called "dipl"s), which correspond to tokens as
-  they appear in the source document.  [Layout information](#layout), which also
-  relates to the document's appearance, refers to this type of tokens.  They are
-  not currently visible in the web interface.
++ **Diplomatic tokens** (sometimes called "dipl"s), which correspond to tokens
+  as they appear in the source document.  [Layout information](#layout), which
+  also relates to the document's appearance, refers to this type of tokens.
+  They are not relevant for the annotation and therefore currently not shown in
+  the web interface.
 
 + **Modernized tokens** (sometimes called "mod"s), which are the units of
   annotation.  They are displayed in the editor (each row in the editor
@@ -39,13 +40,16 @@ diplomatic and modernized tokens.
 
 !!! note "Note"
     It's important to note that the difference between "diplomatic"
-    and "modernized" tokens is purely one of **tokenization.**
+    and "modernized" tokens is purely one of **tokenization.**  To put it
+    another way, diplomatic and modernized tokens simply provide two different
+    *partitions* of the underlying virtual tokens.  The following examples might
+    make this clearer.
+
     In particular, "modernized" in this sense does *not* mean that the form of
     the token (e.g. spelling) has been modified in any way.
     A modernization or standardization of spelling would usually be
     considered to be a form of [annotation layer](layers.md#normalization)
     in this model, not a property of the token itself.
-    The following examples might make this clearer.
 
 ### Some examples
 
@@ -126,7 +130,12 @@ model, this would look like:
 Here, the relationship between the modernized "oberczuge" and the diplomatic
 tokens (i.e., that it consists of the first diplomatic token and parts of the
 second) is not expressed directly, but only indirectly via their common "virtual
-token" span that contains them.
+token" span that contains them.  As mentioned before, you can view diplomatic
+and modernized tokens as (potentially) different subdivisions of the virtual
+token unit:
+
+![](img/tokenization-example.png)
+{: .figure .align-center}
 
 ### Token representations
 
