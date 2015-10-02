@@ -23,8 +23,8 @@
 require_once 'cli_status_bar.php';
 
 $CORA_DIR = "@CORA_WEB_DIR@";
-require_once( $CORA_DIR . "lib/cfg.php" );
-require_once( $CORA_DIR . "lib/connect/TagsetAccessor.php" );
+require_once( $CORA_DIR . "/lib/cfg.php" );
+require_once( $CORA_DIR . "/lib/connect/TagsetAccessor.php" );
 $dbinfo = Cfg::get('dbinfo');
 $dbo = new PDO('mysql:host='.$dbinfo['HOST']
               .';dbname='.$dbinfo['DBNAME']
