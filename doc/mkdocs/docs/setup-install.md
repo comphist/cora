@@ -18,6 +18,9 @@ to a local directory, then perform the following steps:
 2. Open your web browser and navigate to `<cora>/db/configure_db.php`, where
    `<cora>` is the URL of your web server directory.  If your web server is set
    up correctly, this page will guide you through the database installation.
+   (Alternatively, you can use the command-line script
+   `<cora>/db/configure_db_cli.php`.  Call it with `-h` to see the available
+   options.)
 
 3. If the database installation succeeded, you can now login to your CorA
    instance.  On a first-time installation, use the username *"admin"* with
