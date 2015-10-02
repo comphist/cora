@@ -9,7 +9,6 @@ configure_all("${CMAKE_CURRENT_BINARY_DIR}"
   create_user.php
   debug_memory_usage.php
   export_file.php
-  make_database.php
   update_taglist.php
   repair_duplicate_mod2error.php
   repair_duplicate_tags.php
