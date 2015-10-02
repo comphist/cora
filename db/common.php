@@ -92,6 +92,35 @@ function get_settings_from_options($options) {
   return $settings;
 }
 
+function get_settings_from_post($post) {
+  $settings = get_settings_from_config();
+  foreach($post as $opt => $value) switch ($opt) {
+    case 'db_host':
+      $settings["DBINFO"]["HOST"] = $value;
+      break;
+    case 'db_user':
+      $settings["DBINFO"]["USER"] = $value;
+      break;
+    case 'db_password':
+      $settings["DBINFO"]["PASSWORD"] = $value;
+      break;
+    case 'db_dbname':
+      $settings["DBINFO"]["DBNAME"] = $value;
+      break;
+    case 'db_rootuser':
+      $settings["DBROOT"]["USER"] = $value;
+      break;
+    case 'db_rootpass':
+      $settings["DBROOT"]["PASSWORD"] = $value;
+      break;
+    case 'mysql_bin':
+      $settings["MYSQL_BIN"] = $value;
+      break;
+  }
+  $settings["DBROOT"]["HOST"] = $settings["DBINFO"]["HOST"];
+  return $settings;
+}
+
 function make_installer($settings) {
   $installer = new InstallHelper($settings["DBINFO"]);
   $installer->mysql_bin = $settings["MYSQL_BIN"];

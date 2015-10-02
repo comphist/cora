@@ -40,15 +40,17 @@
     color: red;
   }
 
+  div.error {
+    font-size: 1.5em;
+    max-width: 55em;
+    padding: .5em;
+    border: 1px solid red;
+    border-radius: 2px;
+  }
+
   div.configure-form {
     font-size: 1.5em;
     max-width: 55em;
-
-    div.error {
-      padding: .5em;
-      border: 1px solid red;
-      border-radius: 2px;
-    }
 
     form {
       padding-top: 1em;

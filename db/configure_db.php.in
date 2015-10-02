@@ -22,83 +22,45 @@
 <?php
 
 header( "Content-Type: text/html; charset=utf-8" );
-require_once "../lib/cfg.php";
-require_once "../lib/install.php";
+require_once "common.php";
 
-// default form values that can be overridden by POST requests
-$dbinfo_root = array(
-  "USER" => "root",
-  "PASSWORD" => ""
-);
-$mysql_bin = "mysql";
-
-// interpret POST requests
+$errors_occured = false;
+$enable_force_reinstall = false;
 $force_reinstall = isset($_POST['action_force']);
 
-if (isset($_POST['use_form_values'])) {
-  $dbinfo = array(
-    "HOST" => $_POST['db_host'],
-    "USER" => $_POST['db_user'],
-    "PASSWORD" => $_POST['db_password'],
-    "DBNAME" => $_POST['db_dbname']
-  );
-  $dbinfo_root = array(
-    "USER" => $_POST['db_rootuser'],
-    "PASSWORD" => $_POST['db_rootpass']
-  );
-  $mysql_bin = $_POST['mysql_bin'];
-  Cfg::set('dbinfo', $dbinfo);
+$settings = get_settings_from_post($_POST);
+$installer = make_installer($settings);
+$status = get_database_status($installer);
+
+function echo_errors($errors, $caption=null) {
+  global $errors_occured;
+  $errors_occured = true;
+  echo '<div class="error">';
+  if ($caption) {
+    echo "<strong>$caption</strong> ";
+  }
+  echo implode("<br/>", $errors);
+  echo '</div>';
 }
 
-$dbinfo = Cfg::get('dbinfo');
-$dbinfo_root['HOST'] = $dbinfo['HOST'];
-$installer = new InstallHelper($dbinfo);
-$installer->mysql_bin = $mysql_bin;
-
-// Get connectivity & version information
-$can_connect = $installer->canConnect();
-if ($can_connect) {
-  $version_current = $installer->getDBVersion();
-  $version_required = Cfg::get("db_version");
-  $migr_needed = ($version_current != $version_required);
-  if ($migr_needed) {
-    $migr_path = $installer->findMigrationPath(
-      $version_current,
-      $version_required,
-      __DIR__ . "/migration"
-    );
+function recheck_and_save() {
+  global $errors_occured;
+  global $installer;
+  global $settings;
+  global $status;
+  $installer->setDBInfo($settings['DBINFO']);
+  $status = get_database_status($installer);
+  if (!$errors_occured) {
+    try {
+      Cfg::save_user_opts();
+    } catch (Exception $ex) {
+      echo_errors(
+        array("Database settings could not be saved:",
+              $ex->getMessage(),
+              "If you changed the defaults, you might need to edit your config.php manually.")
+      );
+    }
   }
-}
-
-// Should we execute an action?
-$error_code = false;
-if (isset($_POST['action_exec_install']) && $can_connect) {
-  try {
-    $installer->installDB(__DIR__, $dbinfo_root);
-    $installer->setDBInfo($dbinfo);
-    Cfg::save_user_opts();
-    $force_reinstall = false;
-  }
-  catch (Exception $ex) {
-    $error_code = $ex->getMessage();
-  }
-  // re-check
-  $version_current = $installer->getDBVersion();
-  $migr_needed = ($version_current != $version_required);
-}
-$migr_possible = ($can_connect && $migr_needed && $migr_path);
-if (isset($_POST['action_exec_upgrade']) && $migr_possible) {
-  try {
-    $installer->applyMigrationPath($migr_path, $dbinfo_root);
-    $installer->setDBInfo($dbinfo);
-    Cfg::save_user_opts();
-  }
-  catch (Exception $ex) {
-    $error_code = $ex->getMessage();
-  }
-  // re-check
-  $version_current = $installer->getDBVersion();
-  $migr_needed = ($version_current != $version_required);
 }
 
 // render page
@@ -118,15 +80,8 @@ if (isset($_POST['action_exec_upgrade']) && $migr_possible) {
     <link rel="stylesheet" type="text/css" href="../@CORA_HREF_CSS_OPENICONIC@" media="all" />
     <script type="text/javascript" src="../@CORA_HREF_JS_MOOTOOLS_CORE@"></script>
     <script type="text/javascript" src="../@CORA_HREF_JS_MOOTOOLS_MORE@"></script>
-    <script type="text/javascript">
-     window.addEvent('domready', function() {
-       $('main').show();
-       $('dbConfDiv').show();
-       $$('#menu ul').setStyle('visibility', 'visible');
-     });
-    </script>
   </head>
-  <body>
+  <body class="no-javascript">
 
     <!-- header -->
       <div id="header" class="no-print">
@@ -148,46 +103,87 @@ if (isset($_POST['action_exec_upgrade']) && $migr_possible) {
     <div id="main" class="no-print">
       <div id="dbConfDiv" class="content">
         <div class="panel">
+<?php
+if (isset($_POST['action_exec_install'])) {
+  if ($status['can_connect'] && !$force_reinstall) {
+    echo_errors(
+      array('You selected "Perform fresh database installation", '
+            . "but a CorA database already exists.",
+            "To perform a fresh installation anyway, please confirm "
+            . "by clicking the button again.  Keep in mind that doing so will "
+            . "<strong>DELETE ALL EXISTING DATA</strong> "
+            . "in the CorA database."),
+      "ATTENTION!"
+    );
+    $enable_force_reinstall = true;
+  } else {
+    try {
+      $installer->installDB(__DIR__, $settings['DBROOT']);
+      recheck_and_save();
+    }
+    catch (Exception $ex) {
+      echo_errors(array("An error occured:", $ex->getMessage()), "ERROR:");
+    }
+  }
+}
+
+if (isset($_POST['action_exec_upgrade']) && $status['need_migration']) {
+  if (empty($status['migration_path'])) {
+    echo_errors(
+      array("No automatic migration path found!",
+            "The database schema needs an update, but I don't know how to do it. "
+            . "Are you downgrading from a newer version of CorA?  In this case, "
+            . "the database migration cannot be done automatically yet."
+      ),
+      "ERROR:");
+  } else {
+    try {
+      $installer->applyMigrationPath($status['migration_path'],
+                                     $settings['DBROOT']);
+    } catch (Exception $ex) {
+      echo_errors(array("An error occured:", $ex->getMessage()), "ERROR:");
+    }
+  }
+}
+?>
+
           <table class="table-modern configure-results">
             <tbody>
               <tr>
                 <td>Database connection:</td>
-                <?= ($can_connect ?
+                <?= ($status['can_connect'] ?
                      "<td class=\"success\">established</td>" :
                      "<td class=\"error\">failed</td>") ?>
               </tr>
               <tr>
                 <td>Schema version (found):</td>
-                <?= ($can_connect ?
-                     ($migr_needed ?
-                       "<td class=\"error\">$version_current</td>" :
-                       "<td class=\"success\">$version_current</td>") :
+                <?= ($status['can_connect'] ?
+                     ($status['need_migration'] ?
+                       "<td class=\"error\">{$status['version_current']}</td>" :
+                       "<td class=\"success\">{$status['version_current']}</td>") :
                      "<td>&mdash;</td>") ?>
               </tr>
               <tr>
                 <td>Schema version (required):</td>
-                <?= ($can_connect ?
-                     ($migr_needed ?
-                       "<td class=\"error\">$version_required</td>" :
-                       "<td class=\"success\">$version_required</td>") :
+                <?= ($status['can_connect'] ?
+                     ($status['need_migration'] ?
+                       "<td class=\"error\">{$status['version_required']}</td>" :
+                       "<td class=\"success\">{$status['version_required']}</td>") :
                      "<td>&mdash;</td>") ?>
               </tr>
               <tr>
                 <td>Automatic migration:</td>
-                <?= ($can_connect ?
-                     ($migr_needed ?
-                      ($migr_path ?
+                <?= ($status['can_connect'] ?
+                     ($status['need_migration'] ?
+                      (!empty($status['migration_path']) ?
                        "<td class=\"success\">possible</td>" :
                        "<td class=\"error\">not possible</td>") :
                        "<td>&mdash;</td>") :
                      "<td>&mdash;</td>") ?>
               </tr>
-<?php
-$mysql_found = $installer->canExecuteMySQL();
-?>
               <tr>
                 <td>Can execute MySQL:</td>
-                <?= ($mysql_found ?
+                <?= ($status['can_execute_mysql'] ?
                      "<td class=\"success\">yes</td>" :
                      "<td class=\"error\">no</td>")?>
               </tr>
@@ -196,125 +192,71 @@ $mysql_found = $installer->canExecuteMySQL();
 
           <div class="configure-form">
 <?php
-$is_update_required = ($can_connect && $migr_needed);
-$is_fresh_install = (!$can_connect || $force_reinstall);
-
-if ($error_code == "mysql_not_found") {
-  $error_message = "Cannot execute MySQL client.  The given command either does "
-                 . "not exist, does not point to a MySQL client, or I have "
-                 . "insufficient permissions to execute it.  Please correct the "
-                 . "MySQL path and try again.";
-}
-elseif ($error_code == "coradb_missing" || $error_code == "coradb_data_missing") {
-  $error_message = "Necessary SQL scripts could not be found.  Please make sure "
-                 . "that coradb.sql and coradb-data.sql are in the same folder "
-                 . "as this page.";
-}
-else {
-  $error_message = $error_code;
-}
-
-if ($error_code):
+if (!$status['can_connect']):
 ?>
-            <div class="error"><strong>Error: </strong>
-              <?= str_replace("\n", "<br/>", $error_message) ?></div>
+            <p class="big">Could not connect to the database!</p>
+            <p>If you are installing CorA for the first time, please check if the settings below are correct and choose "Perform fresh database installation".</p>
+            <p>If you are <strong>NOT</strong> installing CorA for the first time, please fill in the correct database credentials below, then choose "Set these values and re-check".</p>
 <?php
-endif;
-
-if (!$can_connect):
-?>
-            <p class="big">Assuming first-time installation!</p>
-            <p>If you are <strong>NOT</strong> installing CorA for the first time, please check your database setup and the credentials below, then choose "Set these values and re-check".</p>
-<?php
-elseif ($force_reinstall):
-?>
-            <p class="big warn">Wiping and re-installing the database!</p>
-            <p>An existing CorA database was found on your system, but you can choose to re-install the database from scratch anyway.  Be aware that re-installing will <strong class="warn">WIPE ALL CORA-RELATED DATA</strong> from the database.  Please make absolutely sure you have a backup of the data or are certain you don't need it anymore.</p>
-<?php
-elseif ($is_update_required):
-  if ($migr_path):
+elseif ($status['need_migration']):
 ?>
             <p class="big">Database upgrade required!</p>
-            <p>The current schema version is out of date, but an upgrade path was found, so the database migration can be performed automatically.</p>
+            <p>The current schema version is out of date.  If you want to try an automatic database migration, please choose "Perform database upgrade".</p>
 <?php
-  else:
-?>
-            <p class="big error">CorA requires an upgrade, but I don't know how to do it.</p>
-            <p>The required schema version does not match the schema currently found in the database.  Are you downgrading from a newer version of CorA?  In this case, the database migration cannot be done automatically yet.</p>
-            <p>If you want to re-install the CorA database from scratch, click the button below, but be aware that re-installing will <strong>WIPE ALL CORA-RELATED DATA</strong> from the database.  You will be prompted for confirmation before the re-install.</p>
-<?php
-  endif; //$migr_path
 else:
 ?>
-            <p class="big success">CorA seems to be installed correctly!</p>
+            <p class="big success">CorA appears to be installed correctly!</p>
             <p>No further action is required.</p>
-            <p>If you want to re-install the CorA database from scratch, or change the connection settings, click the button below, but be aware that this will <strong>WIPE ALL CORA-RELATED DATA</strong> from the database.  You will be prompted for confirmation before the re-install.</p>
 <?php
 endif;
 ?>
             <form action="<?= basename(__FILE__) ?>" method="post">
-<?php
-if ($is_fresh_install || $is_update_required):
-?>
               <p>
-                <label for="mysql_bin" class="ra">Path to mysql executable: </label>
-                <input type="text" name="mysql_bin" id="mysql_bin" value="<?= $mysql_bin ?>" />
+                <label for="mysql_bin" class="ra">Path to MySQL executable: </label>
+                <input type="text" name="mysql_bin" id="mysql_bin" value="<?= $settings['MYSQL_BIN'] ?>" />
               </p>
               <p>
                 <label for="db_host" class="ra">Database server: </label>
-                <input type="text" name="db_host" id="db_host" value="<?= $dbinfo['HOST'] ?>" />
+                <input type="text" name="db_host" id="db_host" value="<?= $settings['DBINFO']['HOST'] ?>" />
               </p>
               <p>
                 <label for="db_dbname" class="ra">Database name: </label>
-                <input type="text" name="db_dbname" id="db_dbname" value="<?= $dbinfo['DBNAME'] ?>" />
+                <input type="text" name="db_dbname" id="db_dbname" value="<?= $settings['DBINFO']['DBNAME'] ?>" />
               </p>
               <p>
                 <label for="db_user" class="ra">MySQL local user: </label>
-                <input type="text" name="db_user" id="db_user" value="<?= $dbinfo['USER'] ?>" />
+                <input type="text" name="db_user" id="db_user" value="<?= $settings['DBINFO']['USER'] ?>" />
               </p>
               <p>
                 <label for="db_password" class="ra">MySQL local password: </label>
-                <input type="text" name="db_password" id="db_password" value="<?= $dbinfo['PASSWORD'] ?>" />
+                <input type="text" name="db_password" id="db_password" value="<?= $settings['DBINFO']['PASSWORD'] ?>" />
               </p>
               <p>
                 <label for="db_rootuser" class="ra">MySQL root user: </label>
-                <input type="text" name="db_rootuser" id="db_rootuser" value="<?= $dbinfo_root['USER'] ?>" />
+                <input type="text" name="db_rootuser" id="db_rootuser" value="<?= $settings['DBROOT']['USER'] ?>" />
               </p>
               <p>
                 <label for="db_rootpass" class="ra">MySQL root password: </label>
-                <input type="password" name="db_rootpass" id="db_rootpass" value="<?= $dbinfo_root['PASSWORD'] ?>" />
+                <input type="password" name="db_rootpass" id="db_rootpass" value="<?= $settings['DBROOT']['PASSWORD'] ?>" />
                 <span class="note">(CorA will <strong>not</strong> store this password on disk)</span>
               </p>
               <p>
                 <input type="hidden" name="use_form_values" value="1" />
                 <input type="submit" name="action_reset" value="Set these values and re-check" />
+                <input type="submit" name="action_exec_install" value="Perform fresh database installation" />
 <?php
-  if ($is_fresh_install):
+  if ($status['need_migration']):
 ?>
-                <input type="submit" name="action_exec_install" value="Perform the database installation" />
-<?php
-  else:
-?>
-                <input type="submit" name="action_exec_upgrade" value="Perform the database upgrade" />
+                <input type="submit" name="action_exec_upgrade" value="Perform database upgrade" />
 <?php
   endif;
-  if ($force_reinstall):
+  if ($enable_force_reinstall):
 ?>
                 <input type="hidden" name="action_force" value="1" />
 <?php
   endif;
 ?>
               </p>
-<?php
-endif;
-if (!$is_fresh_install):
-?>
-              <p>
-                <input type="submit" name="action_force" value="Wipe and re-install the database" />
-              </p>
-<?php
-endif;
-?>
             </form>
           </div>
         </div>
