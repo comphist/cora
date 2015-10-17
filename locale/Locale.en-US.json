@@ -44,27 +44,28 @@
         "applyLineSettings" : "Apply line settings",
         "visibleCols" : "Columns to display",
         "horizontalPreview" : "Horizontal preview",
-        "turnOff" : "Off",
+        "noPreview" : "Off",
         "editSupport" : "Editing support",
         "highlightErrorTags" : "Highlight erroneous tags",
         "editorLanguage" : {
             "english" : "English",
             "german" : "German"
-        },
-        "columnOptions" : {
-            "lineNo" : "Line number",
-            "transTok" : "Token (Trans)",
-            "utfTok" : "Token (UTF)",
-            "norm" : "Normalization",
-            "mod" : "Modernization",
-            "modType" : "Modernization type",
-            "pos" : "POS tag",
-            "morph" : "Morphology tag",
-            "lemma" : "Lemma",
-            "lemmaLink" : "Lemma link",
-            "lemmaTag" : "Lemma tag",
-            "comment" : "Comment"
         }
+     },
+     "Columns": {
+        "lineNo" : "Line number",
+        "transTok" : "Token (Trans)",
+        "utfTok" : "Token (UTF)",
+        "norm" : "Normalization",
+        "mod" : "Modernization",
+        "modType" : "Modernization type",
+        "pos" : "POS tag",
+        "morph" : "Morphology tag",
+        "lemma" : "Lemma",
+        "lemmaLink" : "Lemma link",
+        "lemmaTag" : "Lemma tag",
+        "comment" : "Comment"
+
      }
  }
 }
