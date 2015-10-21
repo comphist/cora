@@ -7,17 +7,17 @@
 <div id="editDiv" class="content">
 <div id="editPanelDiv" class="panel">
   <div class="btn-toolbar" id="pagePanel">
-    <span class="btn-toolbar-entry btn-page-count"><span class="oi" aria-hidden="true"></span>Seite <input type="text" class="btn-page-to" size="2" /><span class="page-active"></span>/<span class="page-max"></span></span>
+    <span class="btn-toolbar-entry btn-page-count"><span class="oi" aria-hidden="true"></span><span data-trans-id="EditorTab.page"><?=$lh("EditorTab.page"); ?></span> <input type="text" class="btn-page-to" size="2" /><span class="page-active"></span>/<span class="page-max"></span></span>
     <span class="btn-toolbar-entry btn-page-back" title="Seite zurück"><span class="oi" data-glyph="arrow-thick-left" aria-hidden="true"></span></span>
     <span class="btn-toolbar-entry btn-page-forward" title="Seite vor"><span class="oi" data-glyph="arrow-thick-right" aria-hidden="true"></span></span>
-    <span class="btn-toolbar-entry btn-jump-to"><span class="oi" data-glyph="book" aria-hidden="true"></span> Springe zu Zeile</span>
+    <span class="btn-toolbar-entry btn-jump-to" data-trans-id="EditorTab.goToLine"><span class="oi" data-glyph="book" aria-hidden="true"></span><?=$lh("EditorTab.goToLine"); ?></span>
 
     <span class="btn-toolbar-separator"></span>
     <span class="btn-toolbar-entry btn-undo start-disabled" title="Rückgängig"><span class="oi" data-glyph="action-undo" aria-hidden="true"></span></span>
     <span class="btn-toolbar-entry btn-redo start-disabled" title="Wiederherstellen"><span class="oi" data-glyph="action-redo" aria-hidden="true"></span></span>
 
     <span class="btn-toolbar-separator"></span>
-    <span class="btn-toolbar-entry btn-text-search"><span class="oi" data-glyph="magnifying-glass" aria-hidden="true"></span> Suchen</span>
+    <span class="btn-toolbar-entry btn-text-search" data-trans-id="EditorTab.search"><span class="oi" data-glyph="magnifying-glass" aria-hidden="true"></span> <?=$lh("EditorTab.search"); ?></span>
     <span class="btn-toolbar-entry btn-search-back start-disabled" title="Vorheriges Suchergebnis"><span class="oi" data-glyph="arrow-left" aria-hidden="true"></span>&nbsp;<span class="oi" data-glyph="magnifying-glass" aria-hidden="true"></span></span>
     <span class="btn-toolbar-entry btn-search-forward start-disabled" title="Nächstes Suchergebnis"><span class="oi" data-glyph="magnifying-glass" aria-hidden="true"></span>&nbsp;<span class="oi" data-glyph="arrow-right" aria-hidden="true"></span></span>
 
@@ -133,20 +133,20 @@
       <tr class="editHeadLine">
         <th class="editTable_progress">P</th>
         <th class="editTable_tokenid">#</th>
-        <th class="editTable_line">Zeile</th>
+        <th class="editTable_line" data-trans-id="Columns.line"><?=$lh("Columns.line"); ?></th>
         <th class="editTable_error">E</th>
-        <th class="editTable_tok_trans">Token (Trans)</th>
-        <th class="editTable_token">Token (UTF)</th>
-        <th class="editTable_norm et-anno">Normalisierung</th>
-        <th class="editTable_norm_broad et-anno">Modernisierung</th>
+        <th class="editTable_tok_trans" data-trans-id="Columns.transTok"><?=$lh("Columns.transTok"); ?></th>
+        <th class="editTable_token" data-trans-id="Columns.utfTok"><?=$lh("Columns.utfTok"); ?></th>
+        <th class="editTable_norm et-anno" data-trans-id="Columns.norm"><?=$lh("Columns.norm"); ?></th>
+        <th class="editTable_norm_broad et-anno" data-trans-id="Columns.mod"><?=$lh("Columns.mod"); ?></th>
         <th class="editTable_norm_type et-anno"></th>
-        <th class="editTable_boundary et-anno">Satzgrenze</th>
-        <th class="editTable_pos et-anno">POS-Tag</th>
-        <th class="editTable_morph et-anno">Morphologie-Tag</th>
-        <th class="editTable_lemma et-anno">Lemma</th>
+        <th class="editTable_boundary et-anno" data-trans-id="Columns.sentBorder"><?=$lh("Columns.sentBorder"); ?></th>
+        <th class="editTable_pos et-anno" data-trans-id="Columns.pos"><?=$lh("Columns.pos"); ?></th>
+        <th class="editTable_morph et-anno" data-trans-id="Columns.morph"><?=$lh("Columns.morph"); ?></th>
+        <th class="editTable_lemma et-anno" data-trans-id="Columns.lemma"><?=$lh("Columns.lemma"); ?></th>
         <th class="editTable_lemma_sugg et-anno"></th>
-        <th class="editTable_lemmapos et-anno">Lemma-Tag</th>
-        <th class="editTable_comment et-anno">Kommentar</th>
+        <th class="editTable_lemmapos et-anno" data-trans-id="Columns.lemmaTag"><?=$lh("Columns.lemmaTag"); ?></th>
+        <th class="editTable_comment et-anno" data-trans-id="Columns.comment"><?=$lh("Columns.comment"); ?></th>
         <th class="editTable_dropdown"></th>
       </tr>
     </thead>

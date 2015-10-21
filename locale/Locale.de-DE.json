@@ -53,7 +53,14 @@
             "german" : "Deutsch"
         }
      },
+     "EditorTab": {
+        "page" : "Seite",
+        "previousPage" : "Seite zurück",
+        "goToLine" : "Springe zu Zeile",
+        "search" : "Suchen"
+    },
      "Columns": {
+        "line" : "Zeile",
         "lineNo" : "Zeilennummer",
         "transTok" : "Token (Trans)",
         "utfTok" : "Token (UTF)",
@@ -65,7 +72,8 @@
         "lemma" : "Lemma",
         "lemmaLink" : "Lemma-Link",
         "lemmaTag" : "Lemma-Tag",
-        "comment" : "Kommentar"
+        "comment" : "Kommentar",
+        "sentBorder" : "Satzgrenze"
      }
  }
 }

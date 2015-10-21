@@ -52,7 +52,14 @@
             "german" : "German"
         }
      },
+     "EditorTab": {
+        "page":"Page",
+        "previousPage" : "Previous page",
+        "goToLine" : "Go to line",
+        "search" : "Search"
+    },
      "Columns": {
+        "line" : "Line",
         "lineNo" : "Line number",
         "transTok" : "Token (Trans)",
         "utfTok" : "Token (UTF)",
@@ -64,7 +71,8 @@
         "lemma" : "Lemma",
         "lemmaLink" : "Lemma link",
         "lemmaTag" : "Lemma tag",
-        "comment" : "Comment"
+        "comment" : "Comment",
+        "sentBorder" : "Sent. border"
 
      }
  }
