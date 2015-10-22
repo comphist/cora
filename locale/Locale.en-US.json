@@ -56,7 +56,16 @@
         "page":"Page",
         "previousPage" : "Previous page",
         "goToLine" : "Go to line",
-        "search" : "Search"
+        "search" : "Search",
+        "autoAnnotation" : "Auto annotation",
+        "metaData" : "Meta data",
+        "siglum" : "Siglum:",
+        "fileName" : "File name:",
+        "header" : "Header:",
+        "Forms" : {
+            "lineNumber" : "Line number:",
+            "autoAnnotationInfo" : "<b>Warning!</b> &quot;Annotate&quot; replaces any annotations in lines <b>not</b> marked green in the progress area." 
+        }
     },
      "Columns": {
         "line" : "Line",

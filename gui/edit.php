@@ -10,20 +10,20 @@
     <span class="btn-toolbar-entry btn-page-count"><span class="oi" aria-hidden="true"></span><span data-trans-id="EditorTab.page"><?=$lh("EditorTab.page"); ?></span> <input type="text" class="btn-page-to" size="2" /><span class="page-active"></span>/<span class="page-max"></span></span>
     <span class="btn-toolbar-entry btn-page-back" title="Seite zurück"><span class="oi" data-glyph="arrow-thick-left" aria-hidden="true"></span></span>
     <span class="btn-toolbar-entry btn-page-forward" title="Seite vor"><span class="oi" data-glyph="arrow-thick-right" aria-hidden="true"></span></span>
-    <span class="btn-toolbar-entry btn-jump-to" data-trans-id="EditorTab.goToLine"><span class="oi" data-glyph="book" aria-hidden="true"></span><?=$lh("EditorTab.goToLine"); ?></span>
+    <span class="btn-toolbar-entry btn-jump-to"><span class="oi" data-glyph="book" aria-hidden="true"></span><span data-trans-id="EditorTab.goToLine"><?=$lh("EditorTab.goToLine"); ?></span></span>
 
     <span class="btn-toolbar-separator"></span>
     <span class="btn-toolbar-entry btn-undo start-disabled" title="Rückgängig"><span class="oi" data-glyph="action-undo" aria-hidden="true"></span></span>
     <span class="btn-toolbar-entry btn-redo start-disabled" title="Wiederherstellen"><span class="oi" data-glyph="action-redo" aria-hidden="true"></span></span>
 
     <span class="btn-toolbar-separator"></span>
-    <span class="btn-toolbar-entry btn-text-search" data-trans-id="EditorTab.search"><span class="oi" data-glyph="magnifying-glass" aria-hidden="true"></span> <?=$lh("EditorTab.search"); ?></span>
+    <span class="btn-toolbar-entry btn-text-search"><span class="oi" data-glyph="magnifying-glass" aria-hidden="true"></span> <span data-trans-id="EditorTab.search"><?=$lh("EditorTab.search"); ?></span></span>
     <span class="btn-toolbar-entry btn-search-back start-disabled" title="Vorheriges Suchergebnis"><span class="oi" data-glyph="arrow-left" aria-hidden="true"></span>&nbsp;<span class="oi" data-glyph="magnifying-glass" aria-hidden="true"></span></span>
     <span class="btn-toolbar-entry btn-search-forward start-disabled" title="Nächstes Suchergebnis"><span class="oi" data-glyph="magnifying-glass" aria-hidden="true"></span>&nbsp;<span class="oi" data-glyph="arrow-right" aria-hidden="true"></span></span>
 
     <span class="btn-toolbar-separator"></span>
-    <span class="btn-toolbar-entry btn-text-annotate"><span class="oi" data-glyph="excerpt" aria-hidden="true"></span> Automatisch annotieren</span>
-    <span class="btn-toolbar-entry btn-text-info"><span class="oi" data-glyph="info" aria-hidden="true"></span> Metadaten</span>
+    <span class="btn-toolbar-entry btn-text-annotate"><span class="oi" data-glyph="excerpt" aria-hidden="true"></span> <span data-trans-id="EditorTab.autoAnnotation"><?=$lh("EditorTab.autoAnnotation"); ?></span></span>
+    <span class="btn-toolbar-entry btn-text-info"><span class="oi" data-glyph="info" aria-hidden="true"></span> <span data-trans-id="EditorTab.metaData"> <?=$lh("EditorTab.metaData"); ?></span></span>
   </div>
 
   <table id="editTable">
@@ -36,17 +36,17 @@
   </div>
 
   <div class="btn-toolbar btn-toolbar-notop" id="pagePanelBottom">
-    <span class="btn-toolbar-entry btn-page-count"><span class="oi" aria-hidden="true"></span>Seite <input type="text" class="btn-page-to" size="2" /><span class="page-active"></span>/<span class="page-max"></span></span>
+    <span class="btn-toolbar-entry btn-page-count"><span class="oi" aria-hidden="true"></span><span data-trans-id="EditorTab.page"><?=$lh("EditorTab.page"); ?></span> <input type="text" class="btn-page-to" size="2" /><span class="page-active"></span>/<span class="page-max"></span></span>
     <span class="btn-toolbar-entry btn-page-back" title="Seite zurück"><span class="oi" data-glyph="arrow-thick-left" aria-hidden="true"></span></span>
     <span class="btn-toolbar-entry btn-page-forward" title="Seite vor"><span class="oi" data-glyph="arrow-thick-right" aria-hidden="true"></span></span>
-    <span class="btn-toolbar-entry btn-jump-to"><span class="oi" data-glyph="book" aria-hidden="true"></span> Springe zu Zeile</span>
+    <span class="btn-toolbar-entry btn-jump-to"><span class="oi" data-glyph="book" aria-hidden="true"></span><span data-trans-id="EditorTab.goToLine"><?=$lh("EditorTab.goToLine"); ?></span> </span>
   </div>
 </div>
 
 <!-- templates -->
 <div class="templateHolder">
   <div id="jumpToLineForm">
-    <label for="jumpTo">Zeilennummer: </label>
+    <label for="jumpTo" data-trans-id="EditorTab.Forms.lineNumber"><?=$lh("EditorTab.Forms.lineNumber"); ?></label>
     <input id="jumpToBox" type="text" name="jumpTo" placeholder="" size="6" class="mform" />
   </div>
 
@@ -87,8 +87,9 @@
   </div>
 
   <div id="automaticAnnotationForm" class="limitedWidth">
-    <p>
-      <b>Achtung!</b>  &quot;Annotieren&quot; überschreibt vorhandene Annotationen in allen Zeilen, die <b>nicht</b> mittels des Fortschrittsbalkens grün markiert sind.
+
+    <p data-trans-id="EditorTab.Forms.autoAnnotationInfo">
+      <?=$lh("EditorTab.Forms.autoAnnotationInfo"); ?>
     </p>
 
     <p>
@@ -100,15 +101,15 @@
   <div id="fileMetadataForm">
     <form>
     <p>
-      <label for="fmf-sigle" class="ra">Sigle: </label>
+      <label for="fmf-sigle" class="ra" data-trans-id="EditorTab.siglum"><?=$lh("EditorTab.siglum"); ?> </label>
       <input type="text" name="fmf-sigle" size="30" placeholder="" class="mform" />
     </p>
     <p>
-      <label for="fmf-name" class="ra">Dateiname: </label>
+      <label for="fmf-name" class="ra" data-trans-id="EditorTab.fileName"><?=$lh("EditorTab.fileName"); ?> </label>
       <input type="text" name="fmf-name" size="30" placeholder="" class="mform"/>
     </p>
     <p>
-      <label for="fmf-header" class="ra vt">Header: </label>
+      <label for="fmf-header" class="ra vt" data-trans-id="EditorTab.header"><?=$lh("EditorTab.header"); ?> </label>
       <textarea cols="60" rows="10" name="fmf-header" class="mform sans"></textarea>
     </p>
     </form>

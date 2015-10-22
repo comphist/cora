@@ -57,7 +57,16 @@
         "page" : "Seite",
         "previousPage" : "Seite zurück",
         "goToLine" : "Springe zu Zeile",
-        "search" : "Suchen"
+        "search" : "Suchen",
+        "autoAnnotation" : "Automatisch annotieren",
+        "metaData" : "Metadaten",
+        "siglum" : "Sigle:",
+        "fileName" : "Dateiname:",
+        "header" : "Header:",
+        "Forms" : {
+            "lineNumber" : "Zeilennummer:",
+            "autoAnnotationInfo" : "<b>Achtung!</b> &quot;Annotieren&quot; überschreibt vorhandene Annotationen in allen Zeilen, die <b>nicht</b> mittels des Fortschrittsbalkens grün markiert sind."
+        }
     },
      "Columns": {
         "line" : "Zeile",
