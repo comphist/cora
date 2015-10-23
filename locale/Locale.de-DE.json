@@ -66,6 +66,13 @@
         "Forms" : {
             "lineNumber" : "Zeilennummer:",
             "autoAnnotationInfo" : "<b>Achtung!</b> &quot;Annotieren&quot; überschreibt vorhandene Annotationen in allen Zeilen, die <b>nicht</b> mittels des Fortschrittsbalkens grün markiert sind."
+        },
+        "dropDown" : {
+            "searchSimilar" : "Suche ähnliche...",
+            "editToken" : "Token bearbeiten...",
+            "addToken" : "Token hinzufügen...",
+            "delToken" : "Token löschen"
+
         }
     },
      "Columns": {

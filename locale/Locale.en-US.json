@@ -65,6 +65,13 @@
         "Forms" : {
             "lineNumber" : "Line number:",
             "autoAnnotationInfo" : "<b>Warning!</b> &quot;Annotate&quot; replaces any annotations in lines <b>not</b> marked green in the progress area." 
+        },
+        "dropDown" : {
+            "searchSimilar" : "Search similar...",
+            "editToken" : "Edit token...",
+            "addToken" : "Add token...",
+            "delToken" : "Delete token"
+
         }
     },
      "Columns": {

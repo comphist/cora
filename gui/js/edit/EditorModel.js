@@ -91,16 +91,16 @@ var EditorModel = new Class({
 
         this.dataTable.addDropdownEntries([
             {name: 'Search',
-             text: 'Suche ähnliche...',
+             text: _("EditorTab.dropDown.searchSimilar"),
              action: this.searchSimilarTokens.bind(this)},
             {name: 'Edit',
-             text: 'Token bearbeiten...',
+             text: _("EditorTab.dropDown.editToken"),
              action: this.editToken.bind(this)},
             {name: 'Add',
-             text: 'Token hinzufügen...',
+             text: _("EditorTab.dropDown.addToken"),
              action: this.addToken.bind(this)},
             {name: 'Delete',
-             text: 'Token löschen',
+             text: _("EditorTab.dropDown.delToken"),
              action: this.deleteToken.bind(this)}
         ]);
 	this.dataTable.addEvent(
