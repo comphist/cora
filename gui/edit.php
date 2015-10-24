@@ -93,7 +93,7 @@
     </p>
 
     <p>
-      <label for="aa_tagger_select">Tagger: </label>
+      <label for="aa_tagger_select" data-trans-id="EditorTab.taggerAvailable"><?=$lh("EditorTab.taggerAvailable"); ?></label>
       <div id="aa_tagger_select"></div>
     </p>
   </div>

@@ -242,7 +242,7 @@ var EditorModel = new Class({
             elem.addEvent('click', function() {
                 var content = $('fileMetadataForm');
                 var current = cora.files.get(this.fileId);
-                var buttons = [{title: "Schließen", addClass: "mform"}];
+                var buttons = [{title: _("Action.close"), addClass: "mform"}];
                 var may_modify = cora.files.mayDeleteFile(this.fileId);
                 content.getElement('input[name="fmf-sigle"]')
                     .set('value', current.sigle)
@@ -255,7 +255,7 @@ var EditorModel = new Class({
                     .set('disabled', !may_modify);
                 if(may_modify) {
                     buttons.unshift({
-                        title: "Ändern", addClass: "mform button_red",
+                        title: _("Action.change"), addClass: "mform button_red",
                         event: function() {
                             ref.saveMetadataFromForm(this);
                         }
@@ -263,7 +263,7 @@ var EditorModel = new Class({
                 }
                 new mBox.Modal({
                     content: content,
-                    title: "Metadaten",
+                    title: _("EditorTab.metaData"),
                     buttons: buttons,
                     closeOnBodyClick: false
                 }).open();
@@ -955,7 +955,7 @@ var EditorModel = new Class({
 	    title: 'Transkription bearbeiten',
 	    content: 'editTokenForm',
 	    buttons: [
-		{title: 'Abbrechen', addClass: 'mform'},
+		{title: _("Action.cancel"), addClass: 'mform'},
 		{title: 'Speichern', addClass: 'mform button_green',
 		 event: function() {
 	             var new_token = $('editTokenBox').get('value').trim();
@@ -1025,7 +1025,7 @@ var EditorModel = new Class({
 	    title: 'Transkription hinzufügen',
 	    content: 'addTokenForm',
 	    buttons: [
-		{title: 'Abbrechen', addClass: 'mform'},
+		{title: _("Action.cancel"), addClass: 'mform'},
 		{title: 'Speichern', addClass: 'mform button_green',
 		 event: function() {
 	             var new_token = $('addTokenBox').get('value').trim();
@@ -1105,7 +1105,7 @@ var EditorModel = new Class({
             aaselect.getParent("div.mBoxContainer").getElement("#annoStartButton").set("disabled", false);
         }
         else {
-            aaselect.appendText("Keine Tagger verfügbar.");
+            aaselect.appendText(_("EditorTab.noTaggerAvailable"));
             aaselect.getParent("div.mBoxContainer").getElement("#trainStartButton").set("disabled", true);
             aaselect.getParent("div.mBoxContainer").getElement("#annoStartButton").set("disabled", true);
         }
@@ -1149,11 +1149,11 @@ var EditorModel = new Class({
 
 	// define the dialog window
 	mbox = new mBox.Modal({
-	    title: 'Automatisch neu annotieren',
+	    title: _("EditorTab.autoAnnotationTitle"),
 	    content: 'automaticAnnotationForm',
 	    attach: button,
             onOpen: function() { ref.save(); },
-	    buttons: [ {title: "Neu trainieren", addClass: "mform button_left button_yellow",
+	    buttons: [ {title: _("Action.retrain"), addClass: "mform button_left button_yellow",
                         id: "trainStartButton",
                         event: function() {
                             this.close();
@@ -1164,7 +1164,7 @@ var EditorModel = new Class({
                                 function() { gui.hideSpinner(); }
                             );
                         }},
-                       {title: "Annotieren", addClass: "mform button_green",
+                       {title: _("Action.annotate"), addClass: "mform button_green",
 			id: "annoStartButton",
 			event: function() {
                             this.close();
@@ -1175,7 +1175,7 @@ var EditorModel = new Class({
                                 function() { gui.hideSpinner(); }
                             );
                         }},
-		       {title: "Abbrechen", addClass: "mform",
+		       {title: _("Action.cancel"), addClass: "mform",
 			event: function() { this.close(); }}
 		     ]
 	});

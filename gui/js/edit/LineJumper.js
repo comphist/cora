@@ -21,7 +21,7 @@ var LineJumper = new Class({
         this.parentTable = parent.parent;
         this.mbox = new mBox.Modal({
 	    content: content.clone(),
-	    title: 'Springe zu Zeile',
+	    title: _("EditorTab.goToLine"),
 	    buttons: [
 		{title: 'Abbrechen', addClass: 'mform'},
 		{title: 'OK', addClass: 'mform button_green',

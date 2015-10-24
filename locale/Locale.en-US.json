@@ -58,6 +58,9 @@
         "goToLine" : "Go to line",
         "search" : "Search",
         "autoAnnotation" : "Auto annotation",
+        "autoAnnotationTitle" : "Reannotate automatically",
+        "noTaggerAvailable" : "No tagger available",
+        "taggerAvailable" : "Tagger:",
         "metaData" : "Meta data",
         "siglum" : "Siglum:",
         "fileName" : "File name:",
@@ -70,7 +73,18 @@
             "searchSimilar" : "Search similar...",
             "editToken" : "Edit token...",
             "addToken" : "Add token...",
-            "delToken" : "Delete token"
+            "delToken" : "Delete token",
+            "annotationLevels" : "Annotation levels",
+            "markups" : "Markups",
+            "is" : "is",
+            "isNot" : "is not",
+            "contains" : "contains",
+            "containsNot" : "does not contain",
+            "startsWith" : "starts with",
+            "endsWith" : "ends with",
+            "matchesRegEx" : "matches regex",
+            "isSet" : "is set",
+            "isNotSet" : "is not set"
 
         }
     },
@@ -89,6 +103,18 @@
         "lemmaTag" : "Lemma tag",
         "comment" : "Comment",
         "sentBorder" : "Sent. border"
+
+     },
+     "Action" : {
+        "cancel" : "Cancel",
+        "ok" : "Ok",
+        "change" : "Save changes",
+        "close" : "Close",
+        "retrain" : "Retrain",
+        "annotate" : "Annotate",
+        "search" : "Search",
+        "reset" : "Reset"
+
 
      }
  }

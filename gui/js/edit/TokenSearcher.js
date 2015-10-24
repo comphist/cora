@@ -50,14 +50,14 @@ var TokenSearcher = new Class({
         this.reset();
         this.mbox = new mBox.Modal({
 	    content: content,
-	    title: 'Suchen',
+	    title: _("Action.search"),
             closeOnBodyClick: false,
 	    buttons: [
-                {title: 'Zurücksetzen', addClass: 'mform button_left',
+                {title: _("Action.reset"), addClass: 'mform button_left',
                  event: function() { ref.reset(); }
                 },
-		{title: 'Abbrechen', addClass: 'mform'},
-		{title: 'Suchen', addClass: 'mform button_green',
+		{title: _("Action.cancel"), addClass: 'mform'},
+		{title: _("Action.search"), addClass: 'mform button_green',
 		 event: function() {
                      var spinner = new Spinner(this.mbox.container);
                      spinner.show();
@@ -110,7 +110,7 @@ var TokenSearcher = new Class({
         fieldSelector.grab(makeOption('token_trans',
                                       cora.strings.search_condition.field['token_trans']));
         // Annotation layers
-        optgroup = new Element('optgroup', {'label': "Annotationsebenen"});
+        optgroup = new Element('optgroup', {'label': _("EditorTab.dropDown.annotationLevels")});
         Object.each(this.tagsets, function(tagset) {
             if(tagset.searchable) {
                 elemlist.push(makeOption(tagset.class, tagset.classname));
@@ -123,7 +123,7 @@ var TokenSearcher = new Class({
         elemlist.each(function(a) { optgroup.grab(a); });
         fieldSelector.grab(optgroup);
         // Flags
-        optgroup = new Element('optgroup', {'label': "Markierungen"});
+        optgroup = new Element('optgroup', {'label': _("EditorTab.dropDown.markups")});
         Object.each(this.flagHandler.flags,
                     function(flag, flagname) {
                         optgroup.grab(makeOption(flagname, flag.displayname));
