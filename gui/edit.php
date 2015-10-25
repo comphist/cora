@@ -63,27 +63,27 @@
   </div>
 
   <div id="deleteTokenWarning">
-    <p class="important_text"><strong>Achtung!</strong> Diese Aktion kann nicht rückgängig gemacht werden!</p>
-    <p>Soll das Token &quot;<span id="deleteTokenToken"></span>&quot; wirklich gelöscht werden?</p>
+    <p class="important_text" data-trans-id="EditorTab.Forms.cannotBeUndone"><?=$lh("EditorTab.Forms.cannotBeUndone"); ?></p>
+    <p data-trans-id="EditorTab.Forms.deletionPrompt"><?=$_("EditorTab.Forms.deletionPrompt"); ?></p>
   </div>
 
   <div id="editTokenForm" class="limitedWidth-tiny">
-    <p class="important_text"><strong>Achtung!</strong> Diese Aktion kann nicht rückgängig gemacht werden!</p>
+    <p class="important_text" data-trans-id="EditorTab.Forms.cannotBeUndone"><?=$lh("EditorTab.Forms.cannotBeUndone"); ?></p>
     <p>
-      <label for="editToken">Transkription: </label>
+      <label for="editToken" data-trans-id="EditorTab.Forms.transcription"><?=$lh("EditorTab.Forms.transcription"); ?></label>
       <textarea id="editTokenBox" name="editToken" rows="1" cols="30" class="auto-resize mform"></textarea>
     </p>
   </div>
 
   <div id="addTokenForm" class="limitedWidth-tiny">
-    <p class="important_text"><strong>Achtung!</strong> Diese Aktion kann nicht rückgängig gemacht werden!</p>
+    <p class="important_text" data-trans-id="EditorTab.Forms.cannotBeUndone"><?=$lh("EditorTab.Forms.cannotBeUndone"); ?></p>
     <form>
       <p>
-        <label for="addToken">Transkription: </label>
+        <label for="addToken" data-trans-id="EditorTab.Forms.transcription"><?=$lh("EditorTab.Forms.transcription"); ?></label>
         <textarea id="addTokenBox" name="addToken" rows="1" cols="30" class="auto-resize mform"></textarea>
       </p>
     </form>
-    <p>Die neue Transkription wird <strong>vor</strong> dem Token &quot;<span id="addTokenBefore"></span>&quot; auf Zeile &quot;<span id="addTokenLineinfo"></span>&quot; in das Originaldokument eingefügt.</p>
+    <p data-trans-id="EditorTab.Forms.newTransInfo"><?=$lh("EditorTab.Forms.newTransInfo"); ?></p>
   </div>
 
   <div id="automaticAnnotationForm" class="limitedWidth">

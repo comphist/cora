@@ -68,7 +68,12 @@
         "header" : "Header:",
         "Forms" : {
             "lineNumber" : "Zeilennummer:",
-            "autoAnnotationInfo" : "<b>Achtung!</b> &quot;Annotieren&quot; überschreibt vorhandene Annotationen in allen Zeilen, die <b>nicht</b> mittels des Fortschrittsbalkens grün markiert sind."
+            "autoAnnotationInfo" : "<b>Achtung!</b> &quot;Annotieren&quot; überschreibt vorhandene Annotationen in allen Zeilen, die <b>nicht</b> mittels des Fortschrittsbalkens grün markiert sind.",
+            "confirmDeletion" : "Löschen bestätigen",
+            "cannotBeUndone" : "<strong>Achtung!</strong> Diese Aktion kann nicht rückgängig gemacht werden!",
+            "deletionPrompt" : "Soll das Token &quot;<span id='deleteTokenToken'></span>&quot; wirklich gelöscht werden?",
+            "transcription" : "Transkription: ",
+            "newTransInfo" : "Die neue Transkription wird <strong>vor</strong> dem Token &quot;<span id='addTokenBefore'></span>&quot; auf Zeile &quot;<span id='addTokenLineinfo'></span>&quot; in das Originaldokument eingefügt."
         },
         "dropDown" : {
             "searchSimilar" : "Suche ähnliche...",
@@ -107,13 +112,16 @@
      },
      "Action" : {
         "cancel" : "Abbrechen",
+        "noCancel" : "Nein, abbrechen",
+        "yesDelete" : "Ja, löschen",
         "ok" : "Ok",
         "change" : "Ändern",
         "close" : "Schließen",
         "retrain" : "Neu trainieren",
         "annotate" : "Annotieren",
         "search" : "Suchen",
-        "reset" : "Zurücksetzen"
+        "reset" : "Zurücksetzen",
+        "save" : "Speichern"
      }
  }
 }

@@ -23,8 +23,8 @@ var LineJumper = new Class({
 	    content: content.clone(),
 	    title: _("EditorTab.goToLine"),
 	    buttons: [
-		{title: 'Abbrechen', addClass: 'mform'},
-		{title: 'OK', addClass: 'mform button_green',
+		{title: _("Action.cancel"), addClass: 'mform'},
+		{title: _("Action.ok"), addClass: 'mform button_green',
 		 event: function() {
 		     ref.jump();
 		 }

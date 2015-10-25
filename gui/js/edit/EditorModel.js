@@ -902,11 +902,11 @@ var EditorModel = new Class({
 
 	$('deleteTokenToken').empty().appendText(old_token);
 	new mBox.Modal({
-	    title: 'Löschen bestätigen',
+	    title: _("EditorTab.Forms.confirmDeletion"),
 	    content: 'deleteTokenWarning',
 	    buttons: [
-		{title: 'Nein, abbrechen', addClass: 'mform'},
-		{title: 'Ja, löschen', addClass: 'mform button_red',
+		{title: _("Action.noCancel"), addClass: 'mform'},
+		{title: _("Action.yesDelete"), addClass: 'mform button_red',
 		 event: function() {
 		     this.close();
 		     gui.showSpinner({message: 'Bitte warten...'});
@@ -952,11 +952,11 @@ var EditorModel = new Class({
 
 	$('editTokenBox').set('value', old_token);
 	var editTokenBox = new mBox.Modal({
-	    title: 'Transkription bearbeiten',
+	    title: _("EditorTab.Forms.editTranscription"),
 	    content: 'editTokenForm',
 	    buttons: [
 		{title: _("Action.cancel"), addClass: 'mform'},
-		{title: 'Speichern', addClass: 'mform button_green',
+		{title: _("Action.save"), addClass: 'mform button_green',
 		 event: function() {
 	             var new_token = $('editTokenBox').get('value').trim();
                      if (!new_token) {
@@ -1022,11 +1022,11 @@ var EditorModel = new Class({
 	$('addTokenBefore').empty().appendText(old_token);
 	$('addTokenLineinfo').empty().appendText(lineinfo);
 	var addTokenBox = new mBox.Modal({
-	    title: 'Transkription hinzufügen',
+	    title: _("EditorTab.Forms.addTranscription"),
 	    content: 'addTokenForm',
 	    buttons: [
 		{title: _("Action.cancel"), addClass: 'mform'},
-		{title: 'Speichern', addClass: 'mform button_green',
+		{title: _("Action.save"), addClass: 'mform button_green',
 		 event: function() {
 	             var new_token = $('addTokenBox').get('value').trim();
 	             if(!new_token) {

@@ -67,7 +67,12 @@
         "header" : "Header:",
         "Forms" : {
             "lineNumber" : "Line number:",
-            "autoAnnotationInfo" : "<b>Warning!</b> &quot;Annotate&quot; replaces any annotations in lines <b>not</b> marked green in the progress area." 
+            "autoAnnotationInfo" : "<b>Warning!</b> &quot;Annotate&quot; replaces any annotations in lines <b>not</b> marked green in the progress area.",
+            "confirmDeletion" : "Confirm deletion",
+            "cannotBeUndone" : "<b>Warning!</b> This action cannot be undone!",
+            "deletionPrompt" : "Are you sure you want to delete the token &quot;<span id='deleteTokenToken'></span>&quot;?",
+            "transcription" : "Transcription: ",
+            "newTransInfo" : "The new transcription will be inserted into the original file <strong>in front of</strong> the token &quot;<span id='addTokenBefore'></span>&quot; in line &quot;<span id='addTokenLineinfo'></span>&quot;." 
         },
         "dropDown" : {
             "searchSimilar" : "Search similar...",
@@ -107,13 +112,16 @@
      },
      "Action" : {
         "cancel" : "Cancel",
+        "noCancel" : "No, cancel",
+        "yesDelete" : "Yes, delete",
         "ok" : "Ok",
         "change" : "Save changes",
         "close" : "Close",
         "retrain" : "Retrain",
         "annotate" : "Annotate",
         "search" : "Search",
-        "reset" : "Reset"
+        "reset" : "Reset",
+        "save" : "Save"
 
 
      }
