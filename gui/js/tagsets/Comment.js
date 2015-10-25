@@ -5,7 +5,7 @@
  */
 var CommentTagset = new Class({
     Extends: Tagset,
-    classname: 'Kommentar',
+    classname: "Columns.comment", //'Kommentar'
     eventString: 'input:relay(input.et-input-comment)',
 
     /* Constructor: Tagset

@@ -2,10 +2,11 @@
 
    Class representing a POS tagset.
  */
+
 var POSTagset = new Class({
     Extends: Tagset,
     Implements: SplitClassTagset,
-    classname: 'POS-Tag (inkl. Morphologie)',
+    classname: "EditorTab.dropDown.posTagMorph", //'POS-Tag (inkl. Morphologie)'
     optgroup: null,
     eventStringPOS: 'change:relay(select.et-select-pos-main)',
     eventStringMorph: 'change:relay(select.et-select-morph)',

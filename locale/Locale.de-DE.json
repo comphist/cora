@@ -74,7 +74,9 @@
             "deletionPrompt" : "Soll das Token &quot;<span id='deleteTokenToken'></span>&quot; wirklich gelöscht werden?",
             "transcription" : "Transkription: ",
             "newTransInfo" : "Die neue Transkription wird <strong>vor</strong> dem Token &quot;<span id='addTokenBefore'></span>&quot; auf Zeile &quot;<span id='addTokenLineinfo'></span>&quot; in das Originaldokument eingefügt.",
-            "searchForm" : "Suche Tokens, die <select class=\"editSearchOperator\" size=\"1\"><option value=\"all\">alle</option><option value=\"any\">mind. eine</option></select><span class=\"eso-det-agr\">diese</span> Bedingungen erfüllen:"
+            "searchForm" : "Suche Tokens, die <select class=\"editSearchOperator\" size=\"1\"><option value=\"all\">alle</option><option value=\"any\">mind. eine</option></select><span class=\"eso-det-agr\">diese</span> Bedingungen erfüllen:",
+            "editTranscription" : "Transkription bearbeiten",
+            "addTranscription" : "Transkription hinzufügen"
         },
         "dropDown" : {
             "searchSimilar" : "Suche ähnliche...",
@@ -96,7 +98,9 @@
             "lemmaMarkup" : "Lemma-Markierung",
             "sentBoundaryMarkup" : "Satzgrenzen-Markierung",
             "tokenAll" : "Token",
-            "tokenTrans" : "Token (Transkription)"
+            "tokenTrans" : "Token (Transkription)",
+            "posTagMorph" : "POS-Tag (inkl. Morphologie)"
+
 
         }
     },

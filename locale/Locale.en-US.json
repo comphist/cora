@@ -73,7 +73,9 @@
             "deletionPrompt" : "Are you sure you want to delete the token &quot;<span id='deleteTokenToken'></span>&quot;?",
             "transcription" : "Transcription: ",
             "newTransInfo" : "The new transcription will be inserted into the original file <strong>in front of</strong> the token &quot;<span id='addTokenBefore'></span>&quot; in line &quot;<span id='addTokenLineinfo'></span>&quot;.",
-            "searchForm" : "Search for tokens fulfilling <select class=\"editSearchOperator\" size=\"1\"><option value=\"all\">all</option><option value=\"any\">any</option></select> of the criteria below:" 
+            "searchForm" : "Search for tokens fulfilling <select class=\"editSearchOperator\" size=\"1\"><option value=\"all\">all</option><option value=\"any\">any</option></select> of the criteria below:",
+            "editTranscription" : "Edit transcription",
+            "addTranscription" : "Add transcription"
         },
         "dropDown" : {
             "searchSimilar" : "Search similar...",
@@ -95,7 +97,8 @@
             "lemmaMarkup" : "Lemma markup",
             "sentBoundaryMarkup" : "Sentence boundary markup",
             "tokenAll" : "Token",
-            "tokenTrans" : "Token (transcription)"
+            "tokenTrans" : "Token (transcription)",
+            "posTagMorph" : "POS-Tag (incl. Morphology)"
 
         }
     },

@@ -5,7 +5,7 @@
 var LemmaTagset = new Class({
     Extends: Tagset,
     Implements: LemmaAutocomplete,
-    classname: "Lemma",
+    classname: "Columns.lemma", // "Lemma"
     eventString: 'input:relay(input.et-input-lemma)',
 
     /* Constructor: Tagset

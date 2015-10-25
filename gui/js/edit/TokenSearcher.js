@@ -113,8 +113,8 @@ var TokenSearcher = new Class({
         optgroup = new Element('optgroup', {'label': _("EditorTab.dropDown.annotationLevels")});
         Object.each(this.tagsets, function(tagset) {
             if(tagset.searchable) {
-                elemlist.push(makeOption(tagset.class, tagset.classname));
-                cora.strings.search_condition.field[tagset.class] = tagset.classname;
+                elemlist.push(makeOption(tagset.class, _(tagset.classname)));
+                cora.strings.search_condition.field[tagset.class] = _(tagset.classname);
             }
         });
         elemlist.sort(function(a,b) {

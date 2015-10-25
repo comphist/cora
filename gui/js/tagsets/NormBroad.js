@@ -4,7 +4,7 @@
  */
 var NormBroadTagset = new Class({
     Extends: Tagset,
-    classname: 'Modernisierung',
+    classname: "Columns.mod", //'Modernisierung'
     eventString: 'input:relay(input.et-input-norm_broad)',
 
     /* Constructor: Tagset
