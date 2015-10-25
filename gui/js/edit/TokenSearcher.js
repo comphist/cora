@@ -106,9 +106,9 @@ var TokenSearcher = new Class({
         fieldSelector.empty();
         // Fixed elements
         fieldSelector.grab(makeOption('token_all',
-                                      cora.strings.search_condition.field['token_all']));
+                                      _("EditorTab.dropDown.tokenAll"))); // cora.strings.search_condition.field['token_all']
         fieldSelector.grab(makeOption('token_trans',
-                                      cora.strings.search_condition.field['token_trans']));
+                                     _("EditorTab.dropDown.tokenTrans"))); // cora.strings.search_condition.field['token_trans']
         // Annotation layers
         optgroup = new Element('optgroup', {'label': _("EditorTab.dropDown.annotationLevels")});
         Object.each(this.tagsets, function(tagset) {
@@ -126,8 +126,8 @@ var TokenSearcher = new Class({
         optgroup = new Element('optgroup', {'label': _("EditorTab.dropDown.markups")});
         Object.each(this.flagHandler.flags,
                     function(flag, flagname) {
-                        optgroup.grab(makeOption(flagname, flag.displayname));
-                        cora.strings.search_condition.field[flagname] = flag.displayname;
+                        optgroup.grab(makeOption(flagname, _(flag.displayname)));
+                        cora.strings.search_condition.field[flagname] = _(flag.displayname);
                     });
         // optgroup.grab(makeOption("flag_progress", "Fortschrittsbalken"));
         // cora.strings.search_condition.field["flag_progress"] = "Fortschrittsbalken";
@@ -169,18 +169,18 @@ var TokenSearcher = new Class({
         };
         if(cls === 'flags') {
             return new Elements([
-                makeOption('set', cora.strings.search_condition.match['set']),
-                makeOption('nset', cora.strings.search_condition.match['nset'])
+                makeOption('set', _("EditorTab.dropDown.isSet")), // cora.strings.search_condition.match['set']
+                makeOption('nset', _("EditorTab.dropDown.isNotSet")) // cora.strings.search_condition.match['nset']
             ]);
         }
         return new Elements([
-            makeOption('eq', cora.strings.search_condition.match['eq']),
-            makeOption('neq', cora.strings.search_condition.match['neq']),
-            makeOption('in', cora.strings.search_condition.match['in']),
-            makeOption('nin', cora.strings.search_condition.match['nin']),
-            makeOption('bgn', cora.strings.search_condition.match['bgn']),
-            makeOption('end', cora.strings.search_condition.match['end']),
-            makeOption('regex', cora.strings.search_condition.match['regex'])
+            makeOption('eq', _("EditorTab.dropDown.is")), // cora.strings.search_condition.match['eq']
+            makeOption('neq', _("EditorTab.dropDown.isNot")), // cora.strings.search_condition.match['neq']
+            makeOption('in', _("EditorTab.dropDown.contains")), // cora.strings.search_condition.match['in']
+            makeOption('nin', _("EditorTab.dropDown.containsNot")), // cora.strings.search_condition.match['nin']
+            makeOption('bgn', _("EditorTab.dropDown.startsWith")), // cora.strings.search_condition.match['bgn']
+            makeOption('end', _("EditorTab.dropDown.endsWith")), // cora.strings.search_condition.match['end']
+            makeOption('regex', _("EditorTab.dropDown.matchesRegEx")) // cora.strings.search_condition.match['regex']
         ]);
     },
 

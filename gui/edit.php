@@ -51,15 +51,11 @@
   </div>
 
   <div id="searchTokenForm">
-    <p>
-      Suche Tokens, die
-        <select class="editSearchOperator" size="1">
-          <option value="all">alle</option>
-          <option value="any">mind. eine</option>
-        </select>
-      <span class="eso-det-agr">diese</span> Bedingungen erfüllen:
+    <p data-trans-id="EditorTab.Forms.searchForm"><?=$lh("EditorTab.Forms.searchForm"); ?></p>
       <ul class="flexrow-container"></ul>
     </p>
+
+
   </div>
 
   <div id="deleteTokenWarning">
@@ -141,7 +137,7 @@
         <th class="editTable_norm et-anno" data-trans-id="Columns.norm"><?=$lh("Columns.norm"); ?></th>
         <th class="editTable_norm_broad et-anno" data-trans-id="Columns.mod"><?=$lh("Columns.mod"); ?></th>
         <th class="editTable_norm_type et-anno"></th>
-        <th class="editTable_boundary et-anno" data-trans-id="Columns.sentBorder"><?=$lh("Columns.sentBorder"); ?></th>
+        <th class="editTable_boundary et-anno" data-trans-id="Columns.sentBoundary"><?=$lh("Columns.sentBoundary"); ?></th>
         <th class="editTable_pos et-anno" data-trans-id="Columns.pos"><?=$lh("Columns.pos"); ?></th>
         <th class="editTable_morph et-anno" data-trans-id="Columns.morph"><?=$lh("Columns.morph"); ?></th>
         <th class="editTable_lemma et-anno" data-trans-id="Columns.lemma"><?=$lh("Columns.lemma"); ?></th>
