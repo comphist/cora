@@ -66,6 +66,8 @@
         "siglum" : "Sigle:",
         "fileName" : "Dateiname:",
         "header" : "Header:",
+        "resultPage" : "Ergebnis-Seite",
+        "editQuery" : "Suche ändern",
         "Forms" : {
             "lineNumber" : "Zeilennummer:",
             "autoAnnotationInfo" : "<b>Achtung!</b> &quot;Annotieren&quot; überschreibt vorhandene Annotationen in allen Zeilen, die <b>nicht</b> mittels des Fortschrittsbalkens grün markiert sind.",
@@ -76,7 +78,17 @@
             "newTransInfo" : "Die neue Transkription wird <strong>vor</strong> dem Token &quot;<span id='addTokenBefore'></span>&quot; auf Zeile &quot;<span id='addTokenLineinfo'></span>&quot; in das Originaldokument eingefügt.",
             "searchForm" : "Suche Tokens, die <select class=\"editSearchOperator\" size=\"1\"><option value=\"all\">alle</option><option value=\"any\">mind. eine</option></select><span class=\"eso-det-agr\">diese</span> Bedingungen erfüllen:",
             "editTranscription" : "Transkription bearbeiten",
-            "addTranscription" : "Transkription hinzufügen"
+            "addTranscription" : "Transkription hinzufügen",
+            "result" : "Ergebnis",
+            "results" : "Ergebnisse",
+            "resultInfoHead1" : "Es gibt",
+            "resultInfoHead2" : "Es gibt",
+            "ofThese1" : "dieser",
+            "ofThese2" : "diese",
+            "resultInfoMiddle" : "für Tokens, die",
+            "resultInfoTail" : "Bedingungen erfüllen:",
+            "allFulfilled" : "alle",
+            "oneFulfilled" : "mindestens eine"
         },
         "dropDown" : {
             "searchSimilar" : "Suche ähnliche...",

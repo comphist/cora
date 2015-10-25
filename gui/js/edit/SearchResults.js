@@ -148,18 +148,66 @@ var SearchResults = new Class({
         if (div === null || typeof(div) === "undefined")
             return;
         div.getElement('.srl-count').set('text', this.data.length);
-        text = (this.data.length == 1) ? "Ergebnis" : "Ergebnisse";
+        text = (this.data.length == 1) ? _("EditorTab.Forms.result") : _("EditorTab.Forms.results");
         div.getElement('.srl-agr-count').set('text', text);
-        text = cora.strings.search_condition.operator[this.criteria.operator];
+
+        text = (this.data.length == 1) ? _("EditorTab.Forms.resultInfoHead1") : _("EditorTab.Forms.resultInfoHead2");
+        div.getElement('.srl-head-count').set('text',text);
+
+        text = (cora.strings.search_condition.operator[this.criteria.operator] == "alle") ? _("EditorTab.Forms.allFulfilled") : _("EditorTab.Forms.oneFulfilled");
         div.getElement('.srl-operator').set('text', text);
-        text = (this.criteria.operator === "all") ? "diese" : "dieser";
+
+        text = (this.criteria.operator === "all") ? _("EditorTab.Forms.ofThese2") : _("EditorTab.Forms.ofThese1");
         div.getElement('.srl-agr-operator').set('text', text);
+
         ul = div.getElement('.srl-condition-list');
         ul.empty();
         this.criteria.conditions.each(function(condition) {
             var li = new Element('li');
-            text  = cora.strings.search_condition.field[condition.field] + " ";
-            text += cora.strings.search_condition.match[condition.match] + " ";
+            
+            text = cora.strings.search_condition.field[condition.field] + " ";
+            switch (cora.strings.search_condition.match[condition.match]) {
+
+                case "ist":
+                    text += _("EditorTab.dropDown.is");
+                    break;
+
+                case "ist nicht":
+                    text += _("EditorTab.dropDown.isNot");
+                    break;
+
+                case "ist":
+                    text += _("EditorTab.dropDown.is");
+                    break;
+
+                case "enthält":
+                    text += _("EditorTab.dropDown.contains");
+                    break;
+
+                case "enthält nicht":
+                    text += _("EditorTab.dropDown.containsNot");
+                    break;
+
+                case "beginnt mit":
+                    text += _("EditorTab.dropDown.startsWith");
+                    break;
+
+                case "endet auf":
+                    text += _("EditorTab.dropDown.endsWith");
+                    break;
+
+                case "matcht RegEx":
+                    text += _("EditorTab.dropDown.matchesRegEx");
+                    break;
+
+                default:
+                    text += cora.strings.search_condition.match[condition.match];
+
+            }
+
+            text += " ";
+
+            
             li.set('text', text);
             if (condition.match !== "set" && condition.match !== "nset") {
                 if (condition.value === "") {
