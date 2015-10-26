@@ -52,6 +52,24 @@
             "german" : "German"
         }
      },
+     "FileTab" : {
+        "importText" : "Import text file",
+        "importXml" : "Import XML file",
+        "siglum" : "Sig.",
+        "fileName" : "File name",
+        "lastEdit" : "Last edited",
+        "by" : "...by",
+        "created" : "Created",
+        "id" : "ID",
+        "Forms" : {
+            "exportFile" : "Export File",
+            "exportPrompt" : "Please choose a format for the export file:",
+            "exportInfoCora" : "Export a CorA XML-file containing the complete document including all annotations. The file can be reimported later on in order to obtain a version of the document identical to the file when exported.",
+            "exportInfoCsv" : "Export a tab-delimited text file suitable for the import into spreadsheet software (e.g. Microsoft Excel). Please choose annotation layers to be exported:"
+
+        }
+
+        },
      "EditorTab": {
         "page":"Page",
         "previousPage" : "Previous page",
@@ -87,7 +105,8 @@
             "resultInfoMiddle" : "for tokens fulfilling",
             "resultInfoTail" : "criteria:",
             "allFulfilled" : "all",
-            "oneFulfilled" : "any"
+            "oneFulfilled" : "any",
+            "blank" : "(blank)"
         },
         "dropDown" : {
             "searchSimilar" : "Search similar...",
@@ -142,7 +161,9 @@
         "annotate" : "Annotate",
         "search" : "Search",
         "reset" : "Reset",
-        "save" : "Save"
+        "save" : "Save",
+        "export" : "Export...",
+        "tagsets" : "Tagsets..."
 
 
      }

@@ -53,6 +53,25 @@
             "german" : "Deutsch"
         }
      },
+     "FileTab" : {
+        "importText" : "Import aus Textdatei",
+        "importXml" : "Import aus XML-Datei",
+        "siglum" : "Sigle",
+        "fileName" : "Dateiname",
+        "lastEdit" : "Letzte Änderung",
+        "by" : "...von",
+        "created" : "Erstellt",
+        "id" : "ID",
+        "Forms" : {
+            "exportFile" : "Datei exportieren",
+            "exportPrompt" : "In welchem Format möchten Sie die Datei exportieren?",
+            "exportInfoCora" : "Exportiert eine CorA-XML-Datei, die das vollständige Dokument mitsamt allen Annotationen enthält.  Diese Datei kann auch wieder re-importiert werden, um eine Kopie des Dokuments im selben Zustand wie zum Zeitpunkt des Exports zu erhalten.",
+            "exportInfoCsv" : "Exportiert eine mehrspaltige Textdatei, die sich u.a. zum Import in eine Tabellenkalkulation (z.B. Microsoft Excel) eignet. Wählen Sie aus, welche Annotationsebenen im Export enthalten sein sollen:"
+
+        }
+
+        },
+
      "EditorTab": {
         "page" : "Seite",
         "previousPage" : "Seite zurück",
@@ -88,7 +107,8 @@
             "resultInfoMiddle" : "für Tokens, die",
             "resultInfoTail" : "Bedingungen erfüllen:",
             "allFulfilled" : "alle",
-            "oneFulfilled" : "mindestens eine"
+            "oneFulfilled" : "mindestens eine",
+            "blank" : "(leer)"
         },
         "dropDown" : {
             "searchSimilar" : "Suche ähnliche...",
@@ -143,7 +163,9 @@
         "annotate" : "Annotieren",
         "search" : "Suchen",
         "reset" : "Zurücksetzen",
-        "save" : "Speichern"
+        "save" : "Speichern",
+        "export" : "Exportieren...",
+        "tagsets" : "Tagsets..."
      }
  }
 }

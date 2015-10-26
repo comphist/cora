@@ -10,8 +10,8 @@
       <span class="btn-toolbar-entry" id="fileViewRefresh" title="Aktualisieren"><span class="oi" data-glyph="reload" aria-hidden="true"></span></span>
       <span class="btn-toolbar-entry" id="fileViewCollapseAll" title="Alle Projektgruppen zuklappen"><span class="oi" data-glyph="collapse-up" aria-hidden="true"></span></span>
       <span class="btn-toolbar-entry" id="fileViewExpandAll" title="Alle Projektgruppen aufklappen"><span class="oi" data-glyph="collapse-down" aria-hidden="true"></span></span>
-      <span class="btn-toolbar-entry start-disabled" id="importNewTransLink"><span class="oi" data-glyph="data-transfer-upload" aria-hidden="true"></span> Import aus Textdatei</span>
-      <span class="btn-toolbar-entry start-disabled" id="importNewXMLLink"><span class="oi" data-glyph="data-transfer-upload" aria-hidden="true"></span> Import aus XML-Datei</span>
+      <span class="btn-toolbar-entry start-disabled" id="importNewTransLink"><span class="oi" data-glyph="data-transfer-upload" aria-hidden="true"></span> <span data-trans-id="FileTab.importText"><?=$lh("FileTab.importText"); ?></span></span>
+      <span class="btn-toolbar-entry start-disabled" id="importNewXMLLink"><span class="oi" data-glyph="data-transfer-upload" aria-hidden="true"></span> <span data-trans-id="FileTab.importXml"><?=$lh("FileTab.importXml"); ?></span></span>
     </div>
 
     <div id="files"></div>
@@ -49,16 +49,16 @@
           <table class="fileList table-modern">
           <thead>
             <tr class="fileTableHeadLine">
-              <th class="ftr-sigle">Sigle</th>
-              <th class="ftr-filename">Dateiname</th>
+              <th class="ftr-sigle" data-trans-id="FileTab.siglum"><?=$lh("FileTab.siglum"); ?></th>
+              <th class="ftr-filename" data-trans-id="FileTab.fileName"><?=$lh("FileTab.fileName"); ?></th>
 <!--              <th colspan="2" class="ftr-changed">Letzte Änderung am/von</th>
               <th colspan="2" class="ftr-created">Erstellt am/von</th>
 -->
-              <th class="ftr-changed-at">Letzte Änderung</th>
-              <th class="ftr-changed-by">...von</th>
-              <th class="ftr-created-at">Erstellt</th>
-              <th class="ftr-created-by">...von</th>
-              <th class="ftr-id start-hidden admin-only">ID</th>
+              <th class="ftr-changed-at" data-trans-id="FileTab.lastEdit"><?=$lh("FileTab.lastEdit"); ?></th>
+              <th class="ftr-changed-by" data-trans-id="FileTab.by"><?=$lh("FileTab.by"); ?></th>
+              <th class="ftr-created-at" data-trans-id="FileTab.created"><?=$lh("FileTab.created"); ?></th>
+              <th class="ftr-created-by" data-trans-id="FileTab.by"><?=$lh("FileTab.by"); ?></th>
+              <th class="ftr-id start-hidden admin-only" data-trans-id="FileTab.id"><?=$lh("FileTab.id"); ?></th>
               <th class="ftr-options table-th-nosort"></th>
             </tr>
           </thead>
@@ -79,15 +79,15 @@
         <td class="ftr-id start-hidden admin-only"></td>
         <td class="ftr-options">
           <a class="deleteFileLink deletion-link start-hidden"><span class="oi oi-shadow oi-adjust" data-glyph="delete" title="Datei löschen" aria-hidden="true"></span></a>
-          <a class="exportFileLink"><span class="oi oi-shadow oi-adjust" data-glyph="data-transfer-download" title="Datei exportieren" aria-hidden="true"></span> Exportieren...</a>
-          <a class="editTagsetAssocLink start-hidden admin-only"><span class="oi oi-shadow oi-adjust" data-glyph="link-intact" title="Tagset-Verknüpfungen bearbeiten" aria-hidden="true"></span> Tagsets...</a>
-          <a class="closeFileLink start-hidden"><span class="oi oi-shadow" data-glyph="x" title="Datei schließen" aria-hidden="true"></span> Schließen</a>
+          <a class="exportFileLink"><span class="oi oi-shadow oi-adjust" data-glyph="data-transfer-download" title="Datei exportieren" aria-hidden="true"></span> <span data-trans-id="Action.export"><?=$lh("Action.export"); ?></span></a>
+          <a class="editTagsetAssocLink start-hidden admin-only"><span class="oi oi-shadow oi-adjust" data-glyph="link-intact" title="Tagset-Verknüpfungen bearbeiten" aria-hidden="true"></span> <span data-trans-id="Action.tagsets"><?=$lh("Action.tagsets"); ?></a>
+          <a class="closeFileLink start-hidden"><span class="oi oi-shadow" data-glyph="x" title="Datei schließen" aria-hidden="true"></span> <span data-trans-id="Action.close"><?=$lh("Action.close"); ?></span></a>
         </td>
       </tr>
     </table>
 
     <div id="fileExportPopup" class="limitedWidth">
-      <p>In welchem Format möchten Sie die Datei exportieren?</p>
+      <p data-trans-id="FileTab.Forms.exportPrompt"><?=$lh("FileTab.Forms.exportPrompt"); ?></span></p>
       <p class="file-export-format-selector">
         <input type="radio" name="file-export-format" value="<?php echo ExportType::CoraXML ?>" id="fef-coraxml" checked="checked" /><label for="fef-coraxml">CorA-XML</label><br />
         <input type="radio" name="file-export-format" value="<?php echo ExportType::CustomCSV ?>" id="fef-customcsv" /><label for="fef-customcsv">Spaltenformat (CSV)</label><br />
@@ -96,17 +96,12 @@
           <input type="radio" name="file-export-format" value="<?php echo ExportType::Transcription ?>" id="fef-trans" disabled="disabled"/><label for="fef-trans">Transkriptionsformat</label><br />
         <?php endif; ?>
       </p>
-      <p class="for-fileexport for-<?php echo ExportType::CoraXML ?>">
-        Exportiert eine CorA-XML-Datei, die das vollständige Dokument mitsamt
-        allen Annotationen enthält.  Diese Datei kann auch wieder re-importiert
-        werden, um eine Kopie des Dokuments im selben Zustand wie zum Zeitpunkt
-        des Exports zu erhalten.
+      <p class="for-fileexport for-<?php echo ExportType::CoraXML ?>" data-trans-id="FileTab.Forms.exportInfoCora">
+        <?=$lh("FileTab.Forms.exportInfoCora"); ?>
       </p>
       <span class="start-hidden for-fileexport for-<?php echo ExportType::CustomCSV ?>">
-        <p>
-          Exportiert eine mehrspaltige Textdatei, die sich u.a. zum Import in
-          eine Tabellenkalkulation (z.B. Microsoft Excel) eignet.  Wählen Sie
-          aus, welche Annotationsebenen im Export enthalten sein sollen:
+        <p data-trans-id="FileTab.Forms.exportInfoCsv">
+          <?=$lh("FileTab.Forms.exportInfoCsv"); ?>
         </p>
         <div class="export_CustomCSV_MS"></div>
       </span>
