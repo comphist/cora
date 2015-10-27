@@ -65,7 +65,12 @@
             "exportFile" : "Export File",
             "exportPrompt" : "Please choose a format for the export file:",
             "exportInfoCora" : "Export a CorA XML-file containing the complete document including all annotations. The file can be reimported later on in order to obtain a version of the document identical to the file when exported.",
-            "exportInfoCsv" : "Export a tab-delimited text file suitable for the import into spreadsheet software (e.g. Microsoft Excel). Please choose annotation layers to be exported:"
+            "exportInfoCsv" : "Export a tab-delimited text file suitable for the import into spreadsheet software (e.g. Microsoft Excel). Please choose annotation layers to be exported:",
+            "coraXmlFormat" : "CorA XML",
+            "columnCsvFormat" : "Column format (CSV)",
+            "columnNormFormat" : "Four-column format (Normalization)",
+            "transFormat" : "Transcription format",
+            "columnsSelected" : " column(s) selected"
 
         }
 
@@ -147,7 +152,8 @@
         "lemmaLink" : "Lemma link",
         "lemmaTag" : "Lemma tag",
         "comment" : "Comment",
-        "sentBoundary" : "Sent. boundary"
+        "sentBoundary" : "Sent. boundary",
+        "asciiTok" : "Token (ASCII)"
 
      },
      "Action" : {
@@ -163,6 +169,7 @@
         "reset" : "Reset",
         "save" : "Save",
         "export" : "Export...",
+        "export2" : "Export",
         "tagsets" : "Tagsets..."
 
 

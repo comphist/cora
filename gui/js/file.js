@@ -1225,22 +1225,22 @@ cora.fileManager = {
                                                   text: text});
                 div.grab(entry).grab(label);
             };
-        fixed = [['trans', "Token (Transkription)"],
-                 ['ascii', "Token (ASCII)"],
-                 ['utf', "Token (UTF)"],
-                 ['comment', "Kommentar"]];
+        fixed = [['trans', _("Columns.transTok")],
+                 ['ascii', _("Columns.asciiTok")],
+                 ['utf', _("Columns.utfTok")],
+                 ['comment', _("Columns.comment")]];
         Array.each(fixed, function(elem) {
             makeMultiSelectEntry(div, elem[0], elem[1]);
         });
         Array.each(cora.files.get(fid).tagset_links, function(tid) {
             var ts = cora.tagsets.get(tid);
             if (ts.exportable)
-                makeMultiSelectEntry(div, ts.class, ts.classname);
+                makeMultiSelectEntry(div, ts.class, _(ts.classname));
         });
         Object.each(cora.flags, function(flag, key) {
-            makeMultiSelectEntry(div, key, flag.displayname);
+            makeMultiSelectEntry(div, key, _(flag.displayname));
         });
-        new MultiSelect(div, {monitorText: ' Spalte(n) ausgewählt'});
+        new MultiSelect(div, {monitorText: _("FileTab.Forms.columnsSelected")});
         return div;
     },
 
@@ -1257,10 +1257,10 @@ cora.fileManager = {
             .replaces(content.getElement('.export_CustomCSV_MS'));
 	new mBox.Modal({
 	    content: content,
-	    title: 'Datei exportieren',
+	    title: _("FileTab.Forms.exportFile"),
 	    buttons: [
-		{title: 'Abbrechen', addClass: 'mform'},
-		{title: 'Exportieren', addClass: 'mform button_green',
+		{title: _("Action.cancel"), addClass: 'mform'},
+		{title: _("Action.export2"), addClass: 'mform button_green',
 		 event: function() {
                      var ccsv = [],
                          data = {do: 'exportFile', fileid: fid};
