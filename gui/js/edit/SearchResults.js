@@ -154,7 +154,7 @@ var SearchResults = new Class({
         text = (this.data.length == 1) ? _("EditorTab.Forms.resultInfoHead1") : _("EditorTab.Forms.resultInfoHead2");
         div.getElement('.srl-head-count').set('text',text);
 
-        text = (cora.strings.search_condition.operator[this.criteria.operator] == "alle") ? _("EditorTab.Forms.allFulfilled") : _("EditorTab.Forms.oneFulfilled");
+        text = (cora.strings.search_condition.operator[this.criteria.operator] === "alle") ? _("EditorTab.Forms.allFulfilled") : _("EditorTab.Forms.oneFulfilled");
         div.getElement('.srl-operator').set('text', text);
 
         text = (this.criteria.operator === "all") ? _("EditorTab.Forms.ofThese2") : _("EditorTab.Forms.ofThese1");
@@ -166,47 +166,8 @@ var SearchResults = new Class({
             var li = new Element('li');
             
             text = cora.strings.search_condition.field[condition.field] + " ";
-            switch (cora.strings.search_condition.match[condition.match]) {
 
-                case "ist":
-                    text += _("EditorTab.dropDown.is");
-                    break;
-
-                case "ist nicht":
-                    text += _("EditorTab.dropDown.isNot");
-                    break;
-
-                case "ist":
-                    text += _("EditorTab.dropDown.is");
-                    break;
-
-                case "enthält":
-                    text += _("EditorTab.dropDown.contains");
-                    break;
-
-                case "enthält nicht":
-                    text += _("EditorTab.dropDown.containsNot");
-                    break;
-
-                case "beginnt mit":
-                    text += _("EditorTab.dropDown.startsWith");
-                    break;
-
-                case "endet auf":
-                    text += _("EditorTab.dropDown.endsWith");
-                    break;
-
-                case "matcht RegEx":
-                    text += _("EditorTab.dropDown.matchesRegEx");
-                    break;
-
-                default:
-                    text += cora.strings.search_condition.match[condition.match];
-
-            }
-
-            text += " ";
-
+            text += _(cora.strings.search_condition.match[condition.match]) + " ";
             
             li.set('text', text);
             if (condition.match !== "set" && condition.match !== "nset") {

@@ -8,15 +8,15 @@ cora.strings.search_condition = {
         'any': "mindestens eine"
     },
     'match': {
-        'set': "ist gesetzt",
-        'nset': "ist nicht gesetzt",
-        'eq': "ist",
-        'neq': "ist nicht",
-        'in': "enthält",
-        'nin': "enthält nicht",
-        'bgn': "beginnt mit",
-        'end': "endet auf",
-        'regex': "matcht RegEx"
+        'set': "EditorTab.dropDown.isSet",
+        'nset': "EditorTab.dropDown.isNotSet",
+        'eq': "EditorTab.dropDown.is",
+        'neq': "EditorTab.dropDown.isNot",
+        'in': "EditorTab.dropDown.contains",
+        'nin': "EditorTab.dropDown.containsNot",
+        'bgn': "EditorTab.dropDown.startsWith",
+        'end': "EditorTab.dropDown.endsWith",
+        'regex': "EditorTab.dropDown.matchesRegEx"
     }
 };
 

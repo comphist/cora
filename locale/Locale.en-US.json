@@ -114,7 +114,7 @@
             "blank" : "(blank)"
         },
         "dropDown" : {
-            "searchSimilar" : "Search similar...",
+            "searchSimilar" : "Search for similar...",
             "editToken" : "Edit token...",
             "addToken" : "Add token...",
             "delToken" : "Delete token",
