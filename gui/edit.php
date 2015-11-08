@@ -121,7 +121,7 @@
     <li id="editSearchCriterionTemplate" class="editSearchCriterion">
       <select class="editSearchField" size="1"></select>
       <select class="editSearchMatch" size="1"></select>
-      <input type="text" name="editSearchText" class="editSearchText" placeholder="(leer)" />
+      <input type="text" name="editSearchText" class="editSearchText" placeholder="<?=$lh("EditorTab.Forms.blank"); ?>" data-trans-placeholder-id="EditorTab.Forms.blank" />
     </li>
   </ul>
 

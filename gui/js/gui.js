@@ -250,6 +250,9 @@ var gui = {
         $$("[data-trans-title-id]").each(function(elem) {
             elem.set("title", Locale.get(elem.get("data-trans-title-id")));
         });
+        $$("[data-trans-placeholder-id]").each(function(elem) {
+            elem.set("placeholder", Locale.get(elem.get("data-trans-placeholder-id")));
+        });
     },
 
     /* Function: localizeText
