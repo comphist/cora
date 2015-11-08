@@ -59,12 +59,19 @@
   </div>
 
   <div id="deleteTokenWarning">
-    <p class="important_text" data-trans-id="EditorTab.Forms.cannotBeUndone"><?=$lh("EditorTab.Forms.cannotBeUndone"); ?></p>
+    <p class="important_text">
+      <strong data-trans-id="EditorTab.Forms.warning"><?=$lh("EditorTab.Forms.warning"); ?></strong>
+      <span data-trans-id="EditorTab.Forms.cannotBeUndone"><?=$lh("EditorTab.Forms.cannotBeUndone"); ?></span>
+    </p>
     <p data-trans-id="EditorTab.Forms.deletionPrompt"><?=$_("EditorTab.Forms.deletionPrompt"); ?></p>
   </div>
 
   <div id="editTokenForm" class="limitedWidth-tiny">
-    <p class="important_text" data-trans-id="EditorTab.Forms.cannotBeUndone"><?=$lh("EditorTab.Forms.cannotBeUndone"); ?></p>
+    <p class="important_text">
+      <strong data-trans-id="EditorTab.Forms.warning"><?=$lh("EditorTab.Forms.warning"); ?></strong>
+      <span data-trans-id="EditorTab.Forms.cannotBeUndone"><?=$lh("EditorTab.Forms.cannotBeUndone"); ?></span>
+    </p>
+
     <p>
       <label for="editToken" data-trans-id="EditorTab.Forms.transcription"><?=$lh("EditorTab.Forms.transcription"); ?></label>
       <textarea id="editTokenBox" name="editToken" rows="1" cols="30" class="auto-resize mform"></textarea>
@@ -72,7 +79,11 @@
   </div>
 
   <div id="addTokenForm" class="limitedWidth-tiny">
-    <p class="important_text" data-trans-id="EditorTab.Forms.cannotBeUndone"><?=$lh("EditorTab.Forms.cannotBeUndone"); ?></p>
+    <p class="important_text">
+      <strong data-trans-id="EditorTab.Forms.warning"><?=$lh("EditorTab.Forms.warning"); ?></strong>
+      <span data-trans-id="EditorTab.Forms.cannotBeUndone"><?=$lh("EditorTab.Forms.cannotBeUndone"); ?></span>
+    </p>
+
     <form>
       <p>
         <label for="addToken" data-trans-id="EditorTab.Forms.transcription"><?=$lh("EditorTab.Forms.transcription"); ?></label>
@@ -83,11 +94,15 @@
   </div>
 
   <div id="automaticAnnotationForm" class="limitedWidth">
+    <p>
+      <strong data-trans-id="EditorTab.Forms.warning"><?=$lh("EditorTab.Forms.warning"); ?></strong>
 
-    <p data-trans-id="EditorTab.Forms.autoAnnotationInfo">
-      <?=$lh("EditorTab.Forms.autoAnnotationInfo"); ?>
+      <span data-trans-id="EditorTab.Forms.autoAnnotationInfo1"><?=$lh("EditorTab.Forms.autoAnnotationInfo1"); ?></span>
+      <strong data-trans-id="EditorTab.Forms.autoAnnotationInfoNot"><?=$lh("EditorTab.Forms.autoAnnotationInfoNot"); ?></strong>
+      <span data-trans-id="EditorTab.Forms.autoAnnotationInfo2"><?=$lh("EditorTab.Forms.autoAnnotationInfo2"); ?></span>
+
     </p>
-
+    
     <p>
       <label for="aa_tagger_select" data-trans-id="EditorTab.taggerAvailable"><?=$lh("EditorTab.taggerAvailable"); ?></label>
       <div id="aa_tagger_select"></div>
