@@ -7,19 +7,39 @@
 <div id="editDiv" class="content">
 <div id="editPanelDiv" class="panel">
   <div class="btn-toolbar" id="pagePanel">
-    <span class="btn-toolbar-entry btn-page-count"><span class="oi" aria-hidden="true"></span><span data-trans-id="EditorTab.page"><?=$lh("EditorTab.page"); ?></span> <input type="text" class="btn-page-to" size="2" /><span class="page-active"></span>/<span class="page-max"></span></span>
-    <span class="btn-toolbar-entry btn-page-back" title="Seite zurück"><span class="oi" data-glyph="arrow-thick-left" aria-hidden="true"></span></span>
-    <span class="btn-toolbar-entry btn-page-forward" title="Seite vor"><span class="oi" data-glyph="arrow-thick-right" aria-hidden="true"></span></span>
-    <span class="btn-toolbar-entry btn-jump-to"><span class="oi" data-glyph="book" aria-hidden="true"></span><span data-trans-id="EditorTab.goToLine"><?=$lh("EditorTab.goToLine"); ?></span></span>
+    <span class="btn-toolbar-entry btn-page-count">
+      <span class="oi" aria-hidden="true"></span>
+      <span data-trans-id="EditorTab.page"><?=$lh("EditorTab.page"); ?></span> 
+      <input type="text" class="btn-page-to" size="2" />
+      <span class="page-active"></span>/<span class="page-max"></span>
+    </span>
+
+    <span class="btn-toolbar-entry btn-page-back" title="<?=$lh("EditorTab.previousPage"); ?>" data-trans-title-id="EditorTab.previousPage">
+      <span class="oi" data-glyph="arrow-thick-left" aria-hidden="true"></span>
+    </span>
+    <span class="btn-toolbar-entry btn-page-forward" title="<?=$lh("EditorTab.nextPage"); ?>" data-trans-title-id="EditorTab.nextPage">
+      <span class="oi" data-glyph="arrow-thick-right" aria-hidden="true"></span>
+    </span>
+    <span class="btn-toolbar-entry btn-jump-to">
+      <span class="oi" data-glyph="book" aria-hidden="true"></span><span data-trans-id="EditorTab.goToLine"><?=$lh("EditorTab.goToLine"); ?></span>
+    </span>
 
     <span class="btn-toolbar-separator"></span>
-    <span class="btn-toolbar-entry btn-undo start-disabled" title="Rückgängig"><span class="oi" data-glyph="action-undo" aria-hidden="true"></span></span>
-    <span class="btn-toolbar-entry btn-redo start-disabled" title="Wiederherstellen"><span class="oi" data-glyph="action-redo" aria-hidden="true"></span></span>
+    <span class="btn-toolbar-entry btn-undo start-disabled" title="<?=$lh("EditorTab.undo"); ?>" data-trans-title-id="EditorTab.undo">
+      <span class="oi" data-glyph="action-undo" aria-hidden="true"></span>
+    </span>
+    <span class="btn-toolbar-entry btn-redo start-disabled" title="<?=$lh("EditorTab.redo"); ?>" data-trans-title-id="EditorTab.redo">
+      <span class="oi" data-glyph="action-redo" aria-hidden="true"></span>
+    </span>
 
     <span class="btn-toolbar-separator"></span>
     <span class="btn-toolbar-entry btn-text-search"><span class="oi" data-glyph="magnifying-glass" aria-hidden="true"></span> <span data-trans-id="EditorTab.search"><?=$lh("EditorTab.search"); ?></span></span>
-    <span class="btn-toolbar-entry btn-search-back start-disabled" title="Vorheriges Suchergebnis"><span class="oi" data-glyph="arrow-left" aria-hidden="true"></span>&nbsp;<span class="oi" data-glyph="magnifying-glass" aria-hidden="true"></span></span>
-    <span class="btn-toolbar-entry btn-search-forward start-disabled" title="Nächstes Suchergebnis"><span class="oi" data-glyph="magnifying-glass" aria-hidden="true"></span>&nbsp;<span class="oi" data-glyph="arrow-right" aria-hidden="true"></span></span>
+    <span class="btn-toolbar-entry btn-search-back start-disabled" title="<?=$lh("EditorTab.previousMatch"); ?>" data-trans-title-id="EditorTab.previousMatch">
+      <span class="oi" data-glyph="arrow-left" aria-hidden="true"></span>&nbsp;<span class="oi" data-glyph="magnifying-glass" aria-hidden="true"></span>
+    </span>
+    <span class="btn-toolbar-entry btn-search-forward start-disabled" title="<?=$lh("EditorTab.nextMatch"); ?>" data-trans-title-id="EditorTab.nextMatch">
+      <span class="oi" data-glyph="magnifying-glass" aria-hidden="true"></span>&nbsp;<span class="oi" data-glyph="arrow-right" aria-hidden="true"></span>
+    </span>
 
     <span class="btn-toolbar-separator"></span>
     <span class="btn-toolbar-entry btn-text-annotate"><span class="oi" data-glyph="excerpt" aria-hidden="true"></span> <span data-trans-id="EditorTab.autoAnnotation"><?=$lh("EditorTab.autoAnnotation"); ?></span></span>
@@ -37,8 +57,12 @@
 
   <div class="btn-toolbar btn-toolbar-notop" id="pagePanelBottom">
     <span class="btn-toolbar-entry btn-page-count"><span class="oi" aria-hidden="true"></span><span data-trans-id="EditorTab.page"><?=$lh("EditorTab.page"); ?></span> <input type="text" class="btn-page-to" size="2" /><span class="page-active"></span>/<span class="page-max"></span></span>
-    <span class="btn-toolbar-entry btn-page-back" title="Seite zurück"><span class="oi" data-glyph="arrow-thick-left" aria-hidden="true"></span></span>
-    <span class="btn-toolbar-entry btn-page-forward" title="Seite vor"><span class="oi" data-glyph="arrow-thick-right" aria-hidden="true"></span></span>
+    <span class="btn-toolbar-entry btn-page-back" title="<?=$lh("EditorTab.previousPage"); ?>" data-trans-title-id="EditorTab.previousPage">
+      <span class="oi" data-glyph="arrow-thick-left" aria-hidden="true"></span>
+    </span>
+    <span class="btn-toolbar-entry btn-page-forward" title="<?=$lh("EditorTab.nextPage"); ?>" data-trans-title-id="EditorTab.nextPage">
+      <span class="oi" data-glyph="arrow-thick-right" aria-hidden="true"></span>
+    </span>
     <span class="btn-toolbar-entry btn-jump-to"><span class="oi" data-glyph="book" aria-hidden="true"></span><span data-trans-id="EditorTab.goToLine"><?=$lh("EditorTab.goToLine"); ?></span> </span>
   </div>
 </div>
@@ -51,7 +75,23 @@
   </div>
 
   <div id="searchTokenForm">
-    <p data-trans-id="EditorTab.Forms.searchForm"><?=$lh("EditorTab.Forms.searchForm"); ?></p>
+    
+    <p>
+    <span data-trans-id="EditorTab.Forms.searchForm1"><?=$lh("EditorTab.Forms.searchForm1"); ?></span>
+
+    <select class="editSearchOperator" size="1">
+      <option value="all" data-trans-id="EditorTab.Forms.allFulfilled">
+        <?=$lh("EditorTab.Forms.allFulfilled"); ?>
+      </option>
+      <option value="any" data-trans-id="EditorTab.Forms.oneFulfilled">
+        <?=$lh("EditorTab.Forms.oneFulfilled"); ?>
+      </option>
+    </select>
+
+    <span data-trans-id="EditorTab.Forms.searchForm2"><?=$lh("EditorTab.Forms.searchForm2"); ?></span>
+
+
+    </p>
       <ul class="flexrow-container"></ul>
     </p>
 
@@ -63,7 +103,12 @@
       <strong data-trans-id="EditorTab.Forms.warning"><?=$lh("EditorTab.Forms.warning"); ?></strong>
       <span data-trans-id="EditorTab.Forms.cannotBeUndone"><?=$lh("EditorTab.Forms.cannotBeUndone"); ?></span>
     </p>
-    <p data-trans-id="EditorTab.Forms.deletionPrompt"><?=$_("EditorTab.Forms.deletionPrompt"); ?></p>
+    <p>
+      <span data-trans-id="EditorTab.Forms.deletionPrompt1"><?=$lh("EditorTab.Forms.deletionPrompt1"); ?></span>
+      &quot;<span id='deleteTokenToken'></span>&quot;
+      <span data-trans-id="EditorTab.Forms.deletionPrompt2"><?=$lh("EditorTab.Forms.deletionPrompt2"); ?></span>
+
+    </p>
   </div>
 
   <div id="editTokenForm" class="limitedWidth-tiny">
@@ -90,7 +135,16 @@
         <textarea id="addTokenBox" name="addToken" rows="1" cols="30" class="auto-resize mform"></textarea>
       </p>
     </form>
-    <p data-trans-id="EditorTab.Forms.newTransInfo"><?=$lh("EditorTab.Forms.newTransInfo"); ?></p>
+    <p>
+    <span data-trans-id="EditorTab.Forms.newTransInfo1"><?=$lh("EditorTab.Forms.newTransInfo1"); ?></span>
+    <strong data-trans-id="EditorTab.Forms.newTransInfo2"><?=$lh("EditorTab.Forms.newTransInfo2"); ?></strong>
+    <span data-trans-id="EditorTab.Forms.newTransInfo3"><?=$lh("EditorTab.Forms.newTransInfo3"); ?></span>
+    &quot;<span id='addTokenBefore'></span>&quot;
+    <span data-trans-id="EditorTab.Forms.newTransInfo4"><?=$lh("EditorTab.Forms.newTransInfo4"); ?></span>
+    &quot;<span id='addTokenLineinfo'></span>&quot;
+    <span data-trans-id="EditorTab.Forms.newTransInfo5"><?=$lh("EditorTab.Forms.newTransInfo5"); ?></span>
+
+    </p>
   </div>
 
   <div id="automaticAnnotationForm" class="limitedWidth">
@@ -200,7 +254,7 @@
         </td>
         <td class="editTable_lemma_sugg et-anno">
           <div class="editTableLemmaLink">
-            <span class="oi oi-adjust oi-shadow" data-glyph="external-link" title="Externen Link öffnen" aria-hidden="true"></span>
+            <span class="oi oi-adjust oi-shadow" data-glyph="external-link" title="<?=$lh("EditorTab.openExternalLink"); ?>" data-trans-title-id="EditorTab.openExternalLink" aria-hidden="true"></span>
           </div>
         </td>
         <td class="editTable_lemmapos et-anno">
@@ -211,7 +265,7 @@
         </td>
         <td class="editTable_dropdown">
           <div class="editTableDropdown">
-            <span class="oi oi-adjust oi-shadow oi-green editTableDropdownIcon" data-glyph="caret-bottom" title="Dropdown-Menü öffnen" aria-hidden="true"></span>
+            <span class="oi oi-adjust oi-shadow oi-green editTableDropdownIcon" data-glyph="caret-bottom" title="<?=$lh("EditorTab.openDropdownMenu"); ?>" data-trans-title-id="EditorTab.openDropdownMenu" aria-hidden="true"></span>
           </div>
         </td>
       </tr>
