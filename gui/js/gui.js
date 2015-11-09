@@ -253,6 +253,10 @@ var gui = {
         $$("[data-trans-placeholder-id]").each(function(elem) {
             elem.set("placeholder", Locale.get(elem.get("data-trans-placeholder-id")));
         });
+        $$("[data-trans-value-id]").each(function(elem) {
+            elem.set("value", Locale.get(elem.get("data-trans-value-id")));
+        });
+
     },
 
     /* Function: localizeText

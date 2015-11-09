@@ -66,7 +66,7 @@
             <input type="text" name="contextLines" value="<?php echo $_SESSION['contextLines'];?>" size="2" maxlength="2" data-number="" />
           </p>
           <p>
-            <input type="submit" value="Zeilen-Einstellungen übernehmen" />
+            <input type="submit" value="<?=$lh("SettingsTab.applyLineSettings"); ?>" data-trans-value-id="SettingsTab.applyLineSettings" />
           </p>
         </form>
       </div>
