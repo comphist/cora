@@ -63,6 +63,13 @@
         "id" : "ID",
         "loadingFile" : "Loading file...",
         "importingData" : "Importing data...",
+        "refresh" : "Refresh",
+        "expandProjectGroups" : "Expand all project groups",
+        "collapseProjectGroups" : "Collapse all project groups",
+        "deleteFile" : "Delete file",
+        "exportFileTitle" : "Export file",
+        "editTagsetAssociations" : "Edit associated tag sets",
+        "closeFileTitle" : "Close file",
         "Forms" : {
             "exportFile" : "Export File",
             "exportPrompt" : "Please choose a format for the export file:",

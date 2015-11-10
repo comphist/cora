@@ -7,11 +7,23 @@
 <div id="fileDiv" class="content">
   <div class="panel">
     <div class="btn-toolbar">
-      <span class="btn-toolbar-entry" id="fileViewRefresh" title="Aktualisieren"><span class="oi" data-glyph="reload" aria-hidden="true"></span></span>
-      <span class="btn-toolbar-entry" id="fileViewCollapseAll" title="Alle Projektgruppen zuklappen"><span class="oi" data-glyph="collapse-up" aria-hidden="true"></span></span>
-      <span class="btn-toolbar-entry" id="fileViewExpandAll" title="Alle Projektgruppen aufklappen"><span class="oi" data-glyph="collapse-down" aria-hidden="true"></span></span>
-      <span class="btn-toolbar-entry start-disabled" id="importNewTransLink"><span class="oi" data-glyph="data-transfer-upload" aria-hidden="true"></span> <span data-trans-id="FileTab.importText"><?=$lh("FileTab.importText"); ?></span></span>
-      <span class="btn-toolbar-entry start-disabled" id="importNewXMLLink"><span class="oi" data-glyph="data-transfer-upload" aria-hidden="true"></span> <span data-trans-id="FileTab.importXml"><?=$lh("FileTab.importXml"); ?></span></span>
+      <span class="btn-toolbar-entry" id="fileViewRefresh" title="<?=$lh("FileTab.refresh"); ?>" data-trans-title-id="FileTab.refresh">
+        <span class="oi" data-glyph="reload" aria-hidden="true"></span>
+      </span>
+      <span class="btn-toolbar-entry" id="fileViewCollapseAll" title="<?=$lh("FileTab.collapseProjectGroups"); ?>" data-trans-title-id="FileTab.collapseProjectGroups">
+        <span class="oi" data-glyph="collapse-up" aria-hidden="true"></span>
+      </span>
+      <span class="btn-toolbar-entry" id="fileViewExpandAll" title="<?=$lh("FileTab.expandProjectGroups"); ?>" data-trans-title-id="FileTab.expandProjectGroups">
+        <span class="oi" data-glyph="collapse-down" aria-hidden="true"></span>
+      </span>
+      <span class="btn-toolbar-entry start-disabled" id="importNewTransLink">
+        <span class="oi" data-glyph="data-transfer-upload" aria-hidden="true"></span> 
+        <span data-trans-id="FileTab.importText"><?=$lh("FileTab.importText"); ?></span>
+      </span>
+      <span class="btn-toolbar-entry start-disabled" id="importNewXMLLink">
+        <span class="oi" data-glyph="data-transfer-upload" aria-hidden="true"></span>
+        <span data-trans-id="FileTab.importXml"><?=$lh("FileTab.importXml"); ?></span>
+      </span>
     </div>
 
     <div id="files"></div>
@@ -78,10 +90,21 @@
         <td class="ftr-created-by"></td>
         <td class="ftr-id start-hidden admin-only"></td>
         <td class="ftr-options">
-          <a class="deleteFileLink deletion-link start-hidden"><span class="oi oi-shadow oi-adjust" data-glyph="delete" title="Datei löschen" aria-hidden="true"></span></a>
-          <a class="exportFileLink"><span class="oi oi-shadow oi-adjust" data-glyph="data-transfer-download" title="Datei exportieren" aria-hidden="true"></span> <span data-trans-id="Action.export"><?=$lh("Action.export"); ?></span></a>
-          <a class="editTagsetAssocLink start-hidden admin-only"><span class="oi oi-shadow oi-adjust" data-glyph="link-intact" title="Tagset-Verknüpfungen bearbeiten" aria-hidden="true"></span> <span data-trans-id="Action.tagsets"><?=$lh("Action.tagsets"); ?></a>
-          <a class="closeFileLink start-hidden"><span class="oi oi-shadow" data-glyph="x" title="Datei schließen" aria-hidden="true"></span> <span data-trans-id="Action.close"><?=$lh("Action.close"); ?></span></a>
+          <a class="deleteFileLink deletion-link start-hidden">
+            <span class="oi oi-shadow oi-adjust" data-glyph="delete" title="<?=$lh("FileTab.deleteFile"); ?>" data-trans-title-id="FileTab.deleteFile" aria-hidden="true"></span>
+          </a>
+          <a class="exportFileLink">
+            <span class="oi oi-shadow oi-adjust" data-glyph="data-transfer-download" title="<?=$lh("FileTab.exportFileTitle"); ?>" data-trans-title-id="FileTab.exportFileTitle" aria-hidden="true"></span> 
+            <span data-trans-id="Action.export"><?=$lh("Action.export"); ?></span>
+          </a>
+          <a class="editTagsetAssocLink start-hidden admin-only">
+            <span class="oi oi-shadow oi-adjust" data-glyph="link-intact" title="<?=$lh("FileTab.editTagsetAssociations"); ?>" data-trans-title-id="FileTab.editTagsetAssociations" aria-hidden="true"></span> 
+            <span data-trans-id="Action.tagsets"><?=$lh("Action.tagsets"); ?>
+            </a>
+          <a class="closeFileLink start-hidden">
+            <span class="oi oi-shadow" data-glyph="x" title="<?=$lh("FileTab.closeFileTitle"); ?>" data-trans-title-id="FileTab.closeFileTitle" aria-hidden="true"></span> 
+            <span data-trans-id="Action.close"><?=$lh("Action.close"); ?></span>
+          </a>
         </td>
       </tr>
     </table>

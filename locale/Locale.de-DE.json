@@ -64,6 +64,13 @@
         "id" : "ID",
         "loadingFile" : "Datei wird geöffnet...",
         "importingData" : "Importiere Daten...",
+        "refresh" : "Aktualisieren",
+        "expandProjectGroups" : "Alle Projektgruppen aufklappen",
+        "collapseProjectGroups" : "Alle Projektgruppen zuklappen",
+        "deleteFile" : "Datei löschen",
+        "exportFileTitle" : "Datei exportieren",
+        "editTagsetAssociations" : "Tagset-Verknüpfungen bearbeiten",
+        "closeFileTitle" : "Datei schließen",
         "Forms" : {
             "exportFile" : "Datei exportieren",
             "exportPrompt" : "In welchem Format möchten Sie die Datei exportieren?",
