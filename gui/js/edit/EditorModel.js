@@ -900,7 +900,7 @@ var EditorModel = new Class({
 	    tok_id = tok_id - 1;
 	}
 
-	$('deleteTokenToken').empty().appendText(old_token);
+    $('deleteTokenToken').empty().appendText(_("EditorTab.Forms.deletionPrompt", {'tok2del' : old_token}));
 	new mBox.Modal({
 	    title: _("EditorTab.Forms.confirmDeletion"),
 	    content: 'deleteTokenWarning',
@@ -1019,8 +1019,9 @@ var EditorModel = new Class({
 	}
 
 	$('addTokenBox').set('value', '');
-	$('addTokenBefore').empty().appendText(old_token);
-	$('addTokenLineinfo').empty().appendText(lineinfo);
+    $('addTokenBefore').empty().appendText(_("EditorTab.Forms.newTransInfo3", {'tokInFront' : old_token, 'lineInfo' : lineinfo}));
+    
+
 	var addTokenBox = new mBox.Modal({
 	    title: _("EditorTab.Forms.addTranscription"),
 	    content: 'addTokenForm',

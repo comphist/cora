@@ -62,6 +62,8 @@
         "by" : "...von",
         "created" : "Erstellt",
         "id" : "ID",
+        "loadingFile" : "Datei wird geöffnet...",
+        "importingData" : "Importiere Daten...",
         "Forms" : {
             "exportFile" : "Datei exportieren",
             "exportPrompt" : "In welchem Format möchten Sie die Datei exportieren?",
@@ -71,7 +73,8 @@
             "columnCsvFormat" : "Spaltenformat (CSV)",
             "columnNormFormat" : "4-Spaltenformat (Normalisierung)",
             "transFormat" : "Transkriptionsformat",
-            "columnsSelected" : " Spalte(n) ausgewählt"
+            "columnsSelected" : " Spalte(n) ausgewählt",
+            "importXmlFile" : "Importieren aus CorA-XML-Format"
 
         }
 
@@ -107,12 +110,11 @@
             "autoAnnotationInfo2" : "mittels des Fortschrittsbalkens grün markiert sind.",
             "confirmDeletion" : "Löschen bestätigen",
             "cannotBeUndone" : "Diese Aktion kann nicht rückgängig gemacht werden!",
-            "deletionPrompt1" : "Soll das Token",
-            "deletionPrompt2" : "wirklich gelöscht werden?",
+            "deletionPrompt" : "Soll das Token \"{tok2del}\" wirklich gelöscht werden?",
             "transcription" : "Transkription: ",
             "newTransInfo1" : "Die neue Transkription wird",
             "newTransInfo2" : "vor", 
-            "newTransInfo3" : "dem Token",
+            "newTransInfo3" : "dem Token \"{tokInFront}\" auf Zeile \"{lineInfo}\" in das Originaldokument eingefügt.",
             "newTransInfo4" : "auf Zeile",
             "newTransInfo5" : "in das Originaldokument eingefügt.",
             "searchForm1" : "Suche Tokens, die",

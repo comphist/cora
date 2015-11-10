@@ -103,12 +103,8 @@
       <strong data-trans-id="EditorTab.Forms.warning"><?=$lh("EditorTab.Forms.warning"); ?></strong>
       <span data-trans-id="EditorTab.Forms.cannotBeUndone"><?=$lh("EditorTab.Forms.cannotBeUndone"); ?></span>
     </p>
-    <p>
-      <span data-trans-id="EditorTab.Forms.deletionPrompt1"><?=$lh("EditorTab.Forms.deletionPrompt1"); ?></span>
-      &quot;<span id='deleteTokenToken'></span>&quot;
-      <span data-trans-id="EditorTab.Forms.deletionPrompt2"><?=$lh("EditorTab.Forms.deletionPrompt2"); ?></span>
+    <p id='deleteTokenToken'></p>
 
-    </p>
   </div>
 
   <div id="editTokenForm" class="limitedWidth-tiny">
@@ -138,12 +134,7 @@
     <p>
     <span data-trans-id="EditorTab.Forms.newTransInfo1"><?=$lh("EditorTab.Forms.newTransInfo1"); ?></span>
     <strong data-trans-id="EditorTab.Forms.newTransInfo2"><?=$lh("EditorTab.Forms.newTransInfo2"); ?></strong>
-    <span data-trans-id="EditorTab.Forms.newTransInfo3"><?=$lh("EditorTab.Forms.newTransInfo3"); ?></span>
-    &quot;<span id='addTokenBefore'></span>&quot;
-    <span data-trans-id="EditorTab.Forms.newTransInfo4"><?=$lh("EditorTab.Forms.newTransInfo4"); ?></span>
-    &quot;<span id='addTokenLineinfo'></span>&quot;
-    <span data-trans-id="EditorTab.Forms.newTransInfo5"><?=$lh("EditorTab.Forms.newTransInfo5"); ?></span>
-
+    <span id='addTokenBefore'></span>
     </p>
   </div>
 

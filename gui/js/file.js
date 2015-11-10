@@ -434,7 +434,7 @@ cora.fileImporter = {
         new iFrameFormRequest(importform, {
             onRequest: function() {
                 mbox.close();
-                gui.showSpinner({message: 'Importiere Daten...'});
+                gui.showSpinner({message: _("FileTab.importingData")});
             },
             onComplete: function(response) {
                 var success = ref.showImportResponseDialog(response);
@@ -1041,7 +1041,7 @@ cora.fileManager = {
 
         // 2. If lock was successful, open the file
         onLockSuccess = function() {
-            gui.showSpinner({message: "Datei wird geöffnet..."});
+            gui.showSpinner({message: _("FileTab.loadingFile")});
             cora.files.open(fid, {onSuccess: onOpenSuccess, onError: onOpenError});
         };
         onLockError = function(error) {

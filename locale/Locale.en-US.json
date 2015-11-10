@@ -61,6 +61,8 @@
         "by" : "...by",
         "created" : "Created",
         "id" : "ID",
+        "loadingFile" : "Loading file...",
+        "importingData" : "Importing data...",
         "Forms" : {
             "exportFile" : "Export File",
             "exportPrompt" : "Please choose a format for the export file:",
@@ -70,7 +72,8 @@
             "columnCsvFormat" : "Column format (CSV)",
             "columnNormFormat" : "Four-column format (Normalization)",
             "transFormat" : "Transcription format",
-            "columnsSelected" : " column(s) selected"
+            "columnsSelected" : " column(s) selected",
+            "importXmlFile" : "Import CorA XML file"
 
         }
 
@@ -105,12 +108,11 @@
             "autoAnnotationInfo2" : "marked green in the progress area.", 
             "confirmDeletion" : "Confirm deletion",
             "cannotBeUndone" : "This action cannot be undone!",
-            "deletionPrompt1" : "Are you sure you want to delete the token",
-            "deletionPrompt2" : "?",
+            "deletionPrompt" : "Are you sure you want to delete the token \"{tok2del}\"?",
             "transcription" : "Transcription: ",
             "newTransInfo1" : "The new transcription will be inserted into the original file",
             "newTransInfo2" : "in front of", 
-            "newTransInfo3" : "the token",
+            "newTransInfo3" : "the token \"{tokInFront}\" in line \"{lineInfo}\".",
             "newTransInfo4" : "in line",
             "newTransInfo5" : ".",
             "searchForm1" : "Search for tokens fulfilling",
