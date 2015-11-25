@@ -36,16 +36,17 @@
          "username": "Username"
      },
      "AdminTab" : {
+        "refresh" : "Refresh",
         "collapseCategories" : "Collapse all categories",
         "expandCategories" : "Expand all categories",
-        "newUser" : "New user",
-        "newProject" : "New project",
-        "newTagger" : "New tagger",
+        "newUser" : "Add user",
+        "newProject" : "Add project",
+        "newTagger" : "Add tagger",
         "newMsg" : "New message",
         "tagsetBrowser" : "Tagset browser",
         "importTagset" : "Import tagset",
-        "userAdministration" : "User administration",
-        "username" : "User name",
+        "userAdministration" : "User Management",
+        "userName" : "User name",
         "isAdmin" : "Admin?",
         "lastActive" : "Last active",
         "openFile" : "Opened file",
@@ -53,7 +54,7 @@
         "note" : "Note",
         "options" : "Options",
         "deleteUser" : "Delete user",
-        "projectAdministration" : "Project administration",
+        "projectAdministration" : "Project Management",
         "projectName" : "Project name",
         "assignedUsers" : "Assigned users",
         "isEdit" : "Edit?",
@@ -61,20 +62,37 @@
         "projectOptions" : "Project options...",
         "deleteProject" : "Delete project",
         "visibleForAdmins" : "**Note**: Admins can ##always## see all project groups.",
-        "autoAnnotationOptions" : "Auto annotation",
+        "autoAnnotationOptions" : "Auto Annotation",
         "annoId" : "ID",
         "annoName" : "Name",
         "annoClass" : "Class",
         "isTrained" : "Train?",
         "associatedTagsetTypes" : "Associated tagset types",
-        "serverNotifications" : "Server notifications",
+        "serverNotifications" : "Server Npotifications",
         "serverId" : "ID",
-        "message" : "Message",
-        "type" : "Type",
+        "serverMsg" : "Message",
+        "serverTypes" : "Type",
         "expire" : "Expires",
         "Forms" : {
+            "addUser" : "Add User",
+            "password" : "Password:",
+            "repeatPassword" : "Repeat password:",
+            "addProject" : "Create a New Project",
+            "projectName" : "Project name:",
+            "addTagger" : "Define a New Tagger",
+            "taggerName" : "Name:",
+            "newServerMsg" : "Create a New Server Notification",
+            "type" : "Type:",
+            "expireDate" : "Expires:",
+            "msgText" : "Message:",
+            "tagsetBrowserForm" : "Tagset Browser",
+            "preview" : "Preview",
+            "importTagsetForm" : "Import Tagset From Text File",
+            "tagsetName" : "Tagset name:",
+            "tagsetClass" : "Tagset class:",
+            "tagsetFile" : "Tagset file",
+            "tagsetInfo" : "Note: A tagset file should be a text file containing one tag per line. In the case of POS tagsets dots will be interpreted as boundaries between POS and morph attributes. Tags that need correction should be preceded by a caret (^)."
 
-            
         }
 
 
@@ -239,7 +257,8 @@
         "save" : "Save",
         "export" : "Export...",
         "export2" : "Export",
-        "tagsets" : "Tagsets..."
+        "tagsets" : "Tagsets...",
+        "importTagset" : "Import tagset"
 
 
      }

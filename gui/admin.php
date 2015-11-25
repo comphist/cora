@@ -14,30 +14,30 @@ $ulist = array();
 <div id="adminDiv" class="content" style="display: none;">
   <div class="panel">
     <div class="btn-toolbar">
-      <span class="btn-toolbar-entry" id="adminUsersRefresh" title="Aktualisieren"><span class="oi" data-glyph="reload" aria-hidden="true"></span></span>
-      <span class="btn-toolbar-entry" id="adminViewCollapseAll" title="Alle Kategorien zuklappen"><span class="oi" data-glyph="collapse-up" aria-hidden="true"></span></span>
-      <span class="btn-toolbar-entry" id="adminViewExpandAll" title="Alle Kategorien aufklappen"><span class="oi" data-glyph="collapse-down" aria-hidden="true"></span></span>
-      <span class="btn-toolbar-entry" id="adminCreateUser"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> Neuer Benutzer</span>
-      <span class="btn-toolbar-entry" id="adminCreateProject"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> Neues Projekt</span>
-      <span class="btn-toolbar-entry" id="adminCreateAnnotator"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> Neuer Tagger</span>
-      <span class="btn-toolbar-entry" id="adminCreateNotice"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> Neue Benachrichtigung</span>
-      <span class="btn-toolbar-entry" id="adminViewTagset"><span class="oi" aria-hidden="true"></span>Tagset-Browser</span>
-      <span class="btn-toolbar-entry" id="adminImportTagset"><span class="oi" data-glyph="data-transfer-upload" aria-hidden="true"></span> Tagset importieren</span>
+      <span class="btn-toolbar-entry" id="adminUsersRefresh" title="<?=$lh("AdminTab.refresh"); ?>" data-trans-title-id="AdminTab.refresh"><span class="oi" data-glyph="reload" aria-hidden="true"></span></span>
+      <span class="btn-toolbar-entry" id="adminViewCollapseAll" title="<?=$lh("AdminTab.collapseCategories"); ?>" data-trans-title-id="AdminTab.collapseCategories"><span class="oi" data-glyph="collapse-up" aria-hidden="true"></span></span>
+      <span class="btn-toolbar-entry" id="adminViewExpandAll" title="<?=$lh("AdminTab.expandCategories"); ?>" data-trans-title-id="AdminTab.expandCategories"><span class="oi" data-glyph="collapse-down" aria-hidden="true"></span></span>
+      <span class="btn-toolbar-entry" id="adminCreateUser"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> <span data-trans-id="AdminTab.newUser"><?=$lh("AdminTab.newUser"); ?></span></span>
+      <span class="btn-toolbar-entry" id="adminCreateProject"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> <span data-trans-id="AdminTab.newProject"><?=$lh("AdminTab.newProject"); ?></span></span>
+      <span class="btn-toolbar-entry" id="adminCreateAnnotator"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> <span data-trans-id="AdminTab.newTagger"><?=$lh("AdminTab.newTagger"); ?></span></span>
+      <span class="btn-toolbar-entry" id="adminCreateNotice"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> <span data-trans-id="AdminTab.newMsg"><?=$lh("AdminTab.newMsg"); ?></span></span>
+      <span class="btn-toolbar-entry" id="adminViewTagset"><span class="oi" aria-hidden="true"></span><span data-trans-id="AdminTab.tagsetBrowser"><?=$lh("AdminTab.tagsetBrowser"); ?></span></span>
+      <span class="btn-toolbar-entry" id="adminImportTagset"><span class="oi" data-glyph="data-transfer-upload" aria-hidden="true"></span> <span data-trans-id="AdminTab.importTagset"><?=$lh("AdminTab.importTagset"); ?></span></span>
     </div>
 
     <!-- USER MANAGEMENT -->
     <div class="clappable clapp-modern" id="users">
-      <h4 class="clapp">Benutzerverwaltung</h4>
+      <h4 class="clapp" data-trans-id="AdminTab.userAdministration"><?=$lh("AdminTab.userAdministration"); ?></h4>
       <div>
         <table id="editUsers" class="table-modern">
           <thead>
             <tr>
-              <th>Benutzername</th>
-              <th>Admin?</th>
-              <th>Letzte Aktivität</th>
-              <th>Geöffnete Datei</th>
-              <th>E-Mail</th>
-              <th>Notiz</th>
+              <th><span data-trans-id="AdminTab.userName"><?=$lh("AdminTab.userName"); ?></span></th>
+              <th><span data-trans-id="AdminTab.isAdmin"><?=$lh("AdminTab.isAdmin"); ?></span></th>
+              <th><span data-trans-id="AdminTab.lastActive"><?=$lh("AdminTab.lastActive"); ?></span></th>
+              <th><span data-trans-id="AdminTab.openFile"><?=$lh("AdminTab.openFile"); ?></span></th>
+              <th><span data-trans-id="AdminTab.email"><?=$lh("AdminTab.mail"); ?></span></th>
+              <th><span data-trans-id="AdminTab.note"><?=$lh("AdminTab.note"); ?></span></th>
               <th class="table-th-nosort"></th>
               <th class="table-th-nosort"></th>
             </tr>
@@ -49,16 +49,16 @@ $ulist = array();
 
     <!-- PROJECT MANAGEMENT -->
     <div class="clappable clapp-modern starthidden" id="projectMngr">
-      <h4 class="clapp">Projektverwaltung</h4>
+      <h4 class="clapp" data-trans-id="AdminTab.projectAdministration"><?=$lh("AdminTab.projectAdministration"); ?></h4>
       <div>
         <table id="editProjects" class="table-modern">
           <thead>
             <tr>
-              <th>Projektname</th>
-              <th>Zugeordnete Benutzer</th>
-              <th>Zugeordnete Tagset-Typen</th>
-              <th>Edit?</th>
-              <th>Import?</th>
+              <th><span data-trans-id="AdminTab.projectName"><?=$lh("AdminTab.projectName"); ?></span></th>
+              <th><span data-trans-id="AdminTab.assignedUsers"><?=$lh("AdminTab.assignedUsers"); ?></span></th>
+              <th><span data-trans-id="AdminTab.associatedTagsetTypes"><?=$lh("AdminTab.associatedTagsetTypes"); ?></span></th>
+              <th><span data-trans-id="AdminTab.isEdit"><?=$lh("AdminTab.isEdit"); ?></span></th>
+              <th><span data-trans-id="AdminTab.isImport"><?=$lh("AdminTab.isImport"); ?></span></th>
               <th class="table-th-nosort"></th>
               <th class="table-th-nosort"></th>
             </tr>
@@ -66,22 +66,24 @@ $ulist = array();
           <tbody></tbody>
         </table>
 
-        <p><strong>Hinweis:</strong> Administratoren können <i>immer</i> alle Projektgruppen sehen.</p>
+        <p data-trans-id="AdminTab.visibleForAdmins">
+          <?=$lh("AdminTab.visibleForAdmins"); ?>
+        </p>
       </div>
     </div>
 
     <!-- AUTOMATIC ANNOTATORS -->
     <div class="clappable clapp-modern starthidden" id="automaticAnnotators">
-      <h4 class="clapp">Automatische Annotation</h4>
+      <h4 class="clapp" data-trans-id="AdminTab.autoAnnotationOptions"><?=$lh("AdminTab.autoAnnotationOptions"); ?></h4>
       <div>
         <table id="editAutomaticAnnotators" class="table-modern">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Klasse</th>
-              <th>Train?</th>
-              <th>Zugeordnete Tagset-Typen</th>
+              <th><span data-trans-id="AdminTab.annoId"><?=$lh("AdminTab.annoId"); ?></span></th>
+              <th><span data-trans-id="AdminTab.annoName"><?=$lh("AdminTab.annoName"); ?></span></th>
+              <th><span data-trans-id="AdminTab.annoClass"><?=$lh("AdminTab.annoClass"); ?></span></th>
+              <th><span data-trans-id="AdminTab.isTrained"><?=$lh("AdminTab.isTrained"); ?></span></th>
+              <th><span data-trans-id="AdminTab.associatedTagsetTypes"><?=$lh("AdminTab.associatedTagsetTypes"); ?></span></th>
               <th class="table-th-nosort"></th>
             </tr>
           </thead>
@@ -92,15 +94,15 @@ $ulist = array();
 
     <!-- SERVER NOTICES -->
     <div class="clappable clapp-modern starthidden" id="serverNotices">
-      <h4 class="clapp">Server-Benachrichtigungen</h4>
+      <h4 class="clapp" data-trans-id="AdminTab.serverNotifications"><?=$lh("AdminTab.serverNotifications"); ?></h4>
       <div>
         <table id="editNotices" class="table-modern">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Nachricht</th>
-              <th>Typ</th>
-              <th>Expires</th>
+              <th><span data-trans-id="AdminTab.serverId"><?=$lh("AdminTab.serverId"); ?></span></th>
+              <th><span data-trans-id="AdminTab.serverMsg"><?=$lh("AdminTab.serverMsg"); ?></span></th>
+              <th><span data-trans-id="AdminTab.serverType"><?=$lh("AdminTab.serverType"); ?></span></th>
+              <th><span data-trans-id="AdminTab.expire"><?=$lh("AdminTab.expire"); ?></span></th>
               <th class="table-th-nosort"></th>
             </tr>
           </thead>
@@ -288,9 +290,9 @@ $ulist = array();
         <td class="adminUserEmailCell"></td>
         <td class="adminUserCommentCell"></td>
         <td>
-          <a class="adminUserEditButton"><span class="oi oi-shadow" data-glyph="cog" aria-hidden="true"></span> Optionen...</a>
+          <a class="adminUserEditButton"><span class="oi oi-shadow" data-glyph="cog" aria-hidden="true"></span> <span data-trans-id="AdminTab.options"><?=$lh("AdminTab.options"); ?></span></a>
         </td>
-        <td class="adminUserDelete"><a class="deletion-link"><span class="oi oi-shadow" data-glyph="delete" title="Benutzer löschen" aria-hidden="true"></span></a></td>
+        <td class="adminUserDelete"><a class="deletion-link"><span class="oi oi-shadow" data-glyph="delete" title="<?=$lh("AdminTab.deleteUser"); ?>" data-trans-title-id="AdminTab.deleteUser" aria-hidden="true"></span></a></td>
       </tr>
     </table>
 
@@ -302,9 +304,9 @@ $ulist = array();
         <td class="centered adminProjectCmdEdittoken" title="Edit-Skript zugeordnet"><span class="oi oi-shadow oi-green" data-glyph="check" aria-hidden="true"></span></td>
         <td class="centered adminProjectCmdImport" title="Import-Skript zugeordnet"><span class="oi oi-shadow oi-green" data-glyph="check" aria-hidden="true"></span></td>
         <td>
-          <a class="adminProjectEditButton"><span class="oi oi-shadow" data-glyph="cog" aria-hidden="true"></span> Projekt verwalten...</a>
+          <a class="adminProjectEditButton"><span class="oi oi-shadow" data-glyph="cog" aria-hidden="true"></span> <span data-trans-id="AdminTab.projectOptions"><?=$lh("AdminTab.projectOptions"); ?></a>
         </td>
-        <td><a class="adminProjectDelete deletion-link"><span class="oi oi-shadow" data-glyph="delete" title="Projekt löschen" aria-hidden="true"></span></a></td>
+        <td><a class="adminProjectDelete deletion-link"><span class="oi oi-shadow" data-glyph="delete" title="<?=$lh("AdminTab.deleteProject"); ?>" data-trans-title-id="AdminTab.deleteProject" aria-hidden="true"></span></a></td>
       </tr>
     </table>
 

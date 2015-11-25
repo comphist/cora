@@ -37,6 +37,7 @@
          "username": "Benutzername"
      },
      "AdminTab" : {
+        "refresh" : "Aktualisieren",
         "collapseCategories" : "Alle Kategorien zuklappen",
         "expandCategories" : "Alle Kategorien aufklappen",
         "newUser" : "Neuer Benutzer",
@@ -46,7 +47,7 @@
         "tagsetBrowser" : "Tagset-Browser",
         "importTagset" : "Tagset importieren",
         "userAdministration" : "Benutzerverwaltung",
-        "username" : "Benutzername",
+        "userName" : "Benutzername",
         "isAdmin" : "Admin?",
         "lastActive" : "Letzte Aktivität",
         "openFile" : "Geöffnete Datei",
@@ -70,12 +71,32 @@
         "associatedTagsetTypes" : "Zugeordnete Tagset-Typen",
         "serverNotifications" : "Server-Benachrichtigungen",
         "serverId" : "ID",
-        "message" : "Nachricht",
-        "type" : "Typ",
+        "serverMsg" : "Nachricht",
+        "serverType" : "Typ",
         "expire" : "Expires",
         "Forms" : {
+            "addUser" : "Neuen Benutzer hinzufügen",
+            "password" : "Passwort:",
+            "repeatPassword" : "Passwort wiederholen:",
+            "addProject" : "Neues Projekt erstellen",
+            "projectName" : "Projektname:",
+            "addTagger" : "Neuen Tagger definieren",
+            "taggerName" : "Name:",
+            "newServerMsg" : "Neue Server-Benachrichtigungen erstellen",
+            "type" : "Typ:",
+            "expireDate" : "Expires:",
+            "msgText" : "Nachricht:",
+            "tagsetBrowserForm" : "Tagset-Browser",
+            "preview" : "Anzeigen",
+            "importTagsetForm" : "Tagset aus Textdatei importieren",
+            "tagsetName" : "Name des Tagsets:",
+            "tagsetClass" : "Tagset-Klasse:",
+            "tagsetFile" : "Tagset-Datei",
+            "tagsetInfo" : "Hinweis: Als Tagset-Datei wird eine Textdatei erwartet, die aus einem Tag pro Zeile besteht. Bei POS-Tagsets werden Punkte als Trennsymbole zwischen POS- und Morph-Attributen interpretiert. Tags, die als \"korrekturbedürftig\" markiert werden sollen, muss jeweils ein Caret (^) vorangestellt werden."
 
-            
+
+
+
         }
 
      },
@@ -240,7 +261,8 @@
         "save" : "Speichern",
         "export" : "Exportieren...",
         "export2" : "Exportieren",
-        "tagsets" : "Tagsets..."
+        "tagsets" : "Tagsets...",
+        "importTagset" : "Tagset importieren"
      }
  }
 }
