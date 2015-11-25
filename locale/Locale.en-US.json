@@ -35,6 +35,50 @@
          "password": "Password",
          "username": "Username"
      },
+     "AdminTab" : {
+        "collapseCategories" : "Collapse all categories",
+        "expandCategories" : "Expand all categories",
+        "newUser" : "New user",
+        "newProject" : "New project",
+        "newTagger" : "New tagger",
+        "newMsg" : "New message",
+        "tagsetBrowser" : "Tagset browser",
+        "importTagset" : "Import tagset",
+        "userAdministration" : "User administration",
+        "username" : "User name",
+        "isAdmin" : "Admin?",
+        "lastActive" : "Last active",
+        "openFile" : "Opened file",
+        "email" : "E-mail",
+        "note" : "Note",
+        "options" : "Options",
+        "deleteUser" : "Delete user",
+        "projectAdministration" : "Project administration",
+        "projectName" : "Project name",
+        "assignedUsers" : "Assigned users",
+        "isEdit" : "Edit?",
+        "isImport" : "Import?",
+        "projectOptions" : "Project options...",
+        "deleteProject" : "Delete project",
+        "visibleForAdmins" : "**Note**: Admins can ##always## see all project groups.",
+        "autoAnnotationOptions" : "Auto annotation",
+        "annoId" : "ID",
+        "annoName" : "Name",
+        "annoClass" : "Class",
+        "isTrained" : "Train?",
+        "associatedTagsetTypes" : "Associated tagset types",
+        "serverNotifications" : "Server notifications",
+        "serverId" : "ID",
+        "message" : "Message",
+        "type" : "Type",
+        "expire" : "Expires",
+        "Forms" : {
+
+            
+        }
+
+
+     },
      "SettingsTab": {
         "language" : "Language",
         "changePassword" : "Change password...",
