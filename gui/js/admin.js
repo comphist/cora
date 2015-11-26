@@ -7,6 +7,7 @@
  * @date January 2012 - September 2014
  */
 
+
 // ***********************************************************************
 // ********** USER MANAGEMENT ********************************************
 // ***********************************************************************
@@ -67,7 +68,7 @@ cora.users = {
             textDialogOnError: true,
             onSuccess: function(status) {
                 this.performUpdate();
-                gui.showNotice('ok', "Benutzer hinzugefügt.");
+                gui.showNotice('ok', _("Banner.userAdded"));
             }.bind(this),
             onComplete: function() { gui.unlock(); }
         }).post({'username': name, 'password': pw});
@@ -129,7 +130,7 @@ cora.users = {
             name: 'changePassword',
             textDialogOnError: true,
             onSuccess: function(status) {
-                gui.showNotice('ok', "Password geändert.");
+                gui.showNotice('ok', _("Banner.passwordChanged"));
             }.bind(this),
             onComplete: function() { gui.unlock(); }
         }).post({'id': id, 'password': pw});
@@ -163,7 +164,7 @@ cora.users = {
             multiselect.grab(entry).grab(label);
         });
         new MultiSelect(multiselect,
-                       {monitorText: ' Benutzer ausgewählt'});
+                       {monitorText: ' '+_("AdminTab.Forms.usersSelected")});
         return multiselect;
     },
 
@@ -205,7 +206,7 @@ cora.userEditor = {
 	    'click:relay(td)',
 	    function(event, target) {
 		if(target.hasClass('adminUserAdminStatusTD')) {
-		    this.toggleStatus(event, 'Admin');
+		    this.toggleStatus(event, "Admin");
 		}
 		else if(target.hasClass('adminUserDelete')) {
 		    this.deleteUser(event);
@@ -240,15 +241,15 @@ cora.userEditor = {
             pw1 = cdiv.getElements('input[name="newpw"]')[0].get('value');
             pw2 = cdiv.getElements('input[name="newpw2"]')[0].get('value');
             if(!un) {
-	        gui.showNotice('error', "Benutzername darf nicht leer sein.");
+	        gui.showNotice('error', _("Banner.userNameEmpty"));
                 return false;
             }
             if(!pw1) {
-                gui.showNotice('error', "Passwort darf nicht leer sein.");
+                gui.showNotice('error', _("Banner.passwordEmpty"));
                 return false;
             }
 	    if (pw1 !== pw2) {
-	        gui.showNotice('error', "Passwörter stimmen nicht überein.");
+	        gui.showNotice('error', _("Banner.passwordNoMatch"));
 	        return false;
 	    }
             return [un, pw1];
@@ -259,10 +260,10 @@ cora.userEditor = {
             cora.users.createUser(username, password);
         };
         new mBox.Modal({
-            title: "Neuen Benutzer hinzufügen",
+            title: _("AdminTab.Forms.addUser"),
             content: $('templateCreateUser'),
-            buttons: [ {title: "Abbrechen", addClass: "mform"},
-                       {title: "Hinzufügen", addClass: "mform button_green",
+            buttons: [ {title: _("Action.cancel"), addClass: "mform"},
+                       {title: _("Action.addUserBtn"), addClass: "mform button_green",
                         event: function() {
                             var data = performChecks(this.content);
                             if(data) {
@@ -336,10 +337,10 @@ cora.userEditor = {
         content.getElement('input[name=adminUserEmail]').set('value', user.email);
         content.getElement('input[name=adminUserComment]').set('value', user.comment);
 	mbox = new mBox.Modal({
-	    title: 'Einstellungen für Benutzer "'+user.name+'"',
+	    title: _("AdminTab.Forms.settingsForUser", {user: user.name}),
 	    content: content,
             closeOnBodyClick: false,
-	    buttons: [ {title: "Passwort ändern...", addClass: "mform button_left",
+	    buttons: [ {title: _("Action.changePassword"), addClass: "mform button_left",
                         event: function() {
                             this.addEvent('closeComplete', function() {
                                 ref.changePassword(uid);
@@ -347,8 +348,8 @@ cora.userEditor = {
                             this.close();
                         }
                        },
-                       {title: "Abbrechen", addClass: "mform"},
-                       {title: "Speichern", addClass: "mform button_green",
+                       {title: _("Action.cancel"), addClass: "mform"},
+                       {title: _("Action.save"), addClass: "mform button_green",
 			event: function() {
                             ref.saveUserSettings(uid, this.content, function() {
                                 this.close();
@@ -381,7 +382,7 @@ cora.userEditor = {
             textDialogOnError: true,
 	    onSuccess: function(status) {
                 cora.users.performUpdate();
-                gui.showNotice('ok', "Einstellungen geändert.");
+                gui.showNotice('ok', _("Banner.settingsSaved"));
                 if(typeof(fn) === "function")
                     fn(status);
 	    },
@@ -402,20 +403,20 @@ cora.userEditor = {
             pw1 = cdiv.getElements('input[name="newchpw"]')[0].get('value');
             pw2 = cdiv.getElements('input[name="newchpw2"]')[0].get('value');
             if(!pw1) {
-                gui.showNotice('error', "Passwort darf nicht leer sein.");
+                gui.showNotice('error', _("Banner.passwordEmpty"));
                 return false;
             }
 	    if (pw1 !== pw2) {
-	        gui.showNotice('error', "Passwörter stimmen nicht überein.");
+	        gui.showNotice('error', _("Banner.passwordNoMatch"));
 	        return false;
 	    }
             return pw1;
         };
         new mBox.Modal({
-            title: "Passwort ändern",
+            title: _("AdminTab.Forms.changePasswordForm"),
             content: $('templateChangePassword'),
-            buttons: [ {title: "Abbrechen", addClass: "mform"},
-                       {title: "Ändern", addClass: "mform button_red",
+            buttons: [ {title: _("Action.cancel"), addClass: "mform"},
+                       {title: _("Action.change"), addClass: "mform button_red",
                         event: function() {
                             var pw = performChecks(this.content);
                             if(pw) {
@@ -712,10 +713,10 @@ cora.annotatorEditor = {
             return true;
         }.bind(this);
         new mBox.Modal({
-            title: "Neuen Tagger definieren",
+            title: _("AdminTab.Forms.addTagger"),
             content: $('annotatorCreateForm'),
-            buttons: [ {title: "Abbrechen", addClass: "mform"},
-                       {title: "Erstellen", addClass: "mform button_green",
+            buttons: [ {title: _("Action.cancel"), addClass: "mform"},
+                       {title: _("Action.createTagger"), addClass: "mform button_green",
                         event: function() {
                             if(performRequest(this.content))
                                 this.close();
@@ -853,10 +854,10 @@ cora.noticeEditor = {
             return true;
         }.bind(this);
         new mBox.Modal({
-            title: "Neue Server-Benachrichtigung erstellen",
+            title: _("AdminTab.Forms.newServerMsg"),
             content: $('templateCreateNotice'),
-            buttons: [ {title: "Abbrechen", addClass: "mform"},
-                       {title: "Erstellen", addClass: "mform button_green",
+            buttons: [ {title: _("Action.cancel"), addClass: "mform"},
+                       {title: _("Action.createMsg"), addClass: "mform button_green",
                         event: function() {
                             if(performRequest(this.content))
                                 this.close();
@@ -888,11 +889,11 @@ cora.projectEditor = {
         cora.projects.onUpdate(this.refreshProjectTable);
 	// adding projects
 	var cp_mbox = new mBox.Modal({
-	    'title': 'Neues Projekt erstellen',
+	    'title': _("AdminTab.Forms.addProject"),
 	    'content': 'projectCreateForm',
 	    'attach': 'adminCreateProject',
-            'buttons': [ {title: "Abbrechen", addClass: "mform"},
-                         {title: "Erstellen", addClass: "mform button_green",
+            'buttons': [ {title: _("Action.cancel"), addClass: "mform"},
+                         {title: _("Action.createProject"), addClass: "mform button_green",
                           event: function() {
 		              var pn = this.content.getElement('input').get('value');
                               gui.lock();
@@ -1063,11 +1064,11 @@ cora.projectEditor = {
 
         content = this.makeProjectEditContent(prj);
 	mbox = new mBox.Modal({
-	    title: 'Einstellungen für Projekt "'+prj.name+'"',
+	    title: _("AdminTab.Forms.projectOptionsForm", {project: prj.name}),
 	    content: content,
             closeOnBodyClick: false,
-	    buttons: [ {title: "Abbrechen", addClass: "mform"},
-                       {title: "Speichern", addClass: "mform button_green",
+	    buttons: [ {title: _("Action.cancel"), addClass: "mform"},
+                       {title: _("Action.save"), addClass: "mform button_green",
 			event: function() {
                             ref.saveProjectSettings(pid, this.content, this.close.bind(this));
 			}}
@@ -1115,7 +1116,7 @@ cora.projectEditor = {
             textDialogOnError: true,
             onSuccess: function(status) {
                 cora.projects.performUpdate();
-                gui.showNotice('ok', "Einstellungen geändert.");
+                gui.showNotice('ok', _("Banner.settingsSaved"));
                 if(typeof(fn) === "function")
                     fn();
             }.bind(this),
@@ -1134,7 +1135,7 @@ cora.tagsetEditor = {
     activateTagsetViewer: function() {
 	var ref = this;
 	var import_mbox = new mBox.Modal({
-	    title: 'Tagset-Browser',
+	    title: _("AdminTab.Forms.tagsetBrowserForm"),
 	    content: 'adminTagsetBrowser',
 	    attach: 'adminViewTagset',
             closeOnBodyClick: false
@@ -1188,7 +1189,7 @@ cora.tagsetEditor = {
 	var formname = 'newTagsetImportForm';
         var class_selector = $(formname).getElement('select[name="tagset_class"]');
 	var import_mbox = new mBox.Modal({
-	    title: 'Tagset aus Textdatei importieren',
+	    title: _("AdminTab.Forms.importTagsetForm"),
 	    content: 'tagsetImportForm',
 	    attach: 'adminImportTagset'
 	});

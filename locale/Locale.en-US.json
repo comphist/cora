@@ -73,6 +73,8 @@
         "serverMsg" : "Message",
         "serverTypes" : "Type",
         "expire" : "Expires",
+        "isAdminTitle" : "Administrator",
+        "isNotAdminTitle" : "No admin",
         "Forms" : {
             "addUser" : "Add User",
             "newUserName" : "User name:",
@@ -105,7 +107,13 @@
             "importCommand" : "Command to import texts:",
             "assignUserInfo" : "Only admins and users assigned to the project can see and edit the project and the files it contains.",
             "associatedTagsetsInfo" : "When new texts are imported into this project they will by default be associated with the tagsets set here. Changing the settings here will **not** change any texts already in the database!",
-            "associatedTagsets" : "Associated tagsets:"
+            "associatedTagsets" : "Associated tagsets:",
+            "settingsForUser" : "Settings for '{user}'",            
+            "changePasswordForm" : "Change password",
+            "projectOptionsForm" : "Settings for Project \"{project}\"",
+            "usersSelected" : "user(s) selected",
+            "tagsetsSelected" : "Tagset(s) selected"
+
 
         }
 
@@ -272,9 +280,24 @@
         "export" : "Export...",
         "export2" : "Export",
         "tagsets" : "Tagsets...",
-        "importTagset" : "Import tagset"
+        "importTagset" : "Import tagset",
+        "addUserBtn" : "Add user",
+        "createProject" : "Create project",
+        "createTagger" : "Create Tagger",
+        "createMsg" : "Create notification",
+        "changePassword" : "Change password...",
+        "change" : "Change"
 
 
+     },
+     "Banner" : {
+        "userNameEmpty" : "Please enter a user name.",
+        "passwordEmpty" : "Please enter a password.",
+        "passwordNoMatch" : "The passwords you entered do not match.",
+        "userAdded" : "User added.",
+        "passwordChanged" : "Changed password.",
+        "settingsSaved" : "Saved settings."
+        
      }
  }
 }

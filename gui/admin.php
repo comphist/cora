@@ -27,7 +27,7 @@ $ulist = array();
 
     <!-- USER MANAGEMENT -->
     <div class="clappable clapp-modern" id="users">
-      <h4 class="clapp" data-trans-id="AdminTab.userAdministration"><?=$lh("AdminTab.userAdministration"); ?></h4>
+      <h4 class="clapp"><span data-trans-id="AdminTab.userAdministration"><?=$lh("AdminTab.userAdministration"); ?></span></h4>
       <div>
         <table id="editUsers" class="table-modern">
           <thead>
@@ -49,7 +49,7 @@ $ulist = array();
 
     <!-- PROJECT MANAGEMENT -->
     <div class="clappable clapp-modern starthidden" id="projectMngr">
-      <h4 class="clapp" data-trans-id="AdminTab.projectAdministration"><?=$lh("AdminTab.projectAdministration"); ?></h4>
+      <h4 class="clapp"><span data-trans-id="AdminTab.projectAdministration"><?=$lh("AdminTab.projectAdministration"); ?></span></h4>
       <div>
         <table id="editProjects" class="table-modern">
           <thead>
@@ -74,7 +74,7 @@ $ulist = array();
 
     <!-- AUTOMATIC ANNOTATORS -->
     <div class="clappable clapp-modern starthidden" id="automaticAnnotators">
-      <h4 class="clapp" data-trans-id="AdminTab.autoAnnotationOptions"><?=$lh("AdminTab.autoAnnotationOptions"); ?></h4>
+      <h4 class="clapp"><span data-trans-id="AdminTab.autoAnnotationOptions"><?=$lh("AdminTab.autoAnnotationOptions"); ?></span></h4>
       <div>
         <table id="editAutomaticAnnotators" class="table-modern">
           <thead>
@@ -94,7 +94,7 @@ $ulist = array();
 
     <!-- SERVER NOTICES -->
     <div class="clappable clapp-modern starthidden" id="serverNotices">
-      <h4 class="clapp" data-trans-id="AdminTab.serverNotifications"><?=$lh("AdminTab.serverNotifications"); ?></h4>
+      <h4 class="clapp"><span data-trans-id="AdminTab.serverNotifications"><?=$lh("AdminTab.serverNotifications"); ?></span></h4>
       <div>
         <table id="editNotices" class="table-modern">
           <thead>
@@ -283,7 +283,7 @@ $ulist = array();
     <table>
       <tr id="templateUserInfoRow" class="adminUserInfoRow">
         <td class="adminUserNameCell"></td>
-        <td class="centered adminUserAdminStatusTD" title="Kein Admin"><span class="oi oi-shadow oi-green adminUserAdminStatus" data-glyph="check" aria-hidden="true"></span>
+        <td class="centered adminUserAdminStatusTD" title="<?=$lh("AdminTab.isNotAdminTitle"); ?>" data-trans-title-id="AdminTab.isNotAdminTitle"><span class="oi oi-shadow oi-green adminUserAdminStatus" data-glyph="check" aria-hidden="true"></span>
         </td>
         <td class="adminUserLastactiveCell"></td>
         <td class="adminUserActivityCell"></td>
