@@ -125,44 +125,44 @@ $ulist = array();
   <div class="templateHolder" style="display: none;">
     <div id="templateCreateNotice">
       <p>
-        <label for="noticetype" class="ra">Typ: </label>
+        <label for="noticetype" class="ra"><span data-trans-id="AdminTab.Forms.type"><?=$lh("AdminTab.Forms.type"); ?></span> </label>
         <select name="noticetype" size="1">
           <option value="alert">Alert</option>
           <!-- <option value="info">Info</option> -->
         </select>
       </p>
       <p>
-        <label for="noticeexpires" class="ra">Expires: </label>
+        <label for="noticeexpires" class="ra"><span data-trans-id="AdminTab.Forms.expireDate"><?=$lh("AdminTab.Forms.expireDate"); ?></span> </label>
         <input type="text" name="noticeexpires" value="" data-required="" class="mform" />
       </p>
       <p>
-        <label for="noticetext" class="ra vt">Nachricht: </label>
+        <label for="noticetext" class="ra vt"><span data-trans-id="AdminTab.Forms.msgText"><?=$lh("AdminTab.Forms.msgText"); ?></span> </label>
         <textarea cols="30" rows="3" name="noticetext" value="" data-required="" class="mform"></textarea>
       </p>
     </div>
 
     <div id="templateCreateUser">
       <p>
-        <label for="newuser" class="ra">Benutzername: </label>
+        <label for="newuser" class="ra"><span data-trans-id="AdminTab.Forms.newUserName"><?=$lh("AdminTab.Forms.newUserName"); ?></span> </label>
         <input type="text" name="newuser" value="" data-required="" class="mform" />
       </p>
       <p>
-        <label for="newpw" class="ra">Passwort: </label>
+        <label for="newpw" class="ra"><span data-trans-id="AdminTab.Forms.password"><?=$lh("AdminTab.Forms.password"); ?></span> </label>
         <input type="password" name="newpw" value="" data-required="" class="mform" />
       </p>
       <p>
-        <label for="newpw2" class="ra">Passwort wiederholen: </label>
+        <label for="newpw2" class="ra"><span data-trans-id="AdminTab.Forms.repeatPassword"><?=$lh("AdminTab.Forms.repeatPassword"); ?></span> </label>
         <input type="password" name="newpw2" value="" data-required="" class="mform" />
       </p>
     </div>
 
     <div id="templateChangePassword">
       <p>
-        <label for="newchpw" class="ra">Neues Passwort: </label>
+        <label for="newchpw" class="ra"><span data-trans-id="AdminTab.Forms.newPassword"><?=$lh("AdminTab.Forms.newPassword"); ?></span> </label>
         <input type="password" name="newchpw" value="" data-required="" class="mform" />
       </p>
       <p>
-        <label for="newchpw2" class="ra">Neues Passwort wiederholen: </label>
+        <label for="newchpw2" class="ra"><span data-trans-id="AdminTab.Forms.repeatNewPassword"><?=$lh("AdminTab.Forms.repeatNewPassword"); ?></span> </label>
         <input type="password" name="newchpw2" value="" data-required="" class="mform" />
       </p>
     </div>
@@ -192,46 +192,46 @@ $ulist = array();
 
     <div id="userEditForm" class="userEditForm">
       <p>
-        <label for="adminUserEmail">E-Mail-Adresse: </label><br />
-        <input type="text" name="adminUserEmail" placeholder="max@mustermann.de" size="60" class="mform" />
+        <label for="adminUserEmail"><span data-trans-id="AdminTab.Forms.emailAddress"><?=$lh("AdminTab.Forms.emailAddress"); ?></span> </label><br />
+        <input type="text" name="adminUserEmail" placeholder="<?=$lh("AdminTab.Forms.dummyMail"); ?>" data-trans-placeholder-id="AdminTab.Forms.dummyMail" size="60" class="mform" />
       </p>
       <p>
-        <label for="adminUserComment">Notiz: </label><br />
-        <input type="text" name="adminUserComment" placeholder="(keine)" size="60" class="mform" />
+        <label for="adminUserComment"><span data-trans-id="AdminTab.Forms.userNote"><?=$lh("AdminTab.Forms.userNote"); ?></span> </label><br />
+        <input type="text" name="adminUserComment" placeholder="<?=$lh("AdminTab.Forms.dummyNote"); ?>" data-trans-placeholder-id="AdminTab.Forms.dummyNote" size="60" class="mform" />
       </p>
     </div>
 
     <div id="projectEditForm" class="projectEditForm">
       <p>
-        <label for="projectCmdEditToken">Befehl zum Editieren von Tokens: </label><br />
-        <input type="text" name="projectCmdEditToken" placeholder="(nicht definiert)" size="60" class="mform" />
+        <label for="projectCmdEditToken"><span data-trans-id="AdminTab.Forms.editTokenCommand"><?=$lh("AdminTab.Forms.editTokenCommand"); ?></span> </label><br />
+        <input type="text" name="projectCmdEditToken" placeholder="<?=$lh("AdminTab.Forms.dummyCommand"); ?>" data-trans-placeholder-id="AdminTab.Forms.dummyCommand" size="60" class="mform" />
       </p>
       <p>
-        <label for="projectCmdImport">Befehl zum Importieren von Texten: </label><br />
-        <input type="text" name="projectCmdImport" placeholder="(nicht definiert)" size="60" class="mform" />
+        <label for="projectCmdImport"><span data-trans-id="AdminTab.Forms.importCommand"><?=$lh("AdminTab.Forms.importCommand"); ?></span> </label><br />
+        <input type="text" name="projectCmdImport" placeholder="<?=$lh("AdminTab.Forms.dummyCommand"); ?>" data-trans-placeholder-id="AdminTab.Forms.dummyCommand" size="60" class="mform" />
       </p>
-      <p><label>Zugeordnete Benutzer:</label></p>
+      <p><label data-trans-id="AdminTab.assignedUsers"><?=$lh("AdminTab.Forms.assignedUsers"); ?></label></p>
       <div class="userSelectPlaceholder"></div>
-      <p>
-        Nur Administratoren oder dem Projekt zugeordnete Benutzer können dieses Projekt und die darin enthaltenen Dateien sehen und bearbeiten.
+      <p data-trans-id="AdminTab.assignUserInfo">
+        <?=$lh("AdminTab.Forms.assignUserInfo"); ?>
       </p>
-      <p><label>Zugeordnete Tagsets:</label></p>
+      <p><label data-trans-id="AdminTab.associatedTagsets"><?=$lh("AdminTab.Forms.associatedTagsets"); ?></label></p>
       <div class="tagsetSelectPlaceholder"></div>
-      <p>
-        Neue Texte, die in dieses Projekt importiert werden, werden standardmäßig mit den hier zugeordneten Tagsets verknüpft.  Änderungen hier haben <strong>keine</strong> Auswirkungen auf bereits in der Datenbank vorhandene Texte!
+      <p data-trans-id="AdminTab.associatedTagsetsInfo">
+        <?=$lh("AdminTab.Forms.associatedTagsetsInfo"); ?>
       </p>
     </div>
 
     <div id="projectCreateForm">
       <p>
-        <label for="project_name" class="ra">Projektname:</label>
+        <label for="project_name" class="ra" data-trans-id="AdminTab.Forms.projectName"><?=$lh("AdminTab.Forms.projectName"); ?></label>
         <input type="text" name="project_name" value="" class="mform" />
       </p>
     </div>
 
     <div id="annotatorCreateForm">
       <p>
-        <label for="annotator_name" class="ra">Name:</label>
+        <label for="annotator_name" class="ra" data-trans-id="AdminTab.Forms.taggerName"><?=$lh("AdminTab.Forms.taggerName"); ?></label>
         <input type="text" name="annotator_name" value="" class="mform" />
       </p>
     </div>
@@ -239,19 +239,19 @@ $ulist = array();
     <div id="tagsetImportForm">
       <form action="request.php" id="newTagsetImportForm" method="post" accept-charset="utf-8" enctype="multipart/form-data">
       <p>
-        <label for="tagset_name">Name des Tagsets:</label>
+        <label for="tagset_name" data-trans-id="AdminTab.Forms.tagsetName"><?=$lh("AdminTab.Forms.tagsetName"); ?></label>
         <input type="text" name="tagset_name" value="" size="40" maxlength="255" data-required />
       </p>
       <p>
-        <label for="tagset_class">Tagset-Klasse: </label>
+        <label for="tagset_class"><span data-trans-id="AdminTab.Forms.tagsetClass"><?=$lh("AdminTab.Forms.tagsetClass"); ?></span> </label>
         <select size="1" name="tagset_class"></select>
       </p>
       <p>
-        <label for="txtFile">Tagset-Datei: </label>
+        <label for="txtFile"><span data-trans-id="AdminTab.Forms.tagsetFile"><?=$lh("AdminTab.Forms.tagsetFile"); ?></span> </label>
         <input type="file" name="txtFile" data-required />
       </p>
-      <p style="max-width:32em;">
-        Hinweis: Als Tagset-Datei wird eine Textdatei erwartet, die aus einem Tag pro Zeile besteht.  Bei POS-Tagsets werden Punkte als Trennsymbole zwischen POS- und Morph-Attributen interpretiert.  Tags, die als "korrekturbedürftig" markiert werden sollen, muss jeweils ein Caret (^) vorangestellt werden.
+      <p style="max-width:32em;" data-trans-id="AdminTab.Forms.tagsetInfo">
+        <?=$lh("AdminTab.Forms.tagsetInfo"); ?>        
       </p>
       <p>
         <input type="hidden" name="action" value="importTagsetTxt" />
@@ -259,7 +259,7 @@ $ulist = array();
         <input type="hidden" name="tagset_settype" value="closed" />
       </p>
       <p style="text-align:right;">
-        <input type="submit" value="Tagset importieren &rarr;" />
+        <input type="submit" value="<?=$lh("AdminTab.Forms.importTagsetBtn"); ?>" data-trans-value-id="AdminTab.Forms.importTagsetBtn"/>
       </p>
       </form>
     </div>
@@ -271,7 +271,7 @@ $ulist = array();
           <option value="<?php echo $set['shortname'];?>"><?php echo $set['longname'];?></option>
         <?php endforeach;?>
         </select>
-        <button id="aTBview" type="button" class="mform">Anzeigen</button>
+        <button id="aTBview" type="button" class="mform" data-trans-id="AdminTab.Forms.preview"><?=$lh("AdminTab.Forms.preview"); ?></button>
       </p>
       <p><textarea id="aTBtextarea" cols="80" rows="10" readonly="readonly"></textarea></p>
     </div>

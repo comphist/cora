@@ -76,8 +76,11 @@
         "expire" : "Expires",
         "Forms" : {
             "addUser" : "Neuen Benutzer hinzufügen",
+            "newUserName" : "Benutzername:",
             "password" : "Passwort:",
             "repeatPassword" : "Passwort wiederholen:",
+            "newPassword" : "Neues Passwort",
+            "repeatNewPassword" : "Neues Passwort wiederholen",
             "addProject" : "Neues Projekt erstellen",
             "projectName" : "Projektname:",
             "addTagger" : "Neuen Tagger definieren",
@@ -91,8 +94,20 @@
             "importTagsetForm" : "Tagset aus Textdatei importieren",
             "tagsetName" : "Name des Tagsets:",
             "tagsetClass" : "Tagset-Klasse:",
-            "tagsetFile" : "Tagset-Datei",
-            "tagsetInfo" : "Hinweis: Als Tagset-Datei wird eine Textdatei erwartet, die aus einem Tag pro Zeile besteht. Bei POS-Tagsets werden Punkte als Trennsymbole zwischen POS- und Morph-Attributen interpretiert. Tags, die als \"korrekturbedürftig\" markiert werden sollen, muss jeweils ein Caret (^) vorangestellt werden."
+            "tagsetFile" : "Tagset-Datei:",
+            "tagsetInfo" : "Hinweis: Als Tagset-Datei wird eine Textdatei erwartet, die aus einem Tag pro Zeile besteht. Bei POS-Tagsets werden Punkte als Trennsymbole zwischen POS- und Morph-Attributen interpretiert. Tags, die als \"korrekturbedürftig\" markiert werden sollen, muss jeweils ein Caret (^) vorangestellt werden.",
+            "importTagsetBtn" : "Tagset importieren →",
+            "emailAddress" : "E-Mail-Adresse:",
+            "userNote" : "Notiz:",
+            "dummyMail" : "max@mustermann.de",
+            "dummyNote" : "(keine)",
+            "dummyCommand" : "(nicht definiert)",
+            "editTokenCommand" : "Befehl zum Editieren von Tokens:",
+            "importCommand" : "Befehl zum Importieren von Texten:",
+            "assignUserInfo" : "Nur Administratoren oder dem Projekt zugeordnete Benutzer können dieses Projekt und die darin enthaltenen Dateien sehen und bearbeiten.",
+            "associatedTagsetsInfo" : "Neue Texte, die in dieses Projekt importiert werden, werden standardmäßig mit den hier zugeordneten Tagsets verknüpft. Änderungen hier haben **keine** Auswirkungen auf bereits in der Datenbank vorhandene Texte!",
+            "associatedTagsets" : "Zugeordnete Tagsets:"
+
 
 
 
