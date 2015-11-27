@@ -167,7 +167,43 @@
             "columnNormFormat" : "4-Spaltenformat (Normalisierung)",
             "transFormat" : "Transkriptionsformat",
             "columnsSelected" : " Spalte(n) ausgewählt",
-            "importXmlFile" : "Importieren aus CorA-XML-Format"
+            "importXmlFile" : "Importieren aus CorA-XML-Format",
+            "importTextTitle" : "Importieren aus Textdatei",
+            "file" : "Datei:",
+            "encoding" : "Kodierung:",
+            "project" : "Projekt:",
+            "noImportScriptInfo" : "Für das gewählte Projekt ist kein Importskript festgelegt. Ohne Importskript können neue Dokumente nur als CorA-XML-Datei importiert werden.",
+            "docName" : "Name:",
+            "docNameDummy" : "(Dokumentname)",
+            "siglum" : "Sigle:",
+            "siglumDummya" : "(Sigle - optional)",
+            "associatedTagsets" : "Tagset-Verknüpfungen:",
+            "importBtn" : "Importieren →",
+            "chooseFile" : "Bitte wählen Sie eine Datei zum Importieren aus!",
+            "importInfo" : "Die folgenden Felder müssen nicht ausgefüllt werden, falls die entsprechenden Informationen bereits in der XML-Datei enthalten sind.",
+            "deleteWarning" : "Soll das Dokument '{file}' wirklich gelöscht werden? Dieser Schritt kann nicht rückgängig gemacht werden!",
+            "editTagsetsForm" : "Tagset-Verknüpfungen für '{file}'",
+            "pleaseWait" : "Bitte warten...",
+            "importSuccess" : "Datei-Import erfolgreich",
+            "importSuccessInfo" : "Die Datei wurde erfolgreich hinzugefügt. Das System lieferte {nWarnings} zurück:",
+            "warning1" : "eine Warnung",
+            "warning2" : "Warnungen",
+            "importXmlForm" : "Importieren aus CorA-XML-Format",
+            "importTextForm" : "Importieren aus Textdatei",
+            "importUnknownError" : "Import aus unbekannten Gründen fehlgeschlagen!",
+            "addFileError" : "Beim Hinzufügen der Datei ist ein unbekannter Fehler aufgetreten.",
+            "importFailed" : "Importieren fehlgeschlagen",
+            "fileImportFailed" : "Datei-Import fehlgeschlagen",
+            "importErrorInfo" : "Beim Hinzufügen der Datei {errorStr} Fehler aufgetreten:",
+            "error1" : "ist ein",
+            "error2" : "sind {errorCount}",
+            "importError" : "Beim Importieren sind Fehler aufgetreten.",
+            "noClose" : "Sie haben keine Berechtigung, diese Datei zu schließen.",
+            "closePrompt" : "Sie sind dabei, eine Datei zu schließen, die aktuell nicht von Ihnen bearbeitet wird. Falls jemand anderes diese Datei zur Zeit bearbeitet, könnten Datenverluste auftreten. Trotzdem schließen?",
+            "invalidServerResponse" : "Fehlerhafte Server-Antwort",
+            "invalidServerResponseInfo" : "Der Server lieferte eine ungültige Antwort zurück. Das Importieren der Datei war möglicherweise nicht erfolgreich.",
+            "invalidServerResponseText" : "Fehler beim Interpretieren der Server-Antwort:\n\t{errorMsg}\n\nDer Server antwortete:\n{serverResponse}"
+
 
         }
 
@@ -273,6 +309,7 @@
         "cancel" : "Abbrechen",
         "noCancel" : "Nein, abbrechen",
         "yesDelete" : "Ja, löschen",
+        "yesConfirm" : "Ja, bestätigen",
         "ok" : "Ok",
         "change" : "Ändern",
         "close" : "Schließen",
@@ -299,7 +336,15 @@
         "passwordNoMatch" : "Passwörter stimmen nicht überein.",
         "userAdded" : "Benutzer hinzugefügt.",
         "passwordChanged" : "Passwort geändert.",
-        "settingsSaved" : "Einstellungen geändert."
+        "settingsSaved" : "Einstellungen geändert.",
+        "tagsetsChanged" : "Tagset-Verknüpfungen geändert.",
+        "exporting" : "Datei wird exportiert...",
+        "deleteConfirm" : "Datei gelöscht.",
+        "fileImportSuccess" : "Datei erfolgreich importiert.",
+        "importUnknownError" : "Import aus unbekannten Gründen fehlgeschlagen!",
+        "noConnection" : "Keine Verbindung zum Server.",
+        "openFileError" : "Fehler beim Öffnen der Datei.",
+        "loadTagsetError" : "Fehler beim Laden der Tagsets."
 
 
      }

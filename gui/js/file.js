@@ -424,7 +424,7 @@ cora.fileImporter = {
         var ref = this;
         var importform = $('newFileImportForm');
         var mbox = new mBox.Modal({
-            title: "Importieren aus CorA-XML-Format",
+            title: _("FileTab.Forms.importXmlForm"),
             content: 'fileImportXMLForm',
             attach: 'importNewXMLLink',
             closeOnBodyClick: false
@@ -445,7 +445,7 @@ cora.fileImporter = {
                 gui.hideSpinner();
             },
             onFailure: function() {
-                gui.showNotice('error', "Import aus unbekannten Gründen fehlgeschlagen!");
+                gui.showNotice('error', _("FileTab.Forms.importUnknownError"));
                 gui.hideSpinner();
             }
         });
@@ -460,7 +460,7 @@ cora.fileImporter = {
         var ref = this;
         var importform = $('newFileImportTransForm');
         var mbox = new mBox.Modal({
-            title: "Importieren aus Textdatei",
+            title: _("FileTab.Forms.importTextForm"),
             content: 'fileImportTransForm',
             attach: 'importNewTransLink',
             closeOnBodyClick: false
@@ -483,11 +483,11 @@ cora.fileImporter = {
 		        if(status.done == "success") {
                             ref.resetImportForm(importform);
                             cora.projects.performUpdate();
-			    gui.showNotice('ok', "Datei erfolgreich importiert.");
+			    gui.showNotice('ok', _("Banner.fileImportSuccess"));
 		        } else {
-                            gui.showTextDialog("Importieren fehlgeschlagen",
+                            gui.showTextDialog(_("FileTab.Forms.importFailed"),
                                                status.message, status.output);
-			    gui.showNotice('error', "Importieren fehlgeschlagen.");
+			    gui.showNotice('error', _("FileTab.Forms.importFailed")+".");
 		        }
                     });
                 }
@@ -497,7 +497,7 @@ cora.fileImporter = {
                 }
             },
             onFailure: function() {
-                gui.showNotice('error', "Import aus unbekannten Gründen fehlgeschlagen!");
+                gui.showNotice('error', _("Banner.importUnknownError"));
                 gui.hideSpinner();
             }
         });
@@ -520,7 +520,7 @@ cora.fileImporter = {
 	    displayText: true
         });
         this.transImportProgressDialog = new mBox.Modal({
-	    title: "Importiere Daten...",
+	    title: _("FileTab.importingData"),
 	    content: $('transImportSpinner'),
 	    closeOnBodyClick: false,
 	    closeOnEsc: false,
@@ -611,24 +611,31 @@ cora.fileImporter = {
             response = JSON.decode(tmp.getElement('pre.json').get('text'));
         }
         catch (err) {
-            title = "Fehlerhafte Server-Antwort";
-            message = "Der Server lieferte eine ungültige Antwort zurück. "
+            title = _("FileTab.Forms.invalidServerResponse");
+
+            message = _("FileTab.Forms.invalidServerResponseInfo");
+
+            textarea = _("FileTab.Forms.invalidServerResponseText", {errorMsg: err.message, serverResponse: response})
+
+            /*message = "Der Server lieferte eine ungültige Antwort zurück. "
                     + "Das Importieren der Datei war möglicherweise nicht erfolgreich.";
             textarea = "Fehler beim Interpretieren der Server-Antwort:\n\t"
                      + err.message + "\n\nDer Server antwortete:\n" + response;
+            */
         }
         if(message != "") {}
         else if(!response || typeof response.success == "undefined") {
-            message = "Beim Hinzufügen der Datei ist ein unbekannter Fehler aufgetreten.";
+            message = _("FileTab.Forms.addFileError");
             gui.showMsgDialog('error', message);
             return false;
         }
         else if(!response.success) {
-            title = "Datei-Import fehlgeschlagen";
-            message = "Beim Hinzufügen der Datei "
-                    + ((response.errors.length>1) ?
-                       ("sind " + response.errors.length) : "ist ein")
-                    + " Fehler aufgetreten:";
+            title = _("FileTab.Forms.fileImportFailed");
+
+            var msgInfix = (response.errors.length>1) ? _("FileTab.Forms.error2", {errorCount: response.errors.length}) : _("FileTab.Forms.error1")
+
+            message = _("FileTab.Forms.importErrorInfo", {errorStr:msgInfix})
+
             textarea = response.errors.join("\n");
         }
         else if(error_only) {
@@ -636,13 +643,19 @@ cora.fileImporter = {
         }
         else {
             success = true;
-            title = "Datei-Import erfolgreich";
-            message = "Die Datei wurde erfolgreich hinzufügt.";
+            title = _("FileTab.Forms.importSuccess");
+            //message = "Die Datei wurde erfolgreich hinzufügt.";
             if(response.warnings instanceof Array && response.warnings.length>0) {
-                message += " Das System lieferte "
+                
+                var warningCount = (response.warnings.length>1) ? (response.warnings.length + " " + _("FileTab.Forms.warning2")) : _("FileTab.Forms.warning1");
+
+
+                message = " "+_("FileTab.Forms.importSuccessInfo", {nWarnings:warningCount})
+                /*message += " Das System lieferte "
                          + ((response.warnings.length>1) ?
                             (response.warnings.length + " Warnungen") : "eine Warnung")
                          + " zurück:";
+                         */
                 textarea = response.warnings.join("\n");
             } else {
                 gui.showMsgDialog('info', message);
@@ -684,7 +697,7 @@ cora.fileImporter = {
 	    },
             onFailure: function(xhr) {
                 if(failures++ > 3) {
-                    gui.showNotice('notice', "Keine Verbindung zum Server.", true);
+                    gui.showNotice('notice', _("Banner.noConnection"), true);
                 }
             }
 	});
@@ -727,7 +740,7 @@ cora.fileImporter = {
 	    } else {
 		status.done = 'error';
 		if(process.output != null) {
-		    status.message = "Beim Importieren sind Fehler aufgetreten.";
+		    status.message = _("FileTab.Forms.importError");
                     status.output  = process.output;
 		}
 	    }
@@ -1053,7 +1066,7 @@ cora.fileManager = {
                             error.status.lock.locked_since).toLowerCase()
                     }));
             } else {
-                gui.showNotice('error', "Fehler beim Öffnen der Datei.");
+                gui.showNotice('error', _("Banner.openFileError"));
                 error.showAsDialog();
             }
         };
@@ -1073,7 +1086,7 @@ cora.fileManager = {
                  },
                  onError: function(error) {
                      gui.hideSpinner();
-                     gui.showNotice('error', "Fehler beim Laden der Tagsets.");
+                     gui.showNotice('error', _("Banner.loadTagsetError"));
                      error.showAsDialog();
                      this.closeCurrentlyOpened();
                  }.bind(this)
@@ -1082,7 +1095,7 @@ cora.fileManager = {
         }.bind(this);
         onOpenError = function(error) {
             gui.hideSpinner();
-            gui.showNotice('error', "Fehler beim Laden der Tagsets.");
+            gui.showNotice('error', _("Banner.loadTagsetError"));
             error.showAsDialog();
         };
 
@@ -1112,13 +1125,10 @@ cora.fileManager = {
             // if we're admin, we can close any file
             if(!cora.isAdmin()) {
                 gui.showMsgDialog('error',
-                           "Sie haben keine Berechtigung, diese Datei zu schließen.");
+                           _("FileTab.Forms.noClose"));
             } else {
                 gui.confirm(
-                    "Sie sind dabei, eine Datei zu schließen, die aktuell nicht von "
-                        +"Ihnen bearbeitet wird. Falls jemand anderes diese Datei "
-                        +"zur Zeit bearbeitet, könnten Datenverluste auftreten. "
-                        +"Trotzdem schließen?",
+                    _("FileTab.Forms.closePrompt"),
                     function() {
                         cora.files.close(
                             fid,
@@ -1166,16 +1176,19 @@ cora.fileManager = {
          fid - ID of the file to be deleted
      */
     deleteFile: function(fid) {
-        var message = "Soll das Dokument '" + cora.files.getDisplayName(fid)
+        /*var message = "Soll das Dokument '" + cora.files.getDisplayName(fid)
             + "' wirklich gelöscht werden? Dieser Schritt kann nicht rückgängig "
             + "gemacht werden!";
+        */
+
+        var message = _("FileTab.Forms.deleteWarning", {file: cora.files.getDisplayName(fid)})
         var performDelete = function() {
-            gui.showSpinner({message: "Bitte warten..."});
+            gui.showSpinner({message: _("FileTab.Forms.pleaseWait")});
             cora.files.deleteFile(
                 fid,
                 {noticeOnError: true,
                  onSuccess: function(status) {
-		     gui.showNotice('ok', "Datei gelöscht.");
+		     gui.showNotice('ok', _("Banner.deleteConfirm"));g
                  },
                  onComplete: function() {
                      gui.hideSpinner();
@@ -1275,7 +1288,7 @@ cora.fileManager = {
                      );
                      if(ccsv) data.ccsv = ccsv;
 		     this.close();
-                     gui.showNotice('info', "Datei wird exportiert...");
+                     gui.showNotice('info', _("Banner.exporting"));
                      gui.download('request.php', data);
 		 }
 		}
@@ -1302,7 +1315,7 @@ cora.fileManager = {
             name: 'changeTagsetsForFile',
             textDialogOnError: true,
             onSuccess: function() {
-                gui.showNotice('ok', "Tagset-Verknüpfungen geändert.");
+                gui.showNotice('ok', _("Banner.tagsetsChanged"));
                 cora.projects.performUpdate();
             }
         }).get({'file_id': fileid, 'linktagsets': tagsets});
@@ -1321,12 +1334,12 @@ cora.fileManager = {
 	var contentdiv = $('tagsetAssociationTable');
         var tagsetLinks = cora.files.get(fileid).tagset_links;
 	var content = new mBox.Modal({
-	    title: "Tagset-Verknüpfungen für '"+fullname+"'",
+	    title: _("FileTab.Forms.editTagsetsForm", {file: fullname}), //"Tagset-Verknüpfungen für '"+fullname+"'",
 	    content: contentdiv,
-	    buttons: [ {title: "Schließen", addClass: "mform",
+	    buttons: [ {title: _("Action.close"), addClass: "mform",
 			id: "editTagsetAssocOK",
 			event: function() { this.close(); }},
-                       {title: "Ändern", addClass: "mform button_red",
+                       {title: _("Action.change"), addClass: "mform button_red",
 			id: "editTagsetAssocPerform",
 			event: function() {
                             ref.performChangeTagsetAssoc(fileid, contentdiv);

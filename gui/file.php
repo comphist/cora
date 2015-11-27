@@ -132,26 +132,26 @@
 
     <div id="fileImportXMLForm" class="limitedWidth">
       <form action="request.php" id="newFileImportForm" method="post" accept-charset="utf-8" enctype="multipart/form-data">
-      <p class="error_text error_text_import">Bitte wählen Sie eine Datei zum Importieren aus!</p>
+      <p class="error_text error_text_import" data-trans-id="FileTab.Forms.chooseFile"><?=$lh("FileTab.Forms.chooseFile"); ?></p>
       <p>
-        <label for="xmlFile" class="ra">Datei: </label>
+        <label for="xmlFile" class="ra"><span data-trans-id="FileTab.Forms.file"><?=$lh("FileTab.Forms.file"); ?></span> </label>
         <input type="file" name="xmlFile" data-required="" />
       </p>
       <p>
-        <label for="project" class="ra">Projekt: </label>
+        <label for="project" class="ra"><span data-trans-id="FileTab.Forms.project"><?=$lh("FileTab.Forms.project"); ?></span> </label>
         <select name="project" size="1"></select>
       </p>
-      <p>Die folgenden Felder müssen nicht ausgefüllt werden, falls die entsprechenden Informationen bereits in der XML-Datei enthalten sind.</p>
+      <p data-trans-id="FileTab.Forms.importInfo"><?=$lh("FileTab.Forms.importInfo"); ?></p>
       <p>
-        <label for="xmlName" class="ra">Name: </label>
-        <input type="text" name="xmlName" placeholder="(Dokumentname)" size="30" />
+        <label for="xmlName" class="ra"><span data-trans-id="FileTab.Forms.docName"><?=$lh("FileTab.Forms.docName"); ?></span> </label>
+        <input type="text" name="xmlName" placeholder="<?=$lh("FileTab.Forms.docNameDummy"); ?>" data-trans-placeholder-id="FileTab.Forms.docNameDummy" size="30" />
       </p>
       <p>
-        <label for="sigle" class="ra">Sigle: </label>
-        <input type="text" name="sigle" placeholder="(Sigle &ndash; optional)" size="30" />
+        <label for="sigle" class="ra"><span data-trans-id="FileTab.Forms.siglum"><?=$lh("FileTab.Forms.siglum"); ?></span> </label>
+        <input type="text" name="sigle" placeholder="<?=$lh("FileTab.Forms.siglumDummy"); ?>" data-trans-placeholder-id="FileTab.Forms.siglumDummy" size="30" />
       </p>
       <div class="fileImportTagsetLinks" <?php if(!$_SESSION['admin']) {echo 'style="display:none;"';} ?>>
-        <p style="padding-top: 15px;">Tagset-Verknüpfungen:</p>
+        <p style="padding-top: 15px;" data-trans-id="FileTab.Forms.associatedTagsets"><?=$lh("FileTab.Forms.associatedTagsets"); ?></p>
         <div class="import_LinkTagsets_MS"></div>
       </div>
       <p>
@@ -159,20 +159,20 @@
         <input type="hidden" name="via" value="iframe" />
       </p>
       <p style="text-align:right;">
-        <input type="submit" value="Importieren &rarr;" />
+        <input type="submit" value="<?=$lh("FileTab.Forms.importBtn"); ?>" data-trans-value-id="FileTab.Forms.importBtn" />
       </p>
       </form>
     </div>
 
     <div id="fileImportTransForm" class="limitedWidth">
       <form action="request.php" id="newFileImportTransForm" method="post" accept-charset="utf-8" enctype="multipart/form-data">
-      <p class="error_text error_text_import">Bitte wählen Sie eine Datei zum Importieren aus!</p>
+      <p class="error_text error_text_import" data-trans-id="FileTab.Forms.chooseFile"><?=$lh("FileTab.Forms.chooseFile"); ?></p>
       <p>
-        <label for="transFile" class="ra">Datei: </label>
+        <label for="transFile" class="ra"><span data-trans-id="FileTab.Forms.file"><?=$lh("FileTab.Forms.file"); ?></span> </label>
         <input type="file" name="transFile" data-required="" />
       </p>
       <p>
-        <label for="fileEnc" class="ra">Encoding: </label>
+        <label for="fileEnc" class="ra"><span data-trans-id="FileTab.Forms.encoding"><?=$lh("FileTab.Forms.encoding"); ?></span> </label>
         <select name="fileEnc" size="1">
           <option value="utf-8">UTF-8 (Unicode)</option>
           <option value="iso-8859-1">ISO-8859-1 (Latin 1)</option>
@@ -180,20 +180,20 @@
         </select>
       </p>
       <p>
-        <label for="project" class="ra">Projekt: </label>
+        <label for="project" class="ra"><span data-trans-id="FileTab.Forms.project"><?=$lh("FileTab.Forms.project"); ?></span> </label>
         <select name="project" size="1"></select>
       </p>
-      <p class="error_text error_text_cmdimport">Für das gewählte Projekt ist kein Importskript festgelegt.  Ohne Importskript können neue Dokumente nur als CorA-XML-Datei importiert werden.</p>
+      <p class="error_text error_text_cmdimport" data-trans-id="FileTab.Forms.noImportScriptInfo"><?=$lh("FileTab.Forms.noImportScriptInfo"); ?></p>
       <p>
-        <label for="transName" class="ra">Name: </label>
-        <input type="text" name="transName" placeholder="(Dokumentname)" size="30" data-required="" />
+        <label for="transName" class="ra"><span data-trans-id="FileTab.Forms.docName"><?=$lh("FileTab.Forms.docName"); ?></span> </label>
+        <input type="text" name="transName" placeholder="<?=$lh("FileTab.Forms.docNameDummy"); ?>" data-trans-placeholder-id="FileTab.Forms.docNameDummy" size="30" data-required="" />
       </p>
       <p>
-        <label for="sigle" class="ra">Sigle: </label>
-        <input type="text" name="sigle" placeholder="(Sigle &ndash; optional)" size="30" />
+        <label for="sigle" class="ra"><span data-trans-id="FileTab.Forms.siglum"><?=$lh("FileTab.Forms.siglum"); ?></span> </label>
+        <input type="text" name="sigle" placeholder="<?=$lh("FileTab.Forms.siglumDummy"); ?>" data-trans-placeholder-id="FileTab.Forms.siglumDummy" size="30" />
       </p>
       <div class="fileImportTagsetLinks" <?php if(!$_SESSION['admin']) {echo 'style="display:none;"';} ?>>
-        <p style="padding-top: 15px;">Tagset-Verknüpfungen:</p>
+        <p style="padding-top: 15px;" data-trans-id="FileTab.Forms.associatedTagsets"><?=$lh("FileTab.Forms.associatedTagsets"); ?></p>
         <div class="import_LinkTagsets_MS"></div>
       </div>
       <p>
@@ -201,7 +201,7 @@
         <input type="hidden" name="via" value="iframe" />
       </p>
       <p style="text-align:right;">
-        <input type="submit" value="Importieren &rarr;" />
+        <input type="submit" value="<?=$lh("FileTab.Forms.importBtn"); ?>" data-trans-value-id="FileTab.Forms.importBtn" /> 
       </p>
       </form>
     </div>

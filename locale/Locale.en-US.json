@@ -164,7 +164,44 @@
             "columnNormFormat" : "Four-column format (Normalization)",
             "transFormat" : "Transcription format",
             "columnsSelected" : " column(s) selected",
-            "importXmlFile" : "Import CorA XML file"
+            "importXmlFile" : "Import CorA XML file",
+            "importTextTitle" : "Import text file",
+            "file" : "File:",
+            "encoding" : "Encoding:",
+            "project" : "Project:",
+            "noImportScriptInfo" : "There is no import script set for the selected project. Without an import script new documents can only be imported as CorA XML files.",
+            "docName" : "Name:",
+            "docNameDummy" : "(File name)",
+            "siglum" : "Siglum:",
+            "siglumDummy" : "(Siglum - optional)",
+            "associatedTagsets" : "Associated tagsets:",
+            "importBtn" : "Import →",
+            "chooseFile" : "Please choose a file to be imported!",
+            "importInfo" : "The fields below do not need to be filled if the information is included in the XML file.",
+            "deleteWarning" : "Are you sure you want to delete the file '{file}'? This action cannot be undone!",
+            "editTagsetsForm" : "Associated tagsets for file '{file}'",
+            "pleaseWait" : "Please wait...",
+            "importSuccess" : "File import successful",
+            "importSuccessInfo" : "The file has been added to the project. The system returned {nWarnings}:",
+            "warning1" : "one warning",
+            "warning2" : "warnings",
+            "importXmlForm" : "Import CorA XML file",
+            "importTextForm" : "Import text file",
+            "importUnknownError" : "Import failed due to unknown error!",
+            "addFileError" : "An unknown error occurred while adding file.",
+            "importFailed" : "Import failed",
+            "fileImportFailed" : "File import failed",
+            "importErrorInfo" : "{errorStr} occurred while adding file:",
+            "error1" : "An error",
+            "error2" : "{errorCount} errors",
+            "importError" : "Errors occurred during import.",
+            "noClose" : "You are not permitted to close this file.",
+            "closePrompt" : "You are about to close a file currently not worked on by yourself. If someone else is working on the file, data loss may occur. Continue anyway?",
+            "invalidServerResponse" : "Invalid server response",
+            "invalidServerResponseInfo" : "The server returned an invalid response. The file import may have failed.",
+            "invalidServerResponseText" : "Error when interpreting server response:\n\t{errorMsg}\n\nThe server returned:\n{serverResponse}"
+
+
 
         }
 
@@ -269,6 +306,7 @@
         "cancel" : "Cancel",
         "noCancel" : "No, cancel",
         "yesDelete" : "Yes, delete",
+        "yesConfirm" : "Yes, confirm",
         "ok" : "Ok",
         "change" : "Save changes",
         "close" : "Close",
@@ -296,7 +334,15 @@
         "passwordNoMatch" : "The passwords you entered do not match.",
         "userAdded" : "User added.",
         "passwordChanged" : "Changed password.",
-        "settingsSaved" : "Saved settings."
+        "settingsSaved" : "Saved settings.",
+        "tagsetsChanged" : "Applied tagset settings.",
+        "exporting" : "Exporting file...",
+        "deleteConfirm" : "File deleted.",
+        "fileImportSuccess" : "File successfully imported.",
+        "importUnknownError" : "Import failed due to unknown error!",
+        "noConnection" : "Could not connect to the server.",
+        "openFileError" : "An error occurred while opening file.",
+        "loadTagsetError" : "An error occurred while loading tagset."
         
      }
  }
