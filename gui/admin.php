@@ -36,7 +36,7 @@ $ulist = array();
               <th><span data-trans-id="AdminTab.isAdmin"><?=$lh("AdminTab.isAdmin"); ?></span></th>
               <th><span data-trans-id="AdminTab.lastActive"><?=$lh("AdminTab.lastActive"); ?></span></th>
               <th><span data-trans-id="AdminTab.openFile"><?=$lh("AdminTab.openFile"); ?></span></th>
-              <th><span data-trans-id="AdminTab.email"><?=$lh("AdminTab.mail"); ?></span></th>
+              <th><span data-trans-id="AdminTab.email"><?=$lh("AdminTab.email"); ?></span></th>
               <th><span data-trans-id="AdminTab.note"><?=$lh("AdminTab.note"); ?></span></th>
               <th class="table-th-nosort"></th>
               <th class="table-th-nosort"></th>
