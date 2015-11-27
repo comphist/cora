@@ -25,37 +25,26 @@ if(DEBUG_MODE)
   set(DEBUG_MODE_YESNO YES)
   set(MINIFY_CSS_DEFAULT NO)
   set(MINIFY_JS_DEFAULT NO)
+  set(EXPENSIVE_TESTS_DEFAULT YES)
 else()
   set(DEBUG_MODE_YESNO NO)
   set(MINIFY_CSS_DEFAULT YES)
   set(MINIFY_JS_DEFAULT YES)
+  set(EXPENSIVE_TESTS_DEFAULT NO)
 endif()
 option(WITH_MINIFY_CSS "Minification of CSS files" ${MINIFY_CSS_DEFAULT})
 option(WITH_MINIFY_JS "Minification of JavaScript files" ${MINIFY_JS_DEFAULT})
+option(WITH_EXPENSIVE_TESTS "Include potentially more time-consuming tests" ${EXPENSIVE_TESTS_DEFAULT})
 
+set(EXTERNALS_DOWNLOAD_DIR "${CMAKE_BINARY_DIR}/downloads"
+    CACHE PATH "Directory where external downloads will be stored")
 set(CORA_WEB_DIR "${CMAKE_CURRENT_BINARY_DIR}/www"
     CACHE PATH "Path where all web-related files will be built")
-# Note: CORA_INSTANCE_NAME affects the default DB name and user,
-#       as well as the name of the PHP session variable.  Could be useful
-#       if you want to run multiple instances of CorA on the same server.
-set(CORA_INSTANCE_NAME "cora"
-    CACHE STRING "Name of the CorA instance")
-set(CORA_DB_NAME "${CORA_INSTANCE_NAME}"
-    CACHE STRING "Name of the CorA database")
-set(CORA_DB_SERVER "localhost"
-    CACHE STRING "Database server used by CorA")
-set(CORA_DB_USER "${CORA_INSTANCE_NAME}"
-    CACHE STRING "Name of the database user used by CorA")
-set(CORA_DB_PASSWORD "trustthetext"
-    CACHE STRING "Password of the database user used by CorA")
-set(CORA_DEFAULT_LANGUAGE "de-DE"
-    CACHE STRING "Default GUI language for new CorA users")
-set(CORA_EXTERNAL_PARAM_DIR "/var/lib/cora"
-    CACHE STRING "Directory for external parametrization files")
 
 message(STATUS "Debug mode: ${DEBUG_MODE}")
 message(STATUS "Minification of CSS files: ${WITH_MINIFY_CSS}")
 message(STATUS "Minification of JavaScript files: ${WITH_MINIFY_JS}")
+message(STATUS "External downloads will be stored/expected in: ${EXTERNALS_DOWNLOAD_DIR}")
 
 #########################################################
 ## Find installed dependencies
@@ -83,17 +72,6 @@ find_package(PHPUnit 3.7)
 #########################################################
 ## Download stuff that is not commonly installed/packaged
 #########################################################
-
-# allow specification of a directory with pre-downloaded
-# requirements by evaluating environment variable
-# $CORA_DOWNLOAD_DIR
-# defaults to "./downloads" in the build directory.
-if(IS_DIRECTORY $ENV{CORA_DOWNLOAD_DIR})
-  set(EXTERNALS_DOWNLOAD_DIR $ENV{CORA_DOWNLOAD_DIR})
-else(IS_DIRECTORY $ENV{CORA_DOWNLOAD_DIR})
-  set(EXTERNALS_DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads)
-endif(IS_DIRECTORY $ENV{CORA_DOWNLOAD_DIR})
-message(STATUS "External downloads will be stored/expected in: ${EXTERNALS_DOWNLOAD_DIR}")
 
 include (ExternalProject)
 
@@ -158,6 +136,7 @@ add_subdirectory(gui)
 add_subdirectory(lib)
 
 configure_file(gui.php.in "${CORA_WEB_DIR}/gui.php" @ONLY)
+configure_file(error.php.in "${CORA_WEB_DIR}/error.php" @ONLY)
 add_sources(CORA_PHP_SOURCES gui.php)
 
 # TODO: legacy functionality --- this file is referenced on the "help" tab, so
@@ -173,9 +152,9 @@ file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/doc/cora-guide.pdf"
 ## Configuration files
 #########################################################
 
-configure_file(config.php.in "${CORA_WEB_DIR}/config.php" @ONLY)
+configure_file(config.defaults.php "${CORA_WEB_DIR}/config.defaults.php" COPYONLY)
 configure_file(version.php "${CORA_WEB_DIR}/version.php" COPYONLY)
-add_sources(CORA_PHP_SOURCES config.php version.php)
+add_sources(CORA_PHP_SOURCES config.defaults.php version.php)
 
 add_subdirectory(locale)
 
@@ -223,11 +202,18 @@ else()
 endif()
 
 if(MKDOCS_FOUND)
-  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/doc/mkdocs/mkdocs.yml.in"
-                 "${CMAKE_CURRENT_BINARY_DIR}/mkdocs.yml")
+  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/doc/mkdocs/mkdocs.yml"
+                 "${CMAKE_CURRENT_BINARY_DIR}/mkdocs.yml" COPYONLY)
+  set(MKDOCS_FLAGS
+    --site-dir "${CMAKE_BINARY_DIR}/docs/user/"
+    --config-file "${CMAKE_SOURCE_DIR}/doc/mkdocs/mkdocs.yml"
+    )
+  if(DEBUG_MODE)
+    list(APPEND MKDOCS_FLAGS --clean --verbose)
+  endif()
   add_custom_target(docs-user
-    ${MKDOCS_EXECUTABLE} build
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    ${MKDOCS_EXECUTABLE} build ${MKDOCS_FLAGS}
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/doc/mkdocs"
     COMMENT "Generating user documentation"
     )
   add_dependencies(docs docs-user)
@@ -276,14 +262,3 @@ add_subdirectory(db)
 #########################################################
 
 add_subdirectory(bin)
-
-add_custom_command(
-  OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/make_coradb.sql"
-  COMMAND ${PHP5_EXECUTABLE}
-          "${CMAKE_CURRENT_BINARY_DIR}/bin/make_database.php"
-          -o "${CMAKE_CURRENT_BINARY_DIR}/make_coradb.sql"
-  WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-  DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/bin/make_database.php"
-  COMMENT "Preparing script to create/update the database"
-)
-add_custom_target(database DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/make_coradb.sql")

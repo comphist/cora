@@ -1,3 +1,24 @@
+<?php 
+/*
+ * Copyright (C) 2015 Marcel Bollmann <bollmann@linguistics.rub.de>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */ ?>
 <?php
 
  /** @file DocumentCreator.php
@@ -13,7 +34,7 @@ require_once('DocumentWriter.php');
  */
 class DocumentCreator extends DocumentWriter {
   protected $fullfile = null;
-  protected $tagset_links = null;
+  protected $tagset_links = array();
 
   /* Prepared SQL statements that are typically called multiple times */
   private $stmt_createText = null;
@@ -80,8 +101,8 @@ class DocumentCreator extends DocumentWriter {
           . "              VALUES (:trans,  :utf,  :ascii,  :tokid)";
       $this->stmt_newMod = $this->dbo->prepare($stmt);
       $stmt = "INSERT INTO comment "
-          . "        (`tok_id`, `value`, `comment_type`, `subtok_id`)"
-          . " VALUES (:tokid,   :value,  :ctype,         :subtokid)";
+          . "        (`tok_id`, `value`, `comment_type`)"
+          . " VALUES (:tokid,   :value,  :ctype)";
       $this->stmt_newComm = $this->dbo->prepare($stmt);
   }
 
@@ -103,6 +124,8 @@ class DocumentCreator extends DocumentWriter {
   }
 
   /** Parses tagset links given in an option array.
+   *
+   * @param array $my_tagsets A list of tagset IDs
    */
   private function parseTagsetLinks($my_tagsets) {
       $this->tagset_links = array();
@@ -113,6 +136,20 @@ class DocumentCreator extends DocumentWriter {
               $this->tagset_links[] = $tagset;
           }
       }
+  }
+
+  /** Gets options from a CoraDocument instance and sets appropriate
+   *  class variables, if they haven't been defined yet.
+   */
+  private function fillOptionsFromDocument($doc) {
+      if (!isset($this->text_sigle))
+          $this->text_sigle = $doc->getSigle();
+      if (!isset($this->text_fullname))
+          $this->text_fullname = $doc->getName();
+      if (!isset($this->tagset_links))
+          $this->tagset_links = $doc->getTagsetLinks();
+      if (!isset($this->text_header))
+          $this->text_header = $doc->getHeader();
   }
 
   /** Creates tagset links in the database.
@@ -265,20 +302,12 @@ class DocumentCreator extends DocumentWriter {
   }
 
   /** Saves all comments.
-   *
-   * NOTE: This doesn't re-use DocumentWriter::saveComment since that
-   * function is very specific to 'C'-type comments only.
-   * This could be refactored someday, as it would also allow us
-   * to offer general comment editing to the user.
    */
   private function saveAllComments(&$comments) {
       foreach($comments as $comment) {
-          if(!array_key_exists('subtok_db_id', $comment))
-              $comment['subtok_db_id'] = null;
           $params = array(':tokid' => $comment['parent_db_id'],
                           ':value' => $comment['text'],
-                          ':ctype' => $comment['type'],
-                          ':subtokid' => $comment['subtok_db_id']);
+                          ':ctype' => $comment['type']);
           $this->stmt_newComm->execute($params);
       }
   }
@@ -290,14 +319,18 @@ class DocumentCreator extends DocumentWriter {
   /** Imports a new document into the database.
    *
    * @param CoraDocument $doc The document to be inserted
+   * @param string $uid User ID of the document's creator
    *
    * @return True if import was successful, false otherwise
    */
-  public function importDocument(&$doc) {
-      $this->text_header = $doc->getHeader();
+  public function importDocument(&$doc, $uid) {
+      $this->fillOptionsFromDocument($doc);
+      // Tagset information is normally retrieved in the ctor, but the tagset
+      // links might have been filled from the document now:
+      $this->retrieveTagsetInformation();
       $this->dbo->beginTransaction();
       try {
-          $this->createNewText($_SESSION['user_id']);
+          $this->createNewText($uid);
           $this->createTagsetLinks();
           $this->createLayoutInformation($doc);
           $this->createTokens($doc);

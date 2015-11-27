@@ -1,3 +1,24 @@
+<?php 
+/*
+ * Copyright (C) 2015 Marcel Bollmann <bollmann@linguistics.rub.de>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */ ?>
 <?php
 
 /** @file xmlHandler.php
@@ -154,13 +175,15 @@ class XMLHandler {
       // then, parse all selected annotations
       foreach($modnode->children() as $annonode) {
         $annotype = strtolower($annonode->getName());
-        // CorA-internal comment
+        // CorA-internal comment -- should now be represented in XML as
+        // <comment tag=""/>, but this is retained for compatibility reasons
 	if($annotype=='cora-comment') {
-          $document->addComment(null, $modern['parent_xml_id'],
-                                (string) $annonode, 'C',
-                                null, $modern['xml_id']);
-          $modern['comment'] = (string) $annonode; // this line is left for
-                                                   // compatibility reasons
+          $modern['tags'][] = array('source' => 'user',
+                                    'selected' => 1,
+                                    'score' => null,
+                                    'type' => 'comment',
+                                    'tag' => (string) $annonode
+          );
 	}
         // CorA-internal flag
         else if($annotype=='cora-flag') {
@@ -265,8 +288,9 @@ class XMLHandler {
    * name, tagset) for the document; if there is a conflict with
    * the same type of data being supplied in the XML file,
    * the @c $options array takes precedence
+   * @param string $uid User ID of the document's creator
    */
-  public function import($xmlfile, $options) {
+  public function import($xmlfile, $options, $uid) {
     // check for validity
     libxml_use_internal_errors(true);
     $doc = new DOMDocument('1.0', 'utf-8');
@@ -313,7 +337,7 @@ class XMLHandler {
     }
 
     // insert data into database
-    $status = $this->db->insertNewDocument($options, $data);
+    $status = $this->db->insertNewDocument($options, $data, $uid);
     if(!$status['success']){
         return array("success" => false,
                      "errors"  => $status['warnings']);
@@ -502,13 +526,6 @@ class XMLHandler {
               $elem->appendChild($flag);
           }
           unset($currentflag);
-          // CorA-internal comment
-          if(!empty($mod['comment'])) {
-              $com = $doc->createElement('cora-comment');
-              $txt = $doc->createTextNode($mod['comment']);
-              $com->appendChild($txt);
-              $elem->appendChild($com);
-          }
 
           $root->appendChild($elem);
       }
@@ -517,13 +534,15 @@ class XMLHandler {
 
   private function serializeComments(&$comments, &$doc, &$root) {
       foreach($comments as &$comment) {
-          if($comment['type']!=="C") { // CorA comments already written in mod
-              $elem = $doc->createElement('comment');
-              $elem->setAttribute('type', $comment['type']);
-              $txt  = $doc->createTextNode($comment['text']);
-              $elem->appendChild($txt);
-              $root->appendChild($elem);
-          }
+          // CorA-comments; should no longer exist, but let's guard against
+          // them anyway:
+          if($comment['type']=="C") continue;
+          // True "in-between tokens" comments:
+          $elem = $doc->createElement('comment');
+          $elem->setAttribute('type', $comment['type']);
+          $txt  = $doc->createTextNode($comment['text']);
+          $elem->appendChild($txt);
+          $root->appendChild($elem);
       }
       unset($comment);
   }

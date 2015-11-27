@@ -50,20 +50,35 @@ set_with_cache_buster(
   "${CORA_CURRENT_REL_PATH}/${CSS_MASTER_FILENAME}"
   screen.scss ${CSS_SOURCES}
   )
+set_with_cache_buster(
+  CORA_HREF_CSS_INSTALL "Relative path to installer CSS file"
+  "${CORA_CURRENT_REL_PATH}/install.css"
+  install.scss
+  )
 
 #########################################################
 ## Run Sass to convert .scss -> .css
 #########################################################
 
 configure_file(screen.scss "${CMAKE_CURRENT_BINARY_DIR}/screen.scss" COPYONLY)
+configure_file(install.scss "${CMAKE_CURRENT_BINARY_DIR}/install.scss" COPYONLY)
 add_custom_command(
   OUTPUT "${CONFIGURE_TARGET_DIR}/screen.css"
   COMMAND ${SASS_EXECUTABLE} --scss screen.scss "${CONFIGURE_TARGET_DIR}/screen.css"
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
   DEPENDS screen.scss
-  COMMENT "Pre-compiling SCSS stylesheet"
+  COMMENT "Precompiling screen.scss"
 )
-add_custom_target(web-scss DEPENDS "${CONFIGURE_TARGET_DIR}/screen.css")
+add_custom_command(
+  OUTPUT "${CORA_CURRENT_WEB_DIR}/install.css"
+  COMMAND ${SASS_EXECUTABLE} --scss install.scss "${CORA_CURRENT_WEB_DIR}/install.css"
+  WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+  DEPENDS install.scss
+  COMMENT "Precompiling install.scss"
+)
+add_custom_target(web-scss
+  DEPENDS "${CONFIGURE_TARGET_DIR}/screen.css" "${CORA_CURRENT_WEB_DIR}/install.css"
+)
 add_dependencies(web web-scss)
 
 #########################################################

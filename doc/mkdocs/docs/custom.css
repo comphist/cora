@@ -1,0 +1,66 @@
+/* paragraphs */
+
+p.align-center {
+  text-align: center;
+}
+
+p.figure.align-center {
+  margin-bottom: 24px;
+}
+
+p.figure-caption {
+  font-style: italic;
+  font-size: 95%;
+}
+
+p.figure-caption.align-center {
+  margin-top: -24px;
+  margin-bottom: 24px;
+}
+
+.float-left.extra-margin {
+  margin: 0 24px 12px 0;
+}
+
+.float-right.extra-margin {
+  margin: 0 0 12px 24px;
+}
+
+/* images */
+
+img.inline {
+  max-height: 1.2em;
+  width: auto;
+}
+
+/* tables */
+td.min-120 {
+  min-width: 120px;
+}
+
+.rst-content .section ul li p:last-child {
+  margin-bottom: 12px;
+}
+
+/* footnotes */
+div.footnote li, div.footnote li p {
+  font-size: 12px;
+  line-height: 20px;
+  margin-bottom: 20px;
+}
+
+/* tokenization examples */
+table.tokenization {
+    margin: 20px auto;
+    border-spacing: 8px;
+}
+
+table.tokenization td.label, table.tokenization th.label {
+    font-variant: small-caps;
+}
+
+table.tokenization td.tok, table.tokenization th.tok {
+    font-family: serif;
+    font-size: large;
+    text-align: center;
+}

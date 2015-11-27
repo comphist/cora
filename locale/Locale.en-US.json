@@ -261,6 +261,7 @@
         "lemmaLink" : "Lemma link",
         "lemmaTag" : "Lemma tag",
         "comment" : "Comment",
+        "secondaryComment" : "Secondary comment",
         "sentBoundary" : "Sent. boundary",
         "asciiTok" : "Token (ASCII)"
 
@@ -286,9 +287,8 @@
         "createTagger" : "Create Tagger",
         "createMsg" : "Create notification",
         "changePassword" : "Change password...",
-        "change" : "Change"
-
-
+        "change" : "Change",
+        "preview": "Preview"
      },
      "Banner" : {
         "userNameEmpty" : "Please enter a user name.",

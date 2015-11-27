@@ -1,3 +1,24 @@
+<?php 
+/*
+ * Copyright (C) 2015 Marcel Bollmann <bollmann@linguistics.rub.de>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */ ?>
 <?php
 
  /** @file connect.php
@@ -334,29 +355,8 @@
     * @return A status array
     */
    public function changeProjectUsers($pid, $userlist) {
-     try {
-       $this->dbo->beginTransaction();
-       $qs = "DELETE FROM user2project WHERE project_id=:pid";
-       $stmt = $this->dbo->prepare($qs);
-       $stmt->bindValue(':pid', $pid, PDO::PARAM_INT);
-       $stmt->execute();
-       if (!empty($userlist)) {
-	 $uid = null;
-	 $qs = "INSERT INTO user2project (project_id, user_id) "
-	   . "  VALUES (:pid, :uid)";
-	 $stmt = $this->dbo->prepare($qs);
-	 $stmt->bindValue(':pid', $pid, PDO::PARAM_INT);
-	 $stmt->bindParam(':uid', $uid, PDO::PARAM_INT);
-	 foreach ($userlist as $uid) {
-	   $stmt->execute();
-	 }
-       }
-       $this->dbo->commit();
-     }
-     catch(PDOException $ex) {
-       $this->dbo->rollBack();
-       throw $ex;
-     }
+     $pa = new ProjectAccessor($this, $this->dbo);
+     $pa->setAssociatedUsers($pid, $userlist);
    }
 
    /** Drop a user record from the database.
@@ -1309,11 +1309,9 @@
      $verified = ($currentmod_id && $currentmod_id != null && !empty($currentmod_id));
 
      $qs = "SELECT token.id AS parent_tok_db_id, modern.id AS db_id, "
-       ."          modern.trans, modern.utf, modern.ascii, c1.value AS comment "
+       ."          modern.trans, modern.utf, modern.ascii "
        ."     FROM token "
        ."    INNER JOIN modern ON modern.tok_id=token.id "
-       ."     LEFT JOIN comment c1 ON  c1.tok_id=token.id "
-       ."           AND c1.subtok_id=modern.id AND c1.comment_type='C' "
        ."    WHERE token.text_id=:tid "
        ."    ORDER BY token.ordnr ASC, modern.id ASC";
      $stmt = $this->dbo->prepare($qs);
@@ -1694,11 +1692,10 @@
 	 return array("success" => false, "errors" => $errors);
        }
      }
-     // move any (non-internal) comments attached to this token
+     // move any comments attached to this token
      if($prevtokenid!==null || $nexttokenid!==null) {
        $commtokenid = ($prevtokenid===null ? $nexttokenid : $prevtokenid);
-       $qs  = "UPDATE comment SET `tok_id`=:ctokid ";
-       $qs .= "WHERE  `tok_id`=:tokid AND `comment_type`!='C' ";
+       $qs  = "UPDATE comment SET `tok_id`=:ctokid WHERE `tok_id`=:tokid";
        try {
 	 $stmt = $this->dbo->prepare($qs);
 	 $stmt->execute(array(':ctokid' => $commtokenid, ':tokid' => $tokenid));
@@ -2018,11 +2015,6 @@
 	 $this->dbo->rollBack();
 	 return array("success" => false, "errors" => $errors);
        }
-       // delete CorA comments attached to this modern token
-       $qs  = "DELETE FROM comment WHERE `tok_id`=:tokid AND `comment_type`='C' ";
-       $qs .= " AND `subtok_id` IN (" . implode(", ", $moddelete) . ")";
-       $stmt = $this->dbo->prepare($qs);
-       $stmt->execute(array(':tokid' => $tokenid));
        // if 'currentmod_id' is set to one of the deleted tokens, set it to something feasible
        $qs  = "SELECT currentmod_id FROM text WHERE `id`=:tid ";
        $qs .= "  AND `currentmod_id` IN (" . implode(", ", $moddelete) . ")";
@@ -2091,14 +2083,15 @@
    *
    * @param array $options Metadata for the document
    * @param array $data A CoraDocument object
+   * @param string $uid User ID of the document's creator
    *
    * @return An associative array containing:
    *          -- 'success', which is true if the import was successful
    *          -- 'warnings', an array possibly containing warning messages
    */
-  public function insertNewDocument(&$options, &$data){
+  public function insertNewDocument(&$options, &$data, $uid){
       $dc = new DocumentCreator($this, $this->dbo, $options);
-      $success = $dc->importDocument($data);
+      $success = $dc->importDocument($data, $uid);
       return array('success' => $success,
                    'warnings' => $dc->getWarnings());
   }

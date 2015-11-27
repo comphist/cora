@@ -1,4 +1,24 @@
 <?xml version="1.0"?>
+<!--
+    Copyright (C) 2015 Marcel Bollmann <bollmann@linguistics.rub.de>
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy of
+    this software and associated documentation files (the "Software"), to deal in
+    the Software without restriction, including without limitation the rights to
+    use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+    the Software, and to permit persons to whom the Software is furnished to do so,
+    subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+    FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+    COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+    IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+    CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
 <dataset>
     <table name="inserted_text">
         <column>id</column>
@@ -196,7 +216,7 @@
         <column>tag_id</column>
         <column>mod_id</column>
         <row>
-            <value>12</value>
+            <value>14</value>
             <value>0.91</value>
             <value>0</value>
             <value>user</value>
@@ -204,23 +224,23 @@
             <value>15</value>
         </row>
         <row>
-            <value>13</value>
-            <value>1</value>
-            <value>1</value>
-            <value>user</value>
-            <value>514</value>
             <value>15</value>
-        </row>
-        <row>
-            <value>14</value>
-            <null/>
-            <value>0</value>
+            <value>1</value>
+            <value>1</value>
             <value>user</value>
             <value>515</value>
             <value>15</value>
         </row>
         <row>
+            <value>16</value>
+            <null/>
+            <value>0</value>
+            <value>user</value>
+            <value>516</value>
             <value>15</value>
+        </row>
+        <row>
+            <value>17</value>
             <value>0.91</value>
             <value>0</value>
             <value>user</value>
@@ -228,23 +248,23 @@
             <value>16</value>
         </row>
         <row>
-            <value>16</value>
+            <value>18</value>
             <value>1</value>
             <value>1</value>
-            <value>user</value>
-            <value>516</value>
-            <value>16</value>
-        </row>
-        <row>
-            <value>17</value>
-            <null/>
-            <value>0</value>
             <value>user</value>
             <value>517</value>
             <value>16</value>
         </row>
         <row>
-            <value>18</value>
+            <value>19</value>
+            <null/>
+            <value>0</value>
+            <value>user</value>
+            <value>518</value>
+            <value>16</value>
+        </row>
+        <row>
+            <value>20</value>
             <value>0.91</value>
             <value>0</value>
             <value>user</value>
@@ -252,23 +272,23 @@
             <value>17</value>
         </row>
         <row>
-            <value>19</value>
+            <value>21</value>
             <value>1</value>
             <value>1</value>
-            <value>user</value>
-            <value>518</value>
-            <value>17</value>
-        </row>
-        <row>
-            <value>20</value>
-            <null/>
-            <value>0</value>
             <value>user</value>
             <value>519</value>
             <value>17</value>
         </row>
         <row>
-            <value>21</value>
+            <value>22</value>
+            <null/>
+            <value>0</value>
+            <value>user</value>
+            <value>520</value>
+            <value>17</value>
+        </row>
+        <row>
+            <value>23</value>
             <value>0.91</value>
             <value>0</value>
             <value>user</value>
@@ -276,23 +296,23 @@
             <value>18</value>
         </row>
         <row>
-            <value>22</value>
+            <value>24</value>
             <value>1</value>
             <value>1</value>
-            <value>user</value>
-            <value>520</value>
-            <value>18</value>
-        </row>
-        <row>
-            <value>23</value>
-            <null/>
-            <value>0</value>
             <value>user</value>
             <value>521</value>
             <value>18</value>
         </row>
         <row>
-            <value>24</value>
+            <value>25</value>
+            <null/>
+            <value>0</value>
+            <value>user</value>
+            <value>522</value>
+            <value>18</value>
+        </row>
+        <row>
+            <value>26</value>
             <value>0.91</value>
             <value>0</value>
             <value>user</value>
@@ -300,23 +320,23 @@
             <value>19</value>
         </row>
         <row>
-            <value>25</value>
+            <value>27</value>
             <value>1</value>
             <value>1</value>
-            <value>user</value>
-            <value>522</value>
-            <value>19</value>
-        </row>
-        <row>
-            <value>26</value>
-            <null/>
-            <value>0</value>
             <value>user</value>
             <value>523</value>
             <value>19</value>
         </row>
         <row>
-            <value>27</value>
+            <value>28</value>
+            <null/>
+            <value>0</value>
+            <value>user</value>
+            <value>524</value>
+            <value>19</value>
+        </row>
+        <row>
+            <value>29</value>
             <value>0.91</value>
             <value>0</value>
             <value>user</value>
@@ -324,19 +344,19 @@
             <value>20</value>
         </row>
         <row>
-            <value>28</value>
+            <value>30</value>
             <value>1</value>
             <value>1</value>
             <value>user</value>
-            <value>524</value>
+            <value>525</value>
             <value>20</value>
         </row>
         <row>
-            <value>29</value>
+            <value>31</value>
             <null/>
             <value>0</value>
             <value>user</value>
-            <value>525</value>
+            <value>526</value>
             <value>20</value>
         </row>
     </table>
@@ -358,37 +378,37 @@
             <value>2</value>
         </row>
         <row>
-            <value>514</value>
+            <value>515</value>
             <value>soll</value>
             <value>0</value>
             <value>2</value>
         </row>
         <row>
-            <value>516</value>
+            <value>517</value>
             <value>soll</value>
             <value>0</value>
             <value>2</value>
         </row>
         <row>
-            <value>518</value>
+            <value>519</value>
             <value>soll</value>
             <value>0</value>
             <value>2</value>
         </row>
         <row>
-            <value>520</value>
+            <value>521</value>
             <value>soll</value>
             <value>0</value>
             <value>2</value>
         </row>
         <row>
-            <value>522</value>
+            <value>523</value>
             <value>soll</value>
             <value>0</value>
             <value>2</value>
         </row>
         <row>
-            <value>524</value>
+            <value>525</value>
             <value>soll</value>
             <value>0</value>
             <value>2</value>
@@ -406,37 +426,37 @@
             <value>3</value>
         </row>
         <row>
-            <value>515</value>
+            <value>516</value>
             <value>sollen</value>
             <value>0</value>
             <value>3</value>
         </row>
         <row>
-            <value>517</value>
+            <value>518</value>
             <value>sollen</value>
             <value>0</value>
             <value>3</value>
         </row>
         <row>
-            <value>519</value>
+            <value>520</value>
             <value>sollen</value>
             <value>0</value>
             <value>3</value>
         </row>
         <row>
-            <value>521</value>
+            <value>522</value>
             <value>sollen</value>
             <value>0</value>
             <value>3</value>
         </row>
         <row>
-            <value>523</value>
+            <value>524</value>
             <value>sollen</value>
             <value>0</value>
             <value>3</value>
         </row>
         <row>
-            <value>525</value>
+            <value>526</value>
             <value>sollen</value>
             <value>0</value>
             <value>3</value>
@@ -447,13 +467,11 @@
         <column>tok_id</column>
         <column>value</column>
         <column>comment_type</column>
-        <column>subtok_id</column>
         <row>
-            <value>3</value>
+            <value>2</value>
             <value>7</value>
             <value>bla bla kommentar</value>
             <value>K</value>
-            <null/>
         </row>
     </table>
     <table name="inserted_mod2error">
