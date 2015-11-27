@@ -302,6 +302,7 @@
         "lemmaLink" : "Lemma-Link",
         "lemmaTag" : "Lemma-Tag",
         "comment" : "Kommentar",
+        "secondaryComment" : "Sekundär-Kommentar",
         "sentBoundary" : "Satzgrenze",
         "asciiTok" : "Token (ASCII)"
      },
@@ -327,7 +328,8 @@
         "createTagger" : "Erstellen",
         "createMsg" : "Erstellen",
         "changePassword" : "Passwort ändern...",
-        "change" : "Ändern"
+        "change" : "Ändern",
+        "preview": "Vorschau"
      },
 
      "Banner" : {

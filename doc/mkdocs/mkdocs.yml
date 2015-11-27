@@ -1,0 +1,38 @@
+site_name: CorA User Documentation
+site_author: Marcel Bollmann
+copyright: © 2015 by Marcel Bollmann
+repo_url: https://bitbucket.org/mbollmann/cora/
+theme: readthedocs
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - sane_lists
+  - smarty
+pages:
+  - Home: index.md
+  - Introduction: intro.md
+  - Installation and Configuration:
+      - 'Installation': setup-install.md
+      - 'Server-Side Configuration': setup-config.md
+  - Administrative Tasks:
+      - 'User Accounts': admin-users.md
+      - 'Projects': admin-projects.md
+      - 'Tagsets': admin-tagsets.md
+      - 'External Annotation Tools': admin-taggers.md
+      - 'Server Notifications': admin-notices.md
+  - Working on Documents:
+      - 'Managing Documents': doc-manage.md
+      - 'Using the Editor': doc-annotate.md
+      - 'Customizing the Editor': doc-customize.md
+      - 'Searching in a Document': doc-search.md
+      - 'Calling External Annotators': doc-taggers.md
+      - 'Editing Tokens': doc-edit.md
+  - Further Information:
+      - 'Annotation Layers': layers.md
+      - 'Document Model': document-model.md
+      - 'CorA-XML File Format': coraxml.md
+docs_dir: docs/
+strict: true

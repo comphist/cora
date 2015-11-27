@@ -14,9 +14,9 @@ set(LOCAL_PHP_SOURCES
   sessionHandler.php
   xmlHandler.php
   annotation/AutomaticAnnotator.php
-  annotation/DualRFTaggerAnnotator.php
+  annotation/DualRFTagger.php
   annotation/Lemmatizer.php
-  annotation/RFTaggerAnnotator.php
+  annotation/RFTagger.php
   connect/DocumentAccessor.php
   connect/DocumentCreator.php
   connect/DocumentReader.php

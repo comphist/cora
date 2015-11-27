@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+         datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <documentation xmlns="http://relaxng.org/ns/compatibility/annotations/1.0">
+    Relax NG Schema for CorA-XML
+  </documentation>
+  <start>
+    <!-- Root element -->
+    <element name="text">
+      <attribute name="id"/>
+
+      <!-- Optional <cora-header> can define name/sigle -->
+      <optional>
+	<element name="cora-header">
+	  <optional>
+	    <attribute name="name"/>
+	  </optional>
+	  <optional>
+	    <attribute name="sigle"/>
+	  </optional>
+	</element>
+      </optional>
+
+      <!-- Header (required, but can be empty or contain any text) -->
+      <element name="header"><text /></element>
+
+      <!-- Layout info, defines pages/columns/lines -->
+      <element name="layoutinfo">
+	<oneOrMore>
+	  <element name="page">
+	    <ref name="page_content"/>
+	  </element>
+	</oneOrMore>
+	<oneOrMore>
+	  <element name="column">
+	    <ref name="column_content"/>
+	  </element>
+	</oneOrMore>
+	<oneOrMore>
+	  <element name="line">
+	    <ref name="line_content"/>
+	  </element>
+	</oneOrMore>
+      </element>
+
+      <!-- Shift tags -->
+      <optional>
+	<element name="shifttags">
+	  <zeroOrMore>
+	    <element>
+	      <choice>
+		<name>fm</name>
+		<name>lat</name>
+		<name>marg</name>
+		<name>rub</name>
+		<name>title</name>
+	      </choice>
+	      <attribute name="range"/>
+	    </element>
+	  </zeroOrMore>
+	</element>
+      </optional>
+
+      <!-- The actual document content follows here.
+
+           Content consists of any number of <token> and/or <comment> elements,
+           but at least one <token> element is required.
+      -->
+      <interleave>
+        <oneOrMore>
+	  <element name="token">
+	    <ref name="has_id"/>
+	    <attribute name="trans"/>
+	    <oneOrMore>
+	      <element name="dipl">
+	        <ref name="has_id"/>
+	        <attribute name="trans"/>
+	        <attribute name="utf"/>
+	      </element>
+	    </oneOrMore>
+	    <zeroOrMore>
+	      <element name="mod">
+	        <ref name="mod_content"/>
+	      </element>
+	    </zeroOrMore>
+	  </element>
+        </oneOrMore>
+	<zeroOrMore>
+	  <element name="comment">
+	    <ref name="outer_comment_content"/>
+	  </element>
+        </zeroOrMore>
+      </interleave>
+    </element>
+  </start>
+
+  <!-- Simple pattern for all elements that have an ID -->
+  <define name="has_id">
+    <attribute name="id">
+      <data type="ID"/>
+    </attribute>
+  </define>
+
+  <!-- Pages (in the layoutinfo section) -->
+  <define name="page_content">
+    <ref name="has_id"/>
+    <attribute name="range"/>
+    <attribute name="no">
+      <data type="string">
+        <!-- Length restriction because of CorA's database schema -->
+	<param name="maxLength">16</param>
+      </data>
+    </attribute>
+    <optional>
+      <attribute name="side">
+	<data type="string">
+          <!-- Length restriction because of CorA's database schema -->
+	  <param name="maxLength">1</param>
+	</data>
+      </attribute>
+    </optional>
+  </define>
+
+  <!-- Columns (in the layoutinfo section) -->
+  <define name="column_content">
+    <ref name="has_id"/>
+    <attribute name="range"/>
+    <optional>
+      <attribute name="name">
+	<data type="string">
+          <!-- Length restriction because of CorA's database schema -->
+	  <param name="maxLength">1</param>
+	</data>
+      </attribute>
+    </optional>
+  </define>
+
+  <!-- Lines (in the layoutinfo section) -->
+  <define name="line_content">
+    <ref name="has_id"/>
+    <attribute name="range"/>
+    <optional>
+      <attribute name="name">
+	<data type="string">
+          <!-- Length restriction because of CorA's database schema -->
+	  <param name="maxLength">5</param>
+	</data>
+      </attribute>
+    </optional>
+  </define>
+
+  <!-- Comments
+
+       Must have a "type" attribute with exactly one character (for historical
+       reasons).
+  -->
+  <define name="outer_comment_content">
+    <attribute name="type">
+      <data type="string">
+	<param name="length">1</param>
+      </data>
+    </attribute>
+    <text/>
+  </define>
+
+  <!-- Modern tokens -->
+  <define name="mod_content">
+    <ref name="has_id"/>
+    <attribute name="trans"/>
+    <attribute name="utf"/>
+    <attribute name="ascii"/>
+    <optional>
+      <attribute name="checked">
+	<choice>
+	  <value>y</value>
+	  <value>n</value>
+	</choice>
+      </attribute>
+    </optional>
+    <!-- Annotations -->
+    <zeroOrMore>
+      <choice>
+        <ref name="annotation_elements"/>
+        <ref name="flag_elements"/>
+        <!-- DEPRECATED:
+             cora-comment shouldn't be used anymore; use comment instead
+        -->
+	<element name="cora-comment"><text /></element>
+      </choice>
+    </zeroOrMore>
+  </define>
+
+  <!-- Annotations
+
+       Currently very loosely defined: any element can be used as an annotation
+       (except for a few elements that have other meanings), as long as it has
+       the "tag" attribute.  This allows CorA-XML to contain more annotation
+       layers than CorA actually knows about and can import; this is
+       intentional.
+  -->
+  <define name="annotation_elements">
+    <element>
+      <anyName>
+	<except>
+	  <name>cora-comment</name>
+	  <name>cora-flag</name>
+	  <name>suggestions</name>
+	</except>
+      </anyName>
+      <attribute name="tag"/>
+    </element>
+  </define>
+
+  <!-- Flags -->
+  <define name="flag_elements">
+    <element name="cora-flag">
+      <attribute name="name">
+	<choice>
+	  <value>general error</value>
+	  <value>lemma verified</value>
+	  <value>boundary</value>
+	</choice>
+      </attribute>
+    </element>
+  </define>
+</grammar>

@@ -1,3 +1,24 @@
+<?php 
+/*
+ * Copyright (C) 2015 Marcel Bollmann <bollmann@linguistics.rub.de>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */ ?>
 <?php
 
  /** @file DocumentAccessor.php
@@ -36,7 +57,6 @@ class DocumentAccessor {
   // SQL statements
   private $stmt_isValidModID = null;
   private $stmt_getSelectedAnnotations = null;
-  private $stmt_getCoraComment = null;
 
   /** Construct a new DocumentAccessor.
    *
@@ -51,7 +71,6 @@ class DocumentAccessor {
 
     $this->prepare_isValidModID();
     $this->prepare_getSelectedAnnotations();
-    $this->prepare_getCoraComment();
   }
 
   protected function warn($message) {
@@ -70,8 +89,12 @@ class DocumentAccessor {
    *  depend on this ID can be recreated if the ID changes.
    */
   protected function setFileID($id) {
-      $this->fileid = $id;
-      $this->prepare_isValidModID();
+    $this->fileid = $id;
+    $this->prepare_isValidModID();
+  }
+
+  public function getFileID($id) {
+    return $this->fileid;
   }
 
   /**********************************************
@@ -79,7 +102,7 @@ class DocumentAccessor {
    **********************************************/
 
   private function prepare_isValidModID() {
-    $stmt = "SELECT modern.id FROM modern "
+    $stmt = "SELECT COUNT(*) FROM modern "
       . " LEFT JOIN token     ON   modern.tok_id=token.id "
       . " LEFT JOIN text      ON   token.text_id=text.id "
       . "     WHERE text.id={$this->fileid} "
@@ -97,17 +120,6 @@ class DocumentAccessor {
     $this->stmt_getSelectedAnnotations = $this->dbo->prepare($stmt);
   }
 
-  private function prepare_getCoraComment() {
-    $stmt = "SELECT modern.id, comment.id AS comment_id, token.id AS token_id"
-      . "      FROM modern"
-      . " LEFT JOIN token   ON modern.tok_id=token.id"
-      . " LEFT JOIN comment ON comment.tok_id=token.id"
-      . "                  AND comment.subtok_id=modern.id"
-      . "                  AND comment.comment_type='C'"
-      . "     WHERE modern.id=?";
-    $this->stmt_getCoraComment = $this->dbo->prepare($stmt);
-  }
-
   /**********************************************/
 
   /** Test whether a given mod ID belongs to the associated file.
@@ -116,7 +128,7 @@ class DocumentAccessor {
    */
   public function isValidModID($modid) {
     $this->stmt_isValidModID->execute(array($modid));
-    return $this->stmt_isValidModID->fetch();
+    return ($this->stmt_isValidModID->fetchColumn() == 1);
   }
 
   /** Retrieve selected annotations for a given mod ID.
@@ -126,15 +138,6 @@ class DocumentAccessor {
   public function getSelectedAnnotations($modid) {
     $this->stmt_getSelectedAnnotations->execute(array($modid));
     return $this->stmt_getSelectedAnnotations->fetchAll(PDO::FETCH_ASSOC);
-  }
-
-  /** Retrieve CorA-internal comment for a given mod ID.
-   *
-   * @param string $modid A mod ID
-   */
-  public function getCoraComment($modid) {
-    $this->stmt_getCoraComment->execute(array($modid));
-    return $this->stmt_getCoraComment->fetch(PDO::FETCH_ASSOC);
   }
 
   /** Retrieve selected annotations for a given mod ID and index them

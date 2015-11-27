@@ -1,3 +1,24 @@
+/*
+ * Copyright (C) 2015 Marcel Bollmann <bollmann@linguistics.rub.de>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 /*************************************************************************
  ************ Projects and Files *****************************************
  *************************************************************************/
@@ -145,6 +166,19 @@ cora.projects = {
 	    }
     	}).get();
         return this;
+    },
+
+    /* Function: supportsTokenEditing
+
+       Check if a token editing script is set for a project.
+
+       Parameters:
+         pid - ID of the project
+     */
+    supportsTokenEditing: function(pid) {
+        var idx = this.byID[pid];
+        if(idx == undefined) return false;
+        return !!(this.data[idx].settings.cmd_edittoken);
     }
 };
 
@@ -284,16 +318,7 @@ cora.files = {
         options.onSuccess = function(status) {
             // tagset assocs?
             if(status.data && status.data.tagsets) {
-                this.tagsetsByID[fid] = {  // HACK for the time being
-                    // every file gets the comment "tagset" associated with it
-                    'comment': new CommentTagset({
-                        id: -1,
-                        shortname: '-1',
-                        longname: 'Kommentar',
-                        set_type: 'open',
-                        class: 'comment'
-                    })
-                };
+                this.tagsetsByID[fid] = {};
                 Object.each(status.data.tagsets, function(ts) {
                     this.tagsetsByID[fid][ts['class']] = cora.tagsets.get(ts.id);
                 }.bind(this));
@@ -373,6 +398,17 @@ cora.files = {
             });
         }
         return false;
+    },
+
+    /* Function: supportsTokenEditing
+
+       Check if a token editing script is set for a given file.
+
+       Parameters:
+         fid - ID of the file
+     */
+    supportsTokenEditing: function(fid) {
+        return cora.projects.supportsTokenEditing(this.getProject(fid).id);
     }
 };
 
@@ -1240,8 +1276,7 @@ cora.fileManager = {
             };
         fixed = [['trans', _("Columns.transTok")],
                  ['ascii', _("Columns.asciiTok")],
-                 ['utf', _("Columns.utfTok")],
-                 ['comment', _("Columns.comment")]];
+                 ['utf', _("Columns.utfTok")]];
         Array.each(fixed, function(elem) {
             makeMultiSelectEntry(div, elem[0], elem[1]);
         });

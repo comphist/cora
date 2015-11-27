@@ -1,3 +1,24 @@
+<?php 
+/*
+ * Copyright (C) 2015 Marcel Bollmann <bollmann@linguistics.rub.de>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */ ?>
 <?php
 
 /** @file automaticAnnotation.php
@@ -11,10 +32,6 @@
 //require_once( "documentModel.php" );
 require_once( "cfg.php" );
 require_once( "exporter.php" );
-require_once( "annotation/AutomaticAnnotator.php" );
-require_once( "annotation/RFTaggerAnnotator.php" );
-require_once( "annotation/DualRFTaggerAnnotator.php" );
-require_once( "annotation/Lemmatizer.php" );
 
 /** Wrapper for all automatic annotators.
  *
@@ -37,10 +54,6 @@ class AutomaticAnnotationWrapper {
 
   protected $paramdir = null;
 
-  private $tagger_objects = array("RFTagger"     => "RFTaggerAnnotator",
-                                  "DualRFTagger" => "DualRFTaggerAnnotator",
-                                  "Lemmatizer"   => "Lemmatizer");
-
   /** Construct a new AutomaticAnnotator object.
    *
    * Annotator objects are always specific to a combination of
@@ -61,6 +74,21 @@ class AutomaticAnnotationWrapper {
     $this->instantiateTagger();
   }
 
+  /** Instantiate the tagger object.
+   */
+  private function makeTaggerClass($class_name) {
+    $class_file = __DIR__ . "/annotation/{$class_name}.php";
+    if(!file_exists($class_file)) {
+      throw new Exception ("Tagger interface not found: {$class_name}");
+    }
+    require_once $class_file;
+    $options = $this->db->getTaggerOptions($this->taggerid);
+    if(array_key_exists('train_single_file', $options)) {
+      $this->train_single_file = ($options['train_single_file'] == 1);
+    }
+    return new $class_name($this->getPrefix(), $options);
+  }
+
   /** Fetch information about the tagger and its associated tagsets,
    *  and instantiate the respective tagger class.
    */
@@ -72,15 +100,7 @@ class AutomaticAnnotationWrapper {
     // instantiate class object
     $this->trainable = $tagger[$this->taggerid]['trainable'];
     $class_name = $tagger[$this->taggerid]['class_name'];
-    if(!array_key_exists($class_name, $this->tagger_objects)) {
-      throw new Exception ("Unknown tagger class: {$class_name}");
-    }
-    $options = $this->db->getTaggerOptions($this->taggerid);
-    $this->tagger = new $this->tagger_objects[$class_name]($this->getPrefix(),
-                                                           $options);
-    if(array_key_exists('train_single_file', $options)) {
-      $this->train_single_file = ($options['train_single_file'] == 1);
-    }
+    $this->tagger = $this->makeTaggerClass($class_name);
     // get info about associated tagsets
     $this->tagset_ids = $tagger[$this->taggerid]['tagsets'];
     $this->tagsets    = $this->db->getTagsetMetadata($this->tagset_ids);

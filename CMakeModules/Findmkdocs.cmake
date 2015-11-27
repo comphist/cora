@@ -25,8 +25,8 @@ if(MKDOCS_EXECUTABLE)
         message(WARNING "Warning, could not run mkdocs --version")
       endif()
     else()
-      if(var MATCHES "mkdocs, version [0-9]+\\.[0-9]+\\.[0-9_.]+.*")
-        string(REGEX REPLACE "mkdocs, version ([0-9]+\\.[0-9]+\\.[0-9_.]+).*"
+      if(var MATCHES ".*mkdocs, version [0-9]+\\.[0-9]+\\.[0-9_.]+.*")
+        string(REGEX REPLACE ".*mkdocs, version ([0-9]+\\.[0-9]+\\.[0-9_.]+).*"
                "\\1" MKDOCS_VERSION_STRING "${var}")
       else()
         if(NOT mkdocs_FIND_QUIETLY)

@@ -1,0 +1,83 @@
+<?php 
+/*
+ * Copyright (C) 2015 Marcel Bollmann <bollmann@linguistics.rub.de>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */ ?>
+<?php
+/** @file error.php
+ * Display an error message in the case of exceptions.
+ */
+
+function _gui_make_title() {
+  if (class_exists('Cfg')) {
+    $title = Cfg::get('title');
+    $longtitle = Cfg::get('longtitle');
+    $version = Cfg::get('version');
+    return "Error | $title ($longtitle) $version";
+  } else {
+    return "Error | CorA (Corpus Annotator)";
+  }
+}
+
+?>
+<!DOCTYPE html>
+<html lang="en" xml:lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title><?php echo _gui_make_title(); ?></title>
+    <meta name="robots" content="noindex" />
+
+    <!-- **************** Cascading Style Sheets **************** -->
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,700,400,600" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="@CORA_HREF_CSS_MASTER@" media="all" />
+    <link rel="stylesheet" type="text/css" href="@CORA_HREF_CSS_OPENICONIC@" media="all" />
+  </head>
+  <body class="no-javascript">
+    <!-- header -->
+      <div id="header" class="no-print">
+        <div id="titlebar">
+          <span class="cora-title"><?php echo (class_exists('Cfg') ? Cfg::get('title') : "CorA"); ?></span>
+          <span class="cora-version"><?php echo (class_exists('Cfg') ? Cfg::get('version') : ""); ?></span>
+          <span id="currentfile"></span>
+        </div>
+        <div id="menu">
+          <ul>
+            <li class="tabButton" id="singleTabButton" title="Error" active="true">
+              <a>Error</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    <!-- main content -->
+    <div id="main" class="no-print">
+      <div id="singleDiv" class="content">
+        <div class="panel">
+          <div class="text-content">
+            <h3>CorA has encountered a critical problem.</h3>
+            <p>An exception occured while instantiating CorA.  If this problem
+               persists, please contact your local system administrators.</p>
+            <p>If you're an administrator, please check your local error log.</p>
+          </div>
+        </div>
+      </div>
+      <div id="footer">&copy; 2012&mdash;2015 Marcel Bollmann, Florian Petran, Sprachwissenschaftliches Institut, Ruhr-Universität Bochum</div>
+    </div>
+  </body>
+</html>

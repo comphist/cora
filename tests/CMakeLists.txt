@@ -21,19 +21,23 @@ endif()
 
 set(PHP_TESTS
   AutomaticAnnotator_test.php
+  Cfg_test.php
   CoraDocument_test.php
   DBInterface_test.php
+  DocumentAccessor_test.php
+  DocumentCreator_test.php
   Exporter_test.php
   Locale_test.php
   Menu_test.php
   TagsetAccessor_test.php
   XMLHandler_test.php
 )
-#if(DEBUG_MODE)
-#  list(APPEND PHP_TESTS DBInterface_Expensive_test.php)
-#endif()
+if(WITH_EXPENSIVE_TESTS)
+  list(APPEND PHP_TESTS DBInterface_Expensive_test.php)
+endif()
 
-configure_all("${CMAKE_CURRENT_BINARY_DIR}" ${PHP_TESTS} phpunit.xml DB_fixture.php)
+configure_file(phpunit.xml.in "${CMAKE_CURRENT_BINARY_DIR}/phpunit.xml" @ONLY)
+configure_all_copyonly("${CMAKE_CURRENT_BINARY_DIR}" ${PHP_TESTS} DB_fixture.php DocumentAccessor_mocks.php)
 file(COPY data DESTINATION .)
 
 #########################################################

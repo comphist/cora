@@ -1,3 +1,24 @@
+<?php 
+/*
+ * Copyright (C) 2015 Marcel Bollmann <bollmann@linguistics.rub.de>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */ ?>
 <?php
 
  /** @file ProjectAccessor.php
@@ -44,6 +65,13 @@ class ProjectAccessor {
           . "LEFT JOIN `user2project` ON user2project.user_id=users.id "
           . "    WHERE user2project.project_id=:pid";
       $this->stmt_getUsers = $this->dbo->prepare($query);
+      $query = "SELECT `user_id` FROM `user2project` WHERE `project_id`=:pid";
+      $this->stmt_getUsersID = $this->dbo->prepare($query);
+      $query = "INSERT INTO `user2project` (`project_id`, `user_id`) "
+          . "VALUES (:pid, :uid)";
+      $this->stmt_setUsers = $this->dbo->prepare($query);
+      $query = "DELETE FROM `user2project` WHERE `project_id`=:pid";
+      $this->stmt_deleteUsers = $this->dbo->prepare($query);
       $query = "SELECT `tagset_id` FROM `text2tagset_defaults` "
           . "    WHERE text2tagset_defaults.project_id=:pid";
       $this->stmt_getDefaults = $this->dbo->prepare($query);
@@ -112,6 +140,38 @@ class ProjectAccessor {
   public function getAssociatedUsers($pid) {
       $this->stmt_getUsers->execute(array(':pid' => $pid));
       return $this->stmt_getUsers->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  /** Fetch a list of users associated with a given project.
+   *
+   * @param string $pid The project ID
+   * @return An array of user IDs
+   */
+  public function getAssociatedUserIDs($pid) {
+      $this->stmt_getUsersID->execute(array(':pid' => $pid));
+      return $this->stmt_getUsersID->fetchAll(PDO::FETCH_COLUMN);
+  }
+
+  /** Set a new list of users associated with a given project.
+   *
+   * @param string $pid The project ID
+   * @param array $idlist Array of user IDs
+   */
+  public function setAssociatedUsers($pid, $idlist) {
+      try {
+          $this->dbo->beginTransaction();
+          $this->stmt_deleteUsers->execute(array(':pid' => $pid));
+          $this->stmt_setUsers->bindValue(':pid', $pid, PDO::PARAM_INT);
+          $this->stmt_setUsers->bindParam(':uid', $uid, PDO::PARAM_INT);
+          foreach ($idlist as $uid) {
+              $this->stmt_setUsers->execute();
+          }
+          $this->dbo->commit();
+      }
+      catch(PDOException $ex) {
+          $this->dbo->rollBack();
+          throw $ex;
+      }
   }
 
   /** Fetch the default tagset links for a given project.
@@ -191,5 +251,16 @@ class ProjectAccessor {
                     ':cmdedit' => $cmdedit,
                     ':cmdimport' => $cmdimport);
       $this->stmt_setSettings->execute($data);
+  }
+
+  /** Set project-specific settings.
+   *
+   * @param string $pid The project ID
+   * @param array $settings An associative array of settings
+   */
+  public function setSettingsArray($pid, $settings) {
+      $this->setSettings($pid,
+                         $settings['cmd_edittoken'],
+                         $settings['cmd_import']);
   }
 }

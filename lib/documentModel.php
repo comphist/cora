@@ -1,3 +1,24 @@
+<?php 
+/*
+ * Copyright (C) 2015 Marcel Bollmann <bollmann@linguistics.rub.de>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */ ?>
 <?php
 
 /** @file documentModel.php
@@ -28,6 +49,7 @@ class CoraDocument {
   private $fullname  = "";     /**< Document name */
   private $header    = "";     /**< Document header (free-format text) */
   private $internal = array("fileid"  => null,
+                            "projectid" => null,
 			    "currentmod_id" => null,
 			    "tagsets" => array()
 			    );
@@ -63,7 +85,6 @@ class CoraDocument {
     }
     $metadata = $openfile['data'];
     $instance = new self($metadata);
-    $instance->setHeader($metadata['header']);
 
     // Tokens
     $data = $db->getAllTokens($fileid);
@@ -91,18 +112,13 @@ class CoraDocument {
    * @param string $xml_id XML ID of the token to which comment is attached
    * @param string $text Comment as string
    * @param string $type Comment type as a single letter (e.g. K, E)
-   * @param string $subtok_id Modern DB ID of the token to which comment is attached
-   * @param string $subtok_xml_id Modern ID of the token to which comment is attached
    */
-  public function addComment($tok_id, $xml_id, $text, $type,
-                             $subtok_id=NULL, $subtok_xml_id=NULL) {
+  public function addComment($tok_id, $xml_id, $text, $type) {
     $comment = array();
     $comment['parent_db_id']  = $tok_id;
     $comment['parent_xml_id'] = $xml_id;
     $comment['text']   = $text;
     $comment['type']   = $type;
-    $comment['subtok_db_id']  = $subtok_id;
-    $comment['subtok_xml_id'] = $subtok_xml_id;
     $this->comments[] = $comment;
     return $this;
   }
@@ -222,12 +238,6 @@ class CoraDocument {
       $xmltodb[$mod['xml_id']] = $mod['db_id'];
     }
     unset($mod);
-    // comments sometimes refer to moderns as well
-    foreach($this->comments as &$comment) {
-      if(!is_null($comment['subtok_xml_id']))
-        $comment['subtok_db_id'] = $xmltodb[$comment['subtok_xml_id']];
-    }
-    unset($comment);
     return $this;
   }
 
@@ -463,11 +473,17 @@ class CoraDocument {
     if(isset($options['fullname']) && !empty($options['fullname'])) {
       $this->fullname = $options['fullname'];
     }
+    if(isset($options['header']) && !empty($options['header'])) {
+      $this->header = $options['header'];
+    }
     if(isset($options['currentmod_id']) && !empty($options['currentmod_id'])) {
       $this->internal['currentmod_id'] = $options['currentmod_id'];
     }
     if(isset($options['id']) && !empty($options['id'])) {
       $this->internal['fileid'] = $options['id'];
+    }
+    if(isset($options['projectid']) && !empty($options['projectid'])) {
+      $this->internal['projectid'] = $options['projectid'];
     }
     if(isset($options['tagsets']) && !empty($options['tagsets'])) {
       $this->internal['tagsets'] = $options['tagsets'];
@@ -512,6 +528,18 @@ class CoraDocument {
   }
   public function getComments() {
     return $this->comments;
+  }
+  public function getTagsetLinks() {
+    return $this->internal['tagsets'];
+  }
+  public function getFileID() {
+    return $this->internal['fileid'];
+  }
+  public function getProjectID() {
+    return $this->internal['projectid'];
+  }
+  public function getCurrentModID() {
+    return $this->internal['currentmod_id'];
   }
 
   /** Set shift tag information directly.

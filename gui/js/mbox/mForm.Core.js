@@ -308,6 +308,7 @@ mForm.customId = 0;
 
 // Initialize mForm
 var form;
-window.addEvent('domready', function() {
-	form = new mForm();
-});
+if (document.readyState == "complete")
+    form = new mForm();
+else
+    window.addEvent('domready', function() { form = new mForm(); });

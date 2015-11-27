@@ -1,0 +1,266 @@
+<?php 
+/*
+ * Copyright (C) 2015 Marcel Bollmann <bollmann@linguistics.rub.de>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */ ?>
+<?php
+
+header( "Content-Type: text/html; charset=utf-8" );
+require_once "common.php";
+
+$errors_occured = false;
+$enable_force_reinstall = false;
+$force_reinstall = isset($_POST['action_force']);
+
+$settings = get_settings_from_post($_POST);
+$installer = make_installer($settings);
+$status = get_database_status($installer);
+
+function echo_errors($errors, $caption=null) {
+  global $errors_occured;
+  $errors_occured = true;
+  echo '<div class="error">';
+  if ($caption) {
+    echo "<strong>$caption</strong> ";
+  }
+  echo implode("<br/>", $errors);
+  echo '</div>';
+}
+
+function recheck_and_save() {
+  global $errors_occured;
+  global $installer;
+  global $settings;
+  global $status;
+  $installer->setDBInfo($settings['DBINFO']);
+  $status = get_database_status($installer);
+  if (!$errors_occured) {
+    try {
+      Cfg::save_user_opts();
+    } catch (Exception $ex) {
+      echo_errors(
+        array("Database settings could not be saved:",
+              $ex->getMessage(),
+              "If you changed the defaults, you might need to edit your config.php manually.")
+      );
+    }
+  }
+}
+
+// render page
+?>
+
+<!DOCTYPE html>
+<html lang="en" xml:lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <title><?= Cfg::get('title') ?> Database Configuration</title>
+
+    <!-- **************** Cascading Style Sheets **************** -->
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,700,400,600" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="../@CORA_HREF_CSS_MASTER@" media="all" />
+    <link rel="stylesheet" type="text/css" href="../@CORA_HREF_CSS_INSTALL@" media="all" />
+    <link rel="stylesheet" type="text/css" href="../@CORA_HREF_CSS_OPENICONIC@" media="all" />
+    <script type="text/javascript" src="../@CORA_HREF_JS_MOOTOOLS_CORE@"></script>
+    <script type="text/javascript" src="../@CORA_HREF_JS_MOOTOOLS_MORE@"></script>
+  </head>
+  <body class="no-javascript">
+
+    <!-- header -->
+      <div id="header" class="no-print">
+        <div id="titlebar">
+          <span class="cora-title"><?php echo Cfg::get('title'); ?></span>
+          <span class="cora-version"><?php echo Cfg::get('version'); ?></span>
+          <span id="currentfile"></span>
+        </div>
+        <div id="menu">
+          <ul>
+            <li class="tabButton" active="true">
+              <a onclick="return false;">Database Configuration</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    <!-- main content -->
+    <div id="main" class="no-print">
+      <div id="dbConfDiv" class="content">
+        <div class="panel">
+<?php
+if (isset($_POST['action_exec_install'])) {
+  if ($status['can_connect'] && !$force_reinstall) {
+    echo_errors(
+      array('You selected "Perform fresh database installation", '
+            . "but a CorA database already exists.",
+            "To perform a fresh installation anyway, please confirm "
+            . "by clicking the button again.  Keep in mind that doing so will "
+            . "<strong>DELETE ALL EXISTING DATA</strong> "
+            . "in the CorA database."),
+      "ATTENTION!"
+    );
+    $enable_force_reinstall = true;
+  } else {
+    try {
+      $installer->installDB(__DIR__, $settings['DBROOT']);
+      recheck_and_save();
+    }
+    catch (Exception $ex) {
+      echo_errors(array("An error occured:", $ex->getMessage()), "ERROR:");
+    }
+  }
+}
+
+if (isset($_POST['action_exec_upgrade']) && $status['need_migration']) {
+  if (empty($status['migration_path'])) {
+    echo_errors(
+      array("No automatic migration path found!",
+            "The database schema needs an update, but I don't know how to do it. "
+            . "Are you downgrading from a newer version of CorA?  In this case, "
+            . "the database migration cannot be done automatically yet."
+      ),
+      "ERROR:");
+  } else {
+    try {
+      $installer->applyMigrationPath($status['migration_path'],
+                                     $settings['DBROOT']);
+    } catch (Exception $ex) {
+      echo_errors(array("An error occured:", $ex->getMessage()), "ERROR:");
+    }
+  }
+}
+?>
+
+          <table class="table-modern configure-results">
+            <tbody>
+              <tr>
+                <td>Database connection:</td>
+                <?= ($status['can_connect'] ?
+                     "<td class=\"success\">established</td>" :
+                     "<td class=\"error\">failed</td>") ?>
+              </tr>
+              <tr>
+                <td>Schema version (found):</td>
+                <?= ($status['can_connect'] ?
+                     ($status['need_migration'] ?
+                       "<td class=\"error\">{$status['version_current']}</td>" :
+                       "<td class=\"success\">{$status['version_current']}</td>") :
+                     "<td>&mdash;</td>") ?>
+              </tr>
+              <tr>
+                <td>Schema version (required):</td>
+                <?= ($status['can_connect'] ?
+                     ($status['need_migration'] ?
+                       "<td class=\"error\">{$status['version_required']}</td>" :
+                       "<td class=\"success\">{$status['version_required']}</td>") :
+                     "<td>&mdash;</td>") ?>
+              </tr>
+              <tr>
+                <td>Automatic migration:</td>
+                <?= ($status['can_connect'] ?
+                     ($status['need_migration'] ?
+                      (!empty($status['migration_path']) ?
+                       "<td class=\"success\">possible</td>" :
+                       "<td class=\"error\">not possible</td>") :
+                       "<td>&mdash;</td>") :
+                     "<td>&mdash;</td>") ?>
+              </tr>
+              <tr>
+                <td>Can execute MySQL:</td>
+                <?= ($status['can_execute_mysql'] ?
+                     "<td class=\"success\">yes</td>" :
+                     "<td class=\"error\">no</td>")?>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="configure-form">
+<?php
+if (!$status['can_connect']):
+?>
+            <p class="big">Could not connect to the database!</p>
+            <p>If you are installing CorA for the first time, please check if the settings below are correct and choose "Perform fresh database installation".</p>
+            <p>If you are <strong>NOT</strong> installing CorA for the first time, please fill in the correct database credentials below, then choose "Set these values and re-check".</p>
+<?php
+elseif ($status['need_migration']):
+?>
+            <p class="big">Database upgrade required!</p>
+            <p>The current schema version is out of date.  If you want to try an automatic database migration, please choose "Perform database upgrade".</p>
+<?php
+else:
+?>
+            <p class="big success">CorA appears to be installed correctly!</p>
+            <p>No further action is required.</p>
+<?php
+endif;
+?>
+            <form action="<?= basename(__FILE__) ?>" method="post">
+              <p>
+                <label for="mysql_bin" class="ra">Path to MySQL executable: </label>
+                <input type="text" name="mysql_bin" id="mysql_bin" value="<?= $settings['MYSQL_BIN'] ?>" />
+              </p>
+              <p>
+                <label for="db_host" class="ra">Database server: </label>
+                <input type="text" name="db_host" id="db_host" value="<?= $settings['DBINFO']['HOST'] ?>" />
+              </p>
+              <p>
+                <label for="db_dbname" class="ra">Database name: </label>
+                <input type="text" name="db_dbname" id="db_dbname" value="<?= $settings['DBINFO']['DBNAME'] ?>" />
+              </p>
+              <p>
+                <label for="db_user" class="ra">MySQL local user: </label>
+                <input type="text" name="db_user" id="db_user" value="<?= $settings['DBINFO']['USER'] ?>" />
+              </p>
+              <p>
+                <label for="db_password" class="ra">MySQL local password: </label>
+                <input type="text" name="db_password" id="db_password" value="<?= $settings['DBINFO']['PASSWORD'] ?>" />
+              </p>
+              <p>
+                <label for="db_rootuser" class="ra">MySQL root user: </label>
+                <input type="text" name="db_rootuser" id="db_rootuser" value="<?= $settings['DBROOT']['USER'] ?>" />
+              </p>
+              <p>
+                <label for="db_rootpass" class="ra">MySQL root password: </label>
+                <input type="password" name="db_rootpass" id="db_rootpass" value="<?= $settings['DBROOT']['PASSWORD'] ?>" />
+                <span class="note">(CorA will <strong>not</strong> store this password on disk)</span>
+              </p>
+              <p>
+                <input type="hidden" name="use_form_values" value="1" />
+                <input type="submit" name="action_reset" value="Set these values and re-check" />
+                <input type="submit" name="action_exec_install" value="Perform fresh database installation" />
+<?php
+  if ($status['need_migration']):
+?>
+                <input type="submit" name="action_exec_upgrade" value="Perform database upgrade" />
+<?php
+  endif;
+  if ($enable_force_reinstall):
+?>
+                <input type="hidden" name="action_force" value="1" />
+<?php
+  endif;
+?>
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

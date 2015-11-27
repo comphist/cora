@@ -1,3 +1,24 @@
+/*
+ * Copyright (C) 2015 Marcel Bollmann <bollmann@linguistics.rub.de>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 /* Class: EditorModel
 
    Main class representing an instance of the CorA editor.
@@ -92,31 +113,35 @@ var EditorModel = new Class({
         this.dataTable.addDropdownEntries([
             {name: 'Search',
              text: _("EditorTab.dropDown.searchSimilar"),
-             action: this.searchSimilarTokens.bind(this)},
-            {name: 'Edit',
-             text: _("EditorTab.dropDown.editToken"),
-             action: this.editToken.bind(this)},
-            {name: 'Add',
-             text: _("EditorTab.dropDown.addToken"),
-             action: this.addToken.bind(this)},
-            {name: 'Delete',
-             text: _("EditorTab.dropDown.delToken"),
-             action: this.deleteToken.bind(this)}
+             action: this.searchSimilarTokens.bind(this)}
         ]);
-	this.dataTable.addEvent(
-	    'dblclick',  // triggers on <td> elements
-	    function(target, id) {
-		if (target.hasClass("editTable_token") ||
-		    target.hasClass("editTable_tok_trans")) {
-		    // we don't want text to get selected here:
-		    if (window.getSelection)
-			window.getSelection().removeAllRanges();
-		    else if (document.selection)
-			document.selection.empty();
-		    this.editToken(id);
-		}
-	    }.bind(this)
-	);
+        if (cora.files.supportsTokenEditing(fileid)) {
+            this.dataTable.addDropdownEntries([
+                {name: 'Edit',
+                 text: _("EditorTab.dropDown.editToken"),
+                 action: this.editToken.bind(this)},
+                {name: 'Add',
+                 text: _("EditorTab.dropDown.addToken"),
+                 action: this.addToken.bind(this)},
+                {name: 'Delete',
+                 text: _("EditorTab.dropDown.delToken"),
+                 action: this.deleteToken.bind(this)}
+            ]);
+	    this.dataTable.addEvent(
+	        'dblclick',  // triggers on <td> elements
+	        function(target, id) {
+		    if (target.hasClass("editTable_token") ||
+		        target.hasClass("editTable_tok_trans")) {
+		        // we don't want text to get selected here:
+		        if (window.getSelection)
+			    window.getSelection().removeAllRanges();
+		        else if (document.selection)
+			    document.selection.empty();
+		        this.editToken(id);
+		    }
+	        }.bind(this)
+	    );
+        } // endif cora.files.supportsTokenEditing(fileid)
 	this.dataTable.addEvent(
 	    'focus',  // triggers on contained <input> and <select> elements
 	    function(target, id) {
@@ -1019,8 +1044,10 @@ var EditorModel = new Class({
 	}
 
 	$('addTokenBox').set('value', '');
-    $('addTokenBefore').empty().appendText(_("EditorTab.Forms.newTransInfo3", {'tokInFront' : old_token, 'lineInfo' : lineinfo}));
-    
+        $('addTokenBefore').empty().appendText(
+            _("EditorTab.Forms.newTransInfo3",
+              {'tokInFront' : old_token, 'lineInfo' : lineinfo})
+        );
 
 	var addTokenBox = new mBox.Modal({
 	    title: _("EditorTab.Forms.addTranscription"),

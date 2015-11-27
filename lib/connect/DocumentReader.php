@@ -1,3 +1,24 @@
+<?php 
+/*
+ * Copyright (C) 2015 Marcel Bollmann <bollmann@linguistics.rub.de>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */ ?>
 <?php
 
  /** @file DocumentReader.php
@@ -39,22 +60,16 @@ class DocumentReader extends DocumentAccessor {
    **********************************************/
 
   private function prepareReaderStatements() {
-    $stmt = "SELECT modern.id, modern.trans, modern.utf, "
-          . "       modern.tok_id, c1.value AS comment "
+    $stmt = "SELECT modern.id, modern.trans, modern.utf, modern.tok_id "
           . "FROM   modern "
           . "  LEFT JOIN token   ON modern.tok_id=token.id "
-          . "  LEFT JOIN comment c1 ON  c1.tok_id=token.id "
-          . "        AND c1.subtok_id=modern.id AND c1.comment_type='C' "
           . "WHERE  token.text_id=:tid "
           . "ORDER BY token.ordnr ASC, modern.id ASC "
           . "LIMIT  :offset, :count";
     $this->stmt_getLinesByRange = $this->dbo->prepare($stmt);
-    $stmt = "SELECT modern.id, modern.trans, modern.utf, "
-          . "       modern.tok_id, c1.value AS comment "
+    $stmt = "SELECT modern.id, modern.trans, modern.utf, modern.tok_id "
           . "FROM   modern "
           . "  LEFT JOIN token   ON modern.tok_id=token.id "
-          . "  LEFT JOIN comment c1 ON  c1.tok_id=token.id "
-          . "        AND c1.subtok_id=modern.id AND c1.comment_type='C' "
           . "WHERE  token.text_id=:tid AND modern.id=:mid";
     $this->stmt_getLinesByID = $this->dbo->prepare($stmt);
     $stmt = "SELECT d.trans, d.line_id FROM dipl d "
@@ -158,11 +173,9 @@ class DocumentReader extends DocumentAccessor {
     return $this->stmt_getDiplLayoutInfo->fetch(PDO::FETCH_ASSOC);
   }
 
-  /** Retrieve layout information for a given token.
+  /** Retrieve all annotations for a given token.
    *
    * @param int $tokid ID of the token
-   * @return an @em array with layout information for the first dipl
-   *         of the given token
    */
   public function getAllAnnotations($modid) {
     $this->stmt_getAllAnnotations->execute(array(':modid' => $modid));
