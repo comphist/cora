@@ -352,7 +352,7 @@ cora.userEditor = {
 
         if(user == undefined || user.id != uid) {
             gui.showMsgDialog('error',
-                              'Die Daten für den Benutzer konnten nicht geladen werden.');
+                              _("AdminTab.Forms.couldNotLoadUserData"));
             return;
         }
 
@@ -568,8 +568,8 @@ cora.annotatorEditor = {
             tr.getElement('td.adminAnnotatorNameCell').set('text', tagger.name);
             tr.getElement('td.adminAnnotatorClassCell').set('text', tagger.class_name);
             tr.getElement('td.adminAnnotatorTrainableCell')
-                .set('title', tagger.trainable ? 'Individuell trainierbar'
-                                               : 'Nicht individuell trainierbar');
+                .set('title', tagger.trainable ? _("AdminTab.individuallyTrainable")
+                                               : _("AdminTab.notIndividuallyTrainable"));
             tr.getElement('span.adminAnnotatorTrainableStatus')
                 .setStyle('display', tagger.trainable ? 'inline-block' : 'none');
             tr.getElement('td.adminAnnotatorTagsetCell')
@@ -707,11 +707,11 @@ cora.annotatorEditor = {
             this.flexrow.grabNewRow();
         /* dialog window */
         new mBox.Modal({
-            title: "Optionen für Tagger "+tid,
+            title: _("AdminTab.Forms.optionsForTagger", {taggerId: tid}),
             content: content,
             buttons: [
-                {title: 'Schließen', addClass: 'mform'},
-                {title: 'Ändern', addClass: 'mform button_red',
+                {title: _("Action.close"), addClass: 'mform'},
+                {title: _("Action.change"), addClass: 'mform button_red',
                  event: function() {
                      ref.changeAnnotatorOptionsFromDialog(tid, this.content);
                      this.close();
@@ -936,7 +936,7 @@ cora.projectEditor = {
                                   onSuccess: function(status) {
                                       var pid = Number.from(status.pid);
                                       if(typeof(pid) === "undefined" || pid < 1) {
-                                          gui.showMsgDialog('error', "Keine/ungültige Projekt-ID erhalten: '"+pid+"'");
+                                          gui.showMsgDialog('error', _("AdminTab.Forms.noValidProjectId", {projectId:pid}));
                                           return;
                                       }
 			              $('projectCreateForm').getElement('input').set('value', '');
@@ -1035,13 +1035,13 @@ cora.projectEditor = {
                || prj.settings.cmd_edittoken.length === 0) {
                 tr.getElement('td.adminProjectCmdEdittoken span').hide();
                 tr.getElement('td.adminProjectCmdEdittoken')
-                    .set('title', 'Kein Edit-Skript zugeordnet');
+                    .set('title', _("AdminTab.noEditScript"));
             }
             if(!prj.settings.cmd_import
                || prj.settings.cmd_import.length === 0) {
                 tr.getElement('td.adminProjectCmdImport span').hide();
                 tr.getElement('td.adminProjectCmdImport')
-                    .set('title', 'Kein Import-Skript zugeordnet');
+                    .set('title', _("AdminTab.noImportScript"));
             }
             tr.inject(table);
         });
@@ -1089,7 +1089,7 @@ cora.projectEditor = {
 
         if(prj == undefined || prj.id != pid) {
             gui.showMsgDialog('error',
-                              'Die Einstellungen für das Projekt konnten nicht geladen werden.');
+                              _("AdminTab.Forms.couldNotLoadSettings"));
             return;
         }
 
@@ -1257,8 +1257,8 @@ cora.tagsetEditor = {
 	    },
             onFailure: function(xhr) {
 		// never fires?
-       		gui.showTextDialog("Import nicht erfolgreich",
-                                   "Der Server lieferte folgende Fehlermeldung zurück:",
+       		gui.showTextDialog(_("AdminTab.Forms.importNoSuccess"),
+                                   _("AdminTab.Forms.serverResponseInfo"),
        		                   xhr.responseText);
        	    },
 	    onComplete: function(response){
@@ -1275,18 +1275,18 @@ cora.tagsetEditor = {
                 if (!error) {
                     if (response == null) {
                         error = true;
-		        message = "Beim Import des Tagsets ist ein unbekannter Fehler aufgetreten.";
+		        message = _("AdminTab.Forms.taggerImportError");
                     }
                     else if (!response.success) {
                         error = true;
                         textarea = response.errors;
-		        message  = "Beim Import des Tagsets ";
-		        message += response.errors.length>1 ? "sind " + response.errors.length : "ist ein";
-		        message += " Fehler aufgetreten:";
+		        message = response.errors.length>1 ? 
+                _("AdminTab.Forms.taggerImportErrorInfo2", {nE: response.errors.length}) : 
+                _("AdminTab.Forms.taggerImportErrorInfo1");
                     }
                 }
                 if (error) {
-                    title = "Tagset-Import fehlgeschlagen";
+                    title = _("AdminTab.Forms.tagsetImportFailed");
                     gui.showTextDialog(title, message, textarea);
                 }
                 else {
