@@ -247,7 +247,7 @@ class CoraSessionHandler {
   /** Wraps XMLHandler::import() */
   public function importFile($xmldata, $options) {
     $xml = new XMLHandler($this->db);
-    return $xml->import($xmldata, $options);
+    return $xml->import($xmldata, $options, $_SESSION["user_id"]);
   }
 
   /** Checks and parses the logfile for the current file import. */
@@ -334,7 +334,7 @@ class CoraSessionHandler {
     // perform import
     fwrite($logfile, "~BEGIN IMPORT\n");
     $xmldata = array("tmp_name" => $xmlname, "name" => $transdata['name']);
-    $status = $xml->import($xmldata, $options);
+    $status = $xml->import($xmldata, $options, $_SESSION["user_id"]);
     if(!isset($status['success']) || !$status['success']) {
       fwrite($logfile, "~ERROR IMPORT\n");
       fwrite($logfile, implode("\n", $status['errors']) . "\n");
