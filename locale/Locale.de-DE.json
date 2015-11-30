@@ -119,7 +119,12 @@
             "invalidServerResponseText" : "Antwort des Servers:\n{serverResponse}\n\nInterner Fehler:\n{errorMsg}",
             "deleteUserConfirm" : "Benutzer '{user}' wirklich löschen?",
             "importingTagset" : "Importiere Tagset...",
-            "tagsetSuccessfullyAdded" : "Das Tagset wurde erfolgreich hinzugefügt."
+            "tagsetSuccessfullyAdded" : "Das Tagset wurde erfolgreich hinzugefügt.",
+            "msgDelConfirm" : "Benachrichtigung {msg} wirklich löschen?",
+            "taggerDelConfirm" : "Tagger {taggerNum} '{taggerName}' wirklich löschen?",
+            "taggerClass" : "Class:",
+            "delProjectInfo" : "Projekte können nicht gelöscht werden, solange noch mindestens ein Dokument dem Projekt zugeordnet ist.",
+            "deleteProjectConfirm" : "Projekt {projectName} '{projectId}' wirklich löschen?"
 
 
 
@@ -361,7 +366,18 @@
         "loadTagsetError" : "Fehler beim Laden der Tagsets.",
         "changesApplied" : "Änderungen übernommen.",
         "changesNotApplied" : "Änderungen nicht übernommen.",
-        "userDeleted" : "Benutzer gelöscht."
+        "userDeleted" : "Benutzer gelöscht.",
+        "enterExpireDate" : "Ablauftermin muss angegeben werden!",
+        "enterMsg" : "Benachrichtigung darf nicht leer sein!",
+        "msgAdded" : "Benachrichtigung hinzugefügt.",
+        "msgDeleted" : "Benachrichtigung gelöscht.",
+        "taggerDeleted" : "Tagger gelöscht.",
+        "taggerCreated" : "Tagger erstellt.",
+        "taggerOptionsUpdated" : "Tagger-Optionen geändert.",
+        "enterTaggerName" : "Name darf nicht leer sein!",
+        "projectCreated" : "Projekt angelegt.",
+        "projectDeleted" : "Projekt gelöscht.",
+        "noImportFileSelected" : "Keine Datei zum Importieren ausgewählt!"
 
 
      }
