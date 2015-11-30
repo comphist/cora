@@ -78,7 +78,7 @@ class LocaleHandler {
     if (count($this->supported) == 0)
       return null;
     $default = Cfg::get("default_language");
-    if (in_array($this->supported, $default))
+    if (in_array($default, $this->supported))
       return $default;
     return $this->supported[0];
   }

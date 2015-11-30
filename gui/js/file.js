@@ -648,16 +648,9 @@ cora.fileImporter = {
         }
         catch (err) {
             title = _("FileTab.Forms.invalidServerResponse");
-
             message = _("FileTab.Forms.invalidServerResponseInfo");
-
-            textarea = _("FileTab.Forms.invalidServerResponseText", {errorMsg: err.message, serverResponse: response})
-
-            /*message = "Der Server lieferte eine ungültige Antwort zurück. "
-                    + "Das Importieren der Datei war möglicherweise nicht erfolgreich.";
-            textarea = "Fehler beim Interpretieren der Server-Antwort:\n\t"
-                     + err.message + "\n\nDer Server antwortete:\n" + response;
-            */
+            textarea = _("FileTab.Forms.invalidServerResponseText",
+                         {errorMsg: err.message, serverResponse: response});
         }
         if(message != "") {}
         else if(!response || typeof response.success == "undefined") {
@@ -667,11 +660,10 @@ cora.fileImporter = {
         }
         else if(!response.success) {
             title = _("FileTab.Forms.fileImportFailed");
-
-            var msgInfix = (response.errors.length>1) ? _("FileTab.Forms.error2", {errorCount: response.errors.length}) : _("FileTab.Forms.error1")
-
-            message = _("FileTab.Forms.importErrorInfo", {errorStr:msgInfix})
-
+            var msgInfix = (response.errors.length>1) ?
+                    _("FileTab.Forms.error2", {errorCount: response.errors.length}) :
+                    _("FileTab.Forms.error1");
+            message = _("FileTab.Forms.importErrorInfo", {errorStr:msgInfix});
             textarea = response.errors.join("\n");
         }
         else if(error_only) {
@@ -680,18 +672,11 @@ cora.fileImporter = {
         else {
             success = true;
             title = _("FileTab.Forms.importSuccess");
-            //message = "Die Datei wurde erfolgreich hinzufügt.";
             if(response.warnings instanceof Array && response.warnings.length>0) {
-                
-                var warningCount = (response.warnings.length>1) ? (response.warnings.length + " " + _("FileTab.Forms.warning2")) : _("FileTab.Forms.warning1");
-
-
-                message = " "+_("FileTab.Forms.importSuccessInfo", {nWarnings:warningCount})
-                /*message += " Das System lieferte "
-                         + ((response.warnings.length>1) ?
-                            (response.warnings.length + " Warnungen") : "eine Warnung")
-                         + " zurück:";
-                         */
+                var warningCount = (response.warnings.length>1) ?
+                        (response.warnings.length + " " + _("FileTab.Forms.warning2")) :
+                        _("FileTab.Forms.warning1");
+                message = " "+_("FileTab.Forms.importSuccessInfo", {nWarnings:warningCount});
                 textarea = response.warnings.join("\n");
             } else {
                 gui.showMsgDialog('info', message);
@@ -1217,14 +1202,15 @@ cora.fileManager = {
             + "gemacht werden!";
         */
 
-        var message = _("FileTab.Forms.deleteWarning", {file: cora.files.getDisplayName(fid)})
+        var message = _("FileTab.Forms.deleteWarning",
+                        {file: cora.files.getDisplayName(fid)});
         var performDelete = function() {
             gui.showSpinner({message: _("FileTab.Forms.pleaseWait")});
             cora.files.deleteFile(
                 fid,
                 {noticeOnError: true,
                  onSuccess: function(status) {
-		     gui.showNotice('ok', _("Banner.deleteConfirm"));g
+		     gui.showNotice('ok', _("Banner.deleteConfirm"));
                  },
                  onComplete: function() {
                      gui.hideSpinner();
