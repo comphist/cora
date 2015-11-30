@@ -117,10 +117,10 @@ cora.settings = {
                     em.dataTable.pages.update().setPageByLine(range.from).render();
 		    gui.changeTab('edit');
 		}
-                gui.showNotice('ok', 'Änderungen übernommen.');
+                gui.showNotice('ok', _("Banner.changesApplied"));
             }.bind(this),
             onFailure: function(){
-                gui.showNotice('error', 'Änderungen nicht übernommen.');
+                gui.showNotice('error', _("Banner.changesNotApplied"));
             }
 	});
     },
@@ -213,7 +213,7 @@ cora.settings = {
     _activatePasswordChangeForm: function() {
         /* Change password */
         var pwch = new mBox.Modal({
-	    title: 'Passwort ändern',
+	    title: _("SettingsTab.Forms.changePassword"),
 	    content: 'changePasswordFormDiv',
 	    attach: 'changePasswordLink'
         });
@@ -248,7 +248,7 @@ cora.settings = {
 		    pwch.close();
 		    form.reset($('changePasswordForm'));
 		    new mBox.Notice({
-		        content: 'Passwort geändert',
+		        content: _("SettingsTab.Forms.passwordChanged"),
 		        type: 'ok',
 		        position: {x: 'right'}
 		    });

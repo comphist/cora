@@ -113,9 +113,13 @@
             "changePasswordForm" : "Passwort ändern",
             "projectOptionsForm" : "Einstellungen für Projekt \"{project}\"",
             "usersSelected" : "Benutzer ausgewählt",
-            "tagsetsSelected" : "Tagset(s) ausgewählt"
-
-
+            "tagsetsSelected" : "Tagset(s) ausgewählt",
+            "invalidServerResponse" : "Fehlerhafte Server-Antwort",
+            "invalidServerResponseInfo" : "Der Server lieferte eine ungültige Antwort zurück.",
+            "invalidServerResponseText" : "Antwort des Servers:\n{serverResponse}\n\nInterner Fehler:\n{errorMsg}",
+            "deleteUserConfirm" : "Benutzer '{user}' wirklich löschen?",
+            "importingTagset" : "Importiere Tagset...",
+            "tagsetSuccessfullyAdded" : "Das Tagset wurde erfolgreich hinzugefügt."
 
 
 
@@ -134,6 +138,16 @@
         "noPreview" : "Aus",
         "editSupport" : "Editierhilfen",
         "highlightErrorTags" : "Fehlerhafte Tags hervorheben",
+        "Forms" : {
+            "oldPassword" : "Altes Passwort:",
+            "newPassword" : "Neues Passwort:",
+            "newPasswordRepeat" : "Neues Passwort (Wdh.)",
+            "doNotMatch" : "Die beiden Passwörter stimmen nicht überein!",
+            "oldInvalid" : "Altes Passwort ist nicht korrekt!",
+            "changePassword" : "Passwort ändern",
+            "passwordChanged" : "Passwort geändert"
+
+            },
         "editorLanguage" : {
             "english" : "Englisch",
             "german" : "Deutsch"
@@ -234,9 +248,7 @@
         "Forms" : {
             "warning" : "Achtung!",
             "lineNumber" : "Zeilennummer:",
-            "autoAnnotationInfo1" : "\"Annotieren\" überschreibt vorhandene Annotationen in allen Zeilen, die",
-            "autoAnnotationInfoNot" : "nicht",
-            "autoAnnotationInfo2" : "mittels des Fortschrittsbalkens grün markiert sind.",
+            "autoAnnotationInfo" : "\"Annotieren\" überschreibt vorhandene Annotationen in allen Zeilen, die **nicht** mittels des Fortschrittsbalkens grün markiert sind.",
             "confirmDeletion" : "Löschen bestätigen",
             "cannotBeUndone" : "Diese Aktion kann nicht rückgängig gemacht werden!",
             "deletionPrompt" : "Soll das Token \"{tok2del}\" wirklich gelöscht werden?",
@@ -346,7 +358,10 @@
         "importUnknownError" : "Import aus unbekannten Gründen fehlgeschlagen!",
         "noConnection" : "Keine Verbindung zum Server.",
         "openFileError" : "Fehler beim Öffnen der Datei.",
-        "loadTagsetError" : "Fehler beim Laden der Tagsets."
+        "loadTagsetError" : "Fehler beim Laden der Tagsets.",
+        "changesApplied" : "Änderungen übernommen.",
+        "changesNotApplied" : "Änderungen nicht übernommen.",
+        "userDeleted" : "Benutzer gelöscht."
 
 
      }

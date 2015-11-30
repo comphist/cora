@@ -189,22 +189,22 @@
       <div id="changePasswordFormDiv">
         <form action="request.php" id="changePasswordForm" method="post">
            <p>
-            <label for="oldpw">Altes Passwort: </label>
+            <label for="oldpw"><span data-trans-id="SettingsTab.Forms.oldPassword"><?=$lh("SettingsTab.Forms.oldPassword"); ?></span> </label>
             <input name="oldpw" type="password" size="30" data-required="" />
           </p>
           <p>
-            <label for="newpw">Neues Passwort: </label>
+            <label for="newpw"><span data-trans-id="SettingsTab.Forms.newPassword"><?=$lh("SettingsTab.Forms.newPassword"); ?></span> </label>
             <input name="newpw" type="password" size="30" data-required="" />
           </p>
           <p>
-            <label for="newpw2">Neues Passwort (wdh.): </label>
+            <label for="newpw2"><span data-trans-id="SettingsTab.Forms.newPasswordRepeat"><?=$lh("SettingsTab.Forms.newPasswordRepeat"); ?></span> </label>
             <input name="newpw2" type="password" size="30" data-required="" />
           </p>
-          <p id="changePasswordErrorNew" class="error_text">Die beiden Passwörter stimmen nicht überein!</p>
-          <p id="changePasswordErrorOld" class="error_text">Altes Passwort ist nicht korrekt!</p>
+          <p id="changePasswordErrorNew" class="error_text" data-trans-id="SettingsTab.Forms.doNotMatch"><?=$lh("SettingsTab.Forms.doNotMatch"); ?></p>
+          <p id="changePasswordErrorOld" class="error_text" data-trans-id="SettingsTab.Forms.oldInvalid"><?=$lh("SettingsTab.Forms.oldInvalid"); ?></p>
           <p><input type="hidden" name="action" value="changeUserPassword" /></p>
           <p style="text-align:right;">
-            <input type="submit" value="Passwort ändern" />
+            <input type="submit" value="<?=$lh("SettingsTab.Forms.changePassword"); ?>" data-trans-value-id="SettingsTab.Forms.changePassword"/>
           </p>
         </form>
       </div>

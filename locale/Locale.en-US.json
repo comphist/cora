@@ -73,7 +73,7 @@
         "serverMsg" : "Message",
         "serverTypes" : "Type",
         "expire" : "Expires",
-        "isAdminTitle" : "Administrator",
+        "isAdminTitle" : "Admin",
         "isNotAdminTitle" : "No admin",
         "Forms" : {
             "addUser" : "Add User",
@@ -112,7 +112,13 @@
             "changePasswordForm" : "Change password",
             "projectOptionsForm" : "Settings for Project \"{project}\"",
             "usersSelected" : "user(s) selected",
-            "tagsetsSelected" : "Tagset(s) selected"
+            "tagsetsSelected" : "Tagset(s) selected",
+            "invalidServerResponse" : "Invalid server response",
+            "invalidServerResponseInfo" : "The server returned an invalid response.",
+            "invalidServerResponseText" : "Server response:\n{serverResponse}\n\nInternal Error:\n{errorMsg}",
+            "deleteUserConfirm" : "Are you sure you want to delete the user '{user}'?",
+            "importingTagset" : "Importing tagset...",
+            "tagsetSuccessfullyAdded" : "Successfully added tagset to database."
 
 
         }
@@ -131,6 +137,16 @@
         "noPreview" : "Off",
         "editSupport" : "Editing support",
         "highlightErrorTags" : "Highlight erroneous tags",
+        "Forms" : {
+            "oldPassword" : "Current password:",
+            "newPassword" : "New password:",
+            "newPasswordRepeat" : "Repeat new password:",
+            "doNotMatch" : "The passwords you entered do not match!",
+            "oldInvalid" : "The current password you entered is not correct!",
+            "changePassword" : "Change password",
+            "passwordChanged" : "Password changed successfully."
+
+            },
         "editorLanguage" : {
             "english" : "English",
             "german" : "German"
@@ -231,9 +247,7 @@
         "Forms" : {
             "warning" : "Warning!",
             "lineNumber" : "Line number:",
-            "autoAnnotationInfo1" : "\"Annotate\" replaces any annotations in lines",
-            "autoAnnotationInfoNot" : "not",
-            "autoAnnotationInfo2" : "marked green in the progress area.", 
+            "autoAnnotationInfo" : "\"Annotate\" replaces any annotations in lines **not** marked green in the progress area.", 
             "confirmDeletion" : "Confirm deletion",
             "cannotBeUndone" : "This action cannot be undone!",
             "deletionPrompt" : "Are you sure you want to delete the token \"{tok2del}\"?",
@@ -342,7 +356,11 @@
         "importUnknownError" : "Import failed due to unknown error!",
         "noConnection" : "Could not connect to the server.",
         "openFileError" : "An error occurred while opening file.",
-        "loadTagsetError" : "An error occurred while loading tagset."
+        "loadTagsetError" : "An error occurred while loading tagset.",
+        "changesApplied" : "Changes applied successfully.",
+        "changesNotApplied" : "The changes were not applied.",
+        "userDeleted" : "User successfully deleted."
+
         
      }
  }

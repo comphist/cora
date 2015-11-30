@@ -109,7 +109,7 @@ cora.users = {
             textDialogOnError: true,
             onSuccess: function(status) {
                 this.performUpdate();
-                gui.showNotice('ok', "Benutzer gelöscht.");
+                gui.showNotice('ok', _("Banner.userDeleted"));
             }.bind(this),
             onComplete: function() { gui.unlock(); }
         }).post({'id': id});
@@ -311,7 +311,7 @@ cora.userEditor = {
 	var uid = parentrow.get('id').substr(5);
         var username = parentrow.getElement('td.adminUserNameCell').get('text');
         var performDelete = function() { cora.users.deleteUser(uid); };
-        gui.confirm("Benutzer '" + username + "' wirklich löschen?",
+        gui.confirm(_("AdminTab.Forms.deleteUserConfirm", {user:username}),
                     performDelete, true);
     },
 
@@ -329,9 +329,11 @@ cora.userEditor = {
         cora.users.toggleAdmin(uid, function(status) {
             td.toggleClass('adminUserIsAdmin');
 	    if(td.hasClass('adminUserIsAdmin')) {
-                td.set('title', 'Admin');
+                td.set('title', _("AdminTab.isAdminTitle"));
+
 	    } else {
-                td.set('title', 'Kein Admin');
+                td.set('title', _("AdminTab.isNotAdminTitle"));
+                
 	    }
         });
     },
@@ -1253,7 +1255,7 @@ cora.tagsetEditor = {
         var iFrame = new iFrameFormRequest(formname, {
 	    onRequest: function(){
 		import_mbox.close();
-		gui.showSpinner({message: 'Importiere Tagset...'});
+		gui.showSpinner({message: _("AdminTab.Forms.importingTagset")});
 	    },
             onFailure: function(xhr) {
 		// never fires?
@@ -1268,11 +1270,8 @@ cora.tagsetEditor = {
                     tmp.innerHTML = response;
                     response = JSON.decode(tmp.getElement('pre.json').get('text'));
 		} catch(err) {
-		    message = "Der Server lieferte eine ungültige Antwort zurück.";
-		    textarea  = "Antwort des Servers:\n";
-		    textarea += response;
-		    textarea += "\n\nInterner Fehler:\n";
-		    textarea += err.message;
+		    message = _("AdminTab.Forms.invalidServerResponseInfo");
+		    textarea  = _("AdminTab.Forms.invalidServerResponseText", {errorMsg: err.message, serverResponse: response})
 		    error = true;
 		}
                 if (!error) {
@@ -1294,7 +1293,7 @@ cora.tagsetEditor = {
                 }
                 else {
 		    form.reset($(formname));
-                    gui.showMsgDialog('ok', "Das Tagset wurde erfolgreich hinzugefügt.");
+                    gui.showMsgDialog('ok', _("AdminTab.Forms.tagsetSuccessfullyAdded"));
                 }
 		gui.hideSpinner();
             }

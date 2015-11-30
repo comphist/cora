@@ -163,9 +163,7 @@
     <p>
       <strong data-trans-id="EditorTab.Forms.warning"><?=$lh("EditorTab.Forms.warning"); ?></strong>
 
-      <span data-trans-id="EditorTab.Forms.autoAnnotationInfo1"><?=$lh("EditorTab.Forms.autoAnnotationInfo1"); ?></span>
-      <strong data-trans-id="EditorTab.Forms.autoAnnotationInfoNot"><?=$lh("EditorTab.Forms.autoAnnotationInfoNot"); ?></strong>
-      <span data-trans-id="EditorTab.Forms.autoAnnotationInfo2"><?=$lh("EditorTab.Forms.autoAnnotationInfo2"); ?></span>
+      <span data-trans-id="EditorTab.Forms.autoAnnotationInfo"><?=$lh("EditorTab.Forms.autoAnnotationInfo"); ?></span>
 
     </p>
     
