@@ -75,6 +75,11 @@
         "expire" : "Expires",
         "isAdminTitle" : "Admin",
         "isNotAdminTitle" : "No admin",
+        "noEditScript" : "No edit script",
+        "noImportScript" : "No import script",
+        "individuallyTrainable" : "Can be trained individually",
+        "notIndividuallyTrainable" : "Cannot be trained individually",
+        "deleteTagger" : "Delete tagger",
         "Forms" : {
             "addUser" : "Add User",
             "newUserName" : "User name:",
@@ -118,7 +123,22 @@
             "invalidServerResponseText" : "Server response:\n{serverResponse}\n\nInternal Error:\n{errorMsg}",
             "deleteUserConfirm" : "Are you sure you want to delete the user '{user}'?",
             "importingTagset" : "Importing tagset...",
-            "tagsetSuccessfullyAdded" : "Successfully added tagset to database."
+            "tagsetSuccessfullyAdded" : "Successfully added tagset to database.",
+            "msgDelConfirm" : "Are you sure you want to delete message number {msg}?",
+            "taggerDelConfirm" : "Are you sure you want to delete the tagger {taggerNum} '{taggerName}'?",
+            "taggerClass" : "Class:",
+            "delProjectInfo" : "Projects cannot be deleted as long as they contain any documents.",
+            "deleteProjectConfirm" : "Are you sure you want to delete the project {projectName} '{projectId}'?",
+            "optionsForTagger" : "Options for tagger {taggerId}",
+            "taggerImportError" : "An unknow error occurred while importing the tagset.",
+            "taggerImportErrorInfo1" : "An error occurred while importing the tagset:",
+            "taggerImportErrorInfo2" : "{nE} errors occurred while importing the tagset:",
+            "tagsetImportFailed" : "Tagset import failed!",
+            "importNoSuccess" : "Import failed",
+            "serverResponseInfo" : "The server returned the response below:",
+            "couldNotLoadSettings" : "The project settings could not be loaded.",
+            "noValidProjectId" : "Received no/an unvalid project ID: '{projectId}'",
+            "couldNotLoadUserData" : "The user's data could not be loaded."
 
 
         }
@@ -359,7 +379,18 @@
         "loadTagsetError" : "An error occurred while loading tagset.",
         "changesApplied" : "Changes applied successfully.",
         "changesNotApplied" : "The changes were not applied.",
-        "userDeleted" : "User successfully deleted."
+        "userDeleted" : "User successfully deleted.",
+        "enterExpireDate" : "Please enter an expiry date!",
+        "enterMsg" : "Please enter a message!",
+        "msgAdded" : "Message added successfully.",
+        "msgDeleted" : "Message successfully deleted.",
+        "taggerDeleted" : "Tagger successfully deleted.",
+        "taggerCreated" : "Tagger successfully created.",
+        "taggerOptionsUpdated" : "Tagger options updated successfully.",
+        "enterTaggerName" : "Please enter a name for the tagger.",
+        "projectCreated" : "Project created successfully.",
+        "projectDeleted" : "Project successfully deleted.",
+        "noImportFileSelected" : "No import file selected!"
 
         
      }

@@ -352,7 +352,7 @@ cora.userEditor = {
 
         if(user == undefined || user.id != uid) {
             gui.showMsgDialog('error',
-                              'Die Daten für den Benutzer konnten nicht geladen werden.');
+                              _("AdminTab.Forms.couldNotLoadUserData"));
             return;
         }
 
@@ -568,8 +568,8 @@ cora.annotatorEditor = {
             tr.getElement('td.adminAnnotatorNameCell').set('text', tagger.name);
             tr.getElement('td.adminAnnotatorClassCell').set('text', tagger.class_name);
             tr.getElement('td.adminAnnotatorTrainableCell')
-                .set('title', tagger.trainable ? 'Individuell trainierbar'
-                                               : 'Nicht individuell trainierbar');
+                .set('title', tagger.trainable ? _("AdminTab.individuallyTrainable")
+                                               : _("AdminTab.notIndividuallyTrainable"));
             tr.getElement('span.adminAnnotatorTrainableStatus')
                 .setStyle('display', tagger.trainable ? 'inline-block' : 'none');
             tr.getElement('td.adminAnnotatorTagsetCell')
@@ -593,12 +593,12 @@ cora.annotatorEditor = {
                 textDialogOnError: true,
                 onSuccess: function(status) {
                     this.performUpdate();
-                    gui.showNotice('ok', "Tagger gelöscht.");
+                    gui.showNotice('ok', _("Banner.taggerDeleted"));
                 }.bind(this),
                 onComplete: function() { gui.unlock(); }
             }).get({'id': tid});
         }.bind(this);
-        gui.confirm("Tagger "+tid+" '"+name+"' wirklich löschen?",
+        gui.confirm(_("AdminTab.Forms.taggerDelConfirm", {taggerNum: tid, taggerName: name}),
                     performDelete, true);
     },
 
@@ -619,7 +619,7 @@ cora.annotatorEditor = {
                 this.performUpdate(function() {
                     this.showAnnotatorOptionsDialog(status.id);
                 }.bind(this));
-                gui.showNotice('ok', "Tagger erstellt.");
+                gui.showNotice('ok', _("Banner.taggerCreated"));
             }.bind(this),
             onComplete: function() { gui.unlock(); }
         }).post({'name': name, 'class': 'None'});
@@ -664,7 +664,7 @@ cora.annotatorEditor = {
             textDialogOnError: true,
             onSuccess: function(status) {
                 this.performUpdate();
-                gui.showNotice('ok', "Tagger-Optionen geändert.");
+                gui.showNotice('ok', _("Banner.taggerOptionsUpdated"));
             }.bind(this),
             onComplete: function() { gui.unlock(); }
         }).post(annotator);
@@ -707,11 +707,11 @@ cora.annotatorEditor = {
             this.flexrow.grabNewRow();
         /* dialog window */
         new mBox.Modal({
-            title: "Optionen für Tagger "+tid,
+            title: _("AdminTab.Forms.optionsForTagger", {taggerId: tid}),
             content: content,
             buttons: [
-                {title: 'Schließen', addClass: 'mform'},
-                {title: 'Ändern', addClass: 'mform button_red',
+                {title: _("Action.close"), addClass: 'mform'},
+                {title: _("Action.change"), addClass: 'mform button_red',
                  event: function() {
                      ref.changeAnnotatorOptionsFromDialog(tid, this.content);
                      this.close();
@@ -729,7 +729,7 @@ cora.annotatorEditor = {
         var performRequest = function(content) {
             var name = content.getElement('input').get('value');
             if(!name || name.length < 1) {
-                gui.showNotice('error', 'Name darf nicht leer sein!');
+                gui.showNotice('error', _("Banner.enterTaggerName"));
                 return false;
             }
             this.createAnnotator(name);
@@ -826,7 +826,7 @@ cora.noticeEditor = {
             textDialogOnError: true,
             onSuccess: function(status) {
                 this.performUpdate();
-                gui.showNotice('ok', "Benachrichtigung hinzugefügt.");
+                gui.showNotice('ok', _("Banner.msgAdded"));
             }.bind(this),
             onComplete: function() { gui.unlock(); }
         }).post({'type': type, 'text': text, 'expires': expires});
@@ -846,12 +846,12 @@ cora.noticeEditor = {
                 textDialogOnError: true,
                 onSuccess: function(status) {
                     this.performUpdate();
-                    gui.showNotice('ok', "Benachrichtigung gelöscht.");
+                    gui.showNotice('ok', _("Banner.msgDeleted"));
                 }.bind(this),
                 onComplete: function() { gui.unlock(); }
             }).get({'id': nid});
         }.bind(this);
-        gui.confirm("Benachrichtigung "+nid+" wirklich löschen?",
+        gui.confirm(_("AdminTab.Forms.msgDelConfirm", {msg: nid}),
                     performDelete, true);
     },
 
@@ -866,11 +866,11 @@ cora.noticeEditor = {
             text = content.getElement('textarea').get('value');
             expires = content.getElement('input').get('value');
             if(!expires || expires.length < 1) {
-                gui.showNotice('error', 'Ablauftermin muss angegeben werden!');
+                gui.showNotice('error', _("Banner.enterExpireDate"));
                 return false;
             }
             if(!text || text.length < 1) {
-                gui.showNotice('error', 'Benachrichtigung darf nicht leer sein!');
+                gui.showNotice('error', _("Banner.enterMsg"));
                 return false;
             }
             this.createNotice(type, text, expires);
@@ -936,12 +936,12 @@ cora.projectEditor = {
                                   onSuccess: function(status) {
                                       var pid = Number.from(status.pid);
                                       if(typeof(pid) === "undefined" || pid < 1) {
-                                          gui.showMsgDialog('error', "Keine/ungültige Projekt-ID erhalten: '"+pid+"'");
+                                          gui.showMsgDialog('error', _("AdminTab.Forms.noValidProjectId", {projectId:pid}));
                                           return;
                                       }
                                       $('projectCreateForm').getElement('input').set('value', '');
                                       this.close();
-                                      gui.showNotice('ok', 'Projekt angelegt.');
+                                      gui.showNotice('ok', _("Banner.projectCreated"));
                                       cora.projects.performUpdate(function() {
                                           ref.showProjectEditDialog(pid);
                                       });
@@ -998,19 +998,17 @@ cora.projectEditor = {
                     textDialogOnError: true,
                     onSuccess: function(status) {
                         cora.projects.performUpdate();
-                        gui.showNotice('ok', "Projekt gelöscht.");
+                        gui.showNotice('ok', _("Banner.projectDeleted"));
                     }.bind(this),
                     onComplete: function() { gui.unlock(); }
                 }).get({'project_id': pid});
             } else {
                 setTimeout(function() {
-                    gui.showMsgDialog('error', 'Projekte können nicht gelöscht werden, '
-                                      + 'solange noch mindestens ein Dokument dem Projekt '
-                                      + 'zugeordnet ist.');
+                    gui.showMsgDialog('error', _("AdminTab.Forms.delProjectInfo"));
                 }, 10);
             }
         };
-        gui.confirm("Projekt "+pid+" '"+pn+"' wirklich löschen?",
+        gui.confirm(_("AdminTab.Forms.deleteProjectConfirm", {projectName: pn, projectId: pid}),
                     performDelete, true);
     },
 
@@ -1037,13 +1035,13 @@ cora.projectEditor = {
                || prj.settings.cmd_edittoken.length === 0) {
                 tr.getElement('td.adminProjectCmdEdittoken span').hide();
                 tr.getElement('td.adminProjectCmdEdittoken')
-                    .set('title', 'Kein Edit-Skript zugeordnet');
+                    .set('title', _("AdminTab.noEditScript"));
             }
             if(!prj.settings.cmd_import
                || prj.settings.cmd_import.length === 0) {
                 tr.getElement('td.adminProjectCmdImport span').hide();
                 tr.getElement('td.adminProjectCmdImport')
-                    .set('title', 'Kein Import-Skript zugeordnet');
+                    .set('title', _("AdminTab.noImportScript"));
             }
             tr.inject(table);
         });
@@ -1091,7 +1089,7 @@ cora.projectEditor = {
 
         if(prj == undefined || prj.id != pid) {
             gui.showMsgDialog('error',
-                              'Die Einstellungen für das Projekt konnten nicht geladen werden.');
+                              _("AdminTab.Forms.couldNotLoadSettings"));
             return;
         }
 
@@ -1247,7 +1245,7 @@ cora.tagsetEditor = {
             }
             var importfile = $(formname).getElement('input[name="txtFile"]').get('value');
             if(importfile==null || importfile=="") {
-                gui.showNotice('error', "Keine Datei zum Importieren ausgewählt!");
+                gui.showNotice('error', _("Banner.noImportFileSelected"));
                 e.stop();
             }
         });
@@ -1259,8 +1257,8 @@ cora.tagsetEditor = {
             },
             onFailure: function(xhr) {
                 // never fires?
-                gui.showTextDialog("Import nicht erfolgreich",
-                                   "Der Server lieferte folgende Fehlermeldung zurück:",
+                gui.showTextDialog(_("AdminTab.Forms.importNoSuccess"),
+                                   _("AdminTab.Forms.serverResponseInfo"),
        	                           xhr.responseText);
        	    },
 	    onComplete: function(response){
@@ -1271,24 +1269,24 @@ cora.tagsetEditor = {
                     response = JSON.decode(tmp.getElement('pre.json').get('text'));
 		} catch(err) {
 		    message = _("AdminTab.Forms.invalidServerResponseInfo");
-		    textarea  = _("AdminTab.Forms.invalidServerResponseText", {errorMsg: err.message, serverResponse: response})
+		    textarea = _("AdminTab.Forms.invalidServerResponseText", {errorMsg: err.message, serverResponse: response});
 		    error = true;
 		}
                 if (!error) {
                     if (response == null) {
                         error = true;
-		        message = "Beim Import des Tagsets ist ein unbekannter Fehler aufgetreten.";
+		        message = _("AdminTab.Forms.taggerImportError");
                     }
                     else if (!response.success) {
                         error = true;
                         textarea = response.errors;
-		        message  = "Beim Import des Tagsets ";
-		        message += response.errors.length>1 ? "sind " + response.errors.length : "ist ein";
-		        message += " Fehler aufgetreten:";
+		        message = response.errors.length>1 ? 
+                _("AdminTab.Forms.taggerImportErrorInfo2", {nE: response.errors.length}) : 
+                _("AdminTab.Forms.taggerImportErrorInfo1");
                     }
                 }
                 if (error) {
-                    title = "Tagset-Import fehlgeschlagen";
+                    title = _("AdminTab.Forms.tagsetImportFailed");
                     gui.showTextDialog(title, message, textarea);
                 }
                 else {

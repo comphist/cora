@@ -76,6 +76,11 @@
         "expire" : "Expires",
         "isAdminTitle" : "Admin",
         "isNotAdminTitle" : "Kein Admin",
+        "noEditScript" : "Kein Edit-Skript zugeordnet",
+        "noImportScript" : "Kein Import-Skript zugeordnet",
+        "individuallyTrainable" : "Individuell trainierbar",
+        "notIndividuallyTrainable" : "Nicht individuell trainierbar",
+        "deleteTagger" : "Tagger löschen",
         "Forms" : {
             "addUser" : "Neuen Benutzer hinzufügen",
             "newUserName" : "Benutzername:",
@@ -119,7 +124,23 @@
             "invalidServerResponseText" : "Antwort des Servers:\n{serverResponse}\n\nInterner Fehler:\n{errorMsg}",
             "deleteUserConfirm" : "Benutzer '{user}' wirklich löschen?",
             "importingTagset" : "Importiere Tagset...",
-            "tagsetSuccessfullyAdded" : "Das Tagset wurde erfolgreich hinzugefügt."
+            "tagsetSuccessfullyAdded" : "Das Tagset wurde erfolgreich hinzugefügt.",
+            "msgDelConfirm" : "Benachrichtigung {msg} wirklich löschen?",
+            "taggerDelConfirm" : "Tagger {taggerNum} '{taggerName}' wirklich löschen?",
+            "taggerClass" : "Class:",
+            "delProjectInfo" : "Projekte können nicht gelöscht werden, solange noch mindestens ein Dokument dem Projekt zugeordnet ist.",
+            "deleteProjectConfirm" : "Projekt {projectName} '{projectId}' wirklich löschen?",
+            "optionsForTagger" : "Optionen für Tagger {taggerId}",
+            "taggerImportError" : "Beim Import des Tagsets ist ein unbekannter Fehler aufgetreten.",
+            "taggerImportErrorInfo1" : "Beim Import des Tagsets ist ein Fehler aufgetreten:",
+            "taggerImportErrorInfo2" : "Beim Import des Tagsets sind {nE} Fehler aufgetreten:",
+            "tagsetImportFailed" : "Tagset-Import fehlgeschlagen!",
+            "importNoSuccess" : "Import nicht erfolgreich",
+            "serverResponseInfo" : "Der Server lieferte folgende Fehlermeldung zurück:",
+            "couldNotLoadSettings" : "Die Einstellungen für das Projekt konnten nicht geladen werden.",
+            "noValidProjectId" : "Keine/ungültige Projekt-ID erhalten: '{projectId}'",
+            "couldNotLoadUserData" : "Die Daten für den Benutzer konnten nicht geladen werden."
+            
 
 
 
@@ -361,7 +382,18 @@
         "loadTagsetError" : "Fehler beim Laden der Tagsets.",
         "changesApplied" : "Änderungen übernommen.",
         "changesNotApplied" : "Änderungen nicht übernommen.",
-        "userDeleted" : "Benutzer gelöscht."
+        "userDeleted" : "Benutzer gelöscht.",
+        "enterExpireDate" : "Ablauftermin muss angegeben werden!",
+        "enterMsg" : "Benachrichtigung darf nicht leer sein!",
+        "msgAdded" : "Benachrichtigung hinzugefügt.",
+        "msgDeleted" : "Benachrichtigung gelöscht.",
+        "taggerDeleted" : "Tagger gelöscht.",
+        "taggerCreated" : "Tagger erstellt.",
+        "taggerOptionsUpdated" : "Tagger-Optionen geändert.",
+        "enterTaggerName" : "Name darf nicht leer sein!",
+        "projectCreated" : "Projekt angelegt.",
+        "projectDeleted" : "Projekt gelöscht.",
+        "noImportFileSelected" : "Keine Datei zum Importieren ausgewählt!"
 
 
      }
