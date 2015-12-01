@@ -77,9 +77,13 @@
         "isNotAdminTitle" : "No admin",
         "noEditScript" : "No edit script",
         "noImportScript" : "No import script",
+        "editScript" : "Edit script set",
+        "importScript" : "Import script set",
         "individuallyTrainable" : "Can be trained individually",
         "notIndividuallyTrainable" : "Cannot be trained individually",
         "deleteTagger" : "Delete tagger",
+        "options" : "Options...",
+        "deleteMsg" : "Delete message",
         "Forms" : {
             "addUser" : "Add User",
             "newUserName" : "User name:",
@@ -138,7 +142,12 @@
             "serverResponseInfo" : "The server returned the response below:",
             "couldNotLoadSettings" : "The project settings could not be loaded.",
             "noValidProjectId" : "Received no/an unvalid project ID: '{projectId}'",
-            "couldNotLoadUserData" : "The user's data could not be loaded."
+            "couldNotLoadUserData" : "The user's data could not be loaded.",
+            "trainablePerProject" : "Trainable project-individually",
+            "taggerOptions" : "Options:",
+            "taggerOptionsInfo" : "You can only annotate texts using this tagger if they are associated at least with the tagsets selected here.t" 
+
+
 
 
         }
@@ -188,7 +197,7 @@
         "collapseProjectGroups" : "Collapse all project groups",
         "deleteFile" : "Delete file",
         "exportFileTitle" : "Export file",
-        "editTagsetAssociations" : "Edit associated tag sets",
+        "editTagsetAssociations" : "Edit associated tagsets",
         "closeFileTitle" : "Close file",
         "Forms" : {
             "exportFile" : "Export File",

@@ -78,9 +78,13 @@
         "isNotAdminTitle" : "Kein Admin",
         "noEditScript" : "Kein Edit-Skript zugeordnet",
         "noImportScript" : "Kein Import-Skript zugeordnet",
+        "editScript" : "Edit-Skript zugeordnet",
+        "importScript" : "Import-Skript zugeordnet",
         "individuallyTrainable" : "Individuell trainierbar",
         "notIndividuallyTrainable" : "Nicht individuell trainierbar",
         "deleteTagger" : "Tagger löschen",
+        "options" : "Optionen...",
+        "deleteMsg" : "Benachrichtigung löschen",
         "Forms" : {
             "addUser" : "Neuen Benutzer hinzufügen",
             "newUserName" : "Benutzername:",
@@ -139,7 +143,10 @@
             "serverResponseInfo" : "Der Server lieferte folgende Fehlermeldung zurück:",
             "couldNotLoadSettings" : "Die Einstellungen für das Projekt konnten nicht geladen werden.",
             "noValidProjectId" : "Keine/ungültige Projekt-ID erhalten: '{projectId}'",
-            "couldNotLoadUserData" : "Die Daten für den Benutzer konnten nicht geladen werden."
+            "couldNotLoadUserData" : "Die Daten für den Benutzer konnten nicht geladen werden.",
+            "trainablePerProject" : "Projekt-spezifisch trainierbar",
+            "taggerOptions" : "Optionen:",
+            "taggerOptionsInfo" : "Nur Texte, denen auch mindestens die hier ausgewählten Tagsets zugeordnet sind, können mit diesem Tagger annotiert werden." 
             
 
 

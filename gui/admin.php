@@ -35,15 +35,31 @@ $ulist = array();
 <div id="adminDiv" class="content" style="display: none;">
   <div class="panel">
     <div class="btn-toolbar">
-      <span class="btn-toolbar-entry" id="adminUsersRefresh" title="<?=$lh("AdminTab.refresh"); ?>" data-trans-title-id="AdminTab.refresh"><span class="oi" data-glyph="reload" aria-hidden="true"></span></span>
-      <span class="btn-toolbar-entry" id="adminViewCollapseAll" title="<?=$lh("AdminTab.collapseCategories"); ?>" data-trans-title-id="AdminTab.collapseCategories"><span class="oi" data-glyph="collapse-up" aria-hidden="true"></span></span>
-      <span class="btn-toolbar-entry" id="adminViewExpandAll" title="<?=$lh("AdminTab.expandCategories"); ?>" data-trans-title-id="AdminTab.expandCategories"><span class="oi" data-glyph="collapse-down" aria-hidden="true"></span></span>
-      <span class="btn-toolbar-entry" id="adminCreateUser"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> <span data-trans-id="AdminTab.newUser"><?=$lh("AdminTab.newUser"); ?></span></span>
-      <span class="btn-toolbar-entry" id="adminCreateProject"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> <span data-trans-id="AdminTab.newProject"><?=$lh("AdminTab.newProject"); ?></span></span>
-      <span class="btn-toolbar-entry" id="adminCreateAnnotator"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> <span data-trans-id="AdminTab.newTagger"><?=$lh("AdminTab.newTagger"); ?></span></span>
-      <span class="btn-toolbar-entry" id="adminCreateNotice"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> <span data-trans-id="AdminTab.newMsg"><?=$lh("AdminTab.newMsg"); ?></span></span>
-      <span class="btn-toolbar-entry" id="adminViewTagset"><span class="oi" aria-hidden="true"></span><span data-trans-id="AdminTab.tagsetBrowser"><?=$lh("AdminTab.tagsetBrowser"); ?></span></span>
-      <span class="btn-toolbar-entry" id="adminImportTagset"><span class="oi" data-glyph="data-transfer-upload" aria-hidden="true"></span> <span data-trans-id="AdminTab.importTagset"><?=$lh("AdminTab.importTagset"); ?></span></span>
+      <span class="btn-toolbar-entry" id="adminUsersRefresh" title="<?=$lh("AdminTab.refresh"); ?>" data-trans-title-id="AdminTab.refresh">
+        <span class="oi" data-glyph="reload" aria-hidden="true"></span>
+      </span>
+      <span class="btn-toolbar-entry" id="adminViewCollapseAll" title="<?=$lh("AdminTab.collapseCategories"); ?>" data-trans-title-id="AdminTab.collapseCategories">
+        <span class="oi" data-glyph="collapse-up" aria-hidden="true"></span>
+      </span>
+      <span class="btn-toolbar-entry" id="adminViewExpandAll" title="<?=$lh("AdminTab.expandCategories"); ?>" data-trans-title-id="AdminTab.expandCategories">
+        <span class="oi" data-glyph="collapse-down" aria-hidden="true"></span>
+      </span>
+      <span class="btn-toolbar-entry" id="adminCreateUser"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> <span data-trans-id="AdminTab.newUser">
+      <?=$lh("AdminTab.newUser"); ?></span>
+    </span>
+      <span class="btn-toolbar-entry" id="adminCreateProject">
+        <span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> 
+        <span data-trans-id="AdminTab.newProject"><?=$lh("AdminTab.newProject"); ?>
+        </span>
+      </span>
+      <span class="btn-toolbar-entry" id="adminCreateAnnotator">
+        <span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> <span data-trans-id="AdminTab.newTagger"><?=$lh("AdminTab.newTagger"); ?></span></span>
+      <span class="btn-toolbar-entry" id="adminCreateNotice">
+        <span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> <span data-trans-id="AdminTab.newMsg"><?=$lh("AdminTab.newMsg"); ?></span></span>
+      <span class="btn-toolbar-entry" id="adminViewTagset">
+        <span class="oi" aria-hidden="true"></span><span data-trans-id="AdminTab.tagsetBrowser"><?=$lh("AdminTab.tagsetBrowser"); ?></span></span>
+      <span class="btn-toolbar-entry" id="adminImportTagset">
+        <span class="oi" data-glyph="data-transfer-upload" aria-hidden="true"></span> <span data-trans-id="AdminTab.importTagset"><?=$lh("AdminTab.importTagset"); ?></span></span>
     </div>
 
     <!-- USER MANAGEMENT -->
@@ -146,68 +162,79 @@ $ulist = array();
   <div class="templateHolder" style="display: none;">
     <div id="templateCreateNotice">
       <p>
-        <label for="noticetype" class="ra"><span data-trans-id="AdminTab.Forms.type"><?=$lh("AdminTab.Forms.type"); ?></span> </label>
+        <label for="noticetype" class="ra">
+          <span data-trans-id="AdminTab.Forms.type"><?=$lh("AdminTab.Forms.type"); ?></span> </label>
         <select name="noticetype" size="1">
           <option value="alert">Alert</option>
           <!-- <option value="info">Info</option> -->
         </select>
       </p>
       <p>
-        <label for="noticeexpires" class="ra"><span data-trans-id="AdminTab.Forms.expireDate"><?=$lh("AdminTab.Forms.expireDate"); ?></span> </label>
+        <label for="noticeexpires" class="ra">
+          <span data-trans-id="AdminTab.Forms.expireDate"><?=$lh("AdminTab.Forms.expireDate"); ?></span> </label>
         <input type="text" name="noticeexpires" value="" data-required="" class="mform" />
       </p>
       <p>
-        <label for="noticetext" class="ra vt"><span data-trans-id="AdminTab.Forms.msgText"><?=$lh("AdminTab.Forms.msgText"); ?></span> </label>
+        <label for="noticetext" class="ra vt">
+          <span data-trans-id="AdminTab.Forms.msgText"><?=$lh("AdminTab.Forms.msgText"); ?></span> </label>
         <textarea cols="30" rows="3" name="noticetext" value="" data-required="" class="mform"></textarea>
       </p>
     </div>
 
     <div id="templateCreateUser">
       <p>
-        <label for="newuser" class="ra"><span data-trans-id="AdminTab.Forms.newUserName"><?=$lh("AdminTab.Forms.newUserName"); ?></span> </label>
+        <label for="newuser" class="ra">
+          <span data-trans-id="AdminTab.Forms.newUserName"><?=$lh("AdminTab.Forms.newUserName"); ?></span> </label>
         <input type="text" name="newuser" value="" data-required="" class="mform" />
       </p>
       <p>
-        <label for="newpw" class="ra"><span data-trans-id="AdminTab.Forms.password"><?=$lh("AdminTab.Forms.password"); ?></span> </label>
+        <label for="newpw" class="ra">
+          <span data-trans-id="AdminTab.Forms.password"><?=$lh("AdminTab.Forms.password"); ?></span> </label>
         <input type="password" name="newpw" value="" data-required="" class="mform" />
       </p>
       <p>
-        <label for="newpw2" class="ra"><span data-trans-id="AdminTab.Forms.repeatPassword"><?=$lh("AdminTab.Forms.repeatPassword"); ?></span> </label>
+        <label for="newpw2" class="ra">
+          <span data-trans-id="AdminTab.Forms.repeatPassword"><?=$lh("AdminTab.Forms.repeatPassword"); ?></span> </label>
         <input type="password" name="newpw2" value="" data-required="" class="mform" />
       </p>
     </div>
 
     <div id="templateChangePassword">
       <p>
-        <label for="newchpw" class="ra"><span data-trans-id="AdminTab.Forms.newPassword"><?=$lh("AdminTab.Forms.newPassword"); ?></span> </label>
+        <label for="newchpw" class="ra">
+          <span data-trans-id="AdminTab.Forms.newPassword"><?=$lh("AdminTab.Forms.newPassword"); ?></span> </label>
         <input type="password" name="newchpw" value="" data-required="" class="mform" />
       </p>
       <p>
-        <label for="newchpw2" class="ra"><span data-trans-id="AdminTab.Forms.repeatNewPassword"><?=$lh("AdminTab.Forms.repeatNewPassword"); ?></span> </label>
+        <label for="newchpw2" class="ra">
+          <span data-trans-id="AdminTab.Forms.repeatNewPassword"><?=$lh("AdminTab.Forms.repeatNewPassword"); ?></span> </label>
         <input type="password" name="newchpw2" value="" data-required="" class="mform" />
       </p>
     </div>
 
     <div id="annotatorEditForm" class="annotatorEditForm">
       <p>
-        <label for="annotatorDisplayName" class="ra">Name: </label>
+        <label for="annotatorDisplayName" class="ra">
+          <span data-trans-id="AdminTab.Forms.taggerName"><?=$lh("AdminTab.Forms.taggerName"); ?></span> </label>
         <input type="text" name="annotatorDisplayName" class="mform" />
       </p>
       <p>
-        <label for="annotatorClassName" class="ra">Klasse: </label>
+        <label for="annotatorClassName" class="ra">
+          <span data-trans-id="AdminTab.Forms.taggerClass"><?=$lh("AdminTab.Forms.taggerClass"); ?></span> </label>
         <input type="text" name="annotatorClassName" class="mform" />
       </p>
       <p>
-        <label for="annotatorOptions">Optionen: </label>
+        <label for="annotatorOptions"><span data-trans-id="AdminTab.Forms.taggerOptions"><?=$lh("AdminTab.Forms.taggerOptions"); ?></span> </label>
         <ul class="flexrow-container"></ul>
       </p>
       <p>
-        <input type="checkbox" id="annotatorIsTrainable" name="annotatorIsTrainable" value="trainable" class="mform" /><label for="annotatorIsTrainable">Projekt-spezifisch trainierbar</label>
+        <input type="checkbox" id="annotatorIsTrainable" name="annotatorIsTrainable" value="trainable" class="mform" />
+        <label for="annotatorIsTrainable" data-trans-id="AdminTab.Forms.trainablePerProject"><?=$lh("AdminTab.Forms.trainablePerProject"); ?></label>
       </p>
-      <p><label>Zugeordnete Tagsets:</label></p>
+      <p><label data-trans-title-id="AdminTab.Forms.associatedTagsets"><?=$lh("AdminTab.Forms.associatedTagsets"); ?></label></p>
       <div class="tagsetSelectPlaceholder"></div>
-      <p>
-        Nur Texte, denen auch mindestens die hier ausgewählten Tagsets zugeordnet sind, können mit diesem Tagger annotiert werden.
+      <p data-trans-id="AdminTab.Forms.taggerOptionsInfo">
+        <?=$lh("AdminTab.Forms.taggerOptionsInfo"); ?>
       </p>
     </div>
 
@@ -245,14 +272,18 @@ $ulist = array();
 
     <div id="projectCreateForm">
       <p>
-        <label for="project_name" class="ra" data-trans-id="AdminTab.Forms.projectName"><?=$lh("AdminTab.Forms.projectName"); ?></label>
+        <label for="project_name" class="ra" data-trans-id="AdminTab.Forms.projectName">
+          <?=$lh("AdminTab.Forms.projectName"); ?>
+        </label>
         <input type="text" name="project_name" value="" class="mform" />
       </p>
     </div>
 
     <div id="annotatorCreateForm">
       <p>
-        <label for="annotator_name" class="ra" data-trans-id="AdminTab.Forms.taggerName"><?=$lh("AdminTab.Forms.taggerName"); ?></label>
+        <label for="annotator_name" class="ra" data-trans-id="AdminTab.Forms.taggerName">
+          <?=$lh("AdminTab.Forms.taggerName"); ?>
+        </label>
         <input type="text" name="annotator_name" value="" class="mform" />
       </p>
     </div>
@@ -260,15 +291,21 @@ $ulist = array();
     <div id="tagsetImportForm">
       <form action="request.php" id="newTagsetImportForm" method="post" accept-charset="utf-8" enctype="multipart/form-data">
       <p>
-        <label for="tagset_name" data-trans-id="AdminTab.Forms.tagsetName"><?=$lh("AdminTab.Forms.tagsetName"); ?></label>
+        <label for="tagset_name" data-trans-id="AdminTab.Forms.tagsetName">
+          <?=$lh("AdminTab.Forms.tagsetName"); ?>
+        </label>
         <input type="text" name="tagset_name" value="" size="40" maxlength="255" data-required />
       </p>
       <p>
-        <label for="tagset_class"><span data-trans-id="AdminTab.Forms.tagsetClass"><?=$lh("AdminTab.Forms.tagsetClass"); ?></span> </label>
+        <label for="tagset_class"><span data-trans-id="AdminTab.Forms.tagsetClass">
+          <?=$lh("AdminTab.Forms.tagsetClass"); ?>
+        </span> </label>
         <select size="1" name="tagset_class"></select>
       </p>
       <p>
-        <label for="txtFile"><span data-trans-id="AdminTab.Forms.tagsetFile"><?=$lh("AdminTab.Forms.tagsetFile"); ?></span> </label>
+        <label for="txtFile"><span data-trans-id="AdminTab.Forms.tagsetFile">
+          <?=$lh("AdminTab.Forms.tagsetFile"); ?>
+        </span> </label>
         <input type="file" name="txtFile" data-required />
       </p>
       <p style="max-width:32em;" data-trans-id="AdminTab.Forms.tagsetInfo">
@@ -292,7 +329,8 @@ $ulist = array();
           <option value="<?php echo $set['shortname'];?>"><?php echo $set['longname'];?></option>
         <?php endforeach;?>
         </select>
-        <button id="aTBview" type="button" class="mform" data-trans-id="AdminTab.Forms.preview"><?=$lh("AdminTab.Forms.preview"); ?></button>
+        <button id="aTBview" type="button" class="mform" data-trans-id="AdminTab.Forms.preview"><?=$lh("AdminTab.Forms.preview"); ?>
+        </button>
       </p>
       <p><textarea id="aTBtextarea" cols="80" rows="10" readonly="readonly"></textarea></p>
     </div>
@@ -322,8 +360,10 @@ $ulist = array();
         <td class="adminProjectNameCell"></td>
         <td class="adminProjectUsersCell"></td>
         <td class="adminProjectTagsetsCell"></td>
-        <td class="centered adminProjectCmdEdittoken" title="Edit-Skript zugeordnet"><span class="oi oi-shadow oi-green" data-glyph="check" aria-hidden="true"></span></td>
-        <td class="centered adminProjectCmdImport" title="Import-Skript zugeordnet"><span class="oi oi-shadow oi-green" data-glyph="check" aria-hidden="true"></span></td>
+        <td class="centered adminProjectCmdEdittoken" title="<?=$lh("AdminTab.editScript"); ?>" data-trans-title-id="AdminTab.editScript">
+          <span class="oi oi-shadow oi-green" data-glyph="check" aria-hidden="true"></span></td>
+        <td class="centered adminProjectCmdImport" title="<?=$lh("AdminTab.importScript"); ?>" data-trans-title-id="AdminTab.importScript">
+          <span class="oi oi-shadow oi-green" data-glyph="check" aria-hidden="true"></span></td>
         <td>
           <a class="adminProjectEditButton"><span class="oi oi-shadow" data-glyph="cog" aria-hidden="true"></span> <span data-trans-id="AdminTab.projectOptions"><?=$lh("AdminTab.projectOptions"); ?></a>
         </td>
@@ -337,7 +377,7 @@ $ulist = array();
         <td class="adminNoticeTextCell"></td>
         <td class="adminNoticeTypeCell"></td>
         <td class="adminNoticeExpiresCell"></td>
-        <td class="adminNoticeDelete"><a class="deletion-link"><span class="oi oi-shadow" data-glyph="delete" title="Benachrichtigung löschen" aria-hidden="true"></span></a></td>
+        <td class="adminNoticeDelete"><a class="deletion-link"><span class="oi oi-shadow" data-glyph="delete" title="<?=$lh("AdminTab.deleteMsg"); ?>" data-trans-title-id="AdminTab.deleteMsg" aria-hidden="true"></span></a></td>
       </tr>
       <tr id="templateAnnotatorInfoRow" class="adminAnnotatorInfoRow">
         <td class="adminAnnotatorIDCell"></td>
@@ -347,8 +387,11 @@ $ulist = array();
         </td>
         <td class="adminAnnotatorTagsetCell"></td>
         <td class="adminAnnotatorConfig">
-          <a class="adminAnnotatorEditButton"><span class="oi oi-shadow" data-glyph="cog" aria-hidden="true"></span> Optionen...</a>
-          <a class="deletion-link"><span class="oi oi-shadow" data-glyph="delete" title="Tagger löschen" aria-hidden="true"></span></a></td>
+          <a class="adminAnnotatorEditButton">
+            <span class="oi oi-shadow" data-glyph="cog" aria-hidden="true"></span> 
+            <span data-trans-id="AdminTab.options"><?=$lh("AdminTab.options"); ?></span>
+          </a>
+          <a class="deletion-link"><span class="oi oi-shadow" data-glyph="delete" title="<?=$lh("AdminTab.deleteTagger"); ?>" data-trans-title-id="AdminTab.deleteTagger" aria-hidden="true"></span></a></td>
       </tr>
     </table>
   </div>
