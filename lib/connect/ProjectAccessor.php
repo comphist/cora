@@ -161,10 +161,12 @@ class ProjectAccessor {
       try {
           $this->dbo->beginTransaction();
           $this->stmt_deleteUsers->execute(array(':pid' => $pid));
-          $this->stmt_setUsers->bindValue(':pid', $pid, PDO::PARAM_INT);
-          $this->stmt_setUsers->bindParam(':uid', $uid, PDO::PARAM_INT);
-          foreach ($idlist as $uid) {
-              $this->stmt_setUsers->execute();
+          if (!empty($idlist)) {
+              $this->stmt_setUsers->bindValue(':pid', $pid, PDO::PARAM_INT);
+              $this->stmt_setUsers->bindParam(':uid', $uid, PDO::PARAM_INT);
+              foreach ($idlist as $uid) {
+                  $this->stmt_setUsers->execute();
+              }
           }
           $this->dbo->commit();
       }
