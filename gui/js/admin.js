@@ -223,17 +223,17 @@ cora.userEditor = {
         $('adminUsersRefresh').addEvent(
             'click', function() { cora.users.performUpdate(); }
         );
-	$('editUsers').addEvent(
-	    'click:relay(td)',
-	    function(event, target) {
-		if(target.hasClass('adminUserAdminStatusTD')) {
-		    this.toggleStatus(event, "Admin");
-		}
-		else if(target.hasClass('adminUserDelete')) {
-		    this.deleteUser(event);
-		}
-	    }.bind(this)
-	);
+        $('editUsers').addEvent(
+            'click:relay(td)',
+            function(event, target) {
+                if(target.hasClass('adminUserAdminStatusTD')) {
+                    this.toggleStatus(event, "Admin");
+                }
+                else if(target.hasClass('adminUserDelete')) {
+                    this.deleteUser(event);
+                }
+            }.bind(this)
+        );
         $('editUsers').addEvent(
             'click:relay(a)',
             function(event, button) {
@@ -262,17 +262,17 @@ cora.userEditor = {
             pw1 = cdiv.getElements('input[name="newpw"]')[0].get('value');
             pw2 = cdiv.getElements('input[name="newpw2"]')[0].get('value');
             if(!un) {
-	        gui.showNotice('error', _("Banner.userNameEmpty"));
+                gui.showNotice('error', _("Banner.userNameEmpty"));
                 return false;
             }
             if(!pw1) {
                 gui.showNotice('error', _("Banner.passwordEmpty"));
                 return false;
             }
-	    if (pw1 !== pw2) {
-	        gui.showNotice('error', _("Banner.passwordNoMatch"));
-	        return false;
-	    }
+            if (pw1 !== pw2) {
+                gui.showNotice('error', _("Banner.passwordNoMatch"));
+                return false;
+            }
             return [un, pw1];
         };
         var performRequest = function(data) {
@@ -307,8 +307,8 @@ cora.userEditor = {
        Asks for confirmation to delete a user and requests the delete.
     */
     deleteUser: function(event) {
-	var parentrow = event.target.getParent('tr');
-	var uid = parentrow.get('id').substr(5);
+        var parentrow = event.target.getParent('tr');
+        var uid = parentrow.get('id').substr(5);
         var username = parentrow.getElement('td.adminUserNameCell').get('text');
         var performDelete = function() { cora.users.deleteUser(uid); };
         gui.confirm(_("AdminTab.Forms.deleteUserConfirm", {user:username}),
@@ -322,19 +322,19 @@ cora.userEditor = {
     toggleStatus: function(event, statusname) {
         if(statusname!='Admin')
             return;
-	var tr = event.target.getParent('tr');
+        var tr = event.target.getParent('tr');
         var td = tr.getElement('td.adminUserAdminStatusTD');
-	var uid = tr.get('id').substr(5);
+        var uid = tr.get('id').substr(5);
 
         cora.users.toggleAdmin(uid, function(status) {
             td.toggleClass('adminUserIsAdmin');
-	    if(td.hasClass('adminUserIsAdmin')) {
+            if(td.hasClass('adminUserIsAdmin')) {
                 td.set('title', _("AdminTab.isAdminTitle"));
 
-	    } else {
+            } else {
                 td.set('title', _("AdminTab.isNotAdminTitle"));
                 
-	    }
+            }
         });
     },
 
@@ -359,11 +359,11 @@ cora.userEditor = {
         content = $('userEditForm').clone();
         content.getElement('input[name=adminUserEmail]').set('value', user.email);
         content.getElement('input[name=adminUserComment]').set('value', user.comment);
-	mbox = new mBox.Modal({
-	    title: _("AdminTab.Forms.settingsForUser", {user: user.name}),
-	    content: content,
+        mbox = new mBox.Modal({
+            title: _("AdminTab.Forms.settingsForUser", {user: user.name}),
+            content: content,
             closeOnBodyClick: false,
-	    buttons: [ {title: _("Action.changePassword"), addClass: "mform button_left",
+            buttons: [ {title: _("Action.changePassword"), addClass: "mform button_left",
                         event: function() {
                             this.addEvent('closeComplete', function() {
                                 ref.changePassword(uid);
@@ -373,13 +373,13 @@ cora.userEditor = {
                        },
                        {title: _("Action.cancel"), addClass: "mform"},
                        {title: _("Action.save"), addClass: "mform button_green",
-			event: function() {
+                        event: function() {
                             ref.saveUserSettings(uid, this.content, function() {
                                 this.close();
                             }.bind(this));
-			}}
+                        }}
                      ]
-	});
+        });
         mbox.open();
     },
 
@@ -400,17 +400,17 @@ cora.userEditor = {
 
         // send request
         gui.lock();
-	new CoraRequest({
+        new CoraRequest({
             name: 'saveUserSettings',
             textDialogOnError: true,
-	    onSuccess: function(status) {
+            onSuccess: function(status) {
                 cora.users.performUpdate();
                 gui.showNotice('ok', _("Banner.settingsSaved"));
                 if(typeof(fn) === "function")
                     fn(status);
-	    },
+            },
             onComplete: function() { gui.unlock(); }
-	}).post(data);
+        }).post(data);
     },
 
     /* Function: changePassword
@@ -429,10 +429,10 @@ cora.userEditor = {
                 gui.showNotice('error', _("Banner.passwordEmpty"));
                 return false;
             }
-	    if (pw1 !== pw2) {
-	        gui.showNotice('error', _("Banner.passwordNoMatch"));
-	        return false;
-	    }
+            if (pw1 !== pw2) {
+                gui.showNotice('error', _("Banner.passwordNoMatch"));
+                return false;
+            }
             return pw1;
         };
         new mBox.Modal({
@@ -506,20 +506,20 @@ cora.annotatorEditor = {
         $('adminCreateAnnotator').addEvent(
             'click', function() {this.showCreateAnnotatorDialog();}.bind(this)
         );
-	this.table.addEvent(
-	    'click:relay(a)',
-	    function(event, target) {
+        this.table.addEvent(
+            'click:relay(a)',
+            function(event, target) {
                 var parent = target.getParent('td');
-		if(target.hasClass('deletion-link')
+                if(target.hasClass('deletion-link')
                    && parent.hasClass("adminAnnotatorConfig")) {
-		    this.deleteAnnotator(event);
-		} else if(target.hasClass('adminAnnotatorEditButton')) {
+                    this.deleteAnnotator(event);
+                } else if(target.hasClass('adminAnnotatorEditButton')) {
                     var tid = parent.getParent('tr')
                         .getElement('td.adminAnnotatorIDCell').get('text');
                     this.showAnnotatorOptionsDialog(tid);
                 }
-	    }.bind(this)
-	);
+            }.bind(this)
+        );
         this.flexrow = new FlexRowList(this.editForm.getElement('ul.flexrow-container'),
                                        $('annotatorOptEntryTemplate'));
         this.table.store('HtmlTable',
@@ -583,9 +583,9 @@ cora.annotatorEditor = {
        Asks for confirmation to delete a tagger and requests the delete.
      */
     deleteAnnotator: function(event) {
-	var parentrow = event.target.getParent('tr');
-	var tid  = parentrow.getElement('td.adminAnnotatorIDCell').get('text');
-	var name = parentrow.getElement('td.adminAnnotatorNameCell').get('text');
+        var parentrow = event.target.getParent('tr');
+        var tid  = parentrow.getElement('td.adminAnnotatorIDCell').get('text');
+        var name = parentrow.getElement('td.adminAnnotatorNameCell').get('text');
         var performDelete = function() {
             gui.lock();
             new CoraRequest({
@@ -682,7 +682,7 @@ cora.annotatorEditor = {
             return;
         var ref = this;
         var annotator = this.annotators[this.byID[tid]];
-	var content   = this.editForm;
+        var content   = this.editForm;
         var opt_add   = content.getElement('li.annotatorOptAddLi');
         /* name, class, tagsets */
         content.getElement('input[name=annotatorDisplayName]')
@@ -761,14 +761,14 @@ cora.noticeEditor = {
         $('adminCreateNotice').addEvent(
             'click', function() { this.showCreateNoticeDialog(); }.bind(this)
         );
-	$('editNotices').addEvent(
-	    'click:relay(td)',
-	    function(event, target) {
-		if(target.hasClass('adminNoticeDelete')) {
-		    this.deleteNotice(event);
-		}
-	    }.bind(this)
-	);
+        $('editNotices').addEvent(
+            'click:relay(td)',
+            function(event, target) {
+                if(target.hasClass('adminNoticeDelete')) {
+                    this.deleteNotice(event);
+                }
+            }.bind(this)
+        );
         $('editNotices').store('HtmlTable',
                                new HtmlTable($('editNotices'),
                                              {sortable: true,
@@ -837,8 +837,8 @@ cora.noticeEditor = {
        Asks for confirmation to delete a notice and requests the delete.
      */
     deleteNotice: function(event) {
-	var parentrow = event.target.getParent('tr');
-	var nid = parentrow.getElement('td.adminNoticeIDCell').get('text');
+        var parentrow = event.target.getParent('tr');
+        var nid = parentrow.getElement('td.adminNoticeIDCell').get('text');
         var performDelete = function() {
             gui.lock();
             new CoraRequest({
@@ -918,17 +918,17 @@ cora.noticeEditor = {
 
 cora.projectEditor = {
     initialize: function() {
-	var ref = this;
+        var ref = this;
         cora.projects.onUpdate(this.refreshProjectTable);
-	// adding projects
-	var cp_mbox = new mBox.Modal({
-	    'title': _("AdminTab.Forms.addProject"),
-	    'content': 'projectCreateForm',
-	    'attach': 'adminCreateProject',
+        // adding projects
+        var cp_mbox = new mBox.Modal({
+            'title': _("AdminTab.Forms.addProject"),
+            'content': 'projectCreateForm',
+            'attach': 'adminCreateProject',
             'buttons': [ {title: _("Action.cancel"), addClass: "mform"},
                          {title: _("Action.createProject"), addClass: "mform button_green",
                           event: function() {
-		              var pn = this.content.getElement('input').get('value');
+                              var pn = this.content.getElement('input').get('value');
                               gui.lock();
                               new CoraRequest({
                                   name: 'createProject',
@@ -939,8 +939,8 @@ cora.projectEditor = {
                                           gui.showMsgDialog('error', "Keine/ungültige Projekt-ID erhalten: '"+pid+"'");
                                           return;
                                       }
-			              $('projectCreateForm').getElement('input').set('value', '');
-			              this.close();
+                                      $('projectCreateForm').getElement('input').set('value', '');
+                                      this.close();
                                       gui.showNotice('ok', 'Projekt angelegt.');
                                       cora.projects.performUpdate(function() {
                                           ref.showProjectEditDialog(pid);
@@ -951,28 +951,28 @@ cora.projectEditor = {
                           }
                          }
                        ]
-	});
+        });
 
-	// deleting projects
-	$('editProjects').addEvent(
-	    'click:relay(a)',
-	    function(event, target) {
-		if(target.hasClass("adminProjectDelete")) {
+        // deleting projects
+        $('editProjects').addEvent(
+            'click:relay(a)',
+            function(event, target) {
+                if(target.hasClass("adminProjectDelete")) {
                     this.deleteProject(target);
-		}
-	    }.bind(this)
-	);
-	// editing project groups
-	$('editProjects').addEvent(
-	    'click:relay(a)',
-	    function(event, target) {
-		if(target.hasClass("adminProjectEditButton")) {
+                }
+            }.bind(this)
+        );
+        // editing project groups
+        $('editProjects').addEvent(
+            'click:relay(a)',
+            function(event, target) {
+                if(target.hasClass("adminProjectEditButton")) {
                     event.stop();
-		    var pid = target.getParent('tr').get('id').substr(8);
+                    var pid = target.getParent('tr').get('id').substr(8);
                     ref.showProjectEditDialog(pid);
-		}
-	    }
-	);
+                }
+            }
+        );
 
         $('editProjects').store('HtmlTable',
                                 new HtmlTable($('editProjects'),
@@ -987,11 +987,11 @@ cora.projectEditor = {
        Asks for confirmation to delete a project and requests the delete.
     */
     deleteProject: function(target) {
-	var pid = target.getParent('tr').get('id').substr(8);
-	var pn  = target.getParent('tr').getElement('td.adminProjectNameCell').get('html');
+        var pid = target.getParent('tr').get('id').substr(8);
+        var pn  = target.getParent('tr').getElement('td.adminProjectNameCell').get('html');
         var performDelete = function() {
             var prj = cora.projects.get(pid);
-	    if (prj.files == undefined || prj.files.length == 0) {
+            if (prj.files == undefined || prj.files.length == 0) {
                 gui.lock();
                 new CoraRequest({
                     name: 'deleteProject',
@@ -1002,13 +1002,13 @@ cora.projectEditor = {
                     }.bind(this),
                     onComplete: function() { gui.unlock(); }
                 }).get({'project_id': pid});
-	    } else {
+            } else {
                 setTimeout(function() {
                     gui.showMsgDialog('error', 'Projekte können nicht gelöscht werden, '
                                       + 'solange noch mindestens ein Dokument dem Projekt '
                                       + 'zugeordnet ist.');
                 }, 10);
-	    }
+            }
         };
         gui.confirm("Projekt "+pid+" '"+pn+"' wirklich löschen?",
                     performDelete, true);
@@ -1029,9 +1029,9 @@ cora.projectEditor = {
             var tr = $('templateProjectInfoRow').clone();
             tr.set('id', 'project_'+prj.id);
             tr.getElement('td.adminProjectNameCell').set('text', prj.name);
-	    tr.getElement('td.adminProjectUsersCell')
+            tr.getElement('td.adminProjectUsersCell')
                 .set('text', ulist.join(', '));
-	    tr.getElement('td.adminProjectTagsetsCell')
+            tr.getElement('td.adminProjectTagsetsCell')
                 .set('text', tlist.join(', '));
             if(!prj.settings.cmd_edittoken
                || prj.settings.cmd_edittoken.length === 0) {
@@ -1060,7 +1060,7 @@ cora.projectEditor = {
         prj - Project to take the settings from
      */
     makeProjectEditContent: function(prj) {
-	var content = $('projectEditForm').clone();
+        var content = $('projectEditForm').clone();
         if(prj.settings.cmd_edittoken) {
             content.getElement('input[name="projectCmdEditToken"]')
                    .set('value', prj.settings.cmd_edittoken);
@@ -1096,17 +1096,17 @@ cora.projectEditor = {
         }
 
         content = this.makeProjectEditContent(prj);
-	mbox = new mBox.Modal({
-	    title: _("AdminTab.Forms.projectOptionsForm", {project: prj.name}),
-	    content: content,
+        mbox = new mBox.Modal({
+            title: _("AdminTab.Forms.projectOptionsForm", {project: prj.name}),
+            content: content,
             closeOnBodyClick: false,
-	    buttons: [ {title: _("Action.cancel"), addClass: "mform"},
+            buttons: [ {title: _("Action.cancel"), addClass: "mform"},
                        {title: _("Action.save"), addClass: "mform button_green",
-			event: function() {
+                        event: function() {
                             ref.saveProjectSettings(pid, this.content, this.close.bind(this));
-			}}
+                        }}
                      ]
-	});
+        });
         mbox.open();
     },
 
@@ -1160,57 +1160,57 @@ cora.projectEditor = {
 
 cora.tagsetEditor = {
     initialize: function() {
-	var ref = this;
-	this.activateImportForm();
-	this.activateTagsetViewer();
+        var ref = this;
+        this.activateImportForm();
+        this.activateTagsetViewer();
     },
 
     activateTagsetViewer: function() {
-	var ref = this;
-	var import_mbox = new mBox.Modal({
-	    title: _("AdminTab.Forms.tagsetBrowserForm"),
-	    content: 'adminTagsetBrowser',
-	    attach: 'adminViewTagset',
+        var ref = this;
+        var import_mbox = new mBox.Modal({
+            title: _("AdminTab.Forms.tagsetBrowserForm"),
+            content: 'adminTagsetBrowser',
+            attach: 'adminViewTagset',
             closeOnBodyClick: false
-	});
+        });
 
-	$('aTBview').addEvent('click', function(e) {
-	    var tagset     = $('aTBtagset').getSelected().get('value')[0];
-	    var tagsetname = $('aTBtagset').getSelected().get('html');
-	    var textarea   = $('aTBtextarea');
-	    var spinner    = new Spinner(textarea).show(true);
+        $('aTBview').addEvent('click', function(e) {
+            var tagset     = $('aTBtagset').getSelected().get('value')[0];
+            var tagsetname = $('aTBtagset').getSelected().get('html');
+            var textarea   = $('aTBtextarea');
+            var spinner    = new Spinner(textarea).show(true);
             textarea.empty();
-	    // fetch tag list and perform a quick and dirty analysis:
+            // fetch tag list and perform a quick and dirty analysis:
             new CoraRequest({
                 name: 'fetchTagset',
                 textDialogOnError: true,
                 onSuccess: function(status) {
-		     var data = status['data'],
+                     var data = status['data'],
                          postags = [],
-			 output = tagsetname + " (ID: " + tagset + ") has ";
-		    output += data.length + " tags ";
-		    Array.each(data, function(tag) {
-			var pos;
-			var dot = tag['value'].indexOf('.');
-			if(dot>=0 && dot<tag['value'].length-1) {
-			    pos = tag['value'].slice(0, dot);
-			} else {
-			    pos = tag['value'];
-			}
-			postags.push(pos);
-		    });
-		    postags = postags.unique();
-		    output += "in " + postags.length + " base POS categories.\n\n";
-		    output += "Base POS categories are:\n";
-		    output += postags.join(", ");
-		    output += "\n\nAll tags:\n";
-		    Array.each(data, function(tag) {
-			if(tag['needs_revision']==1) {
-			    output += "^";
-			}
-			output += tag['value'] + "\n";
-		    });
-		    textarea.empty().appendText(output);
+                         output = tagsetname + " (ID: " + tagset + ") has ";
+                    output += data.length + " tags ";
+                    Array.each(data, function(tag) {
+                        var pos;
+                        var dot = tag['value'].indexOf('.');
+                        if(dot>=0 && dot<tag['value'].length-1) {
+                            pos = tag['value'].slice(0, dot);
+                        } else {
+                            pos = tag['value'];
+                        }
+                        postags.push(pos);
+                    });
+                    postags = postags.unique();
+                    output += "in " + postags.length + " base POS categories.\n\n";
+                    output += "Base POS categories are:\n";
+                    output += postags.join(", ");
+                    output += "\n\nAll tags:\n";
+                    Array.each(data, function(tag) {
+                        if(tag['needs_revision']==1) {
+                            output += "^";
+                        }
+                        output += tag['value'] + "\n";
+                    });
+                    textarea.empty().appendText(output);
                 },
                 onComplete: function() { spinner.hide(); }
             }).get({'tagset_id': tagset});
@@ -1218,14 +1218,14 @@ cora.tagsetEditor = {
     },
 
     activateImportForm: function() {
-	var ref = this;
-	var formname = 'newTagsetImportForm';
+        var ref = this;
+        var formname = 'newTagsetImportForm';
         var class_selector = $(formname).getElement('select[name="tagset_class"]');
-	var import_mbox = new mBox.Modal({
-	    title: _("AdminTab.Forms.importTagsetForm"),
-	    content: 'tagsetImportForm',
-	    attach: 'adminImportTagset'
-	});
+        var import_mbox = new mBox.Modal({
+            title: _("AdminTab.Forms.importTagsetForm"),
+            content: 'tagsetImportForm',
+            attach: 'adminImportTagset'
+        });
 
         cora.importableTagsets.each(function(cls) {
             class_selector.grab(new Element('option', {
@@ -1234,34 +1234,34 @@ cora.tagsetEditor = {
             }));
         });
 
-	// note: these checks would be redundant if the iFrame method
-	// below would be replaced by an mForm.Submit ...
-	// check if a name & file has been selected
-	$(formname).getElement('input[type="submit"]').addEvent('click', function(e) {
-	    var importname = $(formname).getElement('input[name="tagset_name"]').get('value');
-	    if(importname==null || importname=="") {
-		$(formname).getElement('input[name="tagset_name"]').addClass("input_error");
-		e.stop();
-	    } else {
-		$(formname).getElement('input[name="tagset_name"]').removeClass("input_error");
-	    }
-	    var importfile = $(formname).getElement('input[name="txtFile"]').get('value');
-	    if(importfile==null || importfile=="") {
+        // note: these checks would be redundant if the iFrame method
+        // below would be replaced by an mForm.Submit ...
+        // check if a name & file has been selected
+        $(formname).getElement('input[type="submit"]').addEvent('click', function(e) {
+            var importname = $(formname).getElement('input[name="tagset_name"]').get('value');
+            if(importname==null || importname=="") {
+                $(formname).getElement('input[name="tagset_name"]').addClass("input_error");
+                e.stop();
+            } else {
+                $(formname).getElement('input[name="tagset_name"]').removeClass("input_error");
+            }
+            var importfile = $(formname).getElement('input[name="txtFile"]').get('value');
+            if(importfile==null || importfile=="") {
                 gui.showNotice('error', "Keine Datei zum Importieren ausgewählt!");
-		e.stop();
-	    }
-	});
+                e.stop();
+            }
+        });
 
         var iFrame = new iFrameFormRequest(formname, {
-	    onRequest: function(){
-		import_mbox.close();
-		gui.showSpinner({message: _("AdminTab.Forms.importingTagset")});
-	    },
+            onRequest: function(){
+                import_mbox.close();
+                gui.showSpinner({message: _("AdminTab.Forms.importingTagset")});
+            },
             onFailure: function(xhr) {
-		// never fires?
-       		gui.showTextDialog("Import nicht erfolgreich",
+                // never fires?
+                gui.showTextDialog("Import nicht erfolgreich",
                                    "Der Server lieferte folgende Fehlermeldung zurück:",
-       		                   xhr.responseText);
+       	                           xhr.responseText);
        	    },
 	    onComplete: function(response){
 		var title="", message="", textarea="", error=false, tmp;
