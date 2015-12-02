@@ -56,19 +56,23 @@
       <div id="transImportStatusContainer">
         <table>
           <tr id="tIS_upload">
-            <td class="proc proc-running"><span class="oi oi-proc-success oi-shadow" data-glyph="check" aria-hidden="true"></span><span class="oi oi-proc-error oi-shadow" data-glyph="x" aria-hidden="true"></span></td>
+            <td class="proc proc-running"><span class="oi oi-proc-success oi-shadow" data-glyph="check" aria-hidden="true"></span>
+              <span class="oi oi-proc-error oi-shadow" data-glyph="x" aria-hidden="true"></span></td>
             <td>Datei übermitteln</td>
           </tr>
           <tr id="tIS_check">
-            <td class="proc"><span class="oi oi-proc-success oi-shadow" data-glyph="check" aria-hidden="true"></span><span class="oi oi-proc-error oi-shadow" data-glyph="x" aria-hidden="true"></span></td>
+            <td class="proc"><span class="oi oi-proc-success oi-shadow" data-glyph="check" aria-hidden="true"></span>
+              <span class="oi oi-proc-error oi-shadow" data-glyph="x" aria-hidden="true"></span></td>
             <td>Gültigkeit prüfen</td>
           </tr>
           <tr id="tIS_convert">
-            <td class="proc"><span class="oi oi-proc-success oi-shadow" data-glyph="check" aria-hidden="true"></span><span class="oi oi-proc-error oi-shadow" data-glyph="x" aria-hidden="true"></span></td>
+            <td class="proc"><span class="oi oi-proc-success oi-shadow" data-glyph="check" aria-hidden="true"></span>
+              <span class="oi oi-proc-error oi-shadow" data-glyph="x" aria-hidden="true"></span></td>
             <td>Umwandeln in CorA-XML</td>
           </tr>
           <tr id="tIS_import">
-            <td class="proc"><span class="oi oi-proc-success oi-shadow" data-glyph="check" aria-hidden="true"></span><span class="oi oi-proc-error oi-shadow" data-glyph="x" aria-hidden="true"></span></td>
+            <td class="proc"><span class="oi oi-proc-success oi-shadow" data-glyph="check" aria-hidden="true"></span>
+              <span class="oi oi-proc-error oi-shadow" data-glyph="x" aria-hidden="true"></span></td>
             <td>Importieren</td>
           </tr>
         </table>
@@ -133,11 +137,15 @@
     <div id="fileExportPopup" class="limitedWidth">
       <p data-trans-id="FileTab.Forms.exportPrompt"><?=$lh("FileTab.Forms.exportPrompt"); ?></span></p>
       <p class="file-export-format-selector">
-        <input type="radio" name="file-export-format" value="<?php echo ExportType::CoraXML ?>" id="fef-coraxml" checked="checked" /><label for="fef-coraxml" data-trans-id="FileTab.Forms.coraXmlFormat"><?=$lh("FileTab.Forms.coraXmlFormat"); ?></label><br />
-        <input type="radio" name="file-export-format" value="<?php echo ExportType::CustomCSV ?>" id="fef-customcsv" /><label for="fef-customcsv" data-trans-id="FileTab.Forms.columnCsvFormat"><?=$lh("FileTab.Forms.columnCsvFormat"); ?></label><br />
+        <input type="radio" name="file-export-format" value="<?php echo ExportType::CoraXML ?>" id="fef-coraxml" checked="checked" />
+        <label for="fef-coraxml" data-trans-id="FileTab.Forms.coraXmlFormat"><?=$lh("FileTab.Forms.coraXmlFormat"); ?></label><br />
+        <input type="radio" name="file-export-format" value="<?php echo ExportType::CustomCSV ?>" id="fef-customcsv" />
+        <label for="fef-customcsv" data-trans-id="FileTab.Forms.columnCsvFormat"><?=$lh("FileTab.Forms.columnCsvFormat"); ?></label><br />
         <?php if($_SESSION["admin"]): ?>
-          <input type="radio" name="file-export-format" value="<?php echo ExportType::Normalization ?>" id="fef-norm" /><label for="fef-norm" data-trans-id="FileTab.Forms.columnNormFormat"><?=$lh("FileTab.Forms.columnNormFormat"); ?></label><br />
-          <input type="radio" name="file-export-format" value="<?php echo ExportType::Transcription ?>" id="fef-trans" disabled="disabled"/><label for="fef-trans" data-trans-id="FileTab.Forms.transFormat"><?=$lh("FileTab.Forms.transFormat"); ?></label><br />
+          <input type="radio" name="file-export-format" value="<?php echo ExportType::Normalization ?>" id="fef-norm" />
+          <label for="fef-norm" data-trans-id="FileTab.Forms.columnNormFormat"><?=$lh("FileTab.Forms.columnNormFormat"); ?></label><br />
+          <input type="radio" name="file-export-format" value="<?php echo ExportType::Transcription ?>" id="fef-trans" disabled="disabled"/>
+          <label for="fef-trans" data-trans-id="FileTab.Forms.transFormat"><?=$lh("FileTab.Forms.transFormat"); ?></label><br />
         <?php endif; ?>
       </p>
       <p class="for-fileexport for-<?php echo ExportType::CoraXML ?>" data-trans-id="FileTab.Forms.exportInfoCora">
@@ -247,13 +255,13 @@
     </div>
 
     <div id="noProjectGroups">
-      <h4>Keine Projektgruppen verfügbar!</h4>
-      <p>Sie gehören zur Zeit keiner Projektgruppe an.  Wenden Sie sich an einen Administrator, um zu einer Projektgruppe hinzuzufügt zu werden.</p>
+      <h4 data-trans-id="FileTab.noProjectGroups"><?=$lh("FileTab.noProjectGroups"); ?></h4>
+      <p data-trans-id="FileTab.noProjectGroupsInfo"><?=$lh("FileTab.noProjectGroupsInfo"); ?></p>
     </div>
 
     <table>
       <tr id="noProjectFiles">
-        <td colspan="7">Dieses Projekt enthält keine Dateien.</td>
+        <td colspan="7" data-trans-id="FileTab.noFilesInProject"><?=$lh("FileTab.noFilesInProject"); ?></td>
       </tr>
     </table>
   </div>

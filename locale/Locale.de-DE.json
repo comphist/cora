@@ -199,6 +199,9 @@
         "exportFileTitle" : "Datei exportieren",
         "editTagsetAssociations" : "Tagset-Verknüpfungen bearbeiten",
         "closeFileTitle" : "Datei schließen",
+        "noProjectGroups" : "Keine Projektgruppen verfügbar!",
+        "noProjectGroupsInfo" : "Sie gehören zur Zeit keiner Projektgruppe an. Wenden Sie sich an einen Administrator, um zu einer Projektgruppe hinzuzufügt zu werden.",
+        "noFilesInProject" : "Dieses Projekt enthält keine Dateien.",
         "Forms" : {
             "exportFile" : "Datei exportieren",
             "exportPrompt" : "In welchem Format möchten Sie die Datei exportieren?",
