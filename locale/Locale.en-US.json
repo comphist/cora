@@ -32,7 +32,7 @@
         "collapse" : "Collapse",
         "expand" : "Expand",
         "waitForAuthorization" : "Waiting for authorization...",
-        "loginAccessError" : "You've successfully logged in but you currently don't have access to the opened file. Another user might be working on the file."l
+        "loginAccessError" : "You've successfully logged in but you currently don't have access to the opened file. Another user might be working on the file."
 
         },
      
