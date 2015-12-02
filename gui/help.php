@@ -28,30 +28,33 @@
 <div id="helpDiv" class="content">
   <div class="panel">
     <div class="text-content">
-      <h3>Hilfe zur Benutzung von CorA</h3>
-      <p>
-        Alle Funktionen von CorA sind im Benutzerhandbuch näher erläutert.  Falls Sie Fragen zur Bedienung oder zu einer bestimmten Funktion von CorA haben, schauen Sie bitte zunächst dort nach:
+      <h3 data-trans-id="Help.coraHelpTitle"><?=$lh("Help.coraHelpTitle"); ?></h3>
+      <p data-trans-id="Help.helpInGuide">
+        <?=$lh("Help.helpInGuide"); ?>
       </p>
       <ul>
         <li>
-          <a href="doc/cora-guide.pdf" download="cora-guide.pdf">CorA Benutzerhandbuch, 27.01.2015 [PDF]</a>
+          <a href="doc/cora-guide.pdf" download="cora-guide.pdf" data-trans-id="Help.coraGuideLink"><?=$lh("Help.coraGuideLink", array('date' => '27.01.2015')); ?></a>
         </li>
       </ul>
 
-      <h3>Ungeklärte Fragen?  Bugs gefunden?</h3>
+      <h3 data-trans-id="Help.feedbackTitle"><?=$lh("Help.feedbackTitle"); ?></h3>
       <p>
-        Falls Sie Fragen haben, die durch das Benutzerhandbuch nicht geklärt worden sind, oder falls Sie gar einen Fehler in CorA entdeckt haben, <a href="mailto:bollmann@linguistics.rub.de">kontaktieren Sie uns bitte!</a>
+        <span data-trans-id="Help.contactUsInfo"><?=$lh("Help.contactUsInfo"); ?></span>
+        <a href="mailto:bollmann@linguistics.rub.de" data-trans-id="Help.contactUs"><?=$lh("Help.contactUs"); ?></a>
       </p>
-      <p>
-        Bitte senden Sie uns beim Melden von Fehlern eine <b>aussagekräftige</b> Beschreibung des Problems!  Dazu gehören folgende Informationen:
+      <p data-trans-id="Help.contactRequest">
+        <?=$lh("Help.contactRequest"); ?>    
       </p>
       <ul>
-        <li>Was <b>genau</b> haben Sie unmittelbar vor dem Auftreten des Fehlers getan?</li>
-        <li>Wie genau äußert sich der Fehler? Gibt es eine Fehlermeldung? Falls ja, die Meldung unbedingt kopieren und einfügen!</li>
-        <li>An welcher Datei oder welcher Textstelle genau haben Sie gearbeitet, als der Fehler auftrat?</li>
+        <li data-trans-id="Help.contactCheck1"><?=$lh("Help.contactCheck1"); ?></li>
+        <li data-trans-id="Help.contactCheck2"><?=$lh("Help.contactCheck2"); ?></li>
+        <li data-trans-id="Help.contactCheck3"><?=$lh("Help.contactCheck3"); ?></li>
       </ul>
+
       <p>
-        Ansprechpartner ist dabei <a href="mailto:bollmann@linguistics.rub.de">Marcel Bollmann &lsaquo;bollmann@linguistics.rub.de&rsaquo;</a>.
+        <span data-trans-id="Help.contactPerson"><?=$lh("Help.contactPerson"); ?></span>
+        <a href="mailto:bollmann@linguistics.rub.de">Marcel Bollmann &lsaquo;bollmann@linguistics.rub.de&rsaquo;</a>
       </p>
     </div>
   </div>

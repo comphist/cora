@@ -31,7 +31,10 @@
         "collapse" : "Zuklappen",
         "expand" : "Aufklappen",
         "waitForAuthorization" : "Warte auf Authorisierung...",
-        "loginAccessError" : "Anmeldung war erfolgreich, aber Zugriff auf die aktuell geöffnete Datei ist nicht möglich. Eventuell wird diese Datei bereits von einem anderen Nutzer bearbeitet."
+        "loginAccessError" : "Anmeldung war erfolgreich, aber Zugriff auf die aktuell geöffnete Datei ist nicht möglich. Eventuell wird diese Datei bereits von einem anderen Nutzer bearbeitet.",
+        "actionFailed" : "Aktion fehlgeschlagen",
+        "couldNotPerformAction" : "Die Aktion konnte nicht ausgeführt werden.",
+        "notLoggedIn" : "Sie sind nicht angemeldet."
 
         },
      "Dialog": {
@@ -46,7 +49,19 @@
      },
      "Help" : {
         "dontShowAgain" : "Schließen und nicht wieder anzeigen",
-        "dontShowAgainInfo" : "Sie können sich die Neuigkeiten jederzeit über den Tab 'Hilfe' erneut anzeigen lassen."
+        "dontShowAgainInfo" : "Sie können sich die Neuigkeiten jederzeit über den Tab 'Hilfe' erneut anzeigen lassen.",
+        "coraHelpTitle" : "Hilfe zur Benutzung von CorA",
+        "helpInGuide" : "Alle Funktionen von CorA sind im Benutzerhandbuch näher erläutert. Falls Sie Fragen zur Bedienung oder zu einer bestimmten Funktion von CorA haben, schauen Sie bitte zunächst dort nach:",
+        "coraGuideLink" : "CorA Benutzerhandbuch, {date} [PDF]",
+        "feedbackTitle" : "Ungeklärte Fragen?  Bugs gefunden?",
+        "contactUsInfo" : "Falls Sie Fragen haben, die durch das Benutzerhandbuch nicht geklärt worden sind, oder falls Sie gar einen Fehler in CorA entdeckt haben, ",
+        "contactUs" : "kontaktieren Sie uns bitte!",
+        "contactRequest" : "Bitte senden Sie uns beim Melden von Fehlern eine **aussagekräftige** Beschreibung des Problems! Dazu gehören folgende Informationen:",
+        "contactCheck1" : "Was **genau** haben Sie unmittelbar vor dem Auftreten des Fehlers getan?",
+        "contactCheck2" : "Wie genau äußert sich der Fehler? Gibt es eine Fehlermeldung? Falls ja, die Meldung unbedingt kopieren und einfügen!",
+        "contactCheck3" : "An welcher Datei oder welcher Textstelle genau haben Sie gearbeitet, als der Fehler auftrat?",
+        "contactPerson" : "Ansprechpartner ist dabei"
+
 
         },
      "AdminTab" : {

@@ -32,7 +32,10 @@
         "collapse" : "Collapse",
         "expand" : "Expand",
         "waitForAuthorization" : "Waiting for authorization...",
-        "loginAccessError" : "You've successfully logged in but you currently don't have access to the opened file. Another user might be working on the file."
+        "loginAccessError" : "You've successfully logged in but you currently don't have access to the opened file. Another user might be working on the file.",
+        "actionFailed" : "Action failed",
+        "couldNotPerformAction" : "Could not perform action.",
+        "notLoggedIn" : "You are not logged in."
 
         },
      
@@ -45,7 +48,18 @@
      },
      "Help" : {
         "dontShowAgain" : "Close and do not show again",
-        "dontShowAgainInfo" : "You can always review the news by clicking on the 'Help' tab."
+        "dontShowAgainInfo" : "You can always review the news by clicking on the 'Help' tab.",
+        "coraHelpTitle" : "About Using CorA",
+        "helpInGuide" : "All functions of CorA are explained in the CorA Guide. If you would like to know more about how to use CorA or need further information about its features, please take a look at the guide first:",
+        "coraGuideLink" : "CorA Guide, {date} [PDF]",
+        "feedbackTitle" : "Questions?  Found any bugs?",
+        "contactUsInfo" : "If you have any questions that couldn't be answered by the CorA Guide or if you have encountered a bug",
+        "contactUs" : "please contact us!",
+        "contactRequest" : "If you would like to report a problem, please send us a **detailed** description of the problem with the information below:",
+        "contactCheck1" : "What **exactly** did you do just before the problem occurred?",
+        "contactCheck2" : "What exactly happens? Is there any error message? If so, please copy the message and send it to us!",
+        "contactCheck3" : "Which file or which line did you edit when the problem occurred?",
+        "contactPerson" : "The person to contact is"
 
         },
      "AdminTab" : {
@@ -416,6 +430,7 @@
         "projectCreated" : "Project created successfully.",
         "projectDeleted" : "Project successfully deleted.",
         "noImportFileSelected" : "No import file selected!"
+
 
         
      }

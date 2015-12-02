@@ -39,19 +39,28 @@
     </div>
 
     <div class="btn-toolbar btn-toolbar-notop" id="searchPagePanel">
-      <span class="btn-toolbar-entry btn-page-count"><span class="oi" aria-hidden="true"></span><span data-trans-id="EditorTab.resultPage"><?=$lh("EditorTab.resultPage"); ?></span> <input type="text" class="btn-page-to" size="2" /><span class="page-active"></span>/<span class="page-max"></span></span>
-      <span class="btn-toolbar-entry btn-page-back" title="Seite zurück"><span class="oi" data-glyph="arrow-thick-left" aria-hidden="true"></span></span>
-      <span class="btn-toolbar-entry btn-page-forward" title="Seite vor"><span class="oi" data-glyph="arrow-thick-right" aria-hidden="true"></span></span>
-      <span class="btn-toolbar-entry btn-text-search"><span class="oi" data-glyph="magnifying-glass" aria-hidden="true"></span> <span data-trans-id="EditorTab.editQuery"><?=$lh("EditorTab.editQuery"); ?></span></span>
+      <span class="btn-toolbar-entry btn-page-count"><span class="oi" aria-hidden="true"></span>
+      <span data-trans-id="EditorTab.resultPage"><?=$lh("EditorTab.resultPage"); ?></span> <input type="text" class="btn-page-to" size="2" />
+      <span class="page-active"></span>/<span class="page-max"></span></span>
+      <span class="btn-toolbar-entry btn-page-back" title="<?=$lh("EditorTab.previousPage"); ?>" data-trans-title-id="EditorTab.previousPage">
+        <span class="oi" data-glyph="arrow-thick-left" aria-hidden="true"></span></span>
+      <span class="btn-toolbar-entry btn-page-forward" title="<?=$lh("EditorTab.nextPage"); ?>" data-trans-title-id="EditorTab.nextPage">
+        <span class="oi" data-glyph="arrow-thick-right" aria-hidden="true"></span></span>
+      <span class="btn-toolbar-entry btn-text-search">
+        <span class="oi" data-glyph="magnifying-glass" aria-hidden="true"></span> <span data-trans-id="EditorTab.editQuery"><?=$lh("EditorTab.editQuery"); ?></span></span>
     </div>
 
     <table id="searchTable">
     </table>
 
     <div class="btn-toolbar btn-toolbar-notop" id="searchPagePanelBottom">
-      <span class="btn-toolbar-entry btn-page-count"><span class="oi" aria-hidden="true"></span><span data-trans-id="EditorTab.resultPage"><?=$lh("EditorTab.resultPage"); ?></span> <input type="text" class="btn-page-to" size="2" /><span class="page-active"></span>/<span class="page-max"></span></span>
-      <span class="btn-toolbar-entry btn-page-back" title="Seite zurück"><span class="oi" data-glyph="arrow-thick-left" aria-hidden="true"></span></span>
-      <span class="btn-toolbar-entry btn-page-forward" title="Seite vor"><span class="oi" data-glyph="arrow-thick-right" aria-hidden="true"></span></span>
+      <span class="btn-toolbar-entry btn-page-count"><span class="oi" aria-hidden="true"></span>
+      <span data-trans-id="EditorTab.resultPage"><?=$lh("EditorTab.resultPage"); ?></span> <input type="text" class="btn-page-to" size="2" />
+      <span class="page-active"></span>/<span class="page-max"></span></span>
+      <span class="btn-toolbar-entry btn-page-back" title="<?=$lh("EditorTab.previousPage"); ?>" data-trans-title-id="EditorTab.previousPage">
+        <span class="oi" data-glyph="arrow-thick-left" aria-hidden="true"></span></span>
+      <span class="btn-toolbar-entry btn-page-forward" title="<?=$lh("EditorTab.nextPage"); ?>" data-trans-title-id="EditorTab.nextPage">
+        <span class="oi" data-glyph="arrow-thick-right" aria-hidden="true"></span></span>
     </div>
   </div>
 </div>
