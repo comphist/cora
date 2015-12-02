@@ -38,7 +38,7 @@ var CoraRequestError = new Class({
            || this.details.length === undefined || this.details.length === 0) {
             this.showAsDialog();
         } else {
-            gui.showTextDialog("Aktion fehlgeschlagen", this.message, this.details);
+            gui.showTextDialog(_("Gui.actionFailed"), this.message, this.details);
         }
     }
 });
@@ -51,7 +51,7 @@ var CoraRequestError = new Class({
 CoraRequestError.Handled = new Class({
     Extends: CoraRequestError,
     name: 'Handled',
-    message: "Die Aktion konnte nicht ausgeführt werden.",
+    message: "Aktion konnte nicht ausgeführt werden.",
     status: {},
     initialize: function(status) {
         this.status  = status;
@@ -68,7 +68,7 @@ CoraRequestError.Handled = new Class({
 CoraRequestError.NotLoggedIn = new Class({
     Extends: CoraRequestError,
     name: 'NotLoggedIn',
-    message: "Sie sind nicht angemeldet."
+    message: _("Gui.notLoggedIn")
 });
 
 /* Class: CoraRequestError.Invalid
