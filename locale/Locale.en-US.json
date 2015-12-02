@@ -28,13 +28,26 @@
      "Toolbar": {
          "closeFile": "Close File"
      },
+     "Gui": {
+        "collapse" : "Collapse",
+        "expand" : "Expand",
+        "waitForAuthorization" : "Waiting for authorization...",
+        "loginAccessError" : "You've successfully logged in but you currently don't have access to the opened file. Another user might be working on the file."l
+
+        },
      
      "Forms": {
          "buttonLogin": "Login",
+         "loginFailed" : "Login failed.",
          "msgFailedLogin": "Login failed.  Please check your credentials.",
          "password": "Password",
          "username": "Username"
      },
+     "Help" : {
+        "dontShowAgain" : "Close and do not show again",
+        "dontShowAgainInfo" : "You can always review the news by clicking on the 'Help' tab."
+
+        },
      "AdminTab" : {
         "refresh" : "Refresh",
         "collapseCategories" : "Collapse all categories",

@@ -27,15 +27,28 @@
      "Toolbar": {
          "closeFile": "Datei schließen"
      },
+     "Gui": {
+        "collapse" : "Zuklappen",
+        "expand" : "Aufklappen",
+        "waitForAuthorization" : "Warte auf Authorisierung...",
+        "loginAccessError" : "Anmeldung war erfolgreich, aber Zugriff auf die aktuell geöffnete Datei ist nicht möglich. Eventuell wird diese Datei bereits von einem anderen Nutzer bearbeitet."
+
+        },
      "Dialog": {
          "documentInUse": "Das Dokument wird bereits bearbeitet von Benutzer '{user}' seit {lockDate}."
      },
      "Forms": {
          "buttonLogin": "Anmelden",
+         "loginFailed" : "Anmeldung fehlgeschlagen.",
          "msgFailedLogin": "Anmeldung fehlgeschlagen.  Bitte überprüfen Sie Ihre Eingaben.",
          "password": "Passwort",
          "username": "Benutzername"
      },
+     "Help" : {
+        "dontShowAgain" : "Schließen und nicht wieder anzeigen",
+        "dontShowAgainInfo" : "Sie können sich die Neuigkeiten jederzeit über den Tab 'Hilfe' erneut anzeigen lassen."
+
+        },
      "AdminTab" : {
         "refresh" : "Aktualisieren",
         "collapseCategories" : "Alle Kategorien zuklappen",

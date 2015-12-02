@@ -90,13 +90,13 @@ var gui = {
                     clapper.grab(new Element('span',
                                              {'class': 'oi clapp-status-hidden',
                                               'data-glyph': 'caret-right',
-                                              'title': 'Aufklappen',
+                                              'title': _("Gui.expand"),
                                               'aria-hidden': 'true'}),
                                  'top');
                     clapper.grab(new Element('span',
                                              {'class': 'oi clapp-status-open',
                                               'data-glyph': 'caret-bottom',
-                                              'title': 'Zuklappen',
+                                              'title': _("Gui.collapse"),
                                               'aria-hidden': 'true'}),
                                  'top');
                     clapper.addClass('has-clapp-icons');
@@ -430,10 +430,10 @@ var gui = {
                     .addClass('mform')
                     .removeClass('button_green')
                     .addClass((danger ? 'button_red' : 'button_green'))
-                    .set('html', '<label>Ja, bestätigen</label>');
+                    .set('html', '<label>'+_("Action.yesConfirm")+'</label>'); 
                 this.footerContainer.getElement('.mBoxConfirmButtonCancel')
                     .addClass('mform')
-                    .set('html', '<label>Nein, abbrechen</label>');
+                    .set('html', '<label>'+_("Action.noCancel")+'</label>');
             }
         }).open();
     },
@@ -536,7 +536,7 @@ var gui = {
 	new mBox.Modal({
 	    content: message,
             addClass: {wrapper: 'MessageDialog '+cls},
-	    buttons: [ {title: "Schließen", addClass: "mform"} ]
+	    buttons: [ {title: _("Action.close"), addClass: "mform"} ]
 	}).open();
     },
 
@@ -578,7 +578,7 @@ var gui = {
             addClass: {wrapper: 'TextDialog'},
 	    closeOnBodyClick: false,
 	    closeOnEsc: false,
-	    buttons: [ {title: "Schließen", addClass: "mform"} ]
+	    buttons: [ {title: _("Action.close"), addClass: "mform"} ]
 	}).open();
     },
 
@@ -696,7 +696,7 @@ var gui = {
          fn - Callback on successful login
      */
     login: function(fn) {
-        this.showSpinner({message: 'Warte auf Authorisierung...'});
+        this.showSpinner({message: _("gui.waitForAuthorization")});
         var onSuccessfulRestore = function() {
             if(typeof(fn) === "function")
                 fn();
@@ -711,11 +711,7 @@ var gui = {
                             {onSuccess: onSuccessfulRestore,
                              onError: function(error) {
                                  this.showMsgDialog('error',
-                                        "Anmeldung war erfolgreich, aber Zugriff "
-                                        + "auf die aktuell geöffnete Datei ist "
-                                        + "nicht möglich.  Eventuell wird "
-                                        + "diese Datei bereits von einem anderen "
-                                        + "Nutzer bearbeitet.");
+                                        _("Gui.loginAccessError"));
                                  mbox.open();
                              }.bind(this),
                             onComplete: function() { this.hideSpinner(); }.bind(this)
@@ -727,7 +723,7 @@ var gui = {
                     }
                 }.bind(this),
                 onError: function(error) {
-                    this.showNotice('error', 'Anmeldung fehlgeschlagen.');
+                    this.showNotice('error', _("Forms.loginFailed"));
                     mbox.open();
                 }.bind(this)
             }).get({'user': user, 'pw': pw});
@@ -737,7 +733,7 @@ var gui = {
 	    content: 'confirmLoginPopup',
 	    closeOnBodyClick: false,
 	    closeOnEsc: false,
-	    buttons: [ {title: "Anmelden",
+	    buttons: [ {title: _("Forms.buttonLogin"),
                         addClass: "mform",
                         event: function() {
                             var user = mbox.content.getElement('#lipu_un').get('value'),
@@ -794,16 +790,14 @@ var gui = {
 	        closeOnBodyClick: false,
 	        closeOnEsc: true,
 	        buttons: [
-                    {title: "Schließen und nicht wieder anzeigen",
+                    {title: _("Help.dontShowAgain"),
                      addClass: "mform button_left",
                      event: function() {
                          Cookie.write('whatsNew', div.get('class'), {duration: 365});
                          this.close();
-                         gui.showNotice('info', "Sie können sich die Neuigkeiten "
-                                        + "jederzeit über den Tab 'Hilfe' erneut "
-                                        + "anzeigen lassen.");
+                         gui.showNotice('info', _("Help.dontShowAgainInfo"));
                      }},
-                    {title: "Schließen", addClass: "mform"}
+                    {title: _("Action.close"), addClass: "mform"}
                 ]
 	    });
         }
