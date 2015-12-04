@@ -112,19 +112,19 @@ var EditorModel = new Class({
 
         this.dataTable.addDropdownEntries([
             {name: 'Search',
-             text: _("EditorTab.dropDown.searchSimilar"),
+             data_trans_id: "EditorTab.dropDown.searchSimilar",
              action: this.searchSimilarTokens.bind(this)}
         ]);
         if (cora.files.supportsTokenEditing(fileid)) {
             this.dataTable.addDropdownEntries([
                 {name: 'Edit',
-                 text: _("EditorTab.dropDown.editToken"),
+                 data_trans_id: "EditorTab.dropDown.editToken",
                  action: this.editToken.bind(this)},
                 {name: 'Add',
-                 text: _("EditorTab.dropDown.addToken"),
+                 data_trans_id: "EditorTab.dropDown.addToken",
                  action: this.addToken.bind(this)},
                 {name: 'Delete',
-                 text: _("EditorTab.dropDown.delToken"),
+                 data_trans_id: "EditorTab.dropDown.delToken",
                  action: this.deleteToken.bind(this)}
             ]);
 	    this.dataTable.addEvent(
