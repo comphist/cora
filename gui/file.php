@@ -38,7 +38,7 @@
         <span class="oi" data-glyph="collapse-down" aria-hidden="true"></span>
       </span>
       <span class="btn-toolbar-entry start-disabled" id="importNewTransLink">
-        <span class="oi" data-glyph="data-transfer-upload" aria-hidden="true"></span> 
+        <span class="oi" data-glyph="data-transfer-upload" aria-hidden="true"></span>
         <span data-trans-id="FileTab.importText"><?=$lh("FileTab.importText"); ?></span>
       </span>
       <span class="btn-toolbar-entry start-disabled" id="importNewXMLLink">
@@ -52,6 +52,7 @@
 
   <!-- templates -->
   <div class="templateHolder">
+    <span id="transImportSpinner_title" data-trans-id="FileTab.importingData"><?=$lh("FileTab.importingData"); ?></span>
     <div id="transImportSpinner">
       <div id="transImportStatusContainer">
         <table>
@@ -119,21 +120,22 @@
             <span class="oi oi-shadow oi-adjust" data-glyph="delete" title="<?=$lh("FileTab.deleteFile"); ?>" data-trans-title-id="FileTab.deleteFile" aria-hidden="true"></span>
           </a>
           <a class="exportFileLink">
-            <span class="oi oi-shadow oi-adjust" data-glyph="data-transfer-download" title="<?=$lh("FileTab.exportFileTitle"); ?>" data-trans-title-id="FileTab.exportFileTitle" aria-hidden="true"></span> 
+            <span class="oi oi-shadow oi-adjust" data-glyph="data-transfer-download" title="<?=$lh("FileTab.exportFileTitle"); ?>" data-trans-title-id="FileTab.exportFileTitle" aria-hidden="true"></span>
             <span data-trans-id="Action.export"><?=$lh("Action.export"); ?></span>
           </a>
           <a class="editTagsetAssocLink start-hidden admin-only">
-            <span class="oi oi-shadow oi-adjust" data-glyph="link-intact" title="<?=$lh("FileTab.editTagsetAssociations"); ?>" data-trans-title-id="FileTab.editTagsetAssociations" aria-hidden="true"></span> 
+            <span class="oi oi-shadow oi-adjust" data-glyph="link-intact" title="<?=$lh("FileTab.editTagsetAssociations"); ?>" data-trans-title-id="FileTab.editTagsetAssociations" aria-hidden="true"></span>
             <span data-trans-id="Action.tagsets"><?=$lh("Action.tagsets"); ?>
             </a>
           <a class="closeFileLink start-hidden">
-            <span class="oi oi-shadow" data-glyph="x" title="<?=$lh("FileTab.closeFileTitle"); ?>" data-trans-title-id="FileTab.closeFileTitle" aria-hidden="true"></span> 
+            <span class="oi oi-shadow" data-glyph="x" title="<?=$lh("FileTab.closeFileTitle"); ?>" data-trans-title-id="FileTab.closeFileTitle" aria-hidden="true"></span>
             <span data-trans-id="Action.close"><?=$lh("Action.close"); ?></span>
           </a>
         </td>
       </tr>
     </table>
 
+    <span id="fileExportPopup_title" data-trans-id="FileTab.Forms.exportFile"><?=$lh("FileTab.Forms.exportFile"); ?></span>
     <div id="fileExportPopup" class="limitedWidth">
       <p data-trans-id="FileTab.Forms.exportPrompt"><?=$lh("FileTab.Forms.exportPrompt"); ?></span></p>
       <p class="file-export-format-selector">
@@ -159,6 +161,7 @@
       </span>
     </div>
 
+    <span id="fileImportXMLForm_title" data-trans-id="FileTab.Forms.importXmlForm"><?=$lh("FileTab.Forms.importXmlForm"); ?></span>
     <div id="fileImportXMLForm" class="limitedWidth">
       <form action="request.php" id="newFileImportForm" method="post" accept-charset="utf-8" enctype="multipart/form-data">
       <p class="error_text error_text_import" data-trans-id="FileTab.Forms.chooseFile"><?=$lh("FileTab.Forms.chooseFile"); ?></p>
@@ -193,6 +196,7 @@
       </form>
     </div>
 
+    <span id="fileImportTransForm_title" data-trans-id="FileTab.Forms.importTextForm"><?=$lh("FileTab.Forms.importTextForm"); ?></span>
     <div id="fileImportTransForm" class="limitedWidth">
       <form action="request.php" id="newFileImportTransForm" method="post" accept-charset="utf-8" enctype="multipart/form-data">
       <p class="error_text error_text_import" data-trans-id="FileTab.Forms.chooseFile"><?=$lh("FileTab.Forms.chooseFile"); ?></p>
@@ -230,7 +234,7 @@
         <input type="hidden" name="via" value="iframe" />
       </p>
       <p style="text-align:right;">
-        <input type="submit" value="<?=$lh("FileTab.Forms.importBtn"); ?>" data-trans-value-id="FileTab.Forms.importBtn" /> 
+        <input type="submit" value="<?=$lh("FileTab.Forms.importBtn"); ?>" data-trans-value-id="FileTab.Forms.importBtn" />
       </p>
       </form>
     </div>

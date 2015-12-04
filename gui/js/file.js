@@ -460,7 +460,7 @@ cora.fileImporter = {
         var ref = this;
         var importform = $('newFileImportForm');
         var mbox = new mBox.Modal({
-            title: _("FileTab.Forms.importXmlForm"),
+            title: 'fileImportXMLForm_title',
             content: 'fileImportXMLForm',
             attach: 'importNewXMLLink',
             closeOnBodyClick: false
@@ -496,7 +496,7 @@ cora.fileImporter = {
         var ref = this;
         var importform = $('newFileImportTransForm');
         var mbox = new mBox.Modal({
-            title: _("FileTab.Forms.importTextForm"),
+            title: 'fileImportTransForm_title',
             content: 'fileImportTransForm',
             attach: 'importNewTransLink',
             closeOnBodyClick: false
@@ -556,8 +556,8 @@ cora.fileImporter = {
 	    displayText: true
         });
         this.transImportProgressDialog = new mBox.Modal({
-	    title: _("FileTab.importingData"),
-	    content: $('transImportSpinner'),
+	    title: 'transImportSpinner_title',
+	    content: 'transImportSpinner',
 	    closeOnBodyClick: false,
 	    closeOnEsc: false,
 	    closeInTitle: false,
@@ -1197,11 +1197,6 @@ cora.fileManager = {
          fid - ID of the file to be deleted
      */
     deleteFile: function(fid) {
-        /*var message = "Soll das Dokument '" + cora.files.getDisplayName(fid)
-            + "' wirklich gelöscht werden? Dieser Schritt kann nicht rückgängig "
-            + "gemacht werden!";
-        */
-
         var message = _("FileTab.Forms.deleteWarning",
                         {file: cora.files.getDisplayName(fid)});
         var performDelete = function() {
@@ -1286,12 +1281,11 @@ cora.fileManager = {
          fid - ID of the file to be exported
      */
     exportFile: function(fid){
-        var content = $('fileExportPopup');
         this.exportMultiSelectForCSV(fid)
             .replaces(content.getElement('.export_CustomCSV_MS'));
 	new mBox.Modal({
-	    content: content,
-	    title: _("FileTab.Forms.exportFile"),
+	    content: 'fileExportPopup',
+	    title: 'fileExportPopup_title',
 	    buttons: [
 		{title: _("Action.cancel"), addClass: 'mform'},
 		{title: _("Action.export2"), addClass: 'mform button_green',
