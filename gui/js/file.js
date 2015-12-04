@@ -883,6 +883,7 @@ cora.fileManager = {
         this.content = $('files');
         this._prepareEvents();
         this._autoOpen();
+        gui.onLocaleChange(function() { cora.projects.performUpdate(); });
     },
 
     /* Function: _prepareEvents
