@@ -1151,9 +1151,21 @@ var EditorModel = new Class({
     activateAnnotationDialog: function(button) {
 	var ref = this;
 	var mbox;
-	var content = $('automaticAnnotationForm');
+        this._initializeAnnotationDialog();
+        button.addEvent('click', function() { ref.mboxAnnotation.open(); });
+        gui.onLocaleChange(function() {
+            this._initializeAnnotationDialog();
+            this.prepareAnnotationOptions();
+        }.bind(this));
+    },
+
+    _initializeAnnotationDialog: function() {
+        var ref = this;
+	var content = 'automaticAnnotationForm';
 	var performAnnotation = function(action) {
-	    var taggerID = $('automaticAnnotationForm').getElement('input[name="aa_tagger_select"]:checked').get('value');
+	    var taggerID = $(content)
+                    .getElement('input[name="aa_tagger_select"]:checked')
+                    .get('value');
             new CoraRequest({
                 name: 'performAnnotation',
                 textDialogOnError: true,
@@ -1172,14 +1184,13 @@ var EditorModel = new Class({
 		    gui.hideSpinner();
                 }
             }).get({'action': action, 'tagger': taggerID});
-	    mbox.close();
+	    ref.mboxAnnotation.close();
 	};
 
 	// define the dialog window
-	mbox = new mBox.Modal({
+	ref.mboxAnnotation = new mBox.Modal({
 	    title: _("EditorTab.autoAnnotationTitle"),
-	    content: 'automaticAnnotationForm',
-	    attach: button,
+	    content: content,
             onOpen: function() { ref.save(); },
 	    buttons: [ {title: _("Action.retrain"), addClass: "mform button_left button_yellow",
                         id: "trainStartButton",

@@ -36,12 +36,17 @@ var LineJumper = new Class({
          parent - The parent PageModel, used to perform the jumps
          content - Content of the dialog window
      */
-    initialize: function(parent, content) {
-        var ref = this;
+    initialize: function(parent) {
         this.parent = parent;
         this.parentTable = parent.parent;
+        this._initializeDialog();
+        gui.onLocaleChange(this._initializeDialog.bind(this));
+    },
+
+    _initializeDialog: function() {
+        var ref = this;
         this.mbox = new mBox.Modal({
-	    content: content.clone(),
+	    content: 'jumpToLineForm',
 	    title: _("EditorTab.goToLine"),
 	    buttons: [
 		{title: _("Action.cancel"), addClass: 'mform'},
