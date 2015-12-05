@@ -29,7 +29,6 @@
 var PageModel = new Class({
     parent: null,
     lineJumper: null,
-    lineJumperForm: 'jumpToLineForm',
     panels: [],
     maxPage: 0,
     activePage: 0,
@@ -39,7 +38,7 @@ var PageModel = new Class({
         this.buttonsPageBack = new Elements();
         this.buttonsPageForward = new Elements();
         this._calculateMaxPage();
-        this.lineJumper = new LineJumper(this, $(this.lineJumperForm));
+        this.lineJumper = new LineJumper(this);
     },
 
     /* Function: _calculateMaxPage

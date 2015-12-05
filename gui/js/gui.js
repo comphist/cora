@@ -35,6 +35,7 @@ var gui = {
     serverNoticeShowing: false,
     currentLocale: null,
     availableLocales: {},
+    onLocaleChangeHandlers: [],
 
     initialize: function(options) {
         if (options.locale)
@@ -216,6 +217,20 @@ var gui = {
 	}
     },
 
+    /* Function: onLocaleChange
+
+       Add a callback function to be called whenever the current locale setting
+       changes.
+
+       Parameters:
+        fn - function to be called
+     */
+    onLocaleChange: function(fn) {
+        if(typeof(fn) == "function")
+            this.onLocaleChangeHandlers.push(fn);
+        return this;
+    },
+
     /* Function: useLocale
 
        Retrieve the locale file (if necessary) and update all GUI text.
@@ -230,8 +245,9 @@ var gui = {
             this._defineDateParsers();
             if (old_locale !== null) {
                 this.updateAllLocaleText();
-                if (cora.projects && typeof cora.projects.performUpdate === "function")
-                    cora.projects.performUpdate();
+                Array.each(this.onLocaleChangeHandlers, function(handler) {
+                    handler();
+                });
             }
         }.bind(this);
         if (!this.availableLocales[locale]) {

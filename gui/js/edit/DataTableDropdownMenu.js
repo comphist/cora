@@ -86,7 +86,8 @@ var DataTableDropdownMenu = new Class({
         var li = new Element('li');
         li.grab(new Element('a', {
             class: 'editTableDdButton'+entry.name,
-            text: entry.text,
+            text: _(entry.data_trans_id),
+            'data-trans-id': entry.data_trans_id,
             events: {
                 click: function(event, target) {
                     entry.action(this.dropdownCurrentId);
