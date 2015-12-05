@@ -54,7 +54,8 @@
     </span>
 
     <span class="btn-toolbar-separator"></span>
-    <span class="btn-toolbar-entry btn-text-search"><span class="oi" data-glyph="magnifying-glass" aria-hidden="true"></span> <span data-trans-id="EditorTab.search"><?=$lh("EditorTab.search"); ?></span></span>
+    <span class="btn-toolbar-entry btn-text-search">
+      <span class="oi" data-glyph="magnifying-glass" aria-hidden="true"></span> <span data-trans-id="EditorTab.search"><?=$lh("EditorTab.search"); ?></span></span>
     <span class="btn-toolbar-entry btn-search-back start-disabled" title="<?=$lh("EditorTab.previousMatch"); ?>" data-trans-title-id="EditorTab.previousMatch">
       <span class="oi" data-glyph="arrow-left" aria-hidden="true"></span>&nbsp;<span class="oi" data-glyph="magnifying-glass" aria-hidden="true"></span>
     </span>
@@ -63,8 +64,14 @@
     </span>
 
     <span class="btn-toolbar-separator"></span>
-    <span class="btn-toolbar-entry btn-text-annotate"><span class="oi" data-glyph="excerpt" aria-hidden="true"></span> <span data-trans-id="EditorTab.autoAnnotation"><?=$lh("EditorTab.autoAnnotation"); ?></span></span>
-    <span class="btn-toolbar-entry btn-text-info"><span class="oi" data-glyph="info" aria-hidden="true"></span> <span data-trans-id="EditorTab.metaData"> <?=$lh("EditorTab.metaData"); ?></span></span>
+    <span class="btn-toolbar-entry btn-text-annotate">
+      <span class="oi" data-glyph="excerpt" aria-hidden="true"></span> <span data-trans-id="EditorTab.autoAnnotation">
+      <?=$lh("EditorTab.autoAnnotation"); ?>
+    </span></span>
+    <span class="btn-toolbar-entry btn-text-info">
+      <span class="oi" data-glyph="info" aria-hidden="true"></span> <span data-trans-id="EditorTab.metaData">
+      <?=$lh("EditorTab.metaData"); ?>
+    </span></span>
   </div>
 
   <table id="editTable">
@@ -77,14 +84,16 @@
   </div>
 
   <div class="btn-toolbar btn-toolbar-notop" id="pagePanelBottom">
-    <span class="btn-toolbar-entry btn-page-count"><span class="oi" aria-hidden="true"></span><span data-trans-id="EditorTab.page"><?=$lh("EditorTab.page"); ?></span> <input type="text" class="btn-page-to" size="2" /><span class="page-active"></span>/<span class="page-max"></span></span>
+    <span class="btn-toolbar-entry btn-page-count"><span class="oi" aria-hidden="true"></span>
+    <span data-trans-id="EditorTab.page"><?=$lh("EditorTab.page"); ?></span> <input type="text" class="btn-page-to" size="2" /><span class="page-active"></span>/<span class="page-max"></span></span>
     <span class="btn-toolbar-entry btn-page-back" title="<?=$lh("EditorTab.previousPage"); ?>" data-trans-title-id="EditorTab.previousPage">
       <span class="oi" data-glyph="arrow-thick-left" aria-hidden="true"></span>
     </span>
     <span class="btn-toolbar-entry btn-page-forward" title="<?=$lh("EditorTab.nextPage"); ?>" data-trans-title-id="EditorTab.nextPage">
       <span class="oi" data-glyph="arrow-thick-right" aria-hidden="true"></span>
     </span>
-    <span class="btn-toolbar-entry btn-jump-to"><span class="oi" data-glyph="book" aria-hidden="true"></span><span data-trans-id="EditorTab.goToLine"><?=$lh("EditorTab.goToLine"); ?></span> </span>
+    <span class="btn-toolbar-entry btn-jump-to"><span class="oi" data-glyph="book" aria-hidden="true"></span>
+    <span data-trans-id="EditorTab.goToLine"><?=$lh("EditorTab.goToLine"); ?></span> </span>
   </div>
 </div>
 
@@ -153,8 +162,6 @@
       </p>
     </form>
     <p>
-    <span data-trans-id="EditorTab.Forms.newTransInfo1"><?=$lh("EditorTab.Forms.newTransInfo1"); ?></span>
-    <strong data-trans-id="EditorTab.Forms.newTransInfo2"><?=$lh("EditorTab.Forms.newTransInfo2"); ?></strong>
     <span id='addTokenBefore'></span>
     </p>
   </div>

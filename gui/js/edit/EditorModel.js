@@ -241,11 +241,8 @@ var EditorModel = new Class({
                 this.fireEvent('processed', [false, error]);
                 if(error.name === 'Handled') {
                     gui.showTextDialog(
-                        "Kritischer Fehler",
-                        "Beim Speichern des Dokuments ist ein server-seitiger "
-                            + "Fehler aufgetreten.  Um Datenverluste zu vermeiden, "
-                            + "bearbeiten Sie das Dokument bitte nicht weiter und "
-                            + "melden diesen Fehler einem Administrator.",
+                        _("EditorTab.Forms.criticalError"),
+                        _("EditorTab.Forms.criticalErrorInfo"),
                         error.details
                     );
                 }
@@ -330,7 +327,7 @@ var EditorModel = new Class({
                      fullname: name}
                 ));
                 this.header = header;
-                gui.showNotice("ok", "Metadaten erfolgreich geändert.");
+                gui.showNotice("ok", _("Banner.metaDataChanged"));
                 mbox.close();
             }.bind(this),
             onComplete: function() { form.unspin(); }
@@ -705,7 +702,7 @@ var EditorModel = new Class({
             if(typeof(onerror) === "function")
                 onerror({
 		    'name': 'FailureToLoadLines',
-		    'message': "Ein interner Fehler ist aufgetreten: Zeilen "+start+" bis "+(end-1)+" können nicht geladen werden."
+		    'message': _("EditorTab.Forms.couldNotLoadLines", {startLine: start, endLine: (end-1)})
 	        });
         };
         this.lineRequestInProgress = true;
@@ -777,7 +774,7 @@ var EditorModel = new Class({
             this.saveFailures++;
             if(this.saveFailures > 2) {
                 this.saveFailureNotice = gui.showNotice('notice',
-                    "Dokument kann derzeit nicht gespeichert werden.");
+                    _("Banner.cannotSave"));
             }
         }
     },
@@ -810,9 +807,7 @@ var EditorModel = new Class({
                 fn();
             } else {
                 gui.showMsgDialog('error',
-                    "Das Dokument kann derzeit nicht gespeichert werden; der "
-                    + "aktuelle Vorgang wird daher abgebrochen.  Überprüfen Sie "
-                    + "Ihre Internetverbindung und versuchen Sie es ggf. erneut.");
+                    _("EditorTab.Forms.cannotSaveInfo"));
                 if (typeof(fail) === "function")
                     fail();
             }
@@ -832,7 +827,7 @@ var EditorModel = new Class({
          fn - Function to call when closing is safe
     */
     confirmClose: function(fn) {
-        this.whenSaved(fn, {message: "Bitte warten..."});
+        this.whenSaved(fn, {message: _("EditorTab.Forms.pleaseWait")});
     },
 
     /* Function: updateDataArray
@@ -903,7 +898,7 @@ var EditorModel = new Class({
                 this.updateDataArray(options.tokId, options.getDiff(status));
             }.bind(this),
             onError: function(error) {
-                gui.showNotice('error', 'Primärdaten nicht geändert.');
+                gui.showNotice('error', _("EditorTab.Forms.primaryDataNotChanged"));
                 gui.hideSpinner();
             }
         }).get(options.request);
@@ -934,7 +929,7 @@ var EditorModel = new Class({
 		{title: _("Action.yesDelete"), addClass: 'mform button_red',
 		 event: function() {
 		     this.close();
-		     gui.showSpinner({message: 'Bitte warten...'});
+		     gui.showSpinner({message: _("EditorTab.Forms.pleaseWait")});
                      ref.whenSaved(
                          function() {
                              ref.sendEditRequest({
@@ -942,7 +937,7 @@ var EditorModel = new Class({
                                  getDiff: function(s){
                                      return -Number.from(s.oldmodcount);
                                  },
-                                 successNotice: "Token gelöscht.",
+                                 successNotice: _("EditorTab.Forms.tokenDeleted"),
                                  request: {'token_id': db_id},
                                  requestName: 'deleteToken'
                              });
@@ -985,12 +980,12 @@ var EditorModel = new Class({
 		 event: function() {
 	             var new_token = $('editTokenBox').get('value').trim();
                      if (!new_token) {
-                         gui.showNotice('error', "Transkription darf nicht leer sein!");
+                         gui.showNotice('error', _("Banner.transcriptionEmpty"));
                      }
                      this.close();
                      if (new_token == old_token)
                          return;
-		     gui.showSpinner({message: 'Bitte warten...'});
+		     gui.showSpinner({message: _("EditorTab.Forms.pleaseWait")});
                      ref.whenSaved(
                          function() {
                              ref.sendEditRequest({
@@ -998,7 +993,7 @@ var EditorModel = new Class({
                                  getDiff: function(s){
                                      return Number.from(s.newmodcount)-Number.from(s.oldmodcount);
                                  },
-                                 successNotice: "Token erfolgreich bearbeitet.",
+                                 successNotice: _("EditorTab.Forms.tokenEdited"),
                                  request: {'token_id': db_id, 'value': new_token},
                                  requestName: 'editToken'
                              });
@@ -1045,8 +1040,7 @@ var EditorModel = new Class({
 
 	$('addTokenBox').set('value', '');
         $('addTokenBefore').empty().appendText(
-            _("EditorTab.Forms.newTransInfo3",
-              {'tokInFront' : old_token, 'lineInfo' : lineinfo})
+            _("EditorTab.Forms.newTransInfo", {'tokInFront' : old_token, 'lineInfo' : lineinfo})
         );
 
 	var addTokenBox = new mBox.Modal({
@@ -1058,11 +1052,11 @@ var EditorModel = new Class({
 		 event: function() {
 	             var new_token = $('addTokenBox').get('value').trim();
 	             if(!new_token) {
-		         gui.showNotice('error', "Transkription darf nicht leer sein!");
+		         gui.showNotice('error', _("Banner.transcriptionEmpty"));
                          return;
 	             }
 	             this.close();
-	             gui.showSpinner({message: 'Bitte warten...'});
+	             gui.showSpinner({message: _("EditorTab.Forms.pleaseWait")});
                      ref.whenSaved(
                          function() {
                              ref.sendEditRequest({
@@ -1070,7 +1064,7 @@ var EditorModel = new Class({
                                  getDiff: function(s){
                                      return Number.from(s.newmodcount);
                                  },
-                                 successNotice: "Token erfolgreich hinzugefügt.",
+                                 successNotice: _("EditorTab.Forms.tokenAdded"),
                                  request: {'token_id': db_id, 'value': new_token},
                                  requestName: 'addToken'
                              });
@@ -1160,10 +1154,10 @@ var EditorModel = new Class({
                 retry: 0,
                 onSuccess: function(status) {
                     if(action == "train") {
-                        gui.showNotice('ok', 'Neu trainieren war erfolgreich.');
+                        gui.showNotice('ok', _("Banner.retrainSuccess"));
 		        gui.hideSpinner();
                     } else {
-			gui.showNotice('ok', 'Automatische Annotation war erfolgreich.');
+			gui.showNotice('ok', _("Banner.autoTagSuccess"));
 			// clear and reload all lines
 			ref.updateDataArray(0, 0);
                     }
@@ -1185,7 +1179,7 @@ var EditorModel = new Class({
                         id: "trainStartButton",
                         event: function() {
                             this.close();
-	                    gui.showSpinner({message: 'Bitte warten...'});
+	                    gui.showSpinner({message: _("EditorTab.Forms.pleaseWait")});
                             ref.whenSaved(
                                 function() { performAnnotation("train"); },
                                 null,
@@ -1196,7 +1190,7 @@ var EditorModel = new Class({
 			id: "annoStartButton",
 			event: function() {
                             this.close();
-	                    gui.showSpinner({message: 'Bitte warten...'});
+	                    gui.showSpinner({message: _("EditorTab.Forms.pleaseWait")});
                             ref.whenSaved(
                                 function() { performAnnotation("anno"); },
                                 null,

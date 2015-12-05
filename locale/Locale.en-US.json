@@ -37,7 +37,11 @@
         "couldNotPerformAction" : "Could not perform action.",
         "notLoggedIn" : "You are not logged in."
 
-        },
+    },
+    "LibFile" : {
+        "invalidXML" : "The file does not contain valid XML. The parser reported:"
+
+    },
      
      "Forms": {
          "buttonLogin": "Login",
@@ -311,11 +315,7 @@
             "cannotBeUndone" : "This action cannot be undone!",
             "deletionPrompt" : "Are you sure you want to delete the token \"{tok2del}\"?",
             "transcription" : "Transcription: ",
-            "newTransInfo1" : "The new transcription will be inserted into the original file",
-            "newTransInfo2" : "in front of", 
-            "newTransInfo3" : "the token \"{tokInFront}\" in line \"{lineInfo}\".",
-            "newTransInfo4" : "in line",
-            "newTransInfo5" : ".",
+            "newTransInfo" : "The new transcription will be inserted into the original file **in front of** the token \"{tokInFront}\" in line \"{lineInfo}\".",
             "searchForm1" : "Search for tokens fulfilling",
             "searchForm2" : "of the criteria below:",
             "editTranscription" : "Edit transcription",
@@ -330,7 +330,17 @@
             "resultInfoTail" : "criteria:",
             "allFulfilled" : "all",
             "oneFulfilled" : "any",
-            "blank" : "(blank)"
+            "blank" : "(blank)",
+            "criticalError" : "Critical error",
+            "criticalErrorInfo" : "A server-side error occurred when saving the document. Please do not continue editing the file and contact an admin in order to prevent data loss.",
+            "couldNotLoadLines" : "An internal error occurred: Could not load lines {startLine} to {endLine}.",
+            "cannotSaveInfo" : "The process has been aborted as the document cannot be saved right now. Please check your internet connection and try again later.",
+            "pleaseWait" : "Please wait...",
+            "primaryDataNotChanged" : "Original data have not been changed.",
+            "tokenDeleted" : "Token successfully deleted.",
+            "tokenEdited" : "Token successfully edited.",
+            "tokenAdded" : "Token successfully added."
+
         },
         "dropDown" : {
             "searchSimilar" : "Search for similar...",
@@ -429,7 +439,12 @@
         "enterTaggerName" : "Please enter a name for the tagger.",
         "projectCreated" : "Project created successfully.",
         "projectDeleted" : "Project successfully deleted.",
-        "noImportFileSelected" : "No import file selected!"
+        "noImportFileSelected" : "No import file selected!",
+        "metaDataChanged" : "Successfully changed meta data.",
+        "cannotSave" : "The document cannot be saved right now.",
+        "retrainSuccess" : "The retraining has been successful.",
+        "autoTagSuccess" : "The auto annotation has been successful.",
+        "transcriptionEmpty" : "Please enter a transcription!"
 
 
         

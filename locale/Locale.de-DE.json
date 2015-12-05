@@ -36,7 +36,11 @@
         "couldNotPerformAction" : "Die Aktion konnte nicht ausgeführt werden.",
         "notLoggedIn" : "Sie sind nicht angemeldet."
 
-        },
+    },
+    "LibFile" : {
+        "invalidXML" : "Datei enthält kein wohlgeformtes XML. Parser meldete:"
+
+    },
      "Dialog": {
          "documentInUse": "Das Dokument wird bereits bearbeitet von Benutzer '{user}' seit {lockDate}."
      },
@@ -312,11 +316,7 @@
             "cannotBeUndone" : "Diese Aktion kann nicht rückgängig gemacht werden!",
             "deletionPrompt" : "Soll das Token \"{tok2del}\" wirklich gelöscht werden?",
             "transcription" : "Transkription: ",
-            "newTransInfo1" : "Die neue Transkription wird",
-            "newTransInfo2" : "vor", 
-            "newTransInfo3" : "dem Token \"{tokInFront}\" auf Zeile \"{lineInfo}\" in das Originaldokument eingefügt.",
-            "newTransInfo4" : "auf Zeile",
-            "newTransInfo5" : "in das Originaldokument eingefügt.",
+            "newTransInfo" : "Die neue Transkription wird **vor** dem Token \"{tokInFront}\" auf Zeile \"{lineInfo}\" in das Originaldokument eingefügt.",
             "searchForm1" : "Suche Tokens, die",
             "searchForm2" : "der folgenden Bedingungen erfüllen:",
             "editTranscription" : "Transkription bearbeiten",
@@ -331,7 +331,17 @@
             "resultInfoTail" : "Bedingungen erfüllen:",
             "allFulfilled" : "alle",
             "oneFulfilled" : "mindestens eine",
-            "blank" : "(leer)"
+            "blank" : "(leer)",
+            "criticalError" : "Kritischer Fehler",
+            "criticalErrorInfo" : "Beim Speichern des Dokuments ist ein server-seitiger Fehler aufgetreten.  Um Datenverluste zu vermeiden, bearbeiten Sie das Dokument bitte nicht weiter und melden diesen Fehler einem Administrator.",
+            "couldNotLoadLines" : "Ein interner Fehler ist aufgetreten: Zeilen {startLine} bis {endLine} können nicht geladen werden.",
+            "cannotSaveInfo" : "Das Dokument kann derzeit nicht gespeichert werden; der aktuelle Vorgang wird daher abgebrochen.  Überprüfen Sie Ihre Internetverbindung und versuchen Sie es ggf. erneut.",
+            "pleaseWait" : "Bitte warten...",
+            "primaryDataNotChanged" : "Primärdaten nicht geändert.",
+            "tokenDeleted" : "Token gelöscht.",
+            "tokenEdited" : "Token erfolgreich bearbeitet.",
+            "tokenAdded" : "Token erfolgreich hinzugefügt."
+
         },
         "dropDown" : {
             "searchSimilar" : "Suche ähnliche...",
@@ -431,7 +441,12 @@
         "enterTaggerName" : "Name darf nicht leer sein!",
         "projectCreated" : "Projekt angelegt.",
         "projectDeleted" : "Projekt gelöscht.",
-        "noImportFileSelected" : "Keine Datei zum Importieren ausgewählt!"
+        "noImportFileSelected" : "Keine Datei zum Importieren ausgewählt!",
+        "metaDataChanged" : "Metadaten erfolgreich geändert.",
+        "cannotSave" : "Dokument kann derzeit nicht gespeichert werden.",
+        "retrainSuccess" : "Neu trainieren war erfolgreich.",
+        "autoTagSuccess" : "Automatische Annotation war erfolgreich.",
+        "transcriptionEmpty" : "Transkription darf nicht leer sein!"
 
 
      }

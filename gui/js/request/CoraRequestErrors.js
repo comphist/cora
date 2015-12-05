@@ -28,17 +28,17 @@ var CoraRequestError = new Class({
     message: "",
     details: [],
     showAsNotice: function() {
-        gui.showNotice('error', this.message);
+        gui.showNotice('error', _(this.message));
     },
     showAsDialog: function() {
-        gui.showMsgDialog('error', this.message);
+        gui.showMsgDialog('error', _(this.message));
     },
     showAsTextDialog: function() {
         if(typeof(this.details) === "undefined" || this.details === null
            || this.details.length === undefined || this.details.length === 0) {
             this.showAsDialog();
         } else {
-            gui.showTextDialog(_("Gui.actionFailed"), this.message, this.details);
+            gui.showTextDialog(_("Gui.actionFailed"), _(this.message), this.details);
         }
     }
 });
@@ -51,7 +51,7 @@ var CoraRequestError = new Class({
 CoraRequestError.Handled = new Class({
     Extends: CoraRequestError,
     name: 'Handled',
-    message: "Aktion konnte nicht ausgeführt werden.",
+    message: "Gui.couldNotPerformAction",
     status: {},
     initialize: function(status) {
         this.status  = status;
@@ -68,7 +68,7 @@ CoraRequestError.Handled = new Class({
 CoraRequestError.NotLoggedIn = new Class({
     Extends: CoraRequestError,
     name: 'NotLoggedIn',
-    message: _("Gui.notLoggedIn")
+    message: "Gui.notLoggedIn"
 });
 
 /* Class: CoraRequestError.Invalid
