@@ -234,6 +234,7 @@
         "noProjectGroups" : "Keine Projektgruppen verfügbar!",
         "noProjectGroupsInfo" : "Sie gehören zur Zeit keiner Projektgruppe an. Wenden Sie sich an einen Administrator, um zu einer Projektgruppe hinzuzufügt zu werden.",
         "noFilesInProject" : "Dieses Projekt enthält keine Dateien.",
+        "projectName" : "Projektname",
         "Forms" : {
             "exportFile" : "Datei exportieren",
             "exportPrompt" : "In welchem Format möchten Sie die Datei exportieren?",
@@ -262,7 +263,8 @@
             "editTagsetsForm" : "Tagset-Verknüpfungen für '{file}'",
             "pleaseWait" : "Bitte warten...",
             "importSuccess" : "Datei-Import erfolgreich",
-            "importSuccessInfo" : "Die Datei wurde erfolgreich hinzugefügt. Das System lieferte {nWarnings} zurück:",
+            "importSuccessInfo" : "Die Datei wurde erfolgreich hinzugefügt.",
+            "importSuccessWarnings" : "Das System lieferte {nWarnings} zurück:",
             "warning1" : "eine Warnung",
             "warning2" : "Warnungen",
             "importXmlForm" : "Importieren aus CorA-XML-Format",

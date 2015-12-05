@@ -672,11 +672,13 @@ cora.fileImporter = {
         else {
             success = true;
             title = _("FileTab.Forms.importSuccess");
+            message = _("FileTab.Forms.importSuccessInfo")
+            
             if(response.warnings instanceof Array && response.warnings.length>0) {
                 var warningCount = (response.warnings.length>1) ?
                         (response.warnings.length + " " + _("FileTab.Forms.warning2")) :
                         _("FileTab.Forms.warning1");
-                message = " "+_("FileTab.Forms.importSuccessInfo", {nWarnings:warningCount});
+                message += " " +_("FileTab.Forms.importSuccessWarnings", {nWarnings:warningCount});
                 textarea = response.warnings.join("\n");
             } else {
                 gui.showMsgDialog('info', message);
