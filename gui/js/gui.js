@@ -217,18 +217,27 @@ var gui = {
 	}
     },
 
-    /* Function: onLocaleChange
+    /* Function: onEditorLocaleChange
 
        Add a callback function to be called whenever the current locale setting
-       changes.
+       changes.  These callbacks are tied to the editor and can be reset when
+       the editor destructs.
 
        Parameters:
         fn - function to be called
      */
-    onLocaleChange: function(fn) {
+    onEditorLocaleChange: function(fn) {
         if(typeof(fn) == "function")
             this.onLocaleChangeHandlers.push(fn);
         return this;
+    },
+
+    /* Function: resetOnEditorLocaleChange
+
+       Remove all registered locale-change callbacks.
+     */
+    resetOnEditorLocaleChange: function() {
+        this.onLocaleChangeHandlers = [];
     },
 
     /* Function: useLocale
@@ -245,6 +254,7 @@ var gui = {
             this._defineDateParsers();
             if (old_locale !== null) {
                 this.updateAllLocaleText();
+                cora.projects.performUpdate();
                 Array.each(this.onLocaleChangeHandlers, function(handler) {
                     handler();
                 });
