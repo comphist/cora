@@ -910,7 +910,7 @@ cora.noticeEditor = {
             closeOnEsc: true
         }).open();
     }
-}
+};
 
 // ***********************************************************************
 // ********** PROJECT MANAGEMENT *****************************************
@@ -920,38 +920,11 @@ cora.projectEditor = {
     initialize: function() {
         var ref = this;
         cora.projects.onUpdate(this.refreshProjectTable);
+
         // adding projects
-        var cp_mbox = new mBox.Modal({
-            'title': _("AdminTab.Forms.addProject"),
-            'content': 'projectCreateForm',
-            'attach': 'adminCreateProject',
-            'buttons': [ {title: _("Action.cancel"), addClass: "mform"},
-                         {title: _("Action.createProject"), addClass: "mform button_green",
-                          event: function() {
-                              var pn = this.content.getElement('input').get('value');
-                              gui.lock();
-                              new CoraRequest({
-                                  name: 'createProject',
-                                  textDialogOnError: true,
-                                  onSuccess: function(status) {
-                                      var pid = Number.from(status.pid);
-                                      if(typeof(pid) === "undefined" || pid < 1) {
-                                          gui.showMsgDialog('error', _("AdminTab.Forms.noValidProjectId", {projectId:pid}));
-                                          return;
-                                      }
-                                      $('projectCreateForm').getElement('input').set('value', '');
-                                      this.close();
-                                      gui.showNotice('ok', _("Banner.projectCreated"));
-                                      cora.projects.performUpdate(function() {
-                                          ref.showProjectEditDialog(pid);
-                                      });
-                                  }.bind(this),
-                                  onComplete: function() { gui.unlock(); }
-                              }).get({'project_name': pn});
-                          }
-                         }
-                       ]
-        });
+        $('adminCreateProject').addEvent(
+            'click', function() { this.showCreateProjectDialog(); }.bind(this)
+        );
 
         // deleting projects
         $('editProjects').addEvent(
@@ -980,6 +953,44 @@ cora.projectEditor = {
                                                parsers: ['string', 'string',
                                                          'string',
                                                          'title',  'title']}));
+    },
+
+    /* Function: showCreateProjectDialog
+
+       Displays a dialog to create a new project.
+     */
+    showCreateProjectDialog: function() {
+        var performRequest = function(mbox) {
+            var pn = mbox.content.getElement('input').get('value');
+            gui.lock();
+            new CoraRequest({
+                name: 'createProject',
+                textDialogOnError: true,
+                onSuccess: function(status) {
+                    var pid = Number.from(status.pid);
+                    if(typeof(pid) === "undefined" || pid < 1) {
+                        gui.showMsgDialog('error', _("AdminTab.Forms.noValidProjectId", {projectId:pid}));
+                        return;
+                    }
+                    $('projectCreateForm').getElement('input').set('value', '');
+                    mbox.close();
+                    gui.showNotice('ok', _("Banner.projectCreated"));
+                    cora.projects.performUpdate(function() {
+                        this.showProjectEditDialog(pid);
+                    }.bind(this));
+                }.bind(this),
+                onComplete: function() { gui.unlock(); }
+            }).get({'project_name': pn});
+        }.bind(this);
+        new mBox.Modal({
+            'title': _("AdminTab.Forms.addProject"),
+            'content': 'projectCreateForm',
+            'buttons': [ {title: _("Action.cancel"), addClass: "mform"},
+                         {title: _("Action.createProject"), addClass: "mform button_green",
+                          event: function() { performRequest(this); }
+                         }
+                       ]
+        }).open();
     },
 
     /* Function: deleteProject
@@ -1166,7 +1177,7 @@ cora.tagsetEditor = {
     activateTagsetViewer: function() {
         var ref = this;
         var import_mbox = new mBox.Modal({
-            title: _("AdminTab.Forms.tagsetBrowserForm"),
+            title: 'adminTagsetBrowser_title',
             content: 'adminTagsetBrowser',
             attach: 'adminViewTagset',
             closeOnBodyClick: false
@@ -1220,7 +1231,7 @@ cora.tagsetEditor = {
         var formname = 'newTagsetImportForm';
         var class_selector = $(formname).getElement('select[name="tagset_class"]');
         var import_mbox = new mBox.Modal({
-            title: _("AdminTab.Forms.importTagsetForm"),
+            title: 'tagsetImportForm_title',
             content: 'tagsetImportForm',
             attach: 'adminImportTagset'
         });
@@ -1280,9 +1291,9 @@ cora.tagsetEditor = {
                     else if (!response.success) {
                         error = true;
                         textarea = response.errors;
-		        message = response.errors.length>1 ? 
-                _("AdminTab.Forms.taggerImportErrorInfo2", {nE: response.errors.length}) : 
-                _("AdminTab.Forms.taggerImportErrorInfo1");
+                        message = response.errors.length>1 ?
+                            _("AdminTab.Forms.taggerImportErrorInfo2", {nE: response.errors.length}) :
+                            _("AdminTab.Forms.taggerImportErrorInfo1");
                     }
                 }
                 if (error) {

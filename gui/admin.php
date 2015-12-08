@@ -288,6 +288,7 @@ $ulist = array();
       </p>
     </div>
 
+    <span id="tagsetImportForm_title" data-trans-id="AdminTab.Forms.importTagsetForm"><?=$lh("AdminTab.Forms.importTagsetForm"); ?></span>
     <div id="tagsetImportForm">
       <form action="request.php" id="newTagsetImportForm" method="post" accept-charset="utf-8" enctype="multipart/form-data">
       <p>
@@ -322,6 +323,7 @@ $ulist = array();
       </form>
     </div>
 
+    <span id="adminTagsetBrowser_title" data-trans-id="AdminTab.Forms.tagsetBrowserForm"><?=$lh("AdminTab.Forms.tagsetBrowserForm"); ?></span>
     <div id="adminTagsetBrowser">
       <p>
         <select id="aTBtagset" class="mform">
