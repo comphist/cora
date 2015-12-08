@@ -94,7 +94,7 @@
         "isImport" : "Import?",
         "projectOptions" : "Projekt verwalten...",
         "deleteProject" : "Projekt löschen",
-        "visibleForAdmins" : "**Hinweis**: Administratoren können ##immer## alle Projektgruppen sehen.",
+        "visibleForAdmins" : "**Hinweis**: Administratoren können _immer_ alle Projektgruppen sehen.",
         "autoAnnotationOptions" : "Automatische Annotation",
         "annoId" : "ID",
         "annoName" : "Name",

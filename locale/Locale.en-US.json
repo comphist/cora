@@ -92,7 +92,7 @@
         "isImport" : "Import?",
         "projectOptions" : "Project options...",
         "deleteProject" : "Delete project",
-        "visibleForAdmins" : "**Note**: Admins can ##always## see all project groups.",
+        "visibleForAdmins" : "**Note**: Admins can _always_ see all project groups.",
         "autoAnnotationOptions" : "Auto Annotation",
         "annoId" : "ID",
         "annoName" : "Name",

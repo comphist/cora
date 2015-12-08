@@ -282,26 +282,32 @@ var gui = {
      */
     updateAllLocaleText: function() {
         $$("[data-trans-id]").each(function(elem) {
-            elem.set("text", Locale.get(elem.get("data-trans-id")));
-        });
+            elem.set("html", this.localizeText(elem.get("data-trans-id")));
+        }.bind(this));
         $$("[data-trans-title-id]").each(function(elem) {
-            elem.set("title", Locale.get(elem.get("data-trans-title-id")));
-        });
+            elem.set("title", this.localizeText(elem.get("data-trans-title-id")));
+        }.bind(this));
         $$("[data-trans-placeholder-id]").each(function(elem) {
-            elem.set("placeholder", Locale.get(elem.get("data-trans-placeholder-id")));
-        });
+            elem.set("placeholder", this.localizeText(elem.get("data-trans-placeholder-id")));
+        }.bind(this));
         $$("[data-trans-value-id]").each(function(elem) {
-            elem.set("value", Locale.get(elem.get("data-trans-value-id")));
-        });
-
+            elem.set("value", this.localizeText(elem.get("data-trans-value-id")));
+        }.bind(this));
     },
 
     /* Function: localizeText
 
-       Localizes a text string with optional arguments.
+       Localizes a text string with optional arguments, and interprets **bold**
+       and _italic_ markup syntax.
      */
     localizeText: function(cat, args) {
-        return Locale.get(cat).substitute(args);
+        var str = Locale.get(cat).substitute(args);
+        // HTML-escaping
+        str = new Element("textarea", {text: str}).get('html');
+        // Interpreting markups
+        str = str.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+                 .replace(/_([^_]+)_/g, "<em>$1</em>");
+        return str;
     },
 
     /* Function: setHeader
@@ -446,7 +452,7 @@ var gui = {
                     .addClass('mform')
                     .removeClass('button_green')
                     .addClass((danger ? 'button_red' : 'button_green'))
-                    .set('html', '<label>'+_("Action.yesConfirm")+'</label>'); 
+                    .set('html', '<label>'+_("Action.yesConfirm")+'</label>');
                 this.footerContainer.getElement('.mBoxConfirmButtonCancel')
                     .addClass('mform')
                     .set('html', '<label>'+_("Action.noCancel")+'</label>');
