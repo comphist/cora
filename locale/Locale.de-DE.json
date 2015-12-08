@@ -178,8 +178,8 @@
             "couldNotLoadUserData" : "Die Daten für den Benutzer konnten nicht geladen werden.",
             "trainablePerProject" : "Projekt-spezifisch trainierbar",
             "taggerOptions" : "Optionen:",
-            "taggerOptionsInfo" : "Nur Texte, denen auch mindestens die hier ausgewählten Tagsets zugeordnet sind, können mit diesem Tagger annotiert werden." 
-            
+            "taggerOptionsInfo" : "Nur Texte, denen auch mindestens die hier ausgewählten Tagsets zugeordnet sind, können mit diesem Tagger annotiert werden."
+
 
 
 
@@ -201,10 +201,11 @@
         "Forms" : {
             "oldPassword" : "Altes Passwort:",
             "newPassword" : "Neues Passwort:",
-            "newPasswordRepeat" : "Neues Passwort (Wdh.)",
+            "newPasswordRepeat" : "Neues Passwort (Wdh.):",
             "doNotMatch" : "Die beiden Passwörter stimmen nicht überein!",
             "oldInvalid" : "Altes Passwort ist nicht korrekt!",
             "changePassword" : "Passwort ändern",
+            "changePasswordTitle" : "Passwort ändern",
             "passwordChanged" : "Passwort geändert"
 
             },

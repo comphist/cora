@@ -213,7 +213,7 @@ cora.settings = {
     _activatePasswordChangeForm: function() {
         /* Change password */
         var pwch = new mBox.Modal({
-	    title: _("SettingsTab.Forms.changePassword"),
+	    title: 'changePasswordForm_title',
 	    content: 'changePasswordFormDiv',
 	    attach: 'changePasswordLink'
         });

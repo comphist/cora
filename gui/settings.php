@@ -186,6 +186,7 @@
     </div>
 
     <div class="templateHolder">
+      <span id="changePasswordForm_title" data-trans-id="SettingsTab.Forms.changePasswordTitle"><?=$lh("SettingsTab.Forms.changePasswordTitle");?></span>
       <div id="changePasswordFormDiv">
         <form action="request.php" id="changePasswordForm" method="post">
            <p>

@@ -176,7 +176,7 @@
             "couldNotLoadUserData" : "The user's data could not be loaded.",
             "trainablePerProject" : "Trainable project-individually",
             "taggerOptions" : "Options:",
-            "taggerOptionsInfo" : "You can only annotate texts using this tagger if they are associated at least with the tagsets selected here.t" 
+            "taggerOptionsInfo" : "You can only annotate texts using this tagger if they are associated at least with the tagsets selected here."
 
 
 
@@ -204,6 +204,7 @@
             "doNotMatch" : "The passwords you entered do not match!",
             "oldInvalid" : "The current password you entered is not correct!",
             "changePassword" : "Change password",
+            "changePasswordTitle" : "Change password",
             "passwordChanged" : "Password changed successfully."
 
             },
