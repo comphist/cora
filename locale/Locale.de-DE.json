@@ -255,7 +255,7 @@
             "docName" : "Name:",
             "docNameDummy" : "(Dokumentname)",
             "siglum" : "Sigle:",
-            "siglumDummya" : "(Sigle - optional)",
+            "siglumDummy" : "(Sigle - optional)",
             "associatedTagsets" : "Tagset-Verknüpfungen:",
             "importBtn" : "Importieren →",
             "chooseFile" : "Bitte wählen Sie eine Datei zum Importieren aus!",
