@@ -163,7 +163,7 @@
             "tagsetSuccessfullyAdded" : "Das Tagset wurde erfolgreich hinzugefügt.",
             "msgDelConfirm" : "Benachrichtigung {msg} wirklich löschen?",
             "taggerDelConfirm" : "Tagger {taggerNum} '{taggerName}' wirklich löschen?",
-            "taggerClass" : "Class:",
+            "taggerClass" : "Klasse:",
             "delProjectInfo" : "Projekte können nicht gelöscht werden, solange noch mindestens ein Dokument dem Projekt zugeordnet ist.",
             "deleteProjectConfirm" : "Projekt {projectName} '{projectId}' wirklich löschen?",
             "optionsForTagger" : "Optionen für Tagger {taggerId}",

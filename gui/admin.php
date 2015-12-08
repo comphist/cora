@@ -231,7 +231,7 @@ $ulist = array();
         <input type="checkbox" id="annotatorIsTrainable" name="annotatorIsTrainable" value="trainable" class="mform" />
         <label for="annotatorIsTrainable" data-trans-id="AdminTab.Forms.trainablePerProject"><?=$lh("AdminTab.Forms.trainablePerProject"); ?></label>
       </p>
-      <p><label data-trans-title-id="AdminTab.Forms.associatedTagsets"><?=$lh("AdminTab.Forms.associatedTagsets"); ?></label></p>
+      <p><label data-trans-id="AdminTab.Forms.associatedTagsets"><?=$lh("AdminTab.Forms.associatedTagsets"); ?></label></p>
       <div class="tagsetSelectPlaceholder"></div>
       <p data-trans-id="AdminTab.Forms.taggerOptionsInfo">
         <?=$lh("AdminTab.Forms.taggerOptionsInfo"); ?>
@@ -258,14 +258,14 @@ $ulist = array();
         <label for="projectCmdImport"><span data-trans-id="AdminTab.Forms.importCommand"><?=$lh("AdminTab.Forms.importCommand"); ?></span> </label><br />
         <input type="text" name="projectCmdImport" placeholder="<?=$lh("AdminTab.Forms.dummyCommand"); ?>" data-trans-placeholder-id="AdminTab.Forms.dummyCommand" size="60" class="mform" />
       </p>
-      <p><label data-trans-id="AdminTab.assignedUsers"><?=$lh("AdminTab.Forms.assignedUsers"); ?></label></p>
+      <p><label data-trans-id="AdminTab.Forms.assignedUsers"><?=$lh("AdminTab.Forms.assignedUsers"); ?></label></p>
       <div class="userSelectPlaceholder"></div>
-      <p data-trans-id="AdminTab.assignUserInfo">
+      <p data-trans-id="AdminTab.Forms.assignUserInfo">
         <?=$lh("AdminTab.Forms.assignUserInfo"); ?>
       </p>
-      <p><label data-trans-id="AdminTab.associatedTagsets"><?=$lh("AdminTab.Forms.associatedTagsets"); ?></label></p>
+      <p><label data-trans-id="AdminTab.Forms.associatedTagsets"><?=$lh("AdminTab.Forms.associatedTagsets"); ?></label></p>
       <div class="tagsetSelectPlaceholder"></div>
-      <p data-trans-id="AdminTab.associatedTagsetsInfo">
+      <p data-trans-id="AdminTab.Forms.ssociatedTagsetsInfo">
         <?=$lh("AdminTab.Forms.associatedTagsetsInfo"); ?>
       </p>
     </div>
@@ -309,7 +309,7 @@ $ulist = array();
         <input type="file" name="txtFile" data-required />
       </p>
       <p style="max-width:32em;" data-trans-id="AdminTab.Forms.tagsetInfo">
-        <?=$lh("AdminTab.Forms.tagsetInfo"); ?>        
+        <?=$lh("AdminTab.Forms.tagsetInfo"); ?>
       </p>
       <p>
         <input type="hidden" name="action" value="importTagsetTxt" />
