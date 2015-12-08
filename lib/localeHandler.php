@@ -74,7 +74,7 @@ class LocaleHandler {
   public function localize($category, $args=array()) {
     if ($this->locale == null) return "";
     $str = $this->retrieveElement($category);
-    return self::performSubstitutions($str, $args);
+    return htmlspecialchars(self::performSubstitutions($str, $args));
   }
 
   /** An alias for LocaleHandler::localize(). */
