@@ -34,7 +34,7 @@
       </p>
       <ul>
         <li>
-          <a href="doc/cora-guide.pdf" download="cora-guide.pdf" data-trans-id="Help.coraGuideLink"><?=$lh("Help.coraGuideLink", array('date' => '27.01.2015')); ?></a>
+          <a href="doc/cora-guide.pdf" download="cora-guide.pdf" data-trans-id="Help.coraGuideLink"><?=$lh("Help.coraGuideLink"); ?></a>
         </li>
       </ul>
 
