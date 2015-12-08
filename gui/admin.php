@@ -265,7 +265,7 @@ $ulist = array();
       </p>
       <p><label data-trans-id="AdminTab.Forms.associatedTagsets"><?=$lh("AdminTab.Forms.associatedTagsets"); ?></label></p>
       <div class="tagsetSelectPlaceholder"></div>
-      <p data-trans-id="AdminTab.Forms.ssociatedTagsetsInfo">
+      <p data-trans-id="AdminTab.Forms.associatedTagsetsInfo">
         <?=$lh("AdminTab.Forms.associatedTagsetsInfo"); ?>
       </p>
     </div>
