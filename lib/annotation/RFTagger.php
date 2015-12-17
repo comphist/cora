@@ -134,7 +134,7 @@ class RFTagger extends AutomaticAnnotator {
             return array();
         }
         if($mod[$this->use_layer] != $line[0]) {
-            throw new Exception("Token mismatch: ".$mod[$this->use_layer]." != ".$line[0]);
+            throw new Exception("Token mismatch: ".$mod[$this->use_layer]." != ".$line[0]);  //$LOCALE
         }
         return array("id" => $mod['id'],
                      $this->use_layer => $mod[$this->use_layer],
@@ -232,8 +232,8 @@ class RFTagger extends AutomaticAnnotator {
                                   "2>/dev/null"));
         exec($cmd, $output, $retval);
         if($retval) {
-            error_log("CorA: RFTaggerAnnotator.php: RFTagger returned status code {$retval}; call was: {$cmd}");
-            throw new Exception("RFTagger gab den Status-Code {$retval} zurück.");
+            error_log("CorA: RFTaggerAnnotator.php: RFTagger returned status code {$retval}; call was: {$cmd}"); 
+            throw new Exception("RFTagger gab den Status-Code {$retval} zurück.");   //$LOCALE
                                 // "\nAufruf war: {$cmd}"
         }
 
@@ -280,7 +280,7 @@ class RFTagger extends AutomaticAnnotator {
                                   $flags));
         exec($cmd, $output, $retval);
         if($retval) {
-            throw new Exception("RFTagger gab den Status-Code {$retval} zurück.");
+            throw new Exception("RFTagger gab den Status-Code {$retval} zurück.");  //$LOCALE
             // "\nAufruf war: {$cmd}");
         }
         $this->train_lines = null;

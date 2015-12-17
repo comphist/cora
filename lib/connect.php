@@ -855,7 +855,7 @@
        $deletetag = $stmt->fetchAll(PDO::FETCH_COLUMN);
      }
      catch(PDOException $ex) {
-       return "Ein interner Fehler ist aufgetreten (Code: 1040).\n" . $ex->getMessage();
+       return "Ein interner Fehler ist aufgetreten (Code: 1040).\n" . $ex->getMessage();  //$LOCALE
      }
 
      $this->dbo->beginTransaction();
@@ -870,7 +870,7 @@
        }
        catch(PDOException $ex) {
 	 $this->dbo->rollBack();
-	 return "Ein interner Fehler ist aufgetreten (Code: 1041).\n" . $ex->getMessage();
+	 return "Ein interner Fehler ist aufgetreten (Code: 1041).\n" . $ex->getMessage();  //$LOCALE
        }
        $qs = "DELETE FROM tag WHERE `id` IN (" . implode(",", $deletetag) . ")";
        try {
@@ -879,7 +879,7 @@
        }
        catch(PDOException $ex) {
 	 $this->dbo->rollBack();
-	 return "Ein interner Fehler ist aufgetreten (Code: 1043).\n" . $ex->getMessage();
+	 return "Ein interner Fehler ist aufgetreten (Code: 1043).\n" . $ex->getMessage();  //$LOCALE
        }
      }
 
@@ -892,7 +892,7 @@
      }
      catch(PDOException $ex) {
        $this->dbo->rollBack();
-       return "Ein interner Fehler ist aufgetreten (Code: 1042).\n" . $ex->getMessage();
+       return "Ein interner Fehler ist aufgetreten (Code: 1042).\n" . $ex->getMessage();  //$LOCALEs
      }
 
      $this->dbo->commit();
@@ -913,7 +913,7 @@
                                 ':header' => $options['header']));
        }
        catch(PDOException $ex) {
-           return "Ein interner Fehler ist aufgetreten (Code: 1061).\n"
+           return "Ein interner Fehler ist aufgetreten (Code: 1061).\n"  //$LOCALE
                . $ex->getMessage();
        }
    }
@@ -953,7 +953,7 @@
        }
        catch(Exception $ex) {
            return array('success' => false,
-                        'errors'  => ["An exception occured.",
+                        'errors'  => ["An exception occured.",  //$LOCALE
                                       $ex->getMessage()]
                         );
        }
@@ -1554,7 +1554,7 @@
      $this->updateChangedTimestamp($fileid,$userid);
 
      if(!empty($warnings)) {
-       return "Der Speichervorgang wurde abgeschlossen, einige Informationen wurden jedoch möglicherweise nicht gespeichert.  Das System meldete:\n" . implode("\n", $warnings);
+       return "Der Speichervorgang wurde abgeschlossen, einige Informationen wurden jedoch möglicherweise nicht gespeichert.  Das System meldete:\n" . implode("\n", $warnings);  //$LOCALE
      }
      return False;
    }
@@ -1615,7 +1615,7 @@
        $row = $stmt->fetch(PDO::FETCH_ASSOC);
      }
      catch (PDOException $ex) {
-       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1220).";
+       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1220).";  //$LOCALE
        $errors[] = $ex->getMessage() . "\n" . $qs;
        return array("success" => false, "errors" => $errors);
      }
@@ -1633,7 +1633,7 @@
        $row = $stmt->fetch(PDO::FETCH_ASSOC);
      }
      catch (PDOException $ex) {
-       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1220).";
+       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1220).";  //$LOCALE
        $errors[] = $ex->getMessage() . "\n" . $qs;
        return array("success" => false, "errors" => $errors);
      }
@@ -1651,7 +1651,7 @@
        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
      }
      catch (PDOException $ex) {
-       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1222).";
+       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1222).";  //$LOCALE
        $errors[] = $ex->getMessage() . "\n" . $qs;
        return array("success" => false, "errors" => $errors);
      }
@@ -1686,7 +1686,7 @@
 	 }
        }
        catch (PDOException $ex) {
-	 $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1223).";
+	 $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1223).";  //$LOCALE
 	 $errors[] = $ex->getMessage() . "\n" . $qs;
 	 $this->dbo->rollBack();
 	 return array("success" => false, "errors" => $errors);
@@ -1714,7 +1714,7 @@
        $stmt->execute(array(':tokid' => $tokenid));
      }
      catch (PDOException $ex) {
-       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1225).";
+       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1225).";  //$LOCALE
        $errors[] = $ex->getMessage() . "\n" . $qs;
        $this->dbo->rollBack();
        return array("success" => false, "errors" => $errors);
@@ -1780,7 +1780,7 @@
 			    ':ordnr' => $ordnr));
      }
      catch (PDOException $ex) {
-       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1231).";
+       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1231).";  //$LOCALE
        $errors[] = $ex->getMessage() . "\n" . $qs;
        $this->dbo->rollBack();
        return array("success" => false, "errors" => $errors);
@@ -1800,7 +1800,7 @@
        }
      }
      catch (PDOException $ex) {
-       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1232).";
+       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1232).";  //$LOCALEs
        $errors[] = $ex->getMessage() . "\n" . $qs;
        $this->dbo->rollBack();
        return array("success" => false, "errors" => $errors);
@@ -1820,7 +1820,7 @@
        }
      }
      catch (PDOException $ex) {
-       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1233).";
+       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1233).";  //$LOCALE
        $errors[] = $ex->getMessage() . "\n" . $qs;
        $this->dbo->rollBack();
        return array("success" => false, "errors" => $errors);
@@ -1868,7 +1868,7 @@
      // --- this takes up an awful lot of space ...
      if($newlinecount > $oldlinecount) {
        if(($newlinecount - $oldlinecount) > 1) {
-	 $errors[] = "Token enthält zuviele Zeilenumbrüche.";
+	 $errors[] = "Token enthält zuviele Zeilenumbrüche.";  //$LOCALE
 	 $errors[] = "Die neue Transkription enthält {$newlinecount} Zeilenumbrüche, "
 	   . "die alte Transkription enthielt jedoch nur {$oldlinecount}.";
 	 return array("success" => false, "errors" => $errors);
@@ -1895,11 +1895,11 @@
 	 return array("success" => false, "errors" => $errors);
        }
        if(empty($row) || !isset($row['line_id'])) {
-	 $errors[] = "Die neue Transkription enthält einen Zeilenumbruch mehr als die vorherige, es konnte jedoch keine passende Zeile gefunden werden. (Befindet sich die Transkription in der letzten Zeile des Dokuments?)";
+	 $errors[] = "Die neue Transkription enthält einen Zeilenumbruch mehr als die vorherige, es konnte jedoch keine passende Zeile gefunden werden. (Befindet sich die Transkription in der letzten Zeile des Dokuments?)"; //$LOCALE
 	 return array("success" => false, "errors" => $errors);
        }
        if($row['line_id'] == $lastline) {
-	 $errors[] = "Die neue Transkription enthält einen Zeilenumbruch mehr als die vorherige, steht jedoch nicht am Ende einer Zeile.";
+	 $errors[] = "Die neue Transkription enthält einen Zeilenumbruch mehr als die vorherige, steht jedoch nicht am Ende einer Zeile."; //$LOCALE
 	 return array("success" => false, "errors" => $errors);
        }
        $lineids[] = $row['line_id'];
@@ -1967,7 +1967,7 @@
 	 }
        }
        catch (PDOException $ex) {
-	 $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1211).";
+	 $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1211).";  //$LOCALE
 	 $errors[] = $ex->getMessage() . "\n" . $qs;
 	 $this->dbo->rollBack();
 	 return array("success" => false, "errors" => $errors);
@@ -1979,7 +1979,7 @@
 	 $this->dbo->exec($qs);
        }
        catch (PDOException $ex) {
-	 $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1212).";
+	 $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1212).";  //$LOCALE
 	 $errors[] = $ex->getMessage() . "\n" . $qs;
 	 $this->dbo->rollBack();
 	 return array("success" => false, "errors" => $errors);
@@ -1998,7 +1998,7 @@
 	 }
        }
        catch (PDOException $ex) {
-	 $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1213).";
+	 $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1213).";  //$LOCALE
 	 $errors[] = $ex->getMessage() . "\n" . $qs;
 	 $this->dbo->rollBack();
 	 return array("success" => false, "errors" => $errors);
@@ -2010,7 +2010,7 @@
 	 $this->dbo->exec($qs);
        }
        catch (PDOException $ex) {
-	 $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1214).";
+	 $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1214).";  //$LOCALE
 	 $errors[] = $ex->getMessage() . "\n" . $qs;
 	 $this->dbo->rollBack();
 	 return array("success" => false, "errors" => $errors);
@@ -2035,7 +2035,7 @@
 			    ':trans' => $toktrans));
      }
      catch (PDOException $ex) {
-       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1215).";
+       $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1215).";  //$LOCALE
        $errors[] = $ex->getMessage() . "\n" . $qs;
        $this->dbo->rollBack();
        return array("success" => false, "errors" => $errors);

@@ -72,7 +72,7 @@ class Cfg {
       '<?php return ' . var_export(self::$user_options, true) . ';'
     );
     if (!$status) {
-      throw new RuntimeException("Couldn't write user configuration to disk.");
+      throw new RuntimeException("Couldn't write user configuration to disk.");  //$LOCALE
     }
   }
 

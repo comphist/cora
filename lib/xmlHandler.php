@@ -67,7 +67,7 @@ class XMLHandler {
 	return False;
       }
     }
-    return "XML-Format nicht erkannt: <text>-Tag nicht gefunden.";
+    return "XML-Format nicht erkannt: <text>-Tag nicht gefunden.";  //$LOCALE
   }
 
   /** Parses a range string ("t1..t4" or just "t1") into an array
@@ -297,7 +297,7 @@ class XMLHandler {
     $doc->loadXML(file_get_contents($xmlfile['tmp_name']));
     $errors = libxml_get_errors();
     if (!empty($errors) && $errors[0]->level > 0) {
-      $message  = "Datei enthält kein wohlgeformtes XML. Parser meldete:\n";
+      $message  = "Datei enthält kein wohlgeformtes XML. Parser meldete:\n";  //$LOCALE
       $message .= $errors[0]->message.' at line '.$errors[0]->line.'.';
       return array("success"=>False, "errors"=>array("XML-Fehler: ".$message));
     }
@@ -306,7 +306,7 @@ class XMLHandler {
     $reader = new XMLReader();
     if(!$reader->open($xmlfile['tmp_name'])) {
       return array("success"=>False,
-		   "errors"=>array("Interner Fehler: Konnte temporäre Datei '".$xmlfile['tmp_name']."' nicht öffnen."));
+		   "errors"=>array("Interner Fehler: Konnte temporäre Datei '".$xmlfile['tmp_name']."' nicht öffnen."));  //$LOCALE
     }
     $format = '';
     $xmlerror = $this->processXMLHeader($reader, $options, $format);
@@ -329,7 +329,7 @@ class XMLHandler {
     $warnings = $this->checkIntegrity($options, $data);
     if(!(isset($options['name']) && !empty($options['name'])) &&
        !(isset($options['sigle']) && !empty($options['sigle']))) {
-      array_unshift($warnings, "Dokument hat weder Name noch Sigle; benutze Dateiname als Dokumentname.");
+      array_unshift($warnings, "Dokument hat weder Name noch Sigle; benutze Dateiname als Dokumentname.");  //$LOCALE
       $options['name'] = $xmlfile['name'];
     }
     if(!(isset($options['ext_id']) && !empty($options['ext_id']))) {

@@ -81,7 +81,7 @@ class CoraDocument {
     // File metadata
     $openfile = $db->openFile($fileid);
     if(!$openfile || !$openfile['success']) {
-      throw new DocumentImportException("Couldn't open the file in the database.");
+      throw new DocumentImportException("Couldn't open the file in the database.");  //$LOCALE
     }
     $metadata = $openfile['data'];
     $instance = new self($metadata);
@@ -254,16 +254,16 @@ class CoraDocument {
       if(empty($pagestart))
         continue;
       if ($currentcol_idx >= count($this->columns)) {
-	throw new DocumentValueException("Out of columns for page '" . $currentpage['xml_id'] . "'.");
+	throw new DocumentValueException("Out of columns for page '" . $currentpage['xml_id'] . "'."); //$LOCALE
       }
       $currentcol = $this->columns[$currentcol_idx];
       if($currentcol['xml_id'] !== $pagestart) {
 	throw new DocumentValueException("Expected column '{$pagestart}' for page '" . $currentpage['xml_id']
-					 ."', but found column '" . $currentcol['xml_id'] . "'.");
+					 ."', but found column '" . $currentcol['xml_id'] . "'."); //$LOCALE
       }
       do {
         if ($currentcol_idx >= count($this->columns)) {
-            throw new DocumentValueException("Out of columns for page '" . $currentpage['xml_id'] . "'.");
+            throw new DocumentValueException("Out of columns for page '" . $currentpage['xml_id'] . "'."); //$LOCALE
         }
         $currentcol = $this->columns[$currentcol_idx];
 	$this->columns[$currentcol_idx]['parent_xml_id'] = $currentpage['xml_id'];
@@ -271,16 +271,16 @@ class CoraDocument {
         if(empty($colstart))
           continue;
 	if ($currentline_idx >= count($this->lines)) {
-	  throw new DocumentValueException("Out of lines for column '" . $currentcol['xml_id'] . "'.");
+	  throw new DocumentValueException("Out of lines for column '" . $currentcol['xml_id'] . "'."); //$LOCALE
 	}
 	$currentline = $this->lines[$currentline_idx];
 	if($currentline['xml_id'] !== $colstart) {
 	  throw new DocumentValueException("Expected line '{$colstart}' for column '" . $currentcol['xml_id']
-					   ."', but found line '" . $currentline['xml_id'] . "'.");
+					   ."', but found line '" . $currentline['xml_id'] . "'."); //$LOCALE
 	}
 	do {
           if ($currentline_idx >= count($this->lines)) {
-            throw new DocumentValueException("Out of lines for column '" . $currentcol['xml_id'] . "'.");
+            throw new DocumentValueException("Out of lines for column '" . $currentcol['xml_id'] . "'."); //$LOCALE
           }
           $currentline = $this->lines[$currentline_idx];
 	  $this->lines[$currentline_idx]['parent_xml_id'] = $currentcol['xml_id'];
@@ -293,10 +293,10 @@ class CoraDocument {
     }
     unset($currentpage);
     if($currentcol_idx < count($this->columns)) {
-      throw new DocumentValueException("No pages left at column '" . $currentcol['xml_id'] . "'.");
+      throw new DocumentValueException("No pages left at column '" . $currentcol['xml_id'] . "'."); //$LOCALE
     }
     if($currentline_idx < count($this->lines)) {
-      throw new DocumentValueException("No columns left at line '" . $currentline['xml_id'] . "'.");
+      throw new DocumentValueException("No columns left at line '" . $currentline['xml_id'] . "'."); //$LOCALE
     }
 
     // map diplomatic tokens to lines (done separately mainly for legibility)
@@ -308,11 +308,11 @@ class CoraDocument {
         continue;
       if($currentdipl['xml_id'] !== $linestart) {
 	throw new DocumentValueException("Expected dipl '{$linestart}' for line '" . $currentline['xml_id']
-					 ."', but found dipl '" . $currentdipl['xml_id'] . "'.");
+					 ."', but found dipl '" . $currentdipl['xml_id'] . "'."); //$LOCALE
       }
       do {
         if ($currentdipl_idx >= count($this->dipls)) {
-          throw new DocumentValueException("Out of diplomatic tokens for line '" . $currentline['xml_id'] . "'.");
+          throw new DocumentValueException("Out of diplomatic tokens for line '" . $currentline['xml_id'] . "'."); //$LOCALE
         }
         $currentdipl = $this->dipls[$currentdipl_idx];
 	$this->dipls[$currentdipl_idx]['parent_line_xml_id'] = $currentline['xml_id'];
@@ -322,7 +322,7 @@ class CoraDocument {
     }
     unset($currentline);
     if($currentdipl_idx < count($this->dipls)) {
-      throw new DocumentValueException("No lines left at diplomatic token '" . $currentdipl['xml_id'] . "'.");
+      throw new DocumentValueException("No lines left at diplomatic token '" . $currentdipl['xml_id'] . "'."); //$LOCALE
     }
     return $this;
   }
