@@ -97,7 +97,7 @@ var SplitClassTagset = new Class({
         this.tags_for = this._makeSplitTaglist(this.tags);
         Object.each(this.tags_for, function(subtags, maintag) {
             this.optgroup_for[maintag] = this.generateOptgroupFor(subtags,
-                                             "Alle Tags für '" + maintag + "'");
+                                             _("EditorTab.dropDown.allTagsFor", {tagClass:maintag}));
         }.bind(this));
     }
 });

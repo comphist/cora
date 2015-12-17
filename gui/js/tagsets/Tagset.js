@@ -185,7 +185,7 @@ var Tagset = new Class({
     generateOptgroupFor: function(tags, label, cls) {
         if(tags.length < 1)
             return null;
-        label = label || "Alle Tags";
+        label = label || _("EditorTab.dropDown.allTags");
         var optgroup = new Element('optgroup', {label: label, class: cls});
         var opt;
         Array.each(tags, function(tag) {

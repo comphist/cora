@@ -712,7 +712,7 @@ var gui = {
          fn - Callback on successful login
      */
     login: function(fn) {
-        this.showSpinner({message: _("gui.waitForAuthorization")});
+        this.showSpinner({message: _("Gui.waitForAuthorization")});
         var onSuccessfulRestore = function() {
             if(typeof(fn) === "function")
                 fn();

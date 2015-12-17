@@ -342,7 +342,6 @@
             "tokenDeleted" : "Token successfully deleted.",
             "tokenEdited" : "Token successfully edited.",
             "tokenAdded" : "Token successfully added."
-
         },
         "dropDown" : {
             "searchSimilar" : "Search for similar...",
@@ -365,7 +364,9 @@
             "sentBoundaryMarkup" : "Sentence boundary markup",
             "tokenAll" : "Token",
             "tokenTrans" : "Token (transcription)",
-            "posTagMorph" : "POS-Tag (incl. Morphology)"
+            "posTagMorph" : "POS-Tag (incl. Morphology)",
+            "allTags" : "All tags",
+            "allTagsFor" : "All tags for '{tagClass}'"
 
         }
     },
