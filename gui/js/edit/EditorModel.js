@@ -303,6 +303,7 @@ var EditorModel = new Class({
         if (this.searchResults !== null)
             this.searchResults.destroy();
         this.dataTable.hide();
+        gui.resetOnEditorLocaleChange();
         $$('div#menuRight .when-file-open-only').removeClass('file-open');
     },
 
@@ -1147,7 +1148,7 @@ var EditorModel = new Class({
 	var mbox;
         this._initializeAnnotationDialog();
         button.addEvent('click', function() { ref.mboxAnnotation.open(); });
-        gui.onLocaleChange(function() {
+        gui.onEditorLocaleChange(function() {
             this._initializeAnnotationDialog();
             this.prepareAnnotationOptions();
         }.bind(this));

@@ -74,7 +74,8 @@ class LocaleHandler {
   public function localize($category, $args=array()) {
     if ($this->locale == null) return "";
     $str = $this->retrieveElement($category);
-    return self::performSubstitutions($str, $args);
+    $str = self::performSubstitutions($str, $args);
+    return self::interpretMarkup(htmlspecialchars($str));
   }
 
   /** An alias for LocaleHandler::localize(). */
@@ -176,6 +177,13 @@ class LocaleHandler {
       $values[] = $v;
     }
     return str_replace($keys, $values, $s);
+  }
+
+  /** Interprets **bold** and _italic_ markup in a format string. */
+  private static function interpretMarkup($s) {
+    $s = preg_replace("/\*\*([^*]+)\*\*/", "<strong>$1</strong>", $s);
+    $s = preg_replace("/_([^_]+)_/", "<em>$1</em>", $s);
+    return $s;
   }
 }
 

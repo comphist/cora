@@ -63,7 +63,7 @@ var TokenSearcher = new Class({
         this.flagHandler = flags;
         this.templateListElem = $(this.options.template);
         this._initializeDialog();
-        gui.onLocaleChange(this._initializeDialog.bind(this));
+        gui.onEditorLocaleChange(this._initializeDialog.bind(this));
         if(this.options.panels) {
             Array.each(this.options.panels, this._activateSearch.bind(this));
         }

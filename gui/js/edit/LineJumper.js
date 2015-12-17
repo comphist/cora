@@ -40,7 +40,7 @@ var LineJumper = new Class({
         this.parent = parent;
         this.parentTable = parent.parent;
         this._initializeDialog();
-        gui.onLocaleChange(this._initializeDialog.bind(this));
+        gui.onEditorLocaleChange(this._initializeDialog.bind(this));
     },
 
     _initializeDialog: function() {

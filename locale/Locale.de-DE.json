@@ -56,7 +56,7 @@
         "dontShowAgainInfo" : "Sie können sich die Neuigkeiten jederzeit über den Tab 'Hilfe' erneut anzeigen lassen.",
         "coraHelpTitle" : "Hilfe zur Benutzung von CorA",
         "helpInGuide" : "Alle Funktionen von CorA sind im Benutzerhandbuch näher erläutert. Falls Sie Fragen zur Bedienung oder zu einer bestimmten Funktion von CorA haben, schauen Sie bitte zunächst dort nach:",
-        "coraGuideLink" : "CorA Benutzerhandbuch, {date} [PDF]",
+        "coraGuideLink" : "CorA Benutzerhandbuch, 27.01.2015 [PDF]",
         "feedbackTitle" : "Ungeklärte Fragen?  Bugs gefunden?",
         "contactUsInfo" : "Falls Sie Fragen haben, die durch das Benutzerhandbuch nicht geklärt worden sind, oder falls Sie gar einen Fehler in CorA entdeckt haben, ",
         "contactUs" : "kontaktieren Sie uns bitte!",
@@ -94,7 +94,7 @@
         "isImport" : "Import?",
         "projectOptions" : "Projekt verwalten...",
         "deleteProject" : "Projekt löschen",
-        "visibleForAdmins" : "**Hinweis**: Administratoren können ##immer## alle Projektgruppen sehen.",
+        "visibleForAdmins" : "**Hinweis**: Administratoren können _immer_ alle Projektgruppen sehen.",
         "autoAnnotationOptions" : "Automatische Annotation",
         "annoId" : "ID",
         "annoName" : "Name",
@@ -163,7 +163,7 @@
             "tagsetSuccessfullyAdded" : "Das Tagset wurde erfolgreich hinzugefügt.",
             "msgDelConfirm" : "Benachrichtigung {msg} wirklich löschen?",
             "taggerDelConfirm" : "Tagger {taggerNum} '{taggerName}' wirklich löschen?",
-            "taggerClass" : "Class:",
+            "taggerClass" : "Klasse:",
             "delProjectInfo" : "Projekte können nicht gelöscht werden, solange noch mindestens ein Dokument dem Projekt zugeordnet ist.",
             "deleteProjectConfirm" : "Projekt {projectName} '{projectId}' wirklich löschen?",
             "optionsForTagger" : "Optionen für Tagger {taggerId}",
@@ -178,8 +178,8 @@
             "couldNotLoadUserData" : "Die Daten für den Benutzer konnten nicht geladen werden.",
             "trainablePerProject" : "Projekt-spezifisch trainierbar",
             "taggerOptions" : "Optionen:",
-            "taggerOptionsInfo" : "Nur Texte, denen auch mindestens die hier ausgewählten Tagsets zugeordnet sind, können mit diesem Tagger annotiert werden." 
-            
+            "taggerOptionsInfo" : "Nur Texte, denen auch mindestens die hier ausgewählten Tagsets zugeordnet sind, können mit diesem Tagger annotiert werden."
+
 
 
 
@@ -201,10 +201,11 @@
         "Forms" : {
             "oldPassword" : "Altes Passwort:",
             "newPassword" : "Neues Passwort:",
-            "newPasswordRepeat" : "Neues Passwort (Wdh.)",
+            "newPasswordRepeat" : "Neues Passwort (Wdh.):",
             "doNotMatch" : "Die beiden Passwörter stimmen nicht überein!",
             "oldInvalid" : "Altes Passwort ist nicht korrekt!",
             "changePassword" : "Passwort ändern",
+            "changePasswordTitle" : "Passwort ändern",
             "passwordChanged" : "Passwort geändert"
 
             },
@@ -254,7 +255,7 @@
             "docName" : "Name:",
             "docNameDummy" : "(Dokumentname)",
             "siglum" : "Sigle:",
-            "siglumDummya" : "(Sigle - optional)",
+            "siglumDummy" : "(Sigle - optional)",
             "associatedTagsets" : "Tagset-Verknüpfungen:",
             "importBtn" : "Importieren →",
             "chooseFile" : "Bitte wählen Sie eine Datei zum Importieren aus!",
