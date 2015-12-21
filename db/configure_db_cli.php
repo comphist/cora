@@ -110,7 +110,11 @@ function echo_status() {
     }
   } else {
     echo_db_credentials();
-    printf("*** Could NOT connect to database.\n");
+    printf("*** Could NOT connect to database.\n\n");
+    if ($status['pdo_exception']) {
+      printf($status['pdo_exception']);
+      printf("\n");
+    }
     $status_code = STATUS_CANNOT_CONNECT;
   }
 }
