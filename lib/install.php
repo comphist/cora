@@ -114,7 +114,7 @@ class InstallHelper {
       list($rc, $stdout, $stderr) = self::exec($cmd);
       if (($rc > 0) || !$stdout)
         return false;
-      return (substr($stdout, 0, 5) == "mysql");
+      return true;
     }
     catch (Exception $ex) {
       return false;
