@@ -59,7 +59,9 @@ class Cora_Tests_DocumentCreator_test extends Cora_Tests_DbTestCase {
     $expected = $this->createXMLDataset("data/inserted_document.xml");
 
     $this->obj = new DocumentCreator($this->dbi, $this->dbo, $options);
-    $this->assertTrue($this->obj->importDocument($data, 3));
+    if (!$this->obj->importDocument($data, 3)) {
+      $this->fail(implode("\n", $this->obj->getWarnings()));
+    }
     $this->assertEmpty($this->obj->getWarnings());
 
     $this->assertTablesEqual($expected->getTable("inserted_text"),

@@ -262,7 +262,7 @@ class DocumentCreator extends DocumentWriter {
   }
 
   /** Saves all annotations, including suggestions, in a document. */
-  private function saveAllAnnotations(&$moderns) {
+  private function saveAllAnnotations($moderns) {
       $last_checked = null;
       $last_checked_found = false;
       foreach($moderns as $mod) {
@@ -293,7 +293,7 @@ class DocumentCreator extends DocumentWriter {
   }
 
   /** Saves all shifttags. */
-  private function saveAllShifttags(&$shifttags) {
+  private function saveAllShifttags($shifttags) {
       foreach($shifttags as $shifttag) {
           $this->saveShifttag($shifttag['db_range'][0],
                               $shifttag['db_range'][1],
@@ -303,7 +303,7 @@ class DocumentCreator extends DocumentWriter {
 
   /** Saves all comments.
    */
-  private function saveAllComments(&$comments) {
+  private function saveAllComments($comments) {
       foreach($comments as $comment) {
           $params = array(':tokid' => $comment['parent_db_id'],
                           ':value' => $comment['text'],
