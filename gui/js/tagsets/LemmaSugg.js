@@ -28,7 +28,7 @@ var LemmaSuggTagset = new Class({
     Extends: Tagset,
     Implements: LemmaAutocomplete,  // for splitting the external IDs
 
-    classname: 'Lemma-Vorschlag',
+    classname: 'Columns.lemmaSuggestion',
     eventString: 'click:relay(div.editTableLemmaLink)',
     searchable: false,
     exportable: false,

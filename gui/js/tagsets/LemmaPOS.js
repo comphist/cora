@@ -25,7 +25,7 @@
  */
 var LemmaPOSTagset = new Class({
     Extends: Tagset,
-    classname: 'Lemma-Tag',
+    classname: 'Columns.lemmaTag',
     optgroup: null,
     eventString: 'change:relay(select.et-select-lemmapos)',
 

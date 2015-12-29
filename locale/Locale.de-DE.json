@@ -119,6 +119,7 @@
         "deleteMsg" : "Benachrichtigung löschen",
         "Forms" : {
             "addUser" : "Neuen Benutzer hinzufügen",
+            "assignedUsers" : "Zugeordnete Benutzer:",
             "newUserName" : "Benutzername:",
             "password" : "Passwort:",
             "repeatPassword" : "Passwort wiederholen:",
@@ -383,8 +384,10 @@
         "modType" : "Modernisierungstyp",
         "pos" : "POS-Tag",
         "morph" : "Morphologie-Tag",
+        "posMorph": "POS-Tag (inkl. Morphologie)",
         "lemma" : "Lemma",
         "lemmaLink" : "Lemma-Link",
+        "lemmaSuggestion": "Lemma-Vorschlag",
         "lemmaTag" : "Lemma-Tag",
         "comment" : "Kommentar",
         "secondaryComment" : "Sekundär-Kommentar",

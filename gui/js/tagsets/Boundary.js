@@ -25,7 +25,7 @@
  */
 var BoundaryTagset = new Class({
     Extends: Tagset,
-    classname: 'Satzgrenze',
+    classname: 'Columns.sentBoundary',
     optgroup: null,
     eventString: 'change:relay(select.et-select-boundary)',
 
