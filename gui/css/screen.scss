@@ -694,15 +694,17 @@ button {
 /***************************************************************************/
 
 input[type=text] {
+    max-width: 95%;
     word-break: normal !important;
 }
 
 label.ra
 {
     display: inline-block;
-    width: 8em;
+    width: 8.5em;
     text-align: right;
     padding-right: 5px;
+    white-space: nowrap;
 }
 
 label.vt
@@ -802,8 +804,12 @@ span.projectname {
 }
 
 table.fileList {
+    th {
+        white-space: nowrap;
+    }
+
     .ftr-sigle {
-        width: 3.6em;
+        min-width: 3.6em;
         text-align: right;
         padding-right: 0;
     }
@@ -831,8 +837,12 @@ table.fileList {
         width: 2.5em;
     }
 
-    .ftr-options a {
-        margin-right: 8px;
+    .ftr-options {
+        white-space: nowrap;
+
+        a {
+            margin-right: 8px;
+        }
     }
 
     a.deleteFileLink.start-hidden {
@@ -989,6 +999,9 @@ table.editTable{
     th {
         border-bottom: 1px solid #666;
         padding: 0px 6px 4px 6px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
 
         &.editTable_tokenid {
             text-align: right;
@@ -1015,7 +1028,6 @@ table.editTable{
         }
         &.editTable_pos select,
         &.editTable_lemmapos select {
-            width: 100%;
         }
         &.editTable_morph select {
             min-width: 12.5em;
@@ -1152,6 +1164,7 @@ div.editTableDropdownMenu {
     display: none;
     background-color: #d4d4d4;
     font-size: 1.5em;
+    white-space: nowrap;
     padding: 5px;
     margin: 0 0 0 ;
     border: 1px solid #777777;
