@@ -35,7 +35,8 @@
         "loginAccessError" : "You've successfully logged in but you currently don't have access to the opened file. Another user might be working on the file.",
         "actionFailed" : "Action failed",
         "couldNotPerformAction" : "Could not perform action.",
-        "notLoggedIn" : "You are not logged in."
+        "notLoggedIn" : "You are not logged in.",
+        "logInAgain" : "Erneut anmelden"
 
     },
     "LibFile" : {
@@ -117,7 +118,6 @@
         "deleteMsg" : "Delete message",
         "Forms" : {
             "addUser" : "Add User",
-            "assignedUsers" : "Assigned users:",
             "newUserName" : "User name:",
             "password" : "Password:",
             "repeatPassword" : "Repeat password:",
@@ -217,7 +217,7 @@
      "FileTab" : {
         "importText" : "Import text file",
         "importXml" : "Import XML file",
-        "siglum" : "Custom ID",
+        "siglum" : "Sig.",
         "fileName" : "File name",
         "lastEdit" : "Last edited",
         "by" : "...by",
@@ -254,8 +254,8 @@
             "noImportScriptInfo" : "There is no import script set for the selected project. Without an import script new documents can only be imported as CorA XML files.",
             "docName" : "Name:",
             "docNameDummy" : "(File name)",
-            "siglum" : "Custom ID:",
-            "siglumDummy" : "(Custom ID - optional)",
+            "siglum" : "Siglum:",
+            "siglumDummy" : "(Siglum - optional)",
             "associatedTagsets" : "Associated tagsets:",
             "importBtn" : "Import →",
             "chooseFile" : "Please choose a file to be imported!",
@@ -311,6 +311,8 @@
         "editQuery" : "Edit query",
         "openDropdownMenu" : "Open dropdown menu",
         "openExternalLink" : "Open external link",
+        "loadingPreview" : "Loading text preview...",
+        "unsavedChangesWarning" : "There are unsaved changes that may be lost if you continue!",
         "Forms" : {
             "warning" : "Warning!",
             "lineNumber" : "Line number:",
@@ -363,7 +365,7 @@
             "isNotSet" : "is not set",
             "errorMarkup" : "Error markup",
             "lemmaMarkup" : "Lemma markup",
-            "sentBoundaryMarkup" : "Boundary markup",
+            "sentBoundaryMarkup" : "Sentence boundary markup",
             "tokenAll" : "Token",
             "tokenTrans" : "Token (transcription)",
             "posTagMorph" : "POS-Tag (incl. Morphology)",
@@ -382,14 +384,12 @@
         "modType" : "Modernization type",
         "pos" : "POS tag",
         "morph" : "Morphology tag",
-        "posMorph": "POS tag (incl. morphology)",
         "lemma" : "Lemma",
         "lemmaLink" : "Lemma link",
-        "lemmaSuggestion": "Lemma suggestion",
         "lemmaTag" : "Lemma tag",
         "comment" : "Comment",
         "secondaryComment" : "Secondary comment",
-        "sentBoundary" : "Boundary",
+        "sentBoundary" : "Sent. boundary",
         "asciiTok" : "Token (ASCII)"
 
      },
@@ -451,7 +451,9 @@
         "cannotSave" : "The document cannot be saved right now.",
         "retrainSuccess" : "The retraining has been successful.",
         "autoTagSuccess" : "The auto annotation has been successful.",
-        "transcriptionEmpty" : "Please enter a transcription!"
+        "transcriptionEmpty" : "Please enter a transcription!",
+        "enterLineNo" : "Please enter a line number.",
+        "lineDoesNotExist" : "The line you entered does not exist."
 
 
         
