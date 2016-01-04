@@ -85,9 +85,9 @@ var LineJumper = new Class({
         var value = Number.from(this.mbox.content
                                 .getElement('input[name="jumpTo"]').value);
         if (value == null) {
-	    gui.showNotice('error', _("Banner.enterLineNo"));
+	    gui.showNotice('error', 'Bitte eine Zahl eingeben.');
         } else if (!this.parent.isValidLine(value)) {
-	    gui.showNotice('error', _("Banner.lineDoesNotExist"));
+	    gui.showNotice('error', 'Zeilennummer existiert nicht.');
         } else {
             this.parent.setPageByLine(value, true);
             this.mbox.close();

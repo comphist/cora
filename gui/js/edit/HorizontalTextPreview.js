@@ -48,7 +48,7 @@ var HorizontalTextPreview = new Class({
         this.parent = parent;
         this.container = container;
         this.view = this.container.getElement('div');
-	this.view.empty().set('text', _("EditorTab.loadingPreview"));
+	this.view.empty().set('text', "Text-Vorschau wird geladen...");
         //this.spinner = new Spinner(this.container);
         this.setPreviewType(cora.settings.get('textPreview'));
     },
