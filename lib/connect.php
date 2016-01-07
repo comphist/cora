@@ -63,7 +63,7 @@
      $this->dbo = new PDO('mysql:host='.$dbinfo['HOST']
                          .';dbname='.$dbinfo['DBNAME']
                          .';charset=utf8',
-			  $dbinfo['USER'],
+                          $dbinfo['USER'],
                           $dbinfo['PASSWORD']);
      $this->dbo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
      $this->db = $dbinfo['DBNAME'];
@@ -2095,6 +2095,86 @@
                    'warnings' => $dc->getWarnings());
   }
 
+  public function getLemmaSuggestionFromLineNumber($linenum) {
+    $suggestions = array();
+    $qstr  = "SELECT ts.id, ts.tag_id, ts.source, tag.value, "
+           . "       LOWER(tagset.class) AS `class` "
+           . "     FROM tag_suggestion ts "
+           . "LEFT JOIN tag ON tag.id=ts.tag_id "
+           . "LEFT JOIN tagset ON tagset.id=tag.tagset_id "
+           . "    WHERE ts.mod_id=:modid AND `class`='lemma' AND ts.source='auto'";
+    $stmt = $this->dbo->prepare($qstr);
+    $stmt->execute(array(':modid' => $linenum));
+    while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+      $suggestions[] = array("id" => $row['tag_id'], "v" => $row['value'], "t" => "s");
+    }
+    return $suggestions;
+  }
+
+  public function getLemmaSuggestionFromIdenticalAscii($linenum) {
+    $suggestions = array();
+    $errortypes = $this->getErrorTypes();
+    if(array_key_exists('lemma verified', $errortypes)) {
+      $lemma_verified = $errortypes['lemma verified'];
+      $paa = $this->getProjectAndAscii($linenum);
+      if($paa && !empty($paa)) {
+        $line_ascii = $paa['ascii'];
+        $line_project = $paa['project_id'];
+        $qstr  = "SELECT tag.id, tag.value, ts.id AS ts_id "
+               . "     FROM   tag "
+               . "       LEFT JOIN tagset ON tag.tagset_id=tagset.id "
+               . "       LEFT JOIN tag_suggestion ts ON ts.tag_id=tag.id "
+               . "       LEFT JOIN modern ON modern.id=ts.mod_id "
+               . "       LEFT JOIN token ON modern.tok_id=token.id "
+               . "       LEFT JOIN text ON token.text_id=text.id "
+               . "       LEFT JOIN mod2error ON mod2error.mod_id=modern.id "
+               . "     WHERE  mod2error.error_id=:errid "
+               . "        AND UPPER(modern.ascii)=UPPER(:ascii) "
+               . "        AND text.project_id=:projectid "
+               . "        AND LOWER(tagset.class)='lemma' "
+               . "        AND ts.selected=1 ";
+        $stmt = $this->dbo->prepare($qstr);
+        $stmt->execute(array(':errid' => $lemma_verified,
+                             ':ascii' => $line_ascii,
+                             ':projectid' => $line_project));
+        $processed_lemmas = array();
+        while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            if(!in_array($row['value'], $processed_lemmas)) {
+                $suggestions[] = array("id" => $row['id'], "v" => $row['value'], "t" => "c");
+                $processed_lemmas[] = $row['value'];
+            }
+        }
+      }
+    }
+    return $suggestions;
+  }
+
+  public function getLemmaSuggestionFromQueryString($q, $fileid, $limit) {
+    $suggestions = array();
+    if(strlen($q)>0) {
+      // strip ID for the search, if applicable
+      $q = preg_replace('/ \[.*\]$/', '', $q);
+      $tslist = $this->getTagsetsForFile($fileid);
+      $tsid = 0;
+      foreach($tslist as $tagset) {
+        if($tagset['class']=="lemma_sugg") {
+          $tsid = $tagset['id'];
+        }
+      }
+      if($tsid && $tsid != 0) {
+        $qs = "SELECT `id`, `value` FROM tag "
+            . "  WHERE `tagset_id`='{$tsid}' AND `value` LIKE '{$q}%' "
+            . "  ORDER BY `value` LIMIT {$limit}";
+        $stmt = $this->dbo->prepare($qs);
+        $stmt->execute();
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $suggestions[] = array("id" => $row['id'], "v" => $row['value'], "t" => "q");
+        }
+      }
+    }
+    return $suggestions;
+  }
+
   /** Retrieve suggestions for lemma annotation.
    *
    * @param string $fileid ID of the file to which the annotation belongs
@@ -2110,80 +2190,16 @@
    * matches from the closed lemma tagset)
    */
   public function getLemmaSuggestion($fileid, $linenum, $q, $limit) {
-    $suggestions = array();
-
     // get automatic suggestions stored with the line number
-    $qstr  = "SELECT ts.id, ts.tag_id, ts.source, tag.value, "
-        . "          LOWER(tagset.class) AS `class` "
-        . "     FROM tag_suggestion ts "
-        . "LEFT JOIN tag ON tag.id=ts.tag_id "
-        . "LEFT JOIN tagset ON tagset.id=tag.tagset_id "
-        . "    WHERE ts.mod_id=:modid AND `class`='lemma' AND ts.source='auto'";
-    $stmt = $this->dbo->prepare($qstr);
-    $stmt->execute(array(':modid' => $linenum));
-    while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-      $suggestions[] = array("id" => $row['tag_id'], "v" => $row['value'], "t" => "s");
-    }
+    $sugg1 = $this->getLemmaSuggestionFromLineNumber($linenum);
 
     // get confirmed selected lemmas from tokens with identical simplification
-    $errortypes = $this->getErrorTypes();
-    if(array_key_exists('lemma verified', $errortypes)) {
-      $lemma_verified = $errortypes['lemma verified'];
-      $paa = $this->getProjectAndAscii($linenum);
-      if($paa && !empty($paa)) {
-	$line_ascii = $paa['ascii'];
-	$line_project = $paa['project_id'];
-	$qstr  = "SELECT tag.id, tag.value, ts.id AS ts_id "
-	  . "     FROM   tag "
-	  . "       LEFT JOIN tagset ON tag.tagset_id=tagset.id "
-	  . "       LEFT JOIN tag_suggestion ts ON ts.tag_id=tag.id "
-	  . "       LEFT JOIN modern ON modern.id=ts.mod_id "
-	  . "       LEFT JOIN token ON modern.tok_id=token.id "
-	  . "       LEFT JOIN text ON token.text_id=text.id "
-	  . "       LEFT JOIN mod2error ON mod2error.mod_id=modern.id "
-	  . "     WHERE  mod2error.error_id=:errid "
-	  . "        AND UPPER(modern.ascii)=UPPER(:ascii) "
-	  . "        AND text.project_id=:projectid "
-	  . "        AND LOWER(tagset.class)='lemma' "
-	  . "        AND ts.selected=1 ";
-	$stmt = $this->dbo->prepare($qstr);
-	$stmt->execute(array(':errid' => $lemma_verified,
-			     ':ascii' => $line_ascii,
-			     ':projectid' => $line_project));
-	$processed_lemmas = array();
-	while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-	  if(!in_array($row['value'], $processed_lemmas)) {
-	    $suggestions[] = array("id" => $row['id'], "v" => $row['value'], "t" => "c");
-	    $processed_lemmas[] = $row['value'];
-	  }
-	}
-      }
-    }
+    $sugg2 = $this->getLemmaSuggestionFromIdenticalAscii($linenum);
 
     // get lemma matches for query string
-    if(strlen($q)>0) {
-      // strip ID for the search, if applicable
-      $q = preg_replace('/ \[.*\]$/', '', $q);
-      $tslist = $this->getTagsetsForFile($fileid);
-      $tsid = 0;
-      foreach($tslist as $tagset) {
-        if($tagset['class']=="lemma_sugg") {
-	  $tsid = $tagset['id'];
-	}
-      }
-      if($tsid && $tsid != 0) {
-	$qs = "SELECT `id`, `value` FROM tag "
-	  . "  WHERE `tagset_id`='{$tsid}' AND `value` LIKE '{$q}%' "
-	  . "  ORDER BY `value` LIMIT {$limit}";
-	$stmt = $this->dbo->prepare($qs);
-	$stmt->execute();
-	while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-	  $suggestions[] = array("id" => $row['id'], "v" => $row['value'], "t" => "q");
-	}
-      }
-    }
+    $sugg3 = $this->getLemmaSuggestionFromQueryString($q, $fileid, $limit);
 
-    return $suggestions;
+    return array_merge($sugg1, $sugg2, $sugg3);
   }
 
   /** Check for current notices.
