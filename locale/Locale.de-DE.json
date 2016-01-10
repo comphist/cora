@@ -32,9 +32,6 @@
         "expand" : "Aufklappen",
         "waitForAuthorization" : "Warte auf Authorisierung...",
         "loginAccessError" : "Anmeldung war erfolgreich, aber Zugriff auf die aktuell geöffnete Datei ist nicht möglich. Eventuell wird diese Datei bereits von einem anderen Nutzer bearbeitet.",
-        "actionFailed" : "Aktion fehlgeschlagen",
-        "couldNotPerformAction" : "Die Aktion konnte nicht ausgeführt werden.",
-        "notLoggedIn" : "Sie sind nicht angemeldet.",
         "logInAgain" : "Erneut anmelden"
 
     },
@@ -459,6 +456,20 @@
         "transcriptionEmpty" : "Transkription darf nicht leer sein!",
         "enterLineNo" : "Bitte eine Zahl eingeben.",
         "lineDoesNotExist" : "Zeilennummer existiert nicht."
+
+
+     },
+
+     "RequestErrors" : {
+        "invalidServerResponseInfo" : "Der Server lieferte eine ungültige Antwort zurück.",
+        "internalError" : "Ein interner Server-Fehler ist aufgetreten.",
+        "requestCancelled" : "Die Anfrage wurde abgebrochen.",
+        "serverNotAvailable" : "Der Server ist derzeit nicht erreichbar.",
+        "internalScriptError" : "Ein interner Skript-Fehler ist aufgetreten.",
+        "internalScriptErrorInfo" : "\"{hName}\" = \"{val}\" fehlgeschlagen.",
+        "actionFailed" : "Aktion fehlgeschlagen",
+        "couldNotPerformAction" : "Die Aktion konnte nicht ausgeführt werden.",
+        "notLoggedIn" : "Sie sind nicht angemeldet."
 
 
      }

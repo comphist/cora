@@ -38,7 +38,7 @@ var CoraRequestError = new Class({
            || this.details.length === undefined || this.details.length === 0) {
             this.showAsDialog();
         } else {
-            gui.showTextDialog(_("Gui.actionFailed"), _(this.message), this.details);
+            gui.showTextDialog(_("RequestErrors.actionFailed"), _(this.message), this.details);
         }
     }
 });
@@ -51,7 +51,7 @@ var CoraRequestError = new Class({
 CoraRequestError.Handled = new Class({
     Extends: CoraRequestError,
     name: 'Handled',
-    message: "Gui.couldNotPerformAction",
+    message: "RequestErrors.couldNotPerformAction",
     status: {},
     initialize: function(status) {
         this.status  = status;
@@ -68,7 +68,7 @@ CoraRequestError.Handled = new Class({
 CoraRequestError.NotLoggedIn = new Class({
     Extends: CoraRequestError,
     name: 'NotLoggedIn',
-    message: "Gui.notLoggedIn"
+    message: "RequestErrors.notLoggedIn"
 });
 
 /* Class: CoraRequestError.Invalid
@@ -84,7 +84,7 @@ CoraRequestError.NotLoggedIn = new Class({
 CoraRequestError.Invalid = new Class({
     Extends: CoraRequestError,
     name: 'InvalidResponse',
-    message: "Der Server lieferte eine ungültige Antwort zurück.",
+    message: "RequestErrors.invalidServerResponseInfo",
     initialize: function(response) {
         this.details = [response];
     }
@@ -98,7 +98,7 @@ CoraRequestError.Invalid = new Class({
 CoraRequestError.Server = new Class({
     Extends: CoraRequestError,
     name: 'ServerError',
-    message: "Ein interner Server-Fehler ist aufgetreten.",
+    message: "RequestErrors.internalError",
     xhr: null,
     initialize: function(xhr) {
         this.xhr = xhr;
@@ -113,7 +113,7 @@ CoraRequestError.Server = new Class({
 CoraRequestError.Cancelled = new Class({
     Extends: CoraRequestError,
     name: 'Cancelled',
-    message: "Die Anfrage wurde abgebrochen."
+    message: _("RequestErrors.requestCancelled")
 });
 
 /* Class: CoraRequestError.Network
@@ -124,7 +124,7 @@ CoraRequestError.Network = new Class({
     Extends: CoraRequestError,
     name: 'Network',
     timeout: false,
-    message: "Der Server ist derzeit nicht erreichbar.",
+    message: _("RequestErrors.serverNotAvailable"),
     initialize: function(to) {
         if(to) this.timeout = true;
     }
@@ -139,8 +139,8 @@ CoraRequestError.Network = new Class({
 CoraRequestError.Exception = new Class({
     Extends: CoraRequestError,
     name: 'Exception',
-    message: "Ein interner Skript-Fehler ist aufgetreten.",
+    message: _("RequestErrors.internalScriptError"),
     initialize: function(headerName, value) {
-        this.details = ['"'+headerName+'" = "'+value+'" fehlgeschlagen.'];
+        this.details = [_("RequestErrors.internalScriptErrorInfo", {hName: headerName, val: value})];
     }
 });
