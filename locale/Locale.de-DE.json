@@ -34,7 +34,8 @@
         "loginAccessError" : "Anmeldung war erfolgreich, aber Zugriff auf die aktuell geöffnete Datei ist nicht möglich. Eventuell wird diese Datei bereits von einem anderen Nutzer bearbeitet.",
         "actionFailed" : "Aktion fehlgeschlagen",
         "couldNotPerformAction" : "Die Aktion konnte nicht ausgeführt werden.",
-        "notLoggedIn" : "Sie sind nicht angemeldet."
+        "notLoggedIn" : "Sie sind nicht angemeldet.",
+        "logInAgain" : "Erneut anmelden"
 
     },
     "LibFile" : {
@@ -312,6 +313,8 @@
         "editQuery" : "Suche ändern",
         "openDropdownMenu" : "Dropdown-Menü öffnen",
         "openExternalLink" : "Externen Link öffnen",
+        "loadingPreview" : "Text-Vorschau wird geladen...",
+        "unsavedChangesWarning" : "Es gibt noch ungespeicherte Änderungen, die verloren gehen könnten, wenn Sie fortfahren!",
         "Forms" : {
             "warning" : "Achtung!",
             "lineNumber" : "Zeilennummer:",
@@ -453,7 +456,9 @@
         "cannotSave" : "Dokument kann derzeit nicht gespeichert werden.",
         "retrainSuccess" : "Neu trainieren war erfolgreich.",
         "autoTagSuccess" : "Automatische Annotation war erfolgreich.",
-        "transcriptionEmpty" : "Transkription darf nicht leer sein!"
+        "transcriptionEmpty" : "Transkription darf nicht leer sein!",
+        "enterLineNo" : "Bitte eine Zahl eingeben.",
+        "lineDoesNotExist" : "Zeilennummer existiert nicht."
 
 
      }

@@ -35,7 +35,8 @@
         "loginAccessError" : "You've successfully logged in but you currently don't have access to the opened file. Another user might be working on the file.",
         "actionFailed" : "Action failed",
         "couldNotPerformAction" : "Could not perform action.",
-        "notLoggedIn" : "You are not logged in."
+        "notLoggedIn" : "You are not logged in.",
+        "logInAgain" : "Log in again"
 
     },
     "LibFile" : {
@@ -311,6 +312,8 @@
         "editQuery" : "Edit query",
         "openDropdownMenu" : "Open dropdown menu",
         "openExternalLink" : "Open external link",
+        "loadingPreview" : "Loading text preview...",
+        "unsavedChangesWarning" : "There are unsaved changes that may be lost if you continue!",
         "Forms" : {
             "warning" : "Warning!",
             "lineNumber" : "Line number:",
@@ -451,7 +454,9 @@
         "cannotSave" : "The document cannot be saved right now.",
         "retrainSuccess" : "The retraining has been successful.",
         "autoTagSuccess" : "The auto annotation has been successful.",
-        "transcriptionEmpty" : "Please enter a transcription!"
+        "transcriptionEmpty" : "Please enter a transcription!",
+        "enterLineNo" : "Please enter a line number.",
+        "lineDoesNotExist" : "The line you entered does not exist."
 
 
         
