@@ -86,16 +86,16 @@ cora.settings = {
 		var cl = div.getElement('input[name="contextLines"]').get('value').toInt();
 		var pl = div.getElement('input[name="noPageLines"]').get('value').toInt();
 		if (isNaN(cl) || isNaN(pl)) {
-                    gui.showNotice('error', "Bitte nur Zahlen eingeben!");
+                    gui.showNotice('error', _("Banner.numbersOnly"));
 		    e.stop(); return;
 		}
 		if (cl >= pl) {
-                    gui.showNotice('error', "Anzahl überlappender Zeilen muss kleiner sein als Anzahl der Zeilen pro Seite.");
+                    gui.showNotice('error', _("Banner.overlappingLines"));
 		    e.stop(); return;
 		}
 		if (pl > 50) {
                     // TODO: change to gui.confirm --- but doesn't work with Form.Request
-		    var doit = confirm("Warnung: Eine hohe Anzahl an Zeilen pro Seite kann zur Folge haben, dass der Seitenaufbau sehr langsam wird bzw. der Browser für längere Zeit nicht mehr reagiert.");
+		    var doit = confirm(_("Banner.manyLinesWarning"));
 		    if (!doit) { e.stop(); return; }
 		}
 	    }

@@ -453,7 +453,10 @@
         "autoTagSuccess" : "The auto annotation has been successful.",
         "transcriptionEmpty" : "Please enter a transcription!",
         "enterLineNo" : "Please enter a line number.",
-        "lineDoesNotExist" : "The line you entered does not exist."
+        "lineDoesNotExist" : "The line you entered does not exist.",
+        "numbersOnly" : "Please enter only numbers!",
+        "overlappingLines" : "The number of overlapping lines has to be less than the number of lines per page.",
+        "manyLinesWarning" : "Warning: A high number of lines per page can result in a long loading time and/or your browser performing poorly."
 
 
      },

@@ -455,7 +455,10 @@
         "autoTagSuccess" : "Automatische Annotation war erfolgreich.",
         "transcriptionEmpty" : "Transkription darf nicht leer sein!",
         "enterLineNo" : "Bitte eine Zahl eingeben.",
-        "lineDoesNotExist" : "Zeilennummer existiert nicht."
+        "lineDoesNotExist" : "Zeilennummer existiert nicht.",
+        "numbersOnly" : "Bitte nur Zahlen eingeben!",
+        "overlappingLines" : "Anzahl überlappender Zeilen muss kleiner sein als Anzahl der Zeilen pro Seite.",
+        "manyLinesWarning" : "Warnung: Eine hohe Anzahl an Zeilen pro Seite kann zur Folge haben, dass der Seitenaufbau sehr langsam wird bzw. der Browser für längere Zeit nicht mehr reagiert."
 
 
      },
