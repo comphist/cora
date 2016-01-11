@@ -1284,7 +1284,7 @@ cora.fileManager = {
      */
     exportFile: function(fid){
         this.exportMultiSelectForCSV(fid)
-            .replaces(content.getElement('.export_CustomCSV_MS'));
+            .replaces($('fileExportPopup').getElement('.export_CustomCSV_MS'));
 	new mBox.Modal({
 	    content: 'fileExportPopup',
 	    title: 'fileExportPopup_title',
