@@ -82,7 +82,7 @@
     </div>
 
     <div class="filegroup clappable clapp-modern" id="fileGroup">
-      <h4 class="clapp"><span class="projectname" data-trans-id="FileTab.projectName"><?=$lh("FileTab.projectName"); ?></span></h4>
+      <h4 class="clapp"><span class="projectname"></span></h4>
         <div>
           <table class="fileList table-modern">
           <thead>

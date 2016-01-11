@@ -146,8 +146,8 @@
               <?=$lh("Columns.comment"); ?>
             </label>
           <input type="checkbox" name="displayedColumns" id="eshc-sec_comment" value="sec_comment" checked="yes" />
-            <label for="eshc-comment" data-trans-id="Columns.sec_comment">
-              <?=$lh("Columns.sec_comment"); ?>
+            <label for="eshc-sec_comment" data-trans-id="Columns.secondaryComment">
+              <?=$lh("Columns.secondaryComment"); ?>
             </label>
         </p>
       </div>
@@ -190,15 +190,15 @@
       <div id="changePasswordFormDiv">
         <form action="request.php" id="changePasswordForm" method="post">
            <p>
-            <label for="oldpw"><span data-trans-id="SettingsTab.Forms.oldPassword"><?=$lh("SettingsTab.Forms.oldPassword"); ?></span> </label>
+            <label for="oldpw" data-trans-id="SettingsTab.Forms.oldPassword" class="ra"><?=$lh("SettingsTab.Forms.oldPassword"); ?></label>
             <input name="oldpw" type="password" size="30" data-required="" />
           </p>
           <p>
-            <label for="newpw"><span data-trans-id="SettingsTab.Forms.newPassword"><?=$lh("SettingsTab.Forms.newPassword"); ?></span> </label>
+            <label for="newpw" data-trans-id="SettingsTab.Forms.newPassword" class="ra"><?=$lh("SettingsTab.Forms.newPassword"); ?></label>
             <input name="newpw" type="password" size="30" data-required="" />
           </p>
           <p>
-            <label for="newpw2"><span data-trans-id="SettingsTab.Forms.newPasswordRepeat"><?=$lh("SettingsTab.Forms.newPasswordRepeat"); ?></span> </label>
+            <label for="newpw2" data-trans-id="SettingsTab.Forms.newPasswordRepeat" class="ra"><?=$lh("SettingsTab.Forms.newPasswordRepeat"); ?></label>
             <input name="newpw2" type="password" size="30" data-required="" />
           </p>
           <p id="changePasswordErrorNew" class="error_text" data-trans-id="SettingsTab.Forms.doNotMatch"><?=$lh("SettingsTab.Forms.doNotMatch"); ?></p>

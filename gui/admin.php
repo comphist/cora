@@ -292,21 +292,21 @@ $ulist = array();
     <div id="tagsetImportForm">
       <form action="request.php" id="newTagsetImportForm" method="post" accept-charset="utf-8" enctype="multipart/form-data">
       <p>
-        <label for="tagset_name" data-trans-id="AdminTab.Forms.tagsetName">
+        <label for="tagset_name" data-trans-id="AdminTab.Forms.tagsetName" class="ra">
           <?=$lh("AdminTab.Forms.tagsetName"); ?>
         </label>
         <input type="text" name="tagset_name" value="" size="40" maxlength="255" data-required />
       </p>
       <p>
-        <label for="tagset_class"><span data-trans-id="AdminTab.Forms.tagsetClass">
+        <label for="tagset_class" data-trans-id="AdminTab.Forms.tagsetClass" class="ra">
           <?=$lh("AdminTab.Forms.tagsetClass"); ?>
-        </span> </label>
+        </label>
         <select size="1" name="tagset_class"></select>
       </p>
       <p>
-        <label for="txtFile"><span data-trans-id="AdminTab.Forms.tagsetFile">
+        <label for="txtFile" data-trans-id="AdminTab.Forms.tagsetFile" class="ra">
           <?=$lh("AdminTab.Forms.tagsetFile"); ?>
-        </span> </label>
+        </label>
         <input type="file" name="txtFile" data-required />
       </p>
       <p style="max-width:32em;" data-trans-id="AdminTab.Forms.tagsetInfo">
