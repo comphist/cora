@@ -146,8 +146,8 @@
               <?=$lh("Columns.comment"); ?>
             </label>
           <input type="checkbox" name="displayedColumns" id="eshc-sec_comment" value="sec_comment" checked="yes" />
-            <label for="eshc-comment" data-trans-id="Columns.sec_comment">
-              <?=$lh("Columns.sec_comment"); ?>
+            <label for="eshc-sec_comment" data-trans-id="Columns.secondaryComment">
+              <?=$lh("Columns.secondaryComment"); ?>
             </label>
         </p>
       </div>

@@ -233,7 +233,6 @@
         "noProjectGroups" : "No project groups available!",
         "noProjectGroupsInfo" : "You have not been assigned to any project groups yet. Please contact an admin in order to get assigned to a project group.",
         "noFilesInProject" : "There are no files in this project.",
-        "projectName" : "Project Name",
         "Forms" : {
             "exportFile" : "Export File",
             "exportPrompt" : "Please choose a format for the export file:",
