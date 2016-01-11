@@ -701,10 +701,9 @@ input[type=text] {
 label.ra
 {
     display: inline-block;
-    width: 8.5em;
+    width: 9em;
     text-align: right;
     padding-right: 5px;
-    white-space: nowrap;
 }
 
 label.vt
@@ -712,9 +711,12 @@ label.vt
     vertical-align: top;
 }
 
-form#newFileImportForm label.ra,
-form#newFileImportTransForm label.ra
-{  width: 4.6em; }
+form#newFileImportForm,
+form#newFileImportTransForm
+{
+    label.ra { width: 6em; }
+    select { max-width: 20em; }
+}
 
 textarea.sans {
     font-family: $font-stack;
@@ -1253,12 +1255,6 @@ div#editorSettingsInputAids {
     label {
         margin-left: 5px;
     }
-}
-
-div#changePasswordFormDiv label {
-    display: inline-block;
-    width: 11em;
-    text-align: right;
 }
 
 /***************************************************************************/
