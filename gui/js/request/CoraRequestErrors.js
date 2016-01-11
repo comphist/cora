@@ -113,7 +113,7 @@ CoraRequestError.Server = new Class({
 CoraRequestError.Cancelled = new Class({
     Extends: CoraRequestError,
     name: 'Cancelled',
-    message: _("RequestErrors.requestCancelled")
+    message: "RequestErrors.requestCancelled"
 });
 
 /* Class: CoraRequestError.Network
@@ -124,7 +124,7 @@ CoraRequestError.Network = new Class({
     Extends: CoraRequestError,
     name: 'Network',
     timeout: false,
-    message: _("RequestErrors.serverNotAvailable"),
+    message: "RequestErrors.serverNotAvailable",
     initialize: function(to) {
         if(to) this.timeout = true;
     }
@@ -139,7 +139,7 @@ CoraRequestError.Network = new Class({
 CoraRequestError.Exception = new Class({
     Extends: CoraRequestError,
     name: 'Exception',
-    message: _("RequestErrors.internalScriptError"),
+    message: "RequestErrors.internalScriptError",
     initialize: function(headerName, value) {
         this.details = [_("RequestErrors.internalScriptErrorInfo", {hName: headerName, val: value})];
     }
