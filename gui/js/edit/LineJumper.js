@@ -47,7 +47,7 @@ var LineJumper = new Class({
         var ref = this;
         this.mbox = new mBox.Modal({
 	    content: 'jumpToLineForm',
-	    title: _("EditorTab.goToLine"),
+	    title: _("EditorTab.topButton.goToLine"),
 	    buttons: [
 		{title: _("Action.cancel"), addClass: 'mform'},
 		{title: _("Action.ok"), addClass: 'mform button_green',

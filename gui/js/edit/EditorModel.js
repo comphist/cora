@@ -124,7 +124,7 @@ var EditorModel = new Class({
                  data_trans_id: "EditorTab.dropDown.addToken",
                  action: this.addToken.bind(this)},
                 {name: 'Delete',
-                 data_trans_id: "EditorTab.dropDown.delToken",
+                 data_trans_id: "EditorTab.dropDown.deleteToken",
                  action: this.deleteToken.bind(this)}
             ]);
 	    this.dataTable.addEvent(
@@ -241,8 +241,8 @@ var EditorModel = new Class({
                 this.fireEvent('processed', [false, error]);
                 if(error.name === 'Handled') {
                     gui.showTextDialog(
-                        _("EditorTab.Forms.criticalError"),
-                        _("EditorTab.Forms.criticalErrorInfo"),
+                        _("EditorTab.general.criticalError"),
+                        _("EditorTab.general.criticalErrorInfo"),
                         error.details
                     );
                 }
@@ -285,7 +285,7 @@ var EditorModel = new Class({
                 }
                 new mBox.Modal({
                     content: content,
-                    title: _("EditorTab.metaData"),
+                    title: _("EditorTab.Forms.metaDataForm.metaDataTitle"),
                     buttons: buttons,
                     closeOnBodyClick: false
                 }).open();
@@ -703,7 +703,7 @@ var EditorModel = new Class({
             if(typeof(onerror) === "function")
                 onerror({
 		    'name': 'FailureToLoadLines',
-		    'message': _("EditorTab.Forms.couldNotLoadLines", {startLine: start, endLine: (end-1)})
+		    'message': _("EditorTab.general.couldNotLoadLines", {startLine: start, endLine: (end-1)})
 	        });
         };
         this.lineRequestInProgress = true;
@@ -808,7 +808,7 @@ var EditorModel = new Class({
                 fn();
             } else {
                 gui.showMsgDialog('error',
-                    _("EditorTab.Forms.cannotSaveInfo"));
+                    _("EditorTab.general.cannotSaveInfo"));
                 if (typeof(fail) === "function")
                     fail();
             }
@@ -828,7 +828,7 @@ var EditorModel = new Class({
          fn - Function to call when closing is safe
     */
     confirmClose: function(fn) {
-        this.whenSaved(fn, {message: _("EditorTab.Forms.pleaseWait")});
+        this.whenSaved(fn, {message: _("EditorTab.general.pleaseWait")});
     },
 
     /* Function: updateDataArray
@@ -899,7 +899,7 @@ var EditorModel = new Class({
                 this.updateDataArray(options.tokId, options.getDiff(status));
             }.bind(this),
             onError: function(error) {
-                gui.showNotice('error', _("EditorTab.Forms.primaryDataNotChanged"));
+                gui.showNotice('error', _("EditorTab.general.primaryDataNotChanged"));
                 gui.hideSpinner();
             }
         }).get(options.request);
@@ -921,16 +921,16 @@ var EditorModel = new Class({
 	    tok_id = tok_id - 1;
 	}
 
-    $('deleteTokenToken').empty().appendText(_("EditorTab.Forms.deletionPrompt", {'tok2del' : old_token}));
+    $('deleteTokenToken').empty().appendText(_("EditorTab.Forms.deleteToken.deletionPrompt", {'tok2del' : old_token}));
 	new mBox.Modal({
-	    title: _("EditorTab.Forms.confirmDeletion"),
+	    title: _("EditorTab.Forms.deleteToken.confirmDeletion"),
 	    content: 'deleteTokenWarning',
 	    buttons: [
 		{title: _("Action.noCancel"), addClass: 'mform'},
 		{title: _("Action.yesDelete"), addClass: 'mform button_red',
 		 event: function() {
 		     this.close();
-		     gui.showSpinner({message: _("EditorTab.Forms.pleaseWait")});
+		     gui.showSpinner({message: _("EditorTab.general.pleaseWait")});
                      ref.whenSaved(
                          function() {
                              ref.sendEditRequest({
@@ -938,7 +938,7 @@ var EditorModel = new Class({
                                  getDiff: function(s){
                                      return -Number.from(s.oldmodcount);
                                  },
-                                 successNotice: _("EditorTab.Forms.tokenDeleted"),
+                                 successNotice: _("EditorTab.Forms.deleteToken.tokenDeleted"),
                                  request: {'token_id': db_id},
                                  requestName: 'deleteToken'
                              });
@@ -973,7 +973,7 @@ var EditorModel = new Class({
 
 	$('editTokenBox').set('value', old_token);
 	var editTokenBox = new mBox.Modal({
-	    title: _("EditorTab.Forms.editTranscription"),
+	    title: _("EditorTab.Forms.editTranscriptionForm.editTranscription"),
 	    content: 'editTokenForm',
 	    buttons: [
 		{title: _("Action.cancel"), addClass: 'mform'},
@@ -986,7 +986,7 @@ var EditorModel = new Class({
                      this.close();
                      if (new_token == old_token)
                          return;
-		     gui.showSpinner({message: _("EditorTab.Forms.pleaseWait")});
+		     gui.showSpinner({message: _("EditorTab.general.pleaseWait")});
                      ref.whenSaved(
                          function() {
                              ref.sendEditRequest({
@@ -994,7 +994,7 @@ var EditorModel = new Class({
                                  getDiff: function(s){
                                      return Number.from(s.newmodcount)-Number.from(s.oldmodcount);
                                  },
-                                 successNotice: _("EditorTab.Forms.tokenEdited"),
+                                 successNotice: _("EditorTab.Forms.editTranscriptionForm.tokenEdited"),
                                  request: {'token_id': db_id, 'value': new_token},
                                  requestName: 'editToken'
                              });
@@ -1041,11 +1041,11 @@ var EditorModel = new Class({
 
 	$('addTokenBox').set('value', '');
         $('addTokenBefore').empty().appendText(
-            _("EditorTab.Forms.newTransInfo", {'tokInFront' : old_token, 'lineInfo' : lineinfo})
+            _("EditorTab.Forms.addTranscriptionForm.newTransInfo", {'tokInFront' : old_token, 'lineInfo' : lineinfo})
         );
 
 	var addTokenBox = new mBox.Modal({
-	    title: _("EditorTab.Forms.addTranscription"),
+	    title: _("EditorTab.Forms.addTranscriptionForm.addTranscription"),
 	    content: 'addTokenForm',
 	    buttons: [
 		{title: _("Action.cancel"), addClass: 'mform'},
@@ -1057,7 +1057,7 @@ var EditorModel = new Class({
                          return;
 	             }
 	             this.close();
-	             gui.showSpinner({message: _("EditorTab.Forms.pleaseWait")});
+	             gui.showSpinner({message: _("EditorTab.general.pleaseWait")});
                      ref.whenSaved(
                          function() {
                              ref.sendEditRequest({
@@ -1065,7 +1065,7 @@ var EditorModel = new Class({
                                  getDiff: function(s){
                                      return Number.from(s.newmodcount);
                                  },
-                                 successNotice: _("EditorTab.Forms.tokenAdded"),
+                                 successNotice: _("EditorTab.Forms.addTranscriptionForm.tokenAdded"),
                                  request: {'token_id': db_id, 'value': new_token},
                                  requestName: 'addToken'
                              });
@@ -1128,7 +1128,7 @@ var EditorModel = new Class({
             aaselect.getParent("div.mBoxContainer").getElement("#annoStartButton").set("disabled", false);
         }
         else {
-            aaselect.appendText(_("EditorTab.noTaggerAvailable"));
+            aaselect.appendText(_("EditorTab.Forms.autoAnnotationForm.noTaggerAvailable"));
             aaselect.getParent("div.mBoxContainer").getElement("#trainStartButton").set("disabled", true);
             aaselect.getParent("div.mBoxContainer").getElement("#annoStartButton").set("disabled", true);
         }
@@ -1184,14 +1184,14 @@ var EditorModel = new Class({
 
 	// define the dialog window
 	ref.mboxAnnotation = new mBox.Modal({
-	    title: _("EditorTab.autoAnnotationTitle"),
+	    title: _("EditorTab.Forms.autoAnnotationForm.autoAnnotationTitle"),
 	    content: content,
             onOpen: function() { ref.save(); },
 	    buttons: [ {title: _("Action.retrain"), addClass: "mform button_left button_yellow",
                         id: "trainStartButton",
                         event: function() {
                             this.close();
-	                    gui.showSpinner({message: _("EditorTab.Forms.pleaseWait")});
+	                    gui.showSpinner({message: _("EditorTab.general.pleaseWait")});
                             ref.whenSaved(
                                 function() { performAnnotation("train"); },
                                 null,
@@ -1202,7 +1202,7 @@ var EditorModel = new Class({
 			id: "annoStartButton",
 			event: function() {
                             this.close();
-	                    gui.showSpinner({message: _("EditorTab.Forms.pleaseWait")});
+	                    gui.showSpinner({message: _("EditorTab.general.pleaseWait")});
                             ref.whenSaved(
                                 function() { performAnnotation("anno"); },
                                 null,

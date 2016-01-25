@@ -169,16 +169,16 @@ var SearchResults = new Class({
         if (div === null || typeof(div) === "undefined")
             return;
         div.getElement('.srl-count').set('text', this.data.length);
-        text = (this.data.length == 1) ? _("EditorTab.Forms.result") : _("EditorTab.Forms.results");
+        text = (this.data.length == 1) ? _("EditorTab.searchResult.result") : _("EditorTab.searchResult.results");
         div.getElement('.srl-agr-count').set('text', text);
 
-        text = (this.data.length == 1) ? _("EditorTab.Forms.resultInfoHead1") : _("EditorTab.Forms.resultInfoHead2");
+        text = (this.data.length == 1) ? _("EditorTab.searchResult.resultInfoHead1") : _("EditorTab.searchResult.resultInfoHead2");
         div.getElement('.srl-head-count').set('text',text);
 
-        text = (cora.strings.search_condition.operator[this.criteria.operator] === "alle") ? _("EditorTab.Forms.allFulfilled") : _("EditorTab.Forms.oneFulfilled");
+        text = (cora.strings.search_condition.operator[this.criteria.operator] === "alle") ? _("EditorTab.Forms.searchForm.allFulfilled") : _("EditorTab.Forms.searchForm.oneFulfilled");
         div.getElement('.srl-operator').set('text', text);
 
-        text = (this.criteria.operator === "all") ? _("EditorTab.Forms.ofThese2") : _("EditorTab.Forms.ofThese1");
+        text = (this.criteria.operator === "all") ? _("EditorTab.searchResult.ofThese2") : _("EditorTab.searchResult.ofThese1");
         div.getElement('.srl-agr-operator').set('text', text);
 
         ul = div.getElement('.srl-condition-list');

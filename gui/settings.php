@@ -186,26 +186,26 @@
     </div>
 
     <div class="templateHolder">
-      <span id="changePasswordForm_title" data-trans-id="SettingsTab.Forms.changePasswordTitle"><?=$lh("SettingsTab.Forms.changePasswordTitle");?></span>
+      <span id="changePasswordForm_title" data-trans-id="SettingsTab.passwordForm.changePasswordTitle"><?=$lh("SettingsTab.passwordForm.changePasswordTitle");?></span>
       <div id="changePasswordFormDiv">
         <form action="request.php" id="changePasswordForm" method="post">
            <p>
-            <label for="oldpw" data-trans-id="SettingsTab.Forms.oldPassword" class="ra"><?=$lh("SettingsTab.Forms.oldPassword"); ?></label>
+            <label for="oldpw" data-trans-id="SettingsTab.passwordForm.oldPassword" class="ra"><?=$lh("SettingsTab.passwordForm.oldPassword"); ?></label>
             <input name="oldpw" type="password" size="30" data-required="" />
           </p>
           <p>
-            <label for="newpw" data-trans-id="SettingsTab.Forms.newPassword" class="ra"><?=$lh("SettingsTab.Forms.newPassword"); ?></label>
+            <label for="newpw" data-trans-id="SettingsTab.passwordForm.newPassword" class="ra"><?=$lh("SettingsTab.passwordForm.newPassword"); ?></label>
             <input name="newpw" type="password" size="30" data-required="" />
           </p>
           <p>
-            <label for="newpw2" data-trans-id="SettingsTab.Forms.newPasswordRepeat" class="ra"><?=$lh("SettingsTab.Forms.newPasswordRepeat"); ?></label>
+            <label for="newpw2" data-trans-id="SettingsTab.passwordForm.newPasswordRepeat" class="ra"><?=$lh("SettingsTab.passwordForm.newPasswordRepeat"); ?></label>
             <input name="newpw2" type="password" size="30" data-required="" />
           </p>
-          <p id="changePasswordErrorNew" class="error_text" data-trans-id="SettingsTab.Forms.doNotMatch"><?=$lh("SettingsTab.Forms.doNotMatch"); ?></p>
-          <p id="changePasswordErrorOld" class="error_text" data-trans-id="SettingsTab.Forms.oldInvalid"><?=$lh("SettingsTab.Forms.oldInvalid"); ?></p>
+          <p id="changePasswordErrorNew" class="error_text" data-trans-id="SettingsTab.passwordForm.doNotMatch"><?=$lh("SettingsTab.passwordForm.doNotMatch"); ?></p>
+          <p id="changePasswordErrorOld" class="error_text" data-trans-id="SettingsTab.passwordForm.oldInvalid"><?=$lh("SettingsTab.passwordForm.oldInvalid"); ?></p>
           <p><input type="hidden" name="action" value="changeUserPassword" /></p>
           <p style="text-align:right;">
-            <input type="submit" value="<?=$lh("SettingsTab.Forms.changePassword"); ?>" data-trans-value-id="SettingsTab.Forms.changePassword"/>
+            <input type="submit" value="<?=$lh("SettingsTab.passwordForm.changePasswordBtn"); ?>" data-trans-value-id="SettingsTab.passwordForm.changePasswordBtn"/>
           </p>
         </form>
       </div>

@@ -35,46 +35,46 @@ $ulist = array();
 <div id="adminDiv" class="content" style="display: none;">
   <div class="panel">
     <div class="btn-toolbar">
-      <span class="btn-toolbar-entry" id="adminUsersRefresh" title="<?=$lh("AdminTab.refresh"); ?>" data-trans-title-id="AdminTab.refresh">
+      <span class="btn-toolbar-entry" id="adminUsersRefresh" title="<?=$lh("AdminTab.topButton.refresh"); ?>" data-trans-title-id="AdminTab.topButton.refresh">
         <span class="oi" data-glyph="reload" aria-hidden="true"></span>
       </span>
-      <span class="btn-toolbar-entry" id="adminViewCollapseAll" title="<?=$lh("AdminTab.collapseCategories"); ?>" data-trans-title-id="AdminTab.collapseCategories">
+      <span class="btn-toolbar-entry" id="adminViewCollapseAll" title="<?=$lh("AdminTab.topButton.collapseCategories"); ?>" data-trans-title-id="AdminTab.topButton.collapseCategories">
         <span class="oi" data-glyph="collapse-up" aria-hidden="true"></span>
       </span>
-      <span class="btn-toolbar-entry" id="adminViewExpandAll" title="<?=$lh("AdminTab.expandCategories"); ?>" data-trans-title-id="AdminTab.expandCategories">
+      <span class="btn-toolbar-entry" id="adminViewExpandAll" title="<?=$lh("AdminTab.topButton.expandCategories"); ?>" data-trans-title-id="AdminTab.topButton.expandCategories">
         <span class="oi" data-glyph="collapse-down" aria-hidden="true"></span>
       </span>
-      <span class="btn-toolbar-entry" id="adminCreateUser"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> <span data-trans-id="AdminTab.newUser">
-      <?=$lh("AdminTab.newUser"); ?></span>
+      <span class="btn-toolbar-entry" id="adminCreateUser"><span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> <span data-trans-id="AdminTab.topButton.newUser">
+      <?=$lh("AdminTab.topButton.newUser"); ?></span>
     </span>
       <span class="btn-toolbar-entry" id="adminCreateProject">
         <span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> 
-        <span data-trans-id="AdminTab.newProject"><?=$lh("AdminTab.newProject"); ?>
+        <span data-trans-id="AdminTab.topButton.newProject"><?=$lh("AdminTab.topButton.newProject"); ?>
         </span>
       </span>
       <span class="btn-toolbar-entry" id="adminCreateAnnotator">
-        <span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> <span data-trans-id="AdminTab.newTagger"><?=$lh("AdminTab.newTagger"); ?></span></span>
+        <span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> <span data-trans-id="AdminTab.topButton.newTagger"><?=$lh("AdminTab.topButton.newTagger"); ?></span></span>
       <span class="btn-toolbar-entry" id="adminCreateNotice">
-        <span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> <span data-trans-id="AdminTab.newMsg"><?=$lh("AdminTab.newMsg"); ?></span></span>
+        <span class="oi oi-green" data-glyph="plus" aria-hidden="true"></span> <span data-trans-id="AdminTab.topButton.newMsg"><?=$lh("AdminTab.topButton.newMsg"); ?></span></span>
       <span class="btn-toolbar-entry" id="adminViewTagset">
-        <span class="oi" aria-hidden="true"></span><span data-trans-id="AdminTab.tagsetBrowser"><?=$lh("AdminTab.tagsetBrowser"); ?></span></span>
+        <span class="oi" aria-hidden="true"></span><span data-trans-id="AdminTab.topButton.tagsetBrowser"><?=$lh("AdminTab.topButton.tagsetBrowser"); ?></span></span>
       <span class="btn-toolbar-entry" id="adminImportTagset">
-        <span class="oi" data-glyph="data-transfer-upload" aria-hidden="true"></span> <span data-trans-id="AdminTab.importTagset"><?=$lh("AdminTab.importTagset"); ?></span></span>
+        <span class="oi" data-glyph="data-transfer-upload" aria-hidden="true"></span> <span data-trans-id="AdminTab.topButton.importTagset"><?=$lh("AdminTab.topButton.importTagset"); ?></span></span>
     </div>
 
     <!-- USER MANAGEMENT -->
     <div class="clappable clapp-modern" id="users">
-      <h4 class="clapp"><span data-trans-id="AdminTab.userAdministration"><?=$lh("AdminTab.userAdministration"); ?></span></h4>
+      <h4 class="clapp"><span data-trans-id="AdminTab.userAdministration.userAdministrationTitle"><?=$lh("AdminTab.userAdministration.userAdministrationTitle"); ?></span></h4>
       <div>
         <table id="editUsers" class="table-modern">
           <thead>
             <tr>
-              <th><span data-trans-id="AdminTab.userName"><?=$lh("AdminTab.userName"); ?></span></th>
-              <th><span data-trans-id="AdminTab.isAdmin"><?=$lh("AdminTab.isAdmin"); ?></span></th>
-              <th><span data-trans-id="AdminTab.lastActive"><?=$lh("AdminTab.lastActive"); ?></span></th>
-              <th><span data-trans-id="AdminTab.openFile"><?=$lh("AdminTab.openFile"); ?></span></th>
-              <th><span data-trans-id="AdminTab.email"><?=$lh("AdminTab.email"); ?></span></th>
-              <th><span data-trans-id="AdminTab.note"><?=$lh("AdminTab.note"); ?></span></th>
+              <th><span data-trans-id="AdminTab.userAdministration.userName"><?=$lh("AdminTab.userAdministration.userName"); ?></span></th>
+              <th><span data-trans-id="AdminTab.userAdministration.isAdmin"><?=$lh("AdminTab.userAdministration.isAdmin"); ?></span></th>
+              <th><span data-trans-id="AdminTab.userAdministration.lastActive"><?=$lh("AdminTab.userAdministration.lastActive"); ?></span></th>
+              <th><span data-trans-id="AdminTab.userAdministration.openFile"><?=$lh("AdminTab.userAdministration.openFile"); ?></span></th>
+              <th><span data-trans-id="AdminTab.userAdministration.email"><?=$lh("AdminTab.userAdministration.email"); ?></span></th>
+              <th><span data-trans-id="AdminTab.userAdministration.note"><?=$lh("AdminTab.userAdministration.note"); ?></span></th>
               <th class="table-th-nosort"></th>
               <th class="table-th-nosort"></th>
             </tr>
@@ -86,16 +86,16 @@ $ulist = array();
 
     <!-- PROJECT MANAGEMENT -->
     <div class="clappable clapp-modern starthidden" id="projectMngr">
-      <h4 class="clapp"><span data-trans-id="AdminTab.projectAdministration"><?=$lh("AdminTab.projectAdministration"); ?></span></h4>
+      <h4 class="clapp"><span data-trans-id="AdminTab.projectAdministration.projectAdministrationTitle"><?=$lh("AdminTab.projectAdministration.projectAdministrationTitle"); ?></span></h4>
       <div>
         <table id="editProjects" class="table-modern">
           <thead>
             <tr>
-              <th><span data-trans-id="AdminTab.projectName"><?=$lh("AdminTab.projectName"); ?></span></th>
-              <th><span data-trans-id="AdminTab.assignedUsers"><?=$lh("AdminTab.assignedUsers"); ?></span></th>
-              <th><span data-trans-id="AdminTab.associatedTagsetTypes"><?=$lh("AdminTab.associatedTagsetTypes"); ?></span></th>
-              <th><span data-trans-id="AdminTab.isEdit"><?=$lh("AdminTab.isEdit"); ?></span></th>
-              <th><span data-trans-id="AdminTab.isImport"><?=$lh("AdminTab.isImport"); ?></span></th>
+              <th><span data-trans-id="AdminTab.projectAdministration.projectName"><?=$lh("AdminTab.projectAdministration.projectName"); ?></span></th>
+              <th><span data-trans-id="AdminTab.projectAdministration.assignedUsers"><?=$lh("AdminTab.projectAdministration.assignedUsers"); ?></span></th>
+              <th><span data-trans-id="AdminTab.autoAnnotation.associatedTagsetTypes"><?=$lh("AdminTab.autoAnnotation.associatedTagsetTypes"); ?></span></th>
+              <th><span data-trans-id="AdminTab.projectAdministration.isEdit"><?=$lh("AdminTab.projectAdministration.isEdit"); ?></span></th>
+              <th><span data-trans-id="AdminTab.projectAdministration.isImport"><?=$lh("AdminTab.projectAdministration.isImport"); ?></span></th>
               <th class="table-th-nosort"></th>
               <th class="table-th-nosort"></th>
             </tr>
@@ -103,24 +103,24 @@ $ulist = array();
           <tbody></tbody>
         </table>
 
-        <p data-trans-id="AdminTab.visibleForAdmins">
-          <?=$lh("AdminTab.visibleForAdmins"); ?>
+        <p data-trans-id="AdminTab.projectAdministration.visibleForAdmins">
+          <?=$lh("AdminTab.projectAdministration.visibleForAdmins"); ?>
         </p>
       </div>
     </div>
 
     <!-- AUTOMATIC ANNOTATORS -->
     <div class="clappable clapp-modern starthidden" id="automaticAnnotators">
-      <h4 class="clapp"><span data-trans-id="AdminTab.autoAnnotationOptions"><?=$lh("AdminTab.autoAnnotationOptions"); ?></span></h4>
+      <h4 class="clapp"><span data-trans-id="AdminTab.autoAnnotation.autoAnnotationTitle"><?=$lh("AdminTab.autoAnnotation.autoAnnotationTitle"); ?></span></h4>
       <div>
         <table id="editAutomaticAnnotators" class="table-modern">
           <thead>
             <tr>
-              <th><span data-trans-id="AdminTab.annoId"><?=$lh("AdminTab.annoId"); ?></span></th>
-              <th><span data-trans-id="AdminTab.annoName"><?=$lh("AdminTab.annoName"); ?></span></th>
-              <th><span data-trans-id="AdminTab.annoClass"><?=$lh("AdminTab.annoClass"); ?></span></th>
-              <th><span data-trans-id="AdminTab.isTrained"><?=$lh("AdminTab.isTrained"); ?></span></th>
-              <th><span data-trans-id="AdminTab.associatedTagsetTypes"><?=$lh("AdminTab.associatedTagsetTypes"); ?></span></th>
+              <th><span data-trans-id="AdminTab.autoAnnotation.annoId"><?=$lh("AdminTab.autoAnnotation.annoId"); ?></span></th>
+              <th><span data-trans-id="AdminTab.autoAnnotation.annoName"><?=$lh("AdminTab.autoAnnotation.annoName"); ?></span></th>
+              <th><span data-trans-id="AdminTab.autoAnnotation.annoClass"><?=$lh("AdminTab.autoAnnotation.annoClass"); ?></span></th>
+              <th><span data-trans-id="AdminTab.autoAnnotation.isTrained"><?=$lh("AdminTab.autoAnnotation.isTrained"); ?></span></th>
+              <th><span data-trans-id="AdminTab.autoAnnotation.associatedTagsetTypes"><?=$lh("AdminTab.autoAnnotation.associatedTagsetTypes"); ?></span></th>
               <th class="table-th-nosort"></th>
             </tr>
           </thead>
@@ -131,15 +131,15 @@ $ulist = array();
 
     <!-- SERVER NOTICES -->
     <div class="clappable clapp-modern starthidden" id="serverNotices">
-      <h4 class="clapp"><span data-trans-id="AdminTab.serverNotifications"><?=$lh("AdminTab.serverNotifications"); ?></span></h4>
+      <h4 class="clapp"><span data-trans-id="AdminTab.serverMessages.serverNotifications"><?=$lh("AdminTab.serverMessages.serverNotifications"); ?></span></h4>
       <div>
         <table id="editNotices" class="table-modern">
           <thead>
             <tr>
-              <th><span data-trans-id="AdminTab.serverId"><?=$lh("AdminTab.serverId"); ?></span></th>
-              <th><span data-trans-id="AdminTab.serverMsg"><?=$lh("AdminTab.serverMsg"); ?></span></th>
-              <th><span data-trans-id="AdminTab.serverType"><?=$lh("AdminTab.serverType"); ?></span></th>
-              <th><span data-trans-id="AdminTab.expire"><?=$lh("AdminTab.expire"); ?></span></th>
+              <th><span data-trans-id="AdminTab.serverMessages.serverId"><?=$lh("AdminTab.serverMessages.serverId"); ?></span></th>
+              <th><span data-trans-id="AdminTab.serverMessages.serverMsg"><?=$lh("AdminTab.serverMessages.serverMsg"); ?></span></th>
+              <th><span data-trans-id="AdminTab.serverMessages.serverType"><?=$lh("AdminTab.serverMessages.serverType"); ?></span></th>
+              <th><span data-trans-id="AdminTab.serverMessages.expire"><?=$lh("AdminTab.serverMessages.expire"); ?></span></th>
               <th class="table-th-nosort"></th>
             </tr>
           </thead>
@@ -163,7 +163,7 @@ $ulist = array();
     <div id="templateCreateNotice">
       <p>
         <label for="noticetype" class="ra">
-          <span data-trans-id="AdminTab.Forms.type"><?=$lh("AdminTab.Forms.type"); ?></span> </label>
+          <span data-trans-id="AdminTab.Forms.addServerMsg.type"><?=$lh("AdminTab.Forms.addServerMsg.type"); ?></span> </label>
         <select name="noticetype" size="1">
           <option value="alert">Alert</option>
           <!-- <option value="info">Info</option> -->
@@ -171,12 +171,12 @@ $ulist = array();
       </p>
       <p>
         <label for="noticeexpires" class="ra">
-          <span data-trans-id="AdminTab.Forms.expireDate"><?=$lh("AdminTab.Forms.expireDate"); ?></span> </label>
+          <span data-trans-id="AdminTab.Forms.addServerMsg.expireDate"><?=$lh("AdminTab.Forms.addServerMsg.expireDate"); ?></span> </label>
         <input type="text" name="noticeexpires" value="" data-required="" class="mform" />
       </p>
       <p>
         <label for="noticetext" class="ra vt">
-          <span data-trans-id="AdminTab.Forms.msgText"><?=$lh("AdminTab.Forms.msgText"); ?></span> </label>
+          <span data-trans-id="AdminTab.Forms.addServerMsg.msgText"><?=$lh("AdminTab.Forms.addServerMsg.msgText"); ?></span> </label>
         <textarea cols="30" rows="3" name="noticetext" value="" data-required="" class="mform"></textarea>
       </p>
     </div>
@@ -184,17 +184,17 @@ $ulist = array();
     <div id="templateCreateUser">
       <p>
         <label for="newuser" class="ra">
-          <span data-trans-id="AdminTab.Forms.newUserName"><?=$lh("AdminTab.Forms.newUserName"); ?></span> </label>
+          <span data-trans-id="AdminTab.Forms.addUserForm.newUserName"><?=$lh("AdminTab.Forms.addUserForm.newUserName"); ?></span> </label>
         <input type="text" name="newuser" value="" data-required="" class="mform" />
       </p>
       <p>
         <label for="newpw" class="ra">
-          <span data-trans-id="AdminTab.Forms.password"><?=$lh("AdminTab.Forms.password"); ?></span> </label>
+          <span data-trans-id="AdminTab.Forms.addUserForm.password"><?=$lh("AdminTab.Forms.addUserForm.password"); ?></span> </label>
         <input type="password" name="newpw" value="" data-required="" class="mform" />
       </p>
       <p>
         <label for="newpw2" class="ra">
-          <span data-trans-id="AdminTab.Forms.repeatPassword"><?=$lh("AdminTab.Forms.repeatPassword"); ?></span> </label>
+          <span data-trans-id="AdminTab.Forms.addUserForm.repeatPassword"><?=$lh("AdminTab.Forms.addUserForm.repeatPassword"); ?></span> </label>
         <input type="password" name="newpw2" value="" data-required="" class="mform" />
       </p>
     </div>
@@ -202,12 +202,12 @@ $ulist = array();
     <div id="templateChangePassword">
       <p>
         <label for="newchpw" class="ra">
-          <span data-trans-id="AdminTab.Forms.newPassword"><?=$lh("AdminTab.Forms.newPassword"); ?></span> </label>
+          <span data-trans-id="AdminTab.Forms.changePasswordForm.newPassword"><?=$lh("AdminTab.Forms.changePasswordForm.newPassword"); ?></span> </label>
         <input type="password" name="newchpw" value="" data-required="" class="mform" />
       </p>
       <p>
         <label for="newchpw2" class="ra">
-          <span data-trans-id="AdminTab.Forms.repeatNewPassword"><?=$lh("AdminTab.Forms.repeatNewPassword"); ?></span> </label>
+          <span data-trans-id="AdminTab.Forms.changePasswordForm.repeatNewPassword"><?=$lh("AdminTab.Forms.changePasswordForm.repeatNewPassword"); ?></span> </label>
         <input type="password" name="newchpw2" value="" data-required="" class="mform" />
       </p>
     </div>
@@ -215,65 +215,65 @@ $ulist = array();
     <div id="annotatorEditForm" class="annotatorEditForm">
       <p>
         <label for="annotatorDisplayName" class="ra">
-          <span data-trans-id="AdminTab.Forms.taggerName"><?=$lh("AdminTab.Forms.taggerName"); ?></span> </label>
+          <span data-trans-id="AdminTab.Forms.taggerOptionsForm.taggerName"><?=$lh("AdminTab.Forms.taggerOptionsForm.taggerName"); ?></span> </label>
         <input type="text" name="annotatorDisplayName" class="mform" />
       </p>
       <p>
         <label for="annotatorClassName" class="ra">
-          <span data-trans-id="AdminTab.Forms.taggerClass"><?=$lh("AdminTab.Forms.taggerClass"); ?></span> </label>
+          <span data-trans-id="AdminTab.Forms.taggerOptionsForm.taggerClass"><?=$lh("AdminTab.Forms.taggerOptionsForm.taggerClass"); ?></span> </label>
         <input type="text" name="annotatorClassName" class="mform" />
       </p>
       <p>
-        <label for="annotatorOptions"><span data-trans-id="AdminTab.Forms.taggerOptions"><?=$lh("AdminTab.Forms.taggerOptions"); ?></span> </label>
+        <label for="annotatorOptions"><span data-trans-id="AdminTab.Forms.taggerOptionsForm.taggerOptions"><?=$lh("AdminTab.Forms.taggerOptionsForm.taggerOptions"); ?></span> </label>
         <ul class="flexrow-container"></ul>
       </p>
       <p>
         <input type="checkbox" id="annotatorIsTrainable" name="annotatorIsTrainable" value="trainable" class="mform" />
-        <label for="annotatorIsTrainable" data-trans-id="AdminTab.Forms.trainablePerProject"><?=$lh("AdminTab.Forms.trainablePerProject"); ?></label>
+        <label for="annotatorIsTrainable" data-trans-id="AdminTab.Forms.taggerOptionsForm.trainablePerProject"><?=$lh("AdminTab.Forms.taggerOptionsForm.trainablePerProject"); ?></label>
       </p>
-      <p><label data-trans-id="AdminTab.Forms.associatedTagsets"><?=$lh("AdminTab.Forms.associatedTagsets"); ?></label></p>
+      <p><label data-trans-id="AdminTab.Forms.taggerOptionsForm.associatedTagsets"><?=$lh("AdminTab.Forms.taggerOptionsForm.associatedTagsets"); ?></label></p>
       <div class="tagsetSelectPlaceholder"></div>
-      <p data-trans-id="AdminTab.Forms.taggerOptionsInfo">
-        <?=$lh("AdminTab.Forms.taggerOptionsInfo"); ?>
+      <p data-trans-id="AdminTab.Forms.taggerOptionsForm.taggerOptionsInfo">
+        <?=$lh("AdminTab.Forms.taggerOptionsForm.taggerOptionsInfo"); ?>
       </p>
     </div>
 
     <div id="userEditForm" class="userEditForm">
       <p>
-        <label for="adminUserEmail"><span data-trans-id="AdminTab.Forms.emailAddress"><?=$lh("AdminTab.Forms.emailAddress"); ?></span> </label><br />
-        <input type="text" name="adminUserEmail" placeholder="<?=$lh("AdminTab.Forms.dummyMail"); ?>" data-trans-placeholder-id="AdminTab.Forms.dummyMail" size="60" class="mform" />
+        <label for="adminUserEmail"><span data-trans-id="AdminTab.Forms.userOptionsForm.emailAddress"><?=$lh("AdminTab.Forms.userOptionsForm.emailAddress"); ?></span> </label><br />
+        <input type="text" name="adminUserEmail" placeholder="<?=$lh("AdminTab.Forms.userOptionsForm.placeholderMail"); ?>" data-trans-placeholder-id="AdminTab.Forms.userOptionsForm.placeholderMail" size="60" class="mform" />
       </p>
       <p>
-        <label for="adminUserComment"><span data-trans-id="AdminTab.Forms.userNote"><?=$lh("AdminTab.Forms.userNote"); ?></span> </label><br />
-        <input type="text" name="adminUserComment" placeholder="<?=$lh("AdminTab.Forms.dummyNote"); ?>" data-trans-placeholder-id="AdminTab.Forms.dummyNote" size="60" class="mform" />
+        <label for="adminUserComment"><span data-trans-id="AdminTab.Forms.userOptionsForm.userNote"><?=$lh("AdminTab.Forms.userOptionsForm.userNote"); ?></span> </label><br />
+        <input type="text" name="adminUserComment" placeholder="<?=$lh("AdminTab.Forms.userOptionsForm.placeholderNote"); ?>" data-trans-placeholder-id="AdminTab.Forms.userOptionsForm.placeholderNote" size="60" class="mform" />
       </p>
     </div>
 
     <div id="projectEditForm" class="projectEditForm">
       <p>
-        <label for="projectCmdEditToken"><span data-trans-id="AdminTab.Forms.editTokenCommand"><?=$lh("AdminTab.Forms.editTokenCommand"); ?></span> </label><br />
-        <input type="text" name="projectCmdEditToken" placeholder="<?=$lh("AdminTab.Forms.dummyCommand"); ?>" data-trans-placeholder-id="AdminTab.Forms.dummyCommand" size="60" class="mform" />
+        <label for="projectCmdEditToken"><span data-trans-id="AdminTab.Forms.projectOptionsForm.editTokenCommand"><?=$lh("AdminTab.Forms.projectOptionsForm.editTokenCommand"); ?></span> </label><br />
+        <input type="text" name="projectCmdEditToken" placeholder="<?=$lh("AdminTab.Forms.projectOptionsForm.placeholderCommand"); ?>" data-trans-placeholder-id="AdminTab.Forms.projectOptionsForm.placeholderCommand" size="60" class="mform" />
       </p>
       <p>
-        <label for="projectCmdImport"><span data-trans-id="AdminTab.Forms.importCommand"><?=$lh("AdminTab.Forms.importCommand"); ?></span> </label><br />
-        <input type="text" name="projectCmdImport" placeholder="<?=$lh("AdminTab.Forms.dummyCommand"); ?>" data-trans-placeholder-id="AdminTab.Forms.dummyCommand" size="60" class="mform" />
+        <label for="projectCmdImport"><span data-trans-id="AdminTab.Forms.projectOptionsForm.importCommand"><?=$lh("AdminTab.Forms.projectOptionsForm.importCommand"); ?></span> </label><br />
+        <input type="text" name="projectCmdImport" placeholder="<?=$lh("AdminTab.Forms.projectOptionsForm.placeholderCommand"); ?>" data-trans-placeholder-id="AdminTab.Forms.projectOptionsForm.placeholderCommand" size="60" class="mform" />
       </p>
-      <p><label data-trans-id="AdminTab.Forms.assignedUsers"><?=$lh("AdminTab.Forms.assignedUsers"); ?></label></p>
+      <p><label data-trans-id="AdminTab.Forms.projectOptionsForm.assignedUsers"><?=$lh("AdminTab.Forms.projectOptionsForm.assignedUsers"); ?></label></p>
       <div class="userSelectPlaceholder"></div>
-      <p data-trans-id="AdminTab.Forms.assignUserInfo">
-        <?=$lh("AdminTab.Forms.assignUserInfo"); ?>
+      <p data-trans-id="AdminTab.Forms.projectOptionsForm.assignUserInfo">
+        <?=$lh("AdminTab.Forms.projectOptionsForm.assignUserInfo"); ?>
       </p>
-      <p><label data-trans-id="AdminTab.Forms.associatedTagsets"><?=$lh("AdminTab.Forms.associatedTagsets"); ?></label></p>
+      <p><label data-trans-id="AdminTab.Forms.projectOptionsForm.associatedTagsets"><?=$lh("AdminTab.Forms.projectOptionsForm.associatedTagsets"); ?></label></p>
       <div class="tagsetSelectPlaceholder"></div>
-      <p data-trans-id="AdminTab.Forms.associatedTagsetsInfo">
-        <?=$lh("AdminTab.Forms.associatedTagsetsInfo"); ?>
+      <p data-trans-id="AdminTab.Forms.projectOptionsForm.associatedTagsetsInfo">
+        <?=$lh("AdminTab.Forms.projectOptionsForm.associatedTagsetsInfo"); ?>
       </p>
     </div>
 
     <div id="projectCreateForm">
       <p>
-        <label for="project_name" class="ra" data-trans-id="AdminTab.Forms.projectName">
-          <?=$lh("AdminTab.Forms.projectName"); ?>
+        <label for="project_name" class="ra" data-trans-id="AdminTab.Forms.addProjectForm.projectName">
+          <?=$lh("AdminTab.Forms.addProjectForm.projectName"); ?>
         </label>
         <input type="text" name="project_name" value="" class="mform" />
       </p>
@@ -281,36 +281,36 @@ $ulist = array();
 
     <div id="annotatorCreateForm">
       <p>
-        <label for="annotator_name" class="ra" data-trans-id="AdminTab.Forms.taggerName">
-          <?=$lh("AdminTab.Forms.taggerName"); ?>
+        <label for="annotator_name" class="ra" data-trans-id="AdminTab.Forms.addTaggerForm.newTaggerName">
+          <?=$lh("AdminTab.Forms.addTaggerForm.newTaggerName"); ?>
         </label>
         <input type="text" name="annotator_name" value="" class="mform" />
       </p>
     </div>
 
-    <span id="tagsetImportForm_title" data-trans-id="AdminTab.Forms.importTagsetForm"><?=$lh("AdminTab.Forms.importTagsetForm"); ?></span>
+    <span id="tagsetImportForm_title" data-trans-id="AdminTab.Forms.importTagsetForm.importTagset"><?=$lh("AdminTab.Forms.importTagsetForm.importTagset"); ?></span>
     <div id="tagsetImportForm">
       <form action="request.php" id="newTagsetImportForm" method="post" accept-charset="utf-8" enctype="multipart/form-data">
       <p>
-        <label for="tagset_name" data-trans-id="AdminTab.Forms.tagsetName" class="ra">
-          <?=$lh("AdminTab.Forms.tagsetName"); ?>
+        <label for="tagset_name" data-trans-id="AdminTab.Forms.importTagsetForm.tagsetName" class="ra">
+          <?=$lh("AdminTab.Forms.importTagsetForm.tagsetName"); ?>
         </label>
         <input type="text" name="tagset_name" value="" size="40" maxlength="255" data-required />
       </p>
       <p>
-        <label for="tagset_class" data-trans-id="AdminTab.Forms.tagsetClass" class="ra">
-          <?=$lh("AdminTab.Forms.tagsetClass"); ?>
+        <label for="tagset_class" data-trans-id="AdminTab.Forms.importTagsetForm.tagsetClass" class="ra">
+          <?=$lh("AdminTab.Forms.importTagsetForm.tagsetClass"); ?>
         </label>
         <select size="1" name="tagset_class"></select>
       </p>
       <p>
-        <label for="txtFile" data-trans-id="AdminTab.Forms.tagsetFile" class="ra">
-          <?=$lh("AdminTab.Forms.tagsetFile"); ?>
+        <label for="txtFile" data-trans-id="AdminTab.Forms.importTagsetForm.tagsetFile" class="ra">
+          <?=$lh("AdminTab.Forms.importTagsetForm.tagsetFile"); ?>
         </label>
         <input type="file" name="txtFile" data-required />
       </p>
-      <p style="max-width:32em;" data-trans-id="AdminTab.Forms.tagsetInfo">
-        <?=$lh("AdminTab.Forms.tagsetInfo"); ?>
+      <p style="max-width:32em;" data-trans-id="AdminTab.Forms.importTagsetForm.tagsetInfo">
+        <?=$lh("AdminTab.Forms.importTagsetForm.tagsetInfo"); ?>
       </p>
       <p>
         <input type="hidden" name="action" value="importTagsetTxt" />
@@ -318,12 +318,12 @@ $ulist = array();
         <input type="hidden" name="tagset_settype" value="closed" />
       </p>
       <p style="text-align:right;">
-        <input type="submit" value="<?=$lh("AdminTab.Forms.importTagsetBtn"); ?>" data-trans-value-id="AdminTab.Forms.importTagsetBtn"/>
+        <input type="submit" value="<?=$lh("AdminTab.Forms.importTagsetForm.importTagsetBtn"); ?>" data-trans-value-id="AdminTab.Forms.importTagsetForm.importTagsetBtn"/>
       </p>
       </form>
     </div>
 
-    <span id="adminTagsetBrowser_title" data-trans-id="AdminTab.Forms.tagsetBrowserForm"><?=$lh("AdminTab.Forms.tagsetBrowserForm"); ?></span>
+    <span id="adminTagsetBrowser_title" data-trans-id="AdminTab.Forms.tagsetBrowserForm.tagsetBrowser"><?=$lh("AdminTab.Forms.tagsetBrowserForm.tagsetBrowser"); ?></span>
     <div id="adminTagsetBrowser">
       <p>
         <select id="aTBtagset" class="mform">
@@ -331,7 +331,7 @@ $ulist = array();
           <option value="<?php echo $set['shortname'];?>"><?php echo $set['longname'];?></option>
         <?php endforeach;?>
         </select>
-        <button id="aTBview" type="button" class="mform" data-trans-id="AdminTab.Forms.preview"><?=$lh("AdminTab.Forms.preview"); ?>
+        <button id="aTBview" type="button" class="mform" data-trans-id="AdminTab.Forms.tagsetBrowserForm.preview"><?=$lh("AdminTab.Forms.tagsetBrowserForm.preview"); ?>
         </button>
       </p>
       <p><textarea id="aTBtextarea" cols="80" rows="10" readonly="readonly"></textarea></p>
@@ -344,16 +344,16 @@ $ulist = array();
     <table>
       <tr id="templateUserInfoRow" class="adminUserInfoRow">
         <td class="adminUserNameCell"></td>
-        <td class="centered adminUserAdminStatusTD" title="<?=$lh("AdminTab.isNotAdminTitle"); ?>" data-trans-title-id="AdminTab.isNotAdminTitle"><span class="oi oi-shadow oi-green adminUserAdminStatus" data-glyph="check" aria-hidden="true"></span>
+        <td class="centered adminUserAdminStatusTD" title="<?=$lh("AdminTab.userAdministration.isNotAdminTitle"); ?>" data-trans-title-id="AdminTab.userAdministration.isNotAdminTitle"><span class="oi oi-shadow oi-green adminUserAdminStatus" data-glyph="check" aria-hidden="true"></span>
         </td>
         <td class="adminUserLastactiveCell"></td>
         <td class="adminUserActivityCell"></td>
         <td class="adminUserEmailCell"></td>
         <td class="adminUserCommentCell"></td>
         <td>
-          <a class="adminUserEditButton"><span class="oi oi-shadow" data-glyph="cog" aria-hidden="true"></span> <span data-trans-id="AdminTab.options"><?=$lh("AdminTab.options"); ?></span></a>
+          <a class="adminUserEditButton"><span class="oi oi-shadow" data-glyph="cog" aria-hidden="true"></span> <span data-trans-id="AdminTab.userAdministration.options"><?=$lh("AdminTab.userAdministration.options"); ?></span></a>
         </td>
-        <td class="adminUserDelete"><a class="deletion-link"><span class="oi oi-shadow" data-glyph="delete" title="<?=$lh("AdminTab.deleteUser"); ?>" data-trans-title-id="AdminTab.deleteUser" aria-hidden="true"></span></a></td>
+        <td class="adminUserDelete"><a class="deletion-link"><span class="oi oi-shadow" data-glyph="delete" title="<?=$lh("AdminTab.userAdministration.deleteUser"); ?>" data-trans-title-id="AdminTab.userAdministration.deleteUser" aria-hidden="true"></span></a></td>
       </tr>
     </table>
 
@@ -362,14 +362,14 @@ $ulist = array();
         <td class="adminProjectNameCell"></td>
         <td class="adminProjectUsersCell"></td>
         <td class="adminProjectTagsetsCell"></td>
-        <td class="centered adminProjectCmdEdittoken" title="<?=$lh("AdminTab.editScript"); ?>" data-trans-title-id="AdminTab.editScript">
+        <td class="centered adminProjectCmdEdittoken" title="<?=$lh("AdminTab.projectAdministration.editScript"); ?>" data-trans-title-id="AdminTab.projectAdministration.editScript">
           <span class="oi oi-shadow oi-green" data-glyph="check" aria-hidden="true"></span></td>
-        <td class="centered adminProjectCmdImport" title="<?=$lh("AdminTab.importScript"); ?>" data-trans-title-id="AdminTab.importScript">
+        <td class="centered adminProjectCmdImport" title="<?=$lh("AdminTab.projectAdministration.importScript"); ?>" data-trans-title-id="AdminTab.projectAdministration.importScript">
           <span class="oi oi-shadow oi-green" data-glyph="check" aria-hidden="true"></span></td>
         <td>
-          <a class="adminProjectEditButton"><span class="oi oi-shadow" data-glyph="cog" aria-hidden="true"></span> <span data-trans-id="AdminTab.projectOptions"><?=$lh("AdminTab.projectOptions"); ?></a>
+          <a class="adminProjectEditButton"><span class="oi oi-shadow" data-glyph="cog" aria-hidden="true"></span> <span data-trans-id="AdminTab.projectAdministration.projectOptions"><?=$lh("AdminTab.projectAdministration.projectOptions"); ?></a>
         </td>
-        <td><a class="adminProjectDelete deletion-link"><span class="oi oi-shadow" data-glyph="delete" title="<?=$lh("AdminTab.deleteProject"); ?>" data-trans-title-id="AdminTab.deleteProject" aria-hidden="true"></span></a></td>
+        <td><a class="adminProjectDelete deletion-link"><span class="oi oi-shadow" data-glyph="delete" title="<?=$lh("AdminTab.projectAdministration.deleteProject"); ?>" data-trans-title-id="AdminTab.projectAdministration.deleteProject" aria-hidden="true"></span></a></td>
       </tr>
     </table>
 
@@ -379,7 +379,7 @@ $ulist = array();
         <td class="adminNoticeTextCell"></td>
         <td class="adminNoticeTypeCell"></td>
         <td class="adminNoticeExpiresCell"></td>
-        <td class="adminNoticeDelete"><a class="deletion-link"><span class="oi oi-shadow" data-glyph="delete" title="<?=$lh("AdminTab.deleteMsg"); ?>" data-trans-title-id="AdminTab.deleteMsg" aria-hidden="true"></span></a></td>
+        <td class="adminNoticeDelete"><a class="deletion-link"><span class="oi oi-shadow" data-glyph="delete" title="<?=$lh("AdminTab.serverMessages.deleteMsg"); ?>" data-trans-title-id="AdminTab.serverMessages.deleteMsg" aria-hidden="true"></span></a></td>
       </tr>
       <tr id="templateAnnotatorInfoRow" class="adminAnnotatorInfoRow">
         <td class="adminAnnotatorIDCell"></td>
@@ -391,9 +391,9 @@ $ulist = array();
         <td class="adminAnnotatorConfig">
           <a class="adminAnnotatorEditButton">
             <span class="oi oi-shadow" data-glyph="cog" aria-hidden="true"></span> 
-            <span data-trans-id="AdminTab.options"><?=$lh("AdminTab.options"); ?></span>
+            <span data-trans-id="AdminTab.autoAnnotation.options"><?=$lh("AdminTab.autoAnnotation.options"); ?></span>
           </a>
-          <a class="deletion-link"><span class="oi oi-shadow" data-glyph="delete" title="<?=$lh("AdminTab.deleteTagger"); ?>" data-trans-title-id="AdminTab.deleteTagger" aria-hidden="true"></span></a></td>
+          <a class="deletion-link"><span class="oi oi-shadow" data-glyph="delete" title="<?=$lh("AdminTab.autoAnnotation.deleteTagger"); ?>" data-trans-title-id="AdminTab.autoAnnotation.deleteTagger" aria-hidden="true"></span></a></td>
       </tr>
     </table>
   </div>

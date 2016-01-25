@@ -89,6 +89,6 @@ var cora = {
 function onBeforeUnload() {
     if (cora.editor !== null && cora.editor.hasUnsavedChanges()) {
         cora.editor.save();
-	return (_("EditorTab.unsavedChangesWarning"));
+	return (_("EditorTab.general.unsavedChangesWarning"));
     }
 }

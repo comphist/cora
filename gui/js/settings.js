@@ -248,7 +248,7 @@ cora.settings = {
 		    pwch.close();
 		    form.reset($('changePasswordForm'));
 		    new mBox.Notice({
-		        content: _("SettingsTab.Forms.passwordChanged"),
+		        content: _("SettingsTab.passwordForm.passwordChanged"),
 		        type: 'ok',
 		        position: {x: 'right'}
 		    });

@@ -470,7 +470,7 @@ cora.fileImporter = {
         new iFrameFormRequest(importform, {
             onRequest: function() {
                 mbox.close();
-                gui.showSpinner({message: _("FileTab.importingData")});
+                gui.showSpinner({message: _("FileTab.Forms.import.importingData")});
             },
             onComplete: function(response) {
                 var success = ref.showImportResponseDialog(response);
@@ -481,7 +481,7 @@ cora.fileImporter = {
                 gui.hideSpinner();
             },
             onFailure: function() {
-                gui.showNotice('error', _("FileTab.Forms.importUnknownError"));
+                gui.showNotice('error', _("FileTab.Forms.import.importUnknownError"));
                 gui.hideSpinner();
             }
         });
@@ -521,9 +521,9 @@ cora.fileImporter = {
                             cora.projects.performUpdate();
 			    gui.showNotice('ok', _("Banner.fileImportSuccess"));
 		        } else {
-                            gui.showTextDialog(_("FileTab.Forms.importFailed"),
+                            gui.showTextDialog(_("FileTab.Forms.import.importFailed"),
                                                status.message, status.output);
-			    gui.showNotice('error', _("FileTab.Forms.importFailed")+".");
+			    gui.showNotice('error', _("FileTab.Forms.import.importFailed")+".");
 		        }
                     });
                 }
@@ -647,9 +647,9 @@ cora.fileImporter = {
             response = JSON.decode(tmp.getElement('pre.json').get('text'));
         }
         catch (err) {
-            title = _("FileTab.Forms.invalidServerResponse");
-            message = _("FileTab.Forms.invalidServerResponseInfo");
-            textarea = _("FileTab.Forms.invalidServerResponseText",
+            title = _("FileTab.invalidServerResponse");
+            message = _("FileTab.invalidServerResponseInfo");
+            textarea = _("FileTab.invalidServerResponseText",
                          {errorMsg: err.message, serverResponse: response});
         }
         if(message != "") {}
@@ -659,11 +659,11 @@ cora.fileImporter = {
             return false;
         }
         else if(!response.success) {
-            title = _("FileTab.Forms.fileImportFailed");
+            title = _("FileTab.Forms.import.fileImportFailed");
             var msgInfix = (response.errors.length>1) ?
-                    _("FileTab.Forms.error2", {errorCount: response.errors.length}) :
-                    _("FileTab.Forms.error1");
-            message = _("FileTab.Forms.importErrorInfo", {errorStr:msgInfix});
+                    _("FileTab.Forms.import.error2", {errorCount: response.errors.length}) :
+                    _("FileTab.Forms.import.error1");
+            message = _("FileTab.Forms.import.importErrorInfo", {errorStr:msgInfix});
             textarea = response.errors.join("\n");
         }
         else if(error_only) {
@@ -671,14 +671,14 @@ cora.fileImporter = {
         }
         else {
             success = true;
-            title = _("FileTab.Forms.importSuccess");
-            message = _("FileTab.Forms.importSuccessInfo")
+            title = _("FileTab.Forms.import.importSuccess");
+            message = _("FileTab.Forms.import.importSuccessInfo")
             
             if(response.warnings instanceof Array && response.warnings.length>0) {
                 var warningCount = (response.warnings.length>1) ?
-                        (response.warnings.length + " " + _("FileTab.Forms.warning2")) :
-                        _("FileTab.Forms.warning1");
-                message += " " +_("FileTab.Forms.importSuccessWarnings", {nWarnings:warningCount});
+                        (response.warnings.length + " " + _("FileTab.Forms.import.warning2")) :
+                        _("FileTab.Forms.import.warning1");
+                message += " " +_("FileTab.Forms.import.importSuccessWarnings", {nWarnings:warningCount});
                 textarea = response.warnings.join("\n");
             } else {
                 gui.showMsgDialog('info', message);
@@ -763,7 +763,7 @@ cora.fileImporter = {
 	    } else {
 		status.done = 'error';
 		if(process.output != null) {
-		    status.message = _("FileTab.Forms.importError");
+		    status.message = _("FileTab.Forms.import.importError");
                     status.output  = process.output;
 		}
 	    }
@@ -1077,7 +1077,7 @@ cora.fileManager = {
 
         // 2. If lock was successful, open the file
         onLockSuccess = function() {
-            gui.showSpinner({message: _("FileTab.loadingFile")});
+            gui.showSpinner({message: _("FileTab.Forms.import.loadingFile")});
             cora.files.open(fid, {onSuccess: onOpenSuccess, onError: onOpenError});
         };
         onLockError = function(error) {
@@ -1148,10 +1148,10 @@ cora.fileManager = {
             // if we're admin, we can close any file
             if(!cora.isAdmin()) {
                 gui.showMsgDialog('error',
-                           _("FileTab.Forms.noClose"));
+                           _("FileTab.columnLabels.noClose"));
             } else {
                 gui.confirm(
-                    _("FileTab.Forms.closePrompt"),
+                    _("FileTab.columnLabels.closePrompt"),
                     function() {
                         cora.files.close(
                             fid,
@@ -1199,10 +1199,10 @@ cora.fileManager = {
          fid - ID of the file to be deleted
      */
     deleteFile: function(fid) {
-        var message = _("FileTab.Forms.deleteWarning",
+        var message = _("FileTab.columnLabels.deleteWarning",
                         {file: cora.files.getDisplayName(fid)});
         var performDelete = function() {
-            gui.showSpinner({message: _("FileTab.Forms.pleaseWait")});
+            gui.showSpinner({message: _("FileTab.pleaseWait")});
             cora.files.deleteFile(
                 fid,
                 {noticeOnError: true,
@@ -1271,7 +1271,7 @@ cora.fileManager = {
         Object.each(cora.flags, function(flag, key) {
             makeMultiSelectEntry(div, key, _(flag.displayname));
         });
-        new MultiSelect(div, {monitorText: _("FileTab.Forms.columnsSelected")});
+        new MultiSelect(div, {monitorText: _("FileTab.Forms.exportForm.columnsSelected")});
         return div;
     },
 
@@ -1290,7 +1290,7 @@ cora.fileManager = {
 	    title: 'fileExportPopup_title',
 	    buttons: [
 		{title: _("Action.cancel"), addClass: 'mform'},
-		{title: _("Action.export2"), addClass: 'mform button_green',
+		{title: _("FileTab.columnLabels.export2"), addClass: 'mform button_green',
 		 event: function() {
                      var ccsv = [],
                          data = {do: 'exportFile', fileid: fid};
@@ -1351,7 +1351,7 @@ cora.fileManager = {
 	var contentdiv = $('tagsetAssociationTable');
         var tagsetLinks = cora.files.get(fileid).tagset_links;
 	var content = new mBox.Modal({
-	    title: _("FileTab.Forms.editTagsetsForm", {file: fullname}), //"Tagset-Verknüpfungen für '"+fullname+"'",
+	    title: _("FileTab.Forms.editTagsets", {file: fullname}), //"Tagset-Verknüpfungen für '"+fullname+"'",
 	    content: contentdiv,
 	    buttons: [ {title: _("Action.close"), addClass: "mform",
 			id: "editTagsetAssocOK",

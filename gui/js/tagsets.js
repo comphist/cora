@@ -126,7 +126,7 @@ cora.tagsets = {
             multiselect.grab(entry).grab(label);
         });
         new MultiSelect(multiselect,
-                        {monitorText: ' '+_("AdminTab.Forms.tagsetsSelected")});
+                        {monitorText: ' '+_("AdminTab.Forms.projectOptionsForm.tagsetsSelected")});
         return multiselect;
     },
 

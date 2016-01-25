@@ -29,15 +29,15 @@ cora.strings.search_condition = {
         'any': "mindestens eine"
     },
     'match': {
-        'set': "EditorTab.dropDown.isSet",
-        'nset': "EditorTab.dropDown.isNotSet",
-        'eq': "EditorTab.dropDown.is",
-        'neq': "EditorTab.dropDown.isNot",
-        'in': "EditorTab.dropDown.contains",
-        'nin': "EditorTab.dropDown.containsNot",
-        'bgn': "EditorTab.dropDown.startsWith",
-        'end': "EditorTab.dropDown.endsWith",
-        'regex': "EditorTab.dropDown.matchesRegEx"
+        'set': "EditorTab.Forms.searchForm.isSet",
+        'nset': "EditorTab.Forms.searchForm.isNotSet",
+        'eq': "EditorTab.Forms.searchForm.is",
+        'neq': "EditorTab.Forms.searchForm.isNot",
+        'in': "EditorTab.Forms.searchForm.contains",
+        'nin': "EditorTab.Forms.searchForm.containsNot",
+        'bgn': "EditorTab.Forms.searchForm.startsWith",
+        'end': "EditorTab.Forms.searchForm.endsWith",
+        'regex': "EditorTab.Forms.searchForm.matchesRegEx"
     }
 };
 
@@ -134,11 +134,11 @@ var TokenSearcher = new Class({
         fieldSelector.empty();
         // Fixed elements
         fieldSelector.grab(makeOption('token_all',
-                                      _("EditorTab.dropDown.tokenAll")));
+                                      _("EditorTab.Forms.searchForm.tokenAll")));
         fieldSelector.grab(makeOption('token_trans',
-                                     _("EditorTab.dropDown.tokenTrans")));
+                                     _("EditorTab.Forms.searchForm.tokenTrans")));
         // Annotation layers
-        optgroup = new Element('optgroup', {'label': _("EditorTab.dropDown.annotationLevels")});
+        optgroup = new Element('optgroup', {'label': _("EditorTab.Forms.searchForm.annotationLevels")});
         Object.each(this.tagsets, function(tagset) {
             if(tagset.searchable) {
                 elemlist.push(makeOption(tagset.class, _(tagset.classname)));
@@ -151,7 +151,7 @@ var TokenSearcher = new Class({
         elemlist.each(function(a) { optgroup.grab(a); });
         fieldSelector.grab(optgroup);
         // Flags
-        optgroup = new Element('optgroup', {'label': _("EditorTab.dropDown.markups")});
+        optgroup = new Element('optgroup', {'label': _("EditorTab.Forms.searchForm.markups")});
         Object.each(this.flagHandler.flags,
                     function(flag, flagname) {
                         optgroup.grab(makeOption(flagname, _(flag.displayname)));
@@ -188,18 +188,18 @@ var TokenSearcher = new Class({
         };
         if(cls === 'flags') {
             return new Elements([
-                makeOption('set', "EditorTab.dropDown.isSet"),
-                makeOption('nset', "EditorTab.dropDown.isNotSet")
+                makeOption('set', "EditorTab.Forms.searchForm.isSet"),
+                makeOption('nset', "EditorTab.Forms.searchForm.isNotSet")
             ]);
         }
         return new Elements([
-            makeOption('eq', "EditorTab.dropDown.is"),
-            makeOption('neq', "EditorTab.dropDown.isNot"),
-            makeOption('in', "EditorTab.dropDown.contains"),
-            makeOption('nin', "EditorTab.dropDown.containsNot"),
-            makeOption('bgn', "EditorTab.dropDown.startsWith"),
-            makeOption('end', "EditorTab.dropDown.endsWith"),
-            makeOption('regex', "EditorTab.dropDown.matchesRegEx")
+            makeOption('eq', "EditorTab.Forms.searchForm.is"),
+            makeOption('neq', "EditorTab.Forms.searchForm.isNot"),
+            makeOption('in', "EditorTab.Forms.searchForm.contains"),
+            makeOption('nin', "EditorTab.Forms.searchForm.containsNot"),
+            makeOption('bgn', "EditorTab.Forms.searchForm.startsWith"),
+            makeOption('end', "EditorTab.Forms.searchForm.endsWith"),
+            makeOption('regex', "EditorTab.Forms.searchForm.matchesRegEx")
         ]);
     },
 
