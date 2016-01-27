@@ -141,5 +141,37 @@ function _gui_make_title() {
       <?php include("news.php"); ?>
     </div>
     <?php endif; ?>
+
+    <!-- Popup in case of uncaught exceptions.
+
+    Mostly a hardcoded mBox dialog window; hardcoded because we don't want to
+    rely on JavaScript functions here if possible, since we can't know what
+    exactly caused the exception in the first place.
+    -->
+    <div id="unknownErrorPopup" class="mBox Modal MessageDialog mBoxModalError hasFooter">
+      <div class="mBoxContainer">
+        <div class="mBoxContent">
+          <strong>Ein unbekannter Fehler ist aufgetreten.</strong>
+          Das hätte nicht passieren dürfen.  Möglicherweise müssen Sie CorA neu
+          laden, um weiterarbeiten zu können.
+
+          <textarea id="unknownErrorDetails"></textarea>
+        </div>
+        <div class="mBoxFooterContainer">
+          <div class="mBoxButtonContainer">
+            <button class="mBoxButton mform" onclick="$('unknownErrorDetails').toggle()">
+              <label>Details...</label>
+            </button>
+            <button class="mBoxButton mform button_yellow" onclick="window.location.href=window.location.href.split('?')[0]">
+              <label>CorA neu laden</label>
+            </button>
+            <button class="mBoxButton mform" onclick="$('unknownErrorPopup').hide()">
+              <label>Schließen</label>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End of error popup. -->
   </body>
 </html>

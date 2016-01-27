@@ -880,6 +880,7 @@ cora.fileImporter = {
 cora.fileManager = {
     content: null,
     currentFileId: null,
+    openFileRunning: false,
 
     initialize: function() {
         this.content = $('files');
@@ -1126,8 +1127,10 @@ cora.fileManager = {
             default_tab = 'edit';
             gui.showTabButton('edit').changeTab('edit');
             gui.hideSpinner();
-        };
+            this.openFileRunning = false;
+        }.bind(this);
 
+        this.openFileRunning = true;
         startChain();
     },
 
