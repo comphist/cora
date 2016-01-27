@@ -206,6 +206,8 @@ var CoraRequest = new Class({
                 this._fireComplete();
             } else if(json.errcode === -1) {
                 this._fireError(new CoraRequestError.NotLoggedIn());
+            } else if(json.errcode === -2) {
+                this._fireError(new CoraRequestError.Server());
             } else {
                 this._fireError(new CoraRequestError.Handled(json));
             }
