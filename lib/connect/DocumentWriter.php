@@ -178,8 +178,9 @@ class DocumentWriter extends DocumentAccessor {
 
   /** Update an annotation of an open class tagset.
   */
-  private function updateOpenClassAnnotation($modid, $current, $annoclass, $value,
-                                             $sel=1, $source='user', $score=NULL) {
+  private function updateOpenClassAnnotation($modid, $current, $annoclass,
+                                             $value, $sel=1, $source='user',
+                                             $score=PDO::PARAM_NULL) {
     if(empty($current)) {
       $this->stmt_insertTag->execute(array(':value' => $value,
 					   ':tagset' => $this->tagsets[$annoclass]['id'],
@@ -199,8 +200,9 @@ class DocumentWriter extends DocumentAccessor {
 
   /** Update an annotation of a closed class tagset.
   */
-  private function updateClosedClassAnnotation($modid, $current, $annoclass, $tagid,
-                                               $sel=1, $source='user', $score=NULL) {
+  private function updateClosedClassAnnotation($modid, $current, $annoclass,
+                                               $tagid, $sel=1, $source='user',
+                                               $score=PDO::PARAM_NULL) {
     if(!empty($current)) {
       if($tagid == $current['tag_id']) return; // nothing to change
       $this->removeAnnotation($current, false);

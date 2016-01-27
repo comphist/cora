@@ -1910,7 +1910,7 @@
      $currentline = 0;
      $diplcount = count($converted['dipl_trans']);
      for($i = 0; $i < $diplcount; $i++) { // loop by index because three arrays are involved
-       $diplid = (isset($olddipl[$i]) ? $olddipl[$i]['id'] : "NULL");
+       $diplid = (isset($olddipl[$i]) ? $olddipl[$i]['id'] : PDO::PARAM_NULL);
        $dipltrans = $converted['dipl_trans'][$i];
        $diplinsert[] = array(':diplid' => $diplid,
 			     ':tokid'  => $tokenid,
@@ -1938,7 +1938,7 @@
      $moddelete = array();
      $modcount  = count($converted['mod_trans']);
      for($j = 0; $j < $modcount; $j++) {
-       $modid = (isset($oldmod[$j]) ? $oldmod[$j]['id'] : "NULL");
+       $modid = (isset($oldmod[$j]) ? $oldmod[$j]['id'] : PDO::PARAM_NULL);
        $modinsert[] = array(':modid' => $modid,
 			    ':tokid' => $tokenid,
 			    ':trans' => $converted['mod_trans'][$j],
