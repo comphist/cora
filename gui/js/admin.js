@@ -281,7 +281,7 @@ cora.userEditor = {
             cora.users.createUser(username, password);
         };
         new mBox.Modal({
-            title: _("AdminTab.Forms.addUserForm.addUser"),
+            title: _("AdminTab.Forms.addUser.addUserTitle"),
             content: $('templateCreateUser'),
             buttons: [ {title: _("Action.cancel"), addClass: "mform"},
                        {title: _("Action.addUserBtn"), addClass: "mform button_green",
@@ -1280,7 +1280,8 @@ cora.tagsetEditor = {
                     response = JSON.decode(tmp.getElement('pre.json').get('text'));
 		} catch(err) {
 		    message = _("AdminTab.Forms.importTagsetForm.invalidServerResponse");
-		    textarea = _("AdminTab.Forms.importTagsetForm.invalidServerResponseText", {errorMsg: err.message, serverResponse: response});
+		    textarea = _("AdminTab.Forms.importTagsetForm.serverResponse") + ":\n" + response + "\n\n";
+            textarea += _("AdminTab.Forms.importTagsetForm.internalError") + ":\n" + err.message;
 		    error = true;
 		}
                 if (!error) {

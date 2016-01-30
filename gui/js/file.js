@@ -649,8 +649,9 @@ cora.fileImporter = {
         catch (err) {
             title = _("FileTab.invalidServerResponse");
             message = _("FileTab.invalidServerResponseInfo");
-            textarea = _("FileTab.invalidServerResponseText",
-                         {errorMsg: err.message, serverResponse: response});
+            textarea = _("FileTab.serverResponseInterpretation") + ":\n\t";
+            textarea += err.message + "\n\n" + _("FileTab.serverResponse") + ":\n" + response;
+            
         }
         if(message != "") {}
         else if(!response || typeof response.success == "undefined") {
@@ -672,13 +673,10 @@ cora.fileImporter = {
         else {
             success = true;
             title = _("FileTab.Forms.import.importSuccess");
-            message = _("FileTab.Forms.import.importSuccessInfo")
+            message = _("FileTab.Forms.import.importSuccessInfo");
             
             if(response.warnings instanceof Array && response.warnings.length>0) {
-                var warningCount = (response.warnings.length>1) ?
-                        (response.warnings.length + " " + _("FileTab.Forms.import.warning2")) :
-                        _("FileTab.Forms.import.warning1");
-                message += " " +_("FileTab.Forms.import.importSuccessWarnings", {nWarnings:warningCount});
+                message += " " + _("FileTab.Forms.import.warnings", {nWarnings : response.warnings.length}) + ":";
                 textarea = response.warnings.join("\n");
             } else {
                 gui.showMsgDialog('info', message);

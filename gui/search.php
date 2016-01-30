@@ -29,9 +29,7 @@
   <div id="searchPanelDiv" class="panel">
     <div class="srl-criteria" id="searchResultsCriteria">
       <p>
-        <span class="srl-head-count">Es gibt</span> <span class="srl-count">256</span> <span class="srl-agr-count">Ergebnisse</span> <span data-trans-id="EditorTab.searchResult.resultInfoMiddle"><?=$lh("EditorTab.searchResult.resultInfoMiddle"); ?></span> 
-        <span class="srl-operator">mindestens eine</span> <span class="srl-agr-operator">dieser</span> 
-        <span data-trans-id="EditorTab.searchResult.resultInfoTail"><?=$lh("EditorTab.searchResult.resultInfoTail"); ?></span>
+        <span class="srl-info">Es gibt {resultCount} Treffer für Tokens, die {searchMode} dieser Bedingungen erfüllen:</span>
       </p>
       <ul class="srl-condition-list">
         <li>Token enthält "esse"</li>

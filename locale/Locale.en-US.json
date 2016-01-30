@@ -146,8 +146,8 @@
          },
 
          "Forms" : {
-            "addUserForm" : {
-                "addUser" : "Add User",
+            "addUser" : {
+                "addUserTitle" : "Add User",
                 "newUserName" : "User name:",
                 "password" : "Password:",
                 "repeatPassword" : "Repeat password:"
@@ -183,7 +183,7 @@
                 "tagsetClass" : "Tagset class:",
                 "tagsetFile" : "Tagset file:",
                 "tagsetInfo" : "Note: A tagset file should be a text file containing one tag per line. In the case of POS tagsets dots will be interpreted as boundaries between POS and morph attributes. Tags that need correction should be preceded by a caret (^).",
-                "importTagsetBtn" : "Import tagset →",
+                "importBtn" : "Import tagset →",
                 "taggerImportError" : "An unknow error occurred while importing the tagset.",
                 "taggerImportErrorInfo1" : "An error occurred while importing the tagset:",
                 "taggerImportErrorInfo2" : "{nE} errors occurred while importing the tagset:",
@@ -194,7 +194,8 @@
                 "serverResponseInfo" : "The server returned the response below:",
                 "invalidServerResponse" : "Invalid server response",
                 "invalidServerResponseInfo" : "The server returned an invalid response.",
-                "invalidServerResponseText" : "Server response:\n{serverResponse}\n\nInternal Error:\n{errorMsg}"
+                "serverResponse" : "Server response",
+                "internalError" : "Internal Error"
                 
             },
             "taggerOptionsForm" : {
@@ -323,9 +324,7 @@
                 "importingData" : "Importing data...",
                 "importSuccess" : "File import successful",
                 "importSuccessInfo" : "The file has been added to the project.",
-                "importSuccessWarnings" : "The system returned {nWarnings}:",
-                "warning1" : "one warning",
-                "warning2" : "warnings",
+                "warnings" : "The system returned {nWarnings} warning(s)",
                 "importUnknownError" : "Import failed due to unknown error!",
                 "importFailed" : "Import failed",
                 "fileImportFailed" : "File import failed",
@@ -361,7 +360,8 @@
         "noFilesInProject" : "There are no files in this project.",
         "invalidServerResponse" : "Invalid server response",
         "invalidServerResponseInfo" : "The server returned an invalid response. The file import may have failed.",
-        "invalidServerResponseText" : "Error when interpreting server response:\n\t{errorMsg}\n\nThe server returned:\n{serverResponse}"
+        "serverResponseInterpretation" : "An error occurred when interpreting the server response",
+        "serverResponse" : "The server returned"
 
     },
      "EditorTab": {
@@ -388,17 +388,9 @@
 
             },
         "searchResult" : {
-
             "resultPage" : "Results page",
             "editQuery" : "Edit query",
-            "result" : "result",
-            "results" : "results",
-            "resultInfoHead1" : "There is",
-            "resultInfoHead2" : "There are",
-            "ofThese1" : "of these",
-            "ofThese2" : "of these",
-            "resultInfoMiddle" : "for tokens fulfilling",
-            "resultInfoTail" : "criteria:"
+            "resultInfo" : "Found **{resultCount}** token(s) fulfilling **{searchMode}** of the criteria below:"
 
 
             },

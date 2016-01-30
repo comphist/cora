@@ -184,17 +184,17 @@ $ulist = array();
     <div id="templateCreateUser">
       <p>
         <label for="newuser" class="ra">
-          <span data-trans-id="AdminTab.Forms.addUserForm.newUserName"><?=$lh("AdminTab.Forms.addUserForm.newUserName"); ?></span> </label>
+          <span data-trans-id="AdminTab.Forms.addUser.newUserName"><?=$lh("AdminTab.Forms.addUser.newUserName"); ?></span> </label>
         <input type="text" name="newuser" value="" data-required="" class="mform" />
       </p>
       <p>
         <label for="newpw" class="ra">
-          <span data-trans-id="AdminTab.Forms.addUserForm.password"><?=$lh("AdminTab.Forms.addUserForm.password"); ?></span> </label>
+          <span data-trans-id="AdminTab.Forms.addUser.password"><?=$lh("AdminTab.Forms.addUser.password"); ?></span> </label>
         <input type="password" name="newpw" value="" data-required="" class="mform" />
       </p>
       <p>
         <label for="newpw2" class="ra">
-          <span data-trans-id="AdminTab.Forms.addUserForm.repeatPassword"><?=$lh("AdminTab.Forms.addUserForm.repeatPassword"); ?></span> </label>
+          <span data-trans-id="AdminTab.Forms.addUser.repeatPassword"><?=$lh("AdminTab.Forms.addUser.repeatPassword"); ?></span> </label>
         <input type="password" name="newpw2" value="" data-required="" class="mform" />
       </p>
     </div>
@@ -318,7 +318,7 @@ $ulist = array();
         <input type="hidden" name="tagset_settype" value="closed" />
       </p>
       <p style="text-align:right;">
-        <input type="submit" value="<?=$lh("AdminTab.Forms.importTagsetForm.importTagsetBtn"); ?>" data-trans-value-id="AdminTab.Forms.importTagsetForm.importTagsetBtn"/>
+        <input type="submit" value="<?=$lh("AdminTab.Forms.importTagsetForm.importBtn"); ?>" data-trans-value-id="AdminTab.Forms.importTagsetForm.importBtn"/>
       </p>
       </form>
     </div>

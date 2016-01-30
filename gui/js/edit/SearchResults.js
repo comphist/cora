@@ -168,18 +168,12 @@ var SearchResults = new Class({
         var text, ul, div = $(this.criteriaHtmlId);
         if (div === null || typeof(div) === "undefined")
             return;
-        div.getElement('.srl-count').set('text', this.data.length);
-        text = (this.data.length == 1) ? _("EditorTab.searchResult.result") : _("EditorTab.searchResult.results");
-        div.getElement('.srl-agr-count').set('text', text);
 
-        text = (this.data.length == 1) ? _("EditorTab.searchResult.resultInfoHead1") : _("EditorTab.searchResult.resultInfoHead2");
-        div.getElement('.srl-head-count').set('text',text);
+        searchModeStr = (cora.strings.search_condition.operator[this.criteria.operator] === "alle") ? 
+        _("EditorTab.Forms.searchForm.allFulfilled") : _("EditorTab.Forms.searchForm.oneFulfilled");
+        text = _("EditorTab.searchResult.resultInfo", {resultCount : this.data.length, searchMode : searchModeStr});
+        div.getElement('.srl-info').set('text',text);
 
-        text = (cora.strings.search_condition.operator[this.criteria.operator] === "alle") ? _("EditorTab.Forms.searchForm.allFulfilled") : _("EditorTab.Forms.searchForm.oneFulfilled");
-        div.getElement('.srl-operator').set('text', text);
-
-        text = (this.criteria.operator === "all") ? _("EditorTab.searchResult.ofThese2") : _("EditorTab.searchResult.ofThese1");
-        div.getElement('.srl-agr-operator').set('text', text);
 
         ul = div.getElement('.srl-condition-list');
         ul.empty();
