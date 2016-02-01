@@ -172,7 +172,7 @@ var SearchResults = new Class({
         searchModeStr = (cora.strings.search_condition.operator[this.criteria.operator] === "alle") ? 
         _("EditorTab.Forms.searchForm.allFulfilled") : _("EditorTab.Forms.searchForm.oneFulfilled");
         text = _("EditorTab.searchResult.resultInfo", {resultCount : this.data.length, searchMode : searchModeStr});
-        div.getElement('.srl-info').set('text',text);
+        div.getElement('.srl-info').set('html', text);
 
 
         ul = div.getElement('.srl-condition-list');

@@ -1040,8 +1040,10 @@ var EditorModel = new Class({
 	}
 
 	$('addTokenBox').set('value', '');
-        $('addTokenBefore').empty().appendText(
-            _("EditorTab.Forms.addTranscriptionForm.newTransInfo", {'tokInFront' : old_token, 'lineInfo' : lineinfo})
+        $('addTokenBefore').set(
+            'html',
+            _("EditorTab.Forms.addTranscriptionForm.newTransInfo",
+              {'tokInFront' : old_token, 'lineInfo' : lineinfo})
         );
 
 	var addTokenBox = new mBox.Modal({
