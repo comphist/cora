@@ -33,8 +33,16 @@
         "expand" : "Expand",
         "waitForAuthorization" : "Waiting for authorization...",
         "loginAccessError" : "You've successfully logged in but you currently don't have access to the opened file. Another user might be working on the file.",
-        "logInAgain" : "Log in again"
-
+         "loading": "CorA is loading...",
+         "confirmLogin": {
+             "title": "Confirm login",
+             "description": "Please enter your credentials again to continue."
+         },
+         "uncaughtException": {
+             "description": "**An uncaught exception occurred.**  This should not have happened.  It is possible that you have to reload CorA to continue your work.",
+             "details": "Details...",
+             "reload": "Reload CorA"
+         }
     },
     "LibFile" : {
         "invalidXML" : "The file does not contain valid XML. The parser reported:"
@@ -49,7 +57,8 @@
          "loginFailed" : "Login failed.",
          "msgFailedLogin": "Login failed.  Please check your credentials.",
          "password": "Password",
-         "username": "Username"
+         "username": "Username",
+         "close": "Close"
      },
      "Help" : {
         "dontShowAgain" : "Close and do not show again",

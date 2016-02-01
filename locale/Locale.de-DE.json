@@ -32,7 +32,16 @@
         "expand" : "Aufklappen",
         "waitForAuthorization" : "Warte auf Authorisierung...",
         "loginAccessError" : "Anmeldung war erfolgreich, aber Zugriff auf die aktuell geöffnete Datei ist nicht möglich. Eventuell wird diese Datei bereits von einem anderen Nutzer bearbeitet.",
-        "logInAgain" : "Erneut anmelden"
+         "loading": "CorA wird geladen...",
+         "confirmLogin": {
+             "title": "Erneut anmelden",
+             "description": "Bitte geben Sie Ihre Zugangsdaten erneut ein, um fortzufahren."
+         },
+         "uncaughtException": {
+             "description": "**Ein unbekannter Fehler ist aufgetreten.**  Das hätte nicht passieren dürfen.  Möglicherweise müssen Sie CorA neu laden, um weiterarbeiten zu können.",
+             "details": "Details...",
+             "reload": "CorA neu laden"
+         }
      },
      "LibFile" : {
         "invalidXML" : "Datei enthält kein wohlgeformtes XML. Parser meldete:"
@@ -46,7 +55,8 @@
          "loginFailed" : "Anmeldung fehlgeschlagen.",
          "msgFailedLogin": "Anmeldung fehlgeschlagen.  Bitte überprüfen Sie Ihre Eingaben.",
          "password": "Passwort",
-         "username": "Benutzername"
+         "username": "Benutzername",
+         "close": "Schließen"
      },
      "Help" : {
         "dontShowAgain" : "Schließen und nicht wieder anzeigen",

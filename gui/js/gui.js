@@ -761,7 +761,7 @@ var gui = {
             }).get({'user': user, 'pw': pw});
         }.bind(this);
         var mbox = new mBox.Modal({
-	    title: "Erneut anmelden",
+	    title: _("Gui.confirmLogin.title"),
 	    content: 'confirmLoginPopup',
 	    closeOnBodyClick: false,
 	    closeOnEsc: false,
