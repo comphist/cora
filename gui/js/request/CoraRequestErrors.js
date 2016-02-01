@@ -92,8 +92,8 @@ CoraRequestError.Invalid = new Class({
 
 /* Class: CoraRequestError.Server
 
-   A server error has occured; i.e., the server sent a status code other than
-   200 (OK).
+   A server error has occured; either the server sent a status code other than
+   200 (OK), or it encountered an uncaught exception.
  */
 CoraRequestError.Server = new Class({
     Extends: CoraRequestError,
@@ -101,8 +101,10 @@ CoraRequestError.Server = new Class({
     message: "RequestErrors.internalError",
     xhr: null,
     initialize: function(xhr) {
-        this.xhr = xhr;
-        this.details = [xhr.statusText, xhr.responseText];
+        if (xhr !== undefined) {
+            this.xhr = xhr;
+            this.details = [xhr.statusText, xhr.responseText];
+        }
     }
 });
 

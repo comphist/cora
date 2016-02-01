@@ -1446,3 +1446,23 @@ div#spin-overlay {
     background: none;
     display: none;
 }
+
+div#unknownErrorPopup {
+    display: none;
+    z-index: 9999;
+    position: absolute;
+    top: 25px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: 600px;
+
+    #unknownErrorDetails {
+        display: none;
+        margin-top: 2em;
+        height: 6em;
+        max-height: 10em;
+        width: 95%;
+        max-width: 95%;
+    }
+}

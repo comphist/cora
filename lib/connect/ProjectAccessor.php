@@ -161,10 +161,12 @@ class ProjectAccessor {
       try {
           $this->dbo->beginTransaction();
           $this->stmt_deleteUsers->execute(array(':pid' => $pid));
-          $this->stmt_setUsers->bindValue(':pid', $pid, PDO::PARAM_INT);
-          $this->stmt_setUsers->bindParam(':uid', $uid, PDO::PARAM_INT);
-          foreach ($idlist as $uid) {
-              $this->stmt_setUsers->execute();
+          if (!empty($idlist)) {
+              $this->stmt_setUsers->bindValue(':pid', $pid, PDO::PARAM_INT);
+              $this->stmt_setUsers->bindParam(':uid', $uid, PDO::PARAM_INT);
+              foreach ($idlist as $uid) {
+                  $this->stmt_setUsers->execute();
+              }
           }
           $this->dbo->commit();
       }
@@ -195,8 +197,10 @@ class ProjectAccessor {
           $this->stmt_deleteDefaults->execute(array(':pid' => $pid));
           $this->stmt_setDefaults->bindValue(':pid', $pid, PDO::PARAM_INT);
           $this->stmt_setDefaults->bindParam(':tid', $tid, PDO::PARAM_INT);
-          foreach ($tslist as $tid) {
-              $this->stmt_setDefaults->execute();
+          if (!empty($tslist)) {
+              foreach ($tslist as $tid) {
+                  $this->stmt_setDefaults->execute();
+              }
           }
           $this->dbo->commit();
       }

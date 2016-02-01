@@ -129,7 +129,10 @@ function make_installer($settings) {
 
 function get_database_status($installer) {
   $status = array(
-    "can_connect" => $installer->canConnect()
+    "can_connect" => $installer->canConnect(),
+    "can_execute_mysql" => $installer->canExecuteMySQL(),
+    "need_migration" => false,
+    "migration_path" => false
   );
   if ($status['can_connect']) {
     $status['version_current'] = $installer->getDBVersion();
@@ -144,7 +147,8 @@ function get_database_status($installer) {
         $migration_dir
       );
     }
-    $status['can_execute_mysql'] = $installer->canExecuteMySQL();
+  } else {
+    $status['pdo_exception'] = $installer->pdo_exception;
   }
   return $status;
 }

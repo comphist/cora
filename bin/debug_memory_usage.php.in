@@ -22,9 +22,9 @@
 <?php
 $CORA_DIR = "@CORA_WEB_DIR@";
 $DEVNULL = fopen("/dev/null", "a");
-require_once( $CORA_DIR . "lib/cfg.php" );
-require_once( $CORA_DIR . "lib/connect.php" );
-require_once( $CORA_DIR . "lib/exporter.php" );
+require_once "{$CORA_DIR}/lib/cfg.php";
+require_once "{$CORA_DIR}/lib/connect.php";
+require_once "{$CORA_DIR}/lib/exporter.php";
 $dbi = new DBInterface(Cfg::get('dbinfo'));
 $exp = new Exporter($dbi);
 

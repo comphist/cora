@@ -8,6 +8,7 @@ configure_all("${CMAKE_CURRENT_BINARY_DIR}"
   cloning_tools.php
   create_user.php
   debug_memory_usage.php
+  debug_get_lemma_sugg.php
   export_file.php
   update_taglist.php
   repair_duplicate_mod2error.php

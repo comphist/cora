@@ -190,6 +190,15 @@ if (isset($_POST['action_exec_upgrade']) && $status['need_migration']) {
             </tbody>
           </table>
 
+<?php
+    if (array_key_exists('pdo_exception', $status) && $status['pdo_exception']):
+        echo_errors(
+            array("Connection failed due to PDOException:",
+                  $status['pdo_exception'])
+        );
+    endif;
+?>
+
           <div class="configure-form">
 <?php
 if (!$status['can_connect']):

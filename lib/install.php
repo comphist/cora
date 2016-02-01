@@ -36,6 +36,7 @@ class InstallHelper {
   private $dbo;
   private $dbi;
   private $can_connect;
+  public $pdo_exception = null;
   public $mysql_bin = "mysql";
 
   public function __construct($dbinfo) {
@@ -56,6 +57,7 @@ class InstallHelper {
     catch (PDOException $ex) {
       $this->dbo = null;
       $this->can_connect = false;
+      $this->pdo_exception = $ex->getMessage();
     }
   }
 
@@ -114,7 +116,7 @@ class InstallHelper {
       list($rc, $stdout, $stderr) = self::exec($cmd);
       if (($rc > 0) || !$stdout)
         return false;
-      return (substr($stdout, 0, 5) == "mysql");
+      return true;
     }
     catch (Exception $ex) {
       return false;

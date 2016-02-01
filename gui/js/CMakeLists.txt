@@ -47,6 +47,7 @@ endif()
 
 # TODO: can we separate the "plugin" files from CorA proper?
 set(JS_SOURCES_MASTER
+  ErrorHandler.js
   request/CoraRequestErrors.js
   request/CoraRequest.js
   settings.js
