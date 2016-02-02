@@ -13,16 +13,17 @@ If you have any questions about this project, please contact Marcel Bollmann
 
 ## Dependencies ##
 
-To host CorA on your own machine, you need at least the following:
+To host CorA on your own machine, you should have at least the following:
 
 * A web server, such as Apache
 
-* PHP 5.3+ with the following extensions: (**TODO:** find out which version exactly the minimum required)
+* PHP 5.3+ or PHP 7+ with the following extensions:
+
     * dom
     * json
     * libxml
 
-* MySQL 5.5+ (**TODO:** which version?)
+* MySQL 5.5+ or MariaDB 10.0+
 
 If you plan to build CorA yourself, further dependencies are needed; see
 `INSTALL.md` for details.
