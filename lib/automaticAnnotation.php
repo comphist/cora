@@ -63,11 +63,11 @@ class AutomaticAnnotationWrapper {
     $this->db = $db;
     $this->exp = $exp;
     if(!isset($taggerid) || empty($taggerid)) {
-      throw new Exception("Tagger ID cannot be empty.");
+      throw new Exception("Tagger ID cannot be empty.");  //$LOCALE
     }
     $this->taggerid = $taggerid;
     if(!isset($projectid) || empty($projectid)) {
-      throw new Exception("Project ID cannot be empty.");
+      throw new Exception("Project ID cannot be empty.");  //$LOCALE
     }
     $this->projectid = $projectid;
     $this->paramdir = Cfg::get('external_param_dir');
@@ -79,7 +79,7 @@ class AutomaticAnnotationWrapper {
   private function makeTaggerClass($class_name) {
     $class_file = __DIR__ . "/annotation/{$class_name}.php";
     if(!file_exists($class_file)) {
-      throw new Exception ("Tagger interface not found: {$class_name}");
+      throw new Exception ("Tagger interface not found: {$class_name}");  //$LOCALE
     }
     require_once $class_file;
     $options = $this->db->getTaggerOptions($this->taggerid);

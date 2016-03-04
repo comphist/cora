@@ -28,11 +28,12 @@ var cora = {
     var idx, len, chain;
 
     var initialize = function() {
-        Locale.use("de-DE");
+        Locale.use(cora.settings.get('locale'));
         gui.initialize({
             startHidden: ['edit', 'search', 'admin'],
             startTab: default_tab,
-            showNews: true
+            showNews: true,
+            locale: cora.settings.get('locale')
         });
         $$('#menu ul').setStyle('visibility', 'visible');
         $('main').show();
@@ -88,6 +89,6 @@ var cora = {
 function onBeforeUnload() {
     if (cora.editor !== null && cora.editor.hasUnsavedChanges()) {
         cora.editor.save();
-	return ("Es gibt noch ungespeicherte Änderungen, die verloren gehen könnten, wenn Sie fortfahren!");
+	return (_("EditorTab.general.unsavedChangesWarning"));
     }
 }

@@ -136,8 +136,8 @@ class Lemmatizer extends AutomaticAnnotator {
                                   $tmpfname));
         exec($cmd, $output, $retval);
         if($retval) {
-            error_log("CorA: Lemmatizer.php: Lemmatizer returned status code {$retval}; call was: {$cmd}");
-            throw new Exception("Lemmatisierer gab den Status-Code {$retval} zurück.");
+            error_log("CorA: Lemmatizer.php: Lemmatizer returned status code {$retval}; call was: {$cmd}"); //$LOCALE
+            throw new Exception("Lemmatisierer gab den Status-Code {$retval} zurück."); //$LOCALE
             // "\nAufruf war: {$cmd}");
         }
 
@@ -175,7 +175,7 @@ class Lemmatizer extends AutomaticAnnotator {
     public function performTrain() {
         $handle = fopen($this->options['par'], "w");
         if(!$handle) {
-            throw new Exception("Konnte Parameterdatei nicht zum Schreiben öffnen:".
+            throw new Exception("Konnte Parameterdatei nicht zum Schreiben öffnen:".      //$LOCALE
                                 $this->options['par']);
         }
         foreach($this->lines as $line) {

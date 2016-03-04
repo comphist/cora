@@ -112,19 +112,19 @@ var EditorModel = new Class({
 
         this.dataTable.addDropdownEntries([
             {name: 'Search',
-             text: 'Suche ähnliche...',
+             data_trans_id: "EditorTab.dropDown.searchSimilar",
              action: this.searchSimilarTokens.bind(this)}
         ]);
         if (cora.files.supportsTokenEditing(fileid)) {
             this.dataTable.addDropdownEntries([
                 {name: 'Edit',
-                 text: 'Token bearbeiten...',
+                 data_trans_id: "EditorTab.dropDown.editToken",
                  action: this.editToken.bind(this)},
                 {name: 'Add',
-                 text: 'Token hinzufügen...',
+                 data_trans_id: "EditorTab.dropDown.addToken",
                  action: this.addToken.bind(this)},
                 {name: 'Delete',
-                 text: 'Token löschen',
+                 data_trans_id: "EditorTab.dropDown.deleteToken",
                  action: this.deleteToken.bind(this)}
             ]);
 	    this.dataTable.addEvent(
@@ -241,11 +241,8 @@ var EditorModel = new Class({
                 this.fireEvent('processed', [false, error]);
                 if(error.name === 'Handled') {
                     gui.showTextDialog(
-                        "Kritischer Fehler",
-                        "Beim Speichern des Dokuments ist ein server-seitiger "
-                            + "Fehler aufgetreten.  Um Datenverluste zu vermeiden, "
-                            + "bearbeiten Sie das Dokument bitte nicht weiter und "
-                            + "melden diesen Fehler einem Administrator.",
+                        _("EditorTab.general.criticalError"),
+                        _("EditorTab.general.criticalErrorInfo"),
                         error.details
                     );
                 }
@@ -267,7 +264,7 @@ var EditorModel = new Class({
             elem.addEvent('click', function() {
                 var content = $('fileMetadataForm');
                 var current = cora.files.get(this.fileId);
-                var buttons = [{title: "Schließen", addClass: "mform"}];
+                var buttons = [{title: _("Action.close"), addClass: "mform"}];
                 var may_modify = cora.files.mayDeleteFile(this.fileId);
                 content.getElement('input[name="fmf-sigle"]')
                     .set('value', current.sigle)
@@ -280,7 +277,7 @@ var EditorModel = new Class({
                     .set('disabled', !may_modify);
                 if(may_modify) {
                     buttons.unshift({
-                        title: "Ändern", addClass: "mform button_red",
+                        title: _("Action.change"), addClass: "mform button_red",
                         event: function() {
                             ref.saveMetadataFromForm(this);
                         }
@@ -288,7 +285,7 @@ var EditorModel = new Class({
                 }
                 new mBox.Modal({
                     content: content,
-                    title: "Metadaten",
+                    title: _("EditorTab.Forms.metaDataForm.metaDataTitle"),
                     buttons: buttons,
                     closeOnBodyClick: false
                 }).open();
@@ -306,6 +303,7 @@ var EditorModel = new Class({
         if (this.searchResults !== null)
             this.searchResults.destroy();
         this.dataTable.hide();
+        gui.resetOnEditorLocaleChange();
         $$('div#menuRight .when-file-open-only').removeClass('file-open');
     },
 
@@ -330,7 +328,7 @@ var EditorModel = new Class({
                      fullname: name}
                 ));
                 this.header = header;
-                gui.showNotice("ok", "Metadaten erfolgreich geändert.");
+                gui.showNotice("ok", _("Banner.metaDataChanged"));
                 mbox.close();
             }.bind(this),
             onComplete: function() { form.unspin(); }
@@ -705,7 +703,7 @@ var EditorModel = new Class({
             if(typeof(onerror) === "function")
                 onerror({
 		    'name': 'FailureToLoadLines',
-		    'message': "Ein interner Fehler ist aufgetreten: Zeilen "+start+" bis "+(end-1)+" können nicht geladen werden."
+		    'message': _("EditorTab.general.couldNotLoadLines", {startLine: start, endLine: (end-1)})
 	        });
         };
         this.lineRequestInProgress = true;
@@ -777,7 +775,7 @@ var EditorModel = new Class({
             this.saveFailures++;
             if(this.saveFailures > 2) {
                 this.saveFailureNotice = gui.showNotice('notice',
-                    "Dokument kann derzeit nicht gespeichert werden.");
+                    _("Banner.cannotSave"));
             }
         }
     },
@@ -810,9 +808,7 @@ var EditorModel = new Class({
                 fn();
             } else {
                 gui.showMsgDialog('error',
-                    "Das Dokument kann derzeit nicht gespeichert werden; der "
-                    + "aktuelle Vorgang wird daher abgebrochen.  Überprüfen Sie "
-                    + "Ihre Internetverbindung und versuchen Sie es ggf. erneut.");
+                    _("EditorTab.general.cannotSaveInfo"));
                 if (typeof(fail) === "function")
                     fail();
             }
@@ -832,7 +828,7 @@ var EditorModel = new Class({
          fn - Function to call when closing is safe
     */
     confirmClose: function(fn) {
-        this.whenSaved(fn, {message: "Bitte warten..."});
+        this.whenSaved(fn, {message: _("EditorTab.general.pleaseWait")});
     },
 
     /* Function: updateDataArray
@@ -903,7 +899,7 @@ var EditorModel = new Class({
                 this.updateDataArray(options.tokId, options.getDiff(status));
             }.bind(this),
             onError: function(error) {
-                gui.showNotice('error', 'Primärdaten nicht geändert.');
+                gui.showNotice('error', _("EditorTab.general.primaryDataNotChanged"));
                 gui.hideSpinner();
             }
         }).get(options.request);
@@ -925,16 +921,16 @@ var EditorModel = new Class({
 	    tok_id = tok_id - 1;
 	}
 
-	$('deleteTokenToken').empty().appendText(old_token);
+    $('deleteTokenToken').empty().appendText(_("EditorTab.Forms.deleteToken.deletionPrompt", {'tok2del' : old_token}));
 	new mBox.Modal({
-	    title: 'Löschen bestätigen',
+	    title: _("EditorTab.Forms.deleteToken.confirmDeletion"),
 	    content: 'deleteTokenWarning',
 	    buttons: [
-		{title: 'Nein, abbrechen', addClass: 'mform'},
-		{title: 'Ja, löschen', addClass: 'mform button_red',
+		{title: _("Action.noCancel"), addClass: 'mform'},
+		{title: _("Action.yesDelete"), addClass: 'mform button_red',
 		 event: function() {
 		     this.close();
-		     gui.showSpinner({message: 'Bitte warten...'});
+		     gui.showSpinner({message: _("EditorTab.general.pleaseWait")});
                      ref.whenSaved(
                          function() {
                              ref.sendEditRequest({
@@ -942,7 +938,7 @@ var EditorModel = new Class({
                                  getDiff: function(s){
                                      return -Number.from(s.oldmodcount);
                                  },
-                                 successNotice: "Token gelöscht.",
+                                 successNotice: _("EditorTab.Forms.deleteToken.tokenDeleted"),
                                  request: {'token_id': db_id},
                                  requestName: 'deleteToken'
                              });
@@ -977,20 +973,20 @@ var EditorModel = new Class({
 
 	$('editTokenBox').set('value', old_token);
 	var editTokenBox = new mBox.Modal({
-	    title: 'Transkription bearbeiten',
+	    title: _("EditorTab.Forms.editTranscriptionForm.editTranscription"),
 	    content: 'editTokenForm',
 	    buttons: [
-		{title: 'Abbrechen', addClass: 'mform'},
-		{title: 'Speichern', addClass: 'mform button_green',
+		{title: _("Action.cancel"), addClass: 'mform'},
+		{title: _("Action.save"), addClass: 'mform button_green',
 		 event: function() {
 	             var new_token = $('editTokenBox').get('value').trim();
                      if (!new_token) {
-                         gui.showNotice('error', "Transkription darf nicht leer sein!");
+                         gui.showNotice('error', _("Banner.transcriptionEmpty"));
                      }
                      this.close();
                      if (new_token == old_token)
                          return;
-		     gui.showSpinner({message: 'Bitte warten...'});
+		     gui.showSpinner({message: _("EditorTab.general.pleaseWait")});
                      ref.whenSaved(
                          function() {
                              ref.sendEditRequest({
@@ -998,7 +994,7 @@ var EditorModel = new Class({
                                  getDiff: function(s){
                                      return Number.from(s.newmodcount)-Number.from(s.oldmodcount);
                                  },
-                                 successNotice: "Token erfolgreich bearbeitet.",
+                                 successNotice: _("EditorTab.Forms.editTranscriptionForm.tokenEdited"),
                                  request: {'token_id': db_id, 'value': new_token},
                                  requestName: 'editToken'
                              });
@@ -1044,22 +1040,26 @@ var EditorModel = new Class({
 	}
 
 	$('addTokenBox').set('value', '');
-	$('addTokenBefore').empty().appendText(old_token);
-	$('addTokenLineinfo').empty().appendText(lineinfo);
+        $('addTokenBefore').set(
+            'html',
+            _("EditorTab.Forms.addTranscriptionForm.newTransInfo",
+              {'tokInFront' : old_token, 'lineInfo' : lineinfo})
+        );
+
 	var addTokenBox = new mBox.Modal({
-	    title: 'Transkription hinzufügen',
+	    title: _("EditorTab.Forms.addTranscriptionForm.addTranscription"),
 	    content: 'addTokenForm',
 	    buttons: [
-		{title: 'Abbrechen', addClass: 'mform'},
-		{title: 'Speichern', addClass: 'mform button_green',
+		{title: _("Action.cancel"), addClass: 'mform'},
+		{title: _("Action.save"), addClass: 'mform button_green',
 		 event: function() {
 	             var new_token = $('addTokenBox').get('value').trim();
 	             if(!new_token) {
-		         gui.showNotice('error', "Transkription darf nicht leer sein!");
+		         gui.showNotice('error', _("Banner.transcriptionEmpty"));
                          return;
 	             }
 	             this.close();
-	             gui.showSpinner({message: 'Bitte warten...'});
+	             gui.showSpinner({message: _("EditorTab.general.pleaseWait")});
                      ref.whenSaved(
                          function() {
                              ref.sendEditRequest({
@@ -1067,7 +1067,7 @@ var EditorModel = new Class({
                                  getDiff: function(s){
                                      return Number.from(s.newmodcount);
                                  },
-                                 successNotice: "Token erfolgreich hinzugefügt.",
+                                 successNotice: _("EditorTab.Forms.addTranscriptionForm.tokenAdded"),
                                  request: {'token_id': db_id, 'value': new_token},
                                  requestName: 'addToken'
                              });
@@ -1130,7 +1130,7 @@ var EditorModel = new Class({
             aaselect.getParent("div.mBoxContainer").getElement("#annoStartButton").set("disabled", false);
         }
         else {
-            aaselect.appendText("Keine Tagger verfügbar.");
+            aaselect.appendText(_("EditorTab.Forms.autoAnnotationForm.noTaggerAvailable"));
             aaselect.getParent("div.mBoxContainer").getElement("#trainStartButton").set("disabled", true);
             aaselect.getParent("div.mBoxContainer").getElement("#annoStartButton").set("disabled", true);
         }
@@ -1148,19 +1148,31 @@ var EditorModel = new Class({
     activateAnnotationDialog: function(button) {
 	var ref = this;
 	var mbox;
-	var content = $('automaticAnnotationForm');
+        this._initializeAnnotationDialog();
+        button.addEvent('click', function() { ref.mboxAnnotation.open(); });
+        gui.onEditorLocaleChange(function() {
+            this._initializeAnnotationDialog();
+            this.prepareAnnotationOptions();
+        }.bind(this));
+    },
+
+    _initializeAnnotationDialog: function() {
+        var ref = this;
+	var content = 'automaticAnnotationForm';
 	var performAnnotation = function(action) {
-	    var taggerID = $('automaticAnnotationForm').getElement('input[name="aa_tagger_select"]:checked').get('value');
+	    var taggerID = $(content)
+                    .getElement('input[name="aa_tagger_select"]:checked')
+                    .get('value');
             new CoraRequest({
                 name: 'performAnnotation',
                 textDialogOnError: true,
                 retry: 0,
                 onSuccess: function(status) {
                     if(action == "train") {
-                        gui.showNotice('ok', 'Neu trainieren war erfolgreich.');
+                        gui.showNotice('ok', _("Banner.retrainSuccess"));
 		        gui.hideSpinner();
                     } else {
-			gui.showNotice('ok', 'Automatische Annotation war erfolgreich.');
+			gui.showNotice('ok', _("Banner.autoTagSuccess"));
 			// clear and reload all lines
 			ref.updateDataArray(0, 0);
                     }
@@ -1169,38 +1181,37 @@ var EditorModel = new Class({
 		    gui.hideSpinner();
                 }
             }).get({'action': action, 'tagger': taggerID});
-	    mbox.close();
+	    ref.mboxAnnotation.close();
 	};
 
 	// define the dialog window
-	mbox = new mBox.Modal({
-	    title: 'Automatisch neu annotieren',
-	    content: 'automaticAnnotationForm',
-	    attach: button,
+	ref.mboxAnnotation = new mBox.Modal({
+	    title: _("EditorTab.Forms.autoAnnotationForm.autoAnnotationTitle"),
+	    content: content,
             onOpen: function() { ref.save(); },
-	    buttons: [ {title: "Neu trainieren", addClass: "mform button_left button_yellow",
+	    buttons: [ {title: _("Action.retrain"), addClass: "mform button_left button_yellow",
                         id: "trainStartButton",
                         event: function() {
                             this.close();
-	                    gui.showSpinner({message: 'Bitte warten...'});
+	                    gui.showSpinner({message: _("EditorTab.general.pleaseWait")});
                             ref.whenSaved(
                                 function() { performAnnotation("train"); },
                                 null,
                                 function() { gui.hideSpinner(); }
                             );
                         }},
-                       {title: "Annotieren", addClass: "mform button_green",
+                       {title: _("Action.annotate"), addClass: "mform button_green",
 			id: "annoStartButton",
 			event: function() {
                             this.close();
-	                    gui.showSpinner({message: 'Bitte warten...'});
+	                    gui.showSpinner({message: _("EditorTab.general.pleaseWait")});
                             ref.whenSaved(
                                 function() { performAnnotation("anno"); },
                                 null,
                                 function() { gui.hideSpinner(); }
                             );
                         }},
-		       {title: "Abbrechen", addClass: "mform",
+		       {title: _("Action.cancel"), addClass: "mform",
 			event: function() { this.close(); }}
 		     ]
 	});

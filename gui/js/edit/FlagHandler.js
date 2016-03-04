@@ -23,19 +23,19 @@ cora.flags = {
     'flag_general_error': {
         elem: 'div.editTableError',
         class: 'editTableErrorChecked',
-        displayname: "Fehler-Markierung",
+        displayname: "EditorTab.Forms.searchForm.errorMarkup", // "Fehler-Markierung"
         eventString: 'click:relay(div.editTableError)'
     },
     'flag_lemma_verified': {
         elem: 'div.editTableLemma',
         class: 'editTableLemmaChecked',
-        displayname: "Lemma-Markierung",
+        displayname: "EditorTab.Forms.searchForm.lemmaMarkup", // "Lemma-Markierung"
         eventString: 'click:relay(div.editTableLemma)'
     },
     'flag_boundary': {
         elem: 'div.editTableBoundary',
         class: 'editTableBoundaryChecked',
-        displayname: "Satzgrenzen-Markierung",
+        displayname: "EditorTab.Forms.searchForm.sentBoundaryMarkup", // "Satzgrenzen-Markierung"
         eventString: 'click:relay(div.editTableBoundary)'
     }
 };

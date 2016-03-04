@@ -29,15 +29,15 @@ cora.strings.search_condition = {
         'any': "mindestens eine"
     },
     'match': {
-        'set': "ist gesetzt",
-        'nset': "ist nicht gesetzt",
-        'eq': "ist",
-        'neq': "ist nicht",
-        'in': "enthält",
-        'nin': "enthält nicht",
-        'bgn': "beginnt mit",
-        'end': "endet auf",
-        'regex': "matcht RegEx"
+        'set': "EditorTab.Forms.searchForm.isSet",
+        'nset': "EditorTab.Forms.searchForm.isNotSet",
+        'eq': "EditorTab.Forms.searchForm.is",
+        'neq': "EditorTab.Forms.searchForm.isNot",
+        'in': "EditorTab.Forms.searchForm.contains",
+        'nin': "EditorTab.Forms.searchForm.containsNot",
+        'bgn': "EditorTab.Forms.searchForm.startsWith",
+        'end': "EditorTab.Forms.searchForm.endsWith",
+        'regex': "EditorTab.Forms.searchForm.matchesRegEx"
     }
 };
 
@@ -57,43 +57,13 @@ var TokenSearcher = new Class({
     templateListElem: null,
 
     initialize: function(parent, tagsets, flags, options) {
-        var content, ref = this;
         this.setOptions(options);
         this.parent = parent;
         this.tagsets = tagsets;
         this.flagHandler = flags;
         this.templateListElem = $(this.options.template);
-
-        this._initializeTemplate();
-        content = $(this.options.content);
-        this.flexrow = new FlexRowList(content.getElement('.flexrow-container'),
-                                       this.templateListElem);
-        this.reset();
-        this.mbox = new mBox.Modal({
-	    content: content,
-	    title: 'Suchen',
-            closeOnBodyClick: false,
-	    buttons: [
-                {title: 'Zurücksetzen', addClass: 'mform button_left',
-                 event: function() { ref.reset(); }
-                },
-		{title: 'Abbrechen', addClass: 'mform'},
-		{title: 'Suchen', addClass: 'mform button_green',
-		 event: function() {
-                     var spinner = new Spinner(this.mbox.container);
-                     spinner.show();
-                     this.parent.whenSaved(
-                         function() {
-                             this.requestSearch(this.mbox, spinner);
-                         }.bind(this),
-                         null,
-                         function() { spinner.hide(); }
-                     );
-                 }.bind(this)
-		}
-	    ]
-	});
-        this._initializeEvents();
+        this._initializeDialog();
+        gui.onEditorLocaleChange(this._initializeDialog.bind(this));
         if(this.options.panels) {
             Array.each(this.options.panels, this._activateSearch.bind(this));
         }
@@ -113,6 +83,43 @@ var TokenSearcher = new Class({
         }
     },
 
+    /* Function: _initializeDialog
+
+       Initializes the dialog window for initiating a search.
+     */
+    _initializeDialog: function() {
+        var content = $(this.options.content);
+        this._initializeTemplate();
+        this.flexrow = new FlexRowList(content.getElement('.flexrow-container'),
+                                       this.templateListElem);
+        this.reset();
+        this.mbox = new mBox.Modal({
+	    content: content,
+	    title: _("Action.search"),
+            closeOnBodyClick: false,
+	    buttons: [
+                {title: _("Action.reset"), addClass: 'mform button_left',
+                 event: function() { this.reset(); }.bind(this)
+                },
+		{title: _("Action.cancel"), addClass: 'mform'},
+		{title: _("Action.search"), addClass: 'mform button_green',
+		 event: function() {
+                     var spinner = new Spinner(this.mbox.container);
+                     spinner.show();
+                     this.parent.whenSaved(
+                         function() {
+                             this.requestSearch(this.mbox, spinner);
+                         }.bind(this),
+                         null,
+                         function() { spinner.hide(); }
+                     );
+                 }.bind(this)
+		}
+	    ]
+	});
+        this._initializeEvents();
+    },
+
     _initializeTemplate: function() {
         this._initializeFieldSelector();
     },
@@ -127,15 +134,15 @@ var TokenSearcher = new Class({
         fieldSelector.empty();
         // Fixed elements
         fieldSelector.grab(makeOption('token_all',
-                                      cora.strings.search_condition.field['token_all']));
+                                      _("EditorTab.Forms.searchForm.tokenAll")));
         fieldSelector.grab(makeOption('token_trans',
-                                      cora.strings.search_condition.field['token_trans']));
+                                     _("EditorTab.Forms.searchForm.tokenTrans")));
         // Annotation layers
-        optgroup = new Element('optgroup', {'label': "Annotationsebenen"});
+        optgroup = new Element('optgroup', {'label': _("EditorTab.Forms.searchForm.annotationLevels")});
         Object.each(this.tagsets, function(tagset) {
             if(tagset.searchable) {
-                elemlist.push(makeOption(tagset.class, tagset.classname));
-                cora.strings.search_condition.field[tagset.class] = tagset.classname;
+                elemlist.push(makeOption(tagset.class, _(tagset.classname)));
+                cora.strings.search_condition.field[tagset.class] = _(tagset.classname);
             }
         });
         elemlist.sort(function(a,b) {
@@ -144,11 +151,11 @@ var TokenSearcher = new Class({
         elemlist.each(function(a) { optgroup.grab(a); });
         fieldSelector.grab(optgroup);
         // Flags
-        optgroup = new Element('optgroup', {'label': "Markierungen"});
+        optgroup = new Element('optgroup', {'label': _("EditorTab.Forms.searchForm.markups")});
         Object.each(this.flagHandler.flags,
                     function(flag, flagname) {
-                        optgroup.grab(makeOption(flagname, flag.displayname));
-                        cora.strings.search_condition.field[flagname] = flag.displayname;
+                        optgroup.grab(makeOption(flagname, _(flag.displayname)));
+                        cora.strings.search_condition.field[flagname] = _(flag.displayname);
                     });
         // optgroup.grab(makeOption("flag_progress", "Fortschrittsbalken"));
         // cora.strings.search_condition.field["flag_progress"] = "Fortschrittsbalken";
@@ -168,15 +175,6 @@ var TokenSearcher = new Class({
                 }
             }.bind(this)
         );
-        // silly agreement hack ...
-        this.mbox.content.addEvent(
-            'change:relay(select.editSearchOperator)',
-            function(event, target) {
-                var span = target.getParent('p').getElement('span.eso-det-agr');
-                var selected = target.getSelected()[0].get('value');
-                span.set('text', (selected === "any") ? 'dieser' : 'diese');
-            }
-        );
     },
 
     /* Function: _makeSearchOptions
@@ -186,22 +184,22 @@ var TokenSearcher = new Class({
      */
     _makeSearchOptions: function(cls) {
         var makeOption = function(a,b) {
-            return new Element('option', {'value': a, 'text': b});
+            return new Element('option', {'value': a, 'text': _(b), 'data-trans-id': b});
         };
         if(cls === 'flags') {
             return new Elements([
-                makeOption('set', cora.strings.search_condition.match['set']),
-                makeOption('nset', cora.strings.search_condition.match['nset'])
+                makeOption('set', "EditorTab.Forms.searchForm.isSet"),
+                makeOption('nset', "EditorTab.Forms.searchForm.isNotSet")
             ]);
         }
         return new Elements([
-            makeOption('eq', cora.strings.search_condition.match['eq']),
-            makeOption('neq', cora.strings.search_condition.match['neq']),
-            makeOption('in', cora.strings.search_condition.match['in']),
-            makeOption('nin', cora.strings.search_condition.match['nin']),
-            makeOption('bgn', cora.strings.search_condition.match['bgn']),
-            makeOption('end', cora.strings.search_condition.match['end']),
-            makeOption('regex', cora.strings.search_condition.match['regex'])
+            makeOption('eq', "EditorTab.Forms.searchForm.is"),
+            makeOption('neq', "EditorTab.Forms.searchForm.isNot"),
+            makeOption('in', "EditorTab.Forms.searchForm.contains"),
+            makeOption('nin', "EditorTab.Forms.searchForm.containsNot"),
+            makeOption('bgn', "EditorTab.Forms.searchForm.startsWith"),
+            makeOption('end', "EditorTab.Forms.searchForm.endsWith"),
+            makeOption('regex', "EditorTab.Forms.searchForm.matchesRegEx")
         ]);
     },
 

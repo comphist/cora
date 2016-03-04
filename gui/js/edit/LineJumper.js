@@ -36,16 +36,21 @@ var LineJumper = new Class({
          parent - The parent PageModel, used to perform the jumps
          content - Content of the dialog window
      */
-    initialize: function(parent, content) {
-        var ref = this;
+    initialize: function(parent) {
         this.parent = parent;
         this.parentTable = parent.parent;
+        this._initializeDialog();
+        gui.onEditorLocaleChange(this._initializeDialog.bind(this));
+    },
+
+    _initializeDialog: function() {
+        var ref = this;
         this.mbox = new mBox.Modal({
-	    content: content.clone(),
-	    title: 'Springe zu Zeile',
+	    content: 'jumpToLineForm',
+	    title: _("EditorTab.topButton.goToLine"),
 	    buttons: [
-		{title: 'Abbrechen', addClass: 'mform'},
-		{title: 'OK', addClass: 'mform button_green',
+		{title: _("Action.cancel"), addClass: 'mform'},
+		{title: _("Action.ok"), addClass: 'mform button_green',
 		 event: function() {
 		     ref.jump();
 		 }
@@ -80,9 +85,9 @@ var LineJumper = new Class({
         var value = Number.from(this.mbox.content
                                 .getElement('input[name="jumpTo"]').value);
         if (value == null) {
-	    gui.showNotice('error', 'Bitte eine Zahl eingeben.');
+	    gui.showNotice('error', _("Banner.enterLineNo"));
         } else if (!this.parent.isValidLine(value)) {
-	    gui.showNotice('error', 'Zeilennummer existiert nicht.');
+	    gui.showNotice('error', _("Banner.lineDoesNotExist"));
         } else {
             this.parent.setPageByLine(value, true);
             this.mbox.close();

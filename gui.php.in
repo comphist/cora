@@ -76,14 +76,15 @@ function _gui_make_title() {
                              'admin' => true,
                              'currentFileId' => true,
                              'currentName' => true,
-                             'showInputErrors' => false
+                             'showInputErrors' => false,
+                             'locale' => true
                              );
-              embedSessionVars($svars);
               embedTagsets($tagsets_all);
           }
           else {
-              echo "var userdata = {};\n";
+              $svars = array('locale' => true);
           }
+          embedSessionVars($svars);
         ?>
     </script>
     <?php $jsMain = ($_SESSION['loggedIn'] ? 'gui/js/main.js' : 'gui/js/main.login.js'); ?>
@@ -115,7 +116,7 @@ function _gui_make_title() {
 
     <!-- loading screen -->
     <div id="loading" class="no-print">
-      <span>CorA is loading...</span>
+      <span data-trans-id="Gui.loading"><?= $_('Gui.loading'); ?></span>
     </div>
 
     <!-- templates -->
@@ -126,13 +127,13 @@ function _gui_make_title() {
         <p><textarea cols="80" rows="10" readonly="readonly"></textarea></p>
       </div>
       <div id="confirmLoginPopup">
-        <p>Bitte geben Sie Ihre Zugangsdaten erneut ein, um fortzufahren.</p>
+        <p data-trans-id="Gui.confirmLogin.description"><?= $_("Gui.confirmLogin.description"); ?></p>
         <form class="loginForm">
-          <label for="lipu_un">Benutzername:</label>
+          <label for="lipu_un" data-trans-id="Forms.username"><?= $_("Forms.username"); ?>:</label>
           <p class="text">
             <input type="text" name="lipu_un" id="lipu_un" disabled="disabled" value="<?php echo $_SESSION['user']; ?>" />
           </p>
-          <label for="lipu_pw">Passwort:</label>
+          <label for="lipu_pw" data-trans-id="Forms.password"><?= $_("Forms.password"); ?>:</label>
           <p class="text">
             <input type="password" name="lipu_pw" id="lipu_pw" value="" />
           </p>
@@ -151,22 +152,21 @@ function _gui_make_title() {
     <div id="unknownErrorPopup" class="mBox Modal MessageDialog mBoxModalError hasFooter">
       <div class="mBoxContainer">
         <div class="mBoxContent">
-          <strong>Ein unbekannter Fehler ist aufgetreten.</strong>
-          Das hätte nicht passieren dürfen.  Möglicherweise müssen Sie CorA neu
-          laden, um weiterarbeiten zu können.
-
+          <span data-trans-id="Gui.uncaughtException.description">
+            <?= $_("Gui.uncaughtException.description"); ?>
+          </span>
           <textarea id="unknownErrorDetails"></textarea>
         </div>
         <div class="mBoxFooterContainer">
           <div class="mBoxButtonContainer">
             <button class="mBoxButton mform" onclick="$('unknownErrorDetails').toggle()">
-              <label>Details...</label>
+              <label data-trans-id="Gui.uncaughtException.details"><?= $_("Gui.uncaughtException.details"); ?></label>
             </button>
             <button class="mBoxButton mform button_yellow" onclick="window.location.href=window.location.href.split('?')[0]">
-              <label>CorA neu laden</label>
+              <label data-trans-id="Gui.uncaughtException.reload"><?= $_("Gui.uncaughtException.reload"); ?></label>
             </button>
             <button class="mBoxButton mform" onclick="$('unknownErrorPopup').hide()">
-              <label>Schließen</label>
+              <label data-trans-id="Forms.close"><?= $_("Forms.close"); ?></label>
             </button>
           </div>
         </div>

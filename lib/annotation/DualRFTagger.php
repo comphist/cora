@@ -128,7 +128,7 @@ class DualRFTagger extends AutomaticAnnotator {
      */
     private function chooseTag($fixline, $varline) {
         if($fixline["id"] != $varline["id"]) {
-            throw new Exception("Fehler beim Zusammenführen der Tagger-Outputs:"
+            throw new Exception("Fehler beim Zusammenführen der Tagger-Outputs:"  //$LOCALE
                                 ."Token sind nicht identisch.");
         }
         if(isset($fixline["anno_pos"]) && $fixline["anno_pos"] == "?") {

@@ -54,6 +54,7 @@ set(JS_SOURCES_MASTER
   ProgressBar.js
   iFrameFormRequest.js
   Meio.Autocomplete.js
+  FlexRowList.js
   gui.js
   tagsets.js
   tagsets/Tagset.js

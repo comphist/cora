@@ -25,7 +25,7 @@
  */
 var NormTagset = new Class({
     Extends: Tagset,
-    classname: 'Normalisierung',
+    classname: "Columns.norm", //'Normalisierung'
     eventString: 'input:relay(input.et-input-norm)',
 
     /* Constructor: Tagset

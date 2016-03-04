@@ -26,113 +26,6 @@
  * @date January 2012
  */
 
-/* Class: FlexRowList
-
-   A list (e.g., <ul>) element that allows the user to dynamically add
-   or delete rows.
- */
-var FlexRowList = new Class({
-    container: null,
-    rowTemplate: null,
-    entries: 0,
-
-    /* Function: initialize
-
-       Create a new FlexRowList object.
-
-       Parameters:
-         container - The <ul>/<ol> element to become a FlexRowList
-         template - Template for a newly added row
-     */
-    initialize: function(container, template) {
-        this.container = container.empty().addClass("flexrow");
-        this.rowTemplate = template.clone().addClass("flexrow-content");
-        this.rowTemplate.grab(this._makeDeleteButton());
-        this.rowTemplate.grab(this._makeAddButton());
-        this._addContainerEvents();
-    },
-
-    _addContainerEvents: function() {
-        this.container.removeEvents('click');
-        this.container.addEvent(
-            'click:relay(span)',
-            function(event, target) {
-                if(target.hasClass("flexrow-add-btn")) {
-                    this.grabNewRow();
-                } else if(target.hasClass("flexrow-del-btn")) {
-                    this.destroy(target.getParent('li'));
-                }
-            }.bind(this)
-        );
-        return this;
-    },
-
-    _makeAddButton: function() {
-        return new Element('span',
-                           {'class': "oi oi-shadow flexrow-add-btn",
-                            'data-glyph': "plus",
-                            'aria-hidden': "true"});
-    },
-
-    _makeDeleteButton: function() {
-        return new Element('span',
-                           {'class': "oi oi-shadow flexrow-del-btn",
-                            'data-glyph': "minus",
-                            'aria-hidden': "true"});
-    },
-
-    /* Function: grabNewRow
-
-       Add a new row cloned from the row template to this element.
-     */
-    grabNewRow: function() {
-        var row = this.rowTemplate.clone();
-        row.inject(this.container, 'bottom');
-        this.entries++;
-        return row;
-    },
-
-    /* Function: grab
-
-       Add a specific row to the bottom of this container.
-     */
-    grab: function(li) {
-        li.addClass("flexrow-content").inject(this.container, 'bottom');
-        this.entries++;
-        return this;
-    },
-
-    /* Function: getAllRows
-
-       Get all content rows from the container.
-     */
-    getAllRows: function() {
-        return this.container.getElements('li.flexrow-content');
-    },
-
-    /* Function: destroy
-
-       Destroys a specific row in the container.  Checks if this is the last row
-       remaining, and inserts an empty row if necessary.
-     */
-    destroy: function(li) {
-        li.destroy();
-        this.entries--;
-        if(this.entries < 1)
-            this.grabNewRow();
-    },
-
-    /* Function: empty
-
-       Destroys all rows in the container.
-     */
-    empty: function() {
-        this.container.getElements('li.flexrow-content').destroy();
-        this.entries = 0;
-        return this;
-    }
-});
-
 var gui = {
     activeSpinner: null,
     activeSpinnerFadeDuration: 250,
@@ -140,12 +33,17 @@ var gui = {
     editKeyboard: null,
     serverNoticeQueue: [],
     serverNoticeShowing: false,
+    currentLocale: null,
+    availableLocales: {},
+    onLocaleChangeHandlers: [],
 
     initialize: function(options) {
+        if (options.locale)
+            this.useLocale(options.locale);
+
 	this._addKeyboardShortcuts();
 	this.addToggleEvents($$('.clappable'));
 	this._activateKeepalive();
-        this._defineDateParsers();
 
         var btn = $('logoutButton');
         if (btn) {
@@ -193,13 +91,13 @@ var gui = {
                     clapper.grab(new Element('span',
                                              {'class': 'oi clapp-status-hidden',
                                               'data-glyph': 'caret-right',
-                                              'title': 'Aufklappen',
+                                              'title': _("Gui.expand"),
                                               'aria-hidden': 'true'}),
                                  'top');
                     clapper.grab(new Element('span',
                                              {'class': 'oi clapp-status-open',
                                               'data-glyph': 'caret-bottom',
-                                              'title': 'Zuklappen',
+                                              'title': _("Gui.collapse"),
                                               'aria-hidden': 'true'}),
                                  'top');
                     clapper.addClass('has-clapp-icons');
@@ -317,6 +215,109 @@ var gui = {
 	    });
 	    this.keepaliveRequest.startTimer();
 	}
+    },
+
+    /* Function: onEditorLocaleChange
+
+       Add a callback function to be called whenever the current locale setting
+       changes.  These callbacks are tied to the editor and can be reset when
+       the editor destructs.
+
+       Parameters:
+        fn - function to be called
+     */
+    onEditorLocaleChange: function(fn) {
+        if(typeof(fn) == "function")
+            this.onLocaleChangeHandlers.push(fn);
+        return this;
+    },
+
+    /* Function: resetOnEditorLocaleChange
+
+       Remove all registered locale-change callbacks.
+     */
+    resetOnEditorLocaleChange: function() {
+        this.onLocaleChangeHandlers = [];
+    },
+
+    /* Function: useLocale
+
+       Retrieve the locale file (if necessary) and update all GUI text.
+     */
+    useLocale: function(locale) {
+        if (locale === this.currentLocale)
+            return;
+        var setLocale = function() {
+            var old_locale = this.currentLocale;
+            Locale.use(locale);
+            this.currentLocale = locale;
+            this._defineDateParsers();
+            if (old_locale !== null) {
+                this.updateAllLocaleText();
+                cora.projects.performUpdate();
+                Array.each(this.onLocaleChangeHandlers, function(handler) {
+                    handler();
+                });
+            }
+        }.bind(this);
+        if (!this.availableLocales[locale]) {
+            this.requestLocale(locale, setLocale);
+        } else {
+            setLocale();
+        }
+    },
+
+    /* Function: requestLocale
+
+       Requests the locale file from the server.
+     */
+    requestLocale: function(locale, callback) {
+        new Request.JSON({
+            url: 'locale/Locale.'+locale+'.json',
+            async: true,
+            onSuccess: function(json, text) {
+                Object.each(json.sets, function(data, set) {
+                    Locale.define(locale, set, data);
+                });
+                this.availableLocales[locale] = true;
+                if (callback && typeof callback === "function")
+                    callback();
+            }.bind(this)
+        }).get();
+    },
+
+    /* Function: updateAllLocaleText
+
+       Updates all HTML elements with new translation strings.
+     */
+    updateAllLocaleText: function() {
+        $$("[data-trans-id]").each(function(elem) {
+            elem.set("html", this.localizeText(elem.get("data-trans-id")));
+        }.bind(this));
+        $$("[data-trans-title-id]").each(function(elem) {
+            elem.set("title", this.localizeText(elem.get("data-trans-title-id")));
+        }.bind(this));
+        $$("[data-trans-placeholder-id]").each(function(elem) {
+            elem.set("placeholder", this.localizeText(elem.get("data-trans-placeholder-id")));
+        }.bind(this));
+        $$("[data-trans-value-id]").each(function(elem) {
+            elem.set("value", this.localizeText(elem.get("data-trans-value-id")));
+        }.bind(this));
+    },
+
+    /* Function: localizeText
+
+       Localizes a text string with optional arguments, and interprets **bold**
+       and _italic_ markup syntax.
+     */
+    localizeText: function(cat, args) {
+        var str = Locale.get(cat).substitute(args);
+        // HTML-escaping
+        str = new Element("textarea", {text: str}).get('html');
+        // Interpreting markups
+        str = str.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+                 .replace(/_([^_]+)_/g, "<em>$1</em>");
+        return str;
     },
 
     /* Function: setHeader
@@ -461,10 +462,10 @@ var gui = {
                     .addClass('mform')
                     .removeClass('button_green')
                     .addClass((danger ? 'button_red' : 'button_green'))
-                    .set('html', '<label>Ja, bestätigen</label>');
+                    .set('html', '<label>'+_("Action.yesConfirm")+'</label>');
                 this.footerContainer.getElement('.mBoxConfirmButtonCancel')
                     .addClass('mform')
-                    .set('html', '<label>Nein, abbrechen</label>');
+                    .set('html', '<label>'+_("Action.noCancel")+'</label>');
             }
         }).open();
     },
@@ -567,7 +568,7 @@ var gui = {
 	new mBox.Modal({
 	    content: message,
             addClass: {wrapper: 'MessageDialog '+cls},
-	    buttons: [ {title: "Schließen", addClass: "mform"} ]
+	    buttons: [ {title: _("Action.close"), addClass: "mform"} ]
 	}).open();
     },
 
@@ -609,7 +610,7 @@ var gui = {
             addClass: {wrapper: 'TextDialog'},
 	    closeOnBodyClick: false,
 	    closeOnEsc: false,
-	    buttons: [ {title: "Schließen", addClass: "mform"} ]
+	    buttons: [ {title: _("Action.close"), addClass: "mform"} ]
 	}).open();
     },
 
@@ -618,21 +619,36 @@ var gui = {
        Registers date parsers for our custom date formats.
      */
     _defineDateParsers: function() {
-        Date.defineParser("%Y-%m-%d %H:%M:%S");
-        Date.defineParser("%d.%m.%Y, %H:%M");
-        Date.defineParser({
-            re: /([hH]eute|[gG]estern|[vV]orgestern), (\d\d):(\d\d)/,
+        var re, daysRelative = Locale.get("Date.daysRelative"),
+            equalIgnoringCase = function(a, b) {
+                if (String.prototype.toLocaleUpperCase === undefined)
+                    return (a.toUpperCase() === b.toUpperCase());
+                return (a.toLocaleUpperCase() === b.toLocaleUpperCase());
+            };
+        re = "(" + daysRelative.join("|") + "), (\\d\\d):(\\d\\d)";
+        // NOTE --
+        // Accessing Date.parsePatterns directly is deprecated according to
+        // MooTools 1.5.1 docs, but currently the only way to make sure this
+        // pattern has precedence over system-defined ones, particularly
+        // the stupid /^(?:tod|tom|yes)/i pattern which can easily interfere
+        // with localized patterns.
+        Date.parsePatterns.unshift({
+            re: new RegExp(re, "i"),
             handler: function (bits) {
                 var date = new Date();
-                if(bits[1].toUpperCase() === "GESTERN")
-                    date.decrement('day', 1);
-                else if(bits[1].toUpperCase() === "VORGESTERN")
-                    date.decrement('day', 2);
+                for (var i=0; i<daysRelative.length; ++i) {
+                    if (equalIgnoringCase(bits[1], daysRelative[i])) {
+                        date.decrement('day', i);
+                        break;
+                    }
+                }
                 date.set('hours', bits[2]);
                 date.set('minutes', bits[3]);
                 return date;
             }
         });
+        Date.defineParser(Locale.get("Date.shortDate") + ", "
+                          + Locale.get("Date.shortTime"));
     },
 
     /* Function: parseSQLDate
@@ -667,8 +683,8 @@ var gui = {
      */
     formatDateString: function(date) {
         var format_string = '';
-        var date_strings = ['Heute', 'Gestern', 'Vorgestern'];
-        var now = Date.now();
+        var daysRelative = Locale.get("Date.daysRelative");
+        var datediff;
         if(!(date instanceof Date)) {
             date = this.parseSQLDate(date);
             if(!(date instanceof Date))
@@ -676,11 +692,12 @@ var gui = {
         }
         if(!date.isValid() || date.get('year') < 1980)
             return "";
-        if(date.diff(now) > 2 || date.diff(now) < 0)
-            format_string += "%d.%m.%Y";
+        datediff = date.diff(Date.now());
+        if(datediff >= daysRelative.length || datediff < 0)
+            format_string += Locale.get("Date.shortDate");
         else
-            format_string += date_strings[date.diff(now)];
-        format_string += ", %H:%M";
+            format_string += daysRelative[datediff];
+        format_string += ", " + Locale.get("Date.shortTime");
         return date.format(format_string);
     },
 
@@ -711,7 +728,7 @@ var gui = {
          fn - Callback on successful login
      */
     login: function(fn) {
-        this.showSpinner({message: 'Warte auf Authorisierung...'});
+        this.showSpinner({message: _("Gui.waitForAuthorization")});
         var onSuccessfulRestore = function() {
             if(typeof(fn) === "function")
                 fn();
@@ -726,11 +743,7 @@ var gui = {
                             {onSuccess: onSuccessfulRestore,
                              onError: function(error) {
                                  this.showMsgDialog('error',
-                                        "Anmeldung war erfolgreich, aber Zugriff "
-                                        + "auf die aktuell geöffnete Datei ist "
-                                        + "nicht möglich.  Eventuell wird "
-                                        + "diese Datei bereits von einem anderen "
-                                        + "Nutzer bearbeitet.");
+                                        _("Gui.loginAccessError"));
                                  mbox.open();
                              }.bind(this),
                             onComplete: function() { this.hideSpinner(); }.bind(this)
@@ -742,17 +755,17 @@ var gui = {
                     }
                 }.bind(this),
                 onError: function(error) {
-                    this.showNotice('error', 'Anmeldung fehlgeschlagen.');
+                    this.showNotice('error', _("Forms.loginFailed"));
                     mbox.open();
                 }.bind(this)
             }).get({'user': user, 'pw': pw});
         }.bind(this);
         var mbox = new mBox.Modal({
-	    title: "Erneut anmelden",
+	    title: _("Gui.confirmLogin.title"),
 	    content: 'confirmLoginPopup',
 	    closeOnBodyClick: false,
 	    closeOnEsc: false,
-	    buttons: [ {title: "Anmelden",
+	    buttons: [ {title: _("Forms.buttonLogin"),
                         addClass: "mform",
                         event: function() {
                             var user = mbox.content.getElement('#lipu_un').get('value'),
@@ -809,19 +822,20 @@ var gui = {
 	        closeOnBodyClick: false,
 	        closeOnEsc: true,
 	        buttons: [
-                    {title: "Schließen und nicht wieder anzeigen",
+                    {title: _("Help.dontShowAgain"),
                      addClass: "mform button_left",
                      event: function() {
                          Cookie.write('whatsNew', div.get('class'), {duration: 365});
                          this.close();
-                         gui.showNotice('info', "Sie können sich die Neuigkeiten "
-                                        + "jederzeit über den Tab 'Hilfe' erneut "
-                                        + "anzeigen lassen.");
+                         gui.showNotice('info', _("Help.dontShowAgainInfo"));
                      }},
-                    {title: "Schließen", addClass: "mform"}
+                    {title: _("Action.close"), addClass: "mform"}
                 ]
 	    });
         }
         this.newsDialog.open();
     }
 };
+
+/** Alias for localization function. */
+var _ = gui.localizeText;

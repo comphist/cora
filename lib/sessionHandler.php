@@ -44,8 +44,7 @@ require_once( "automaticAnnotation.php" );
  */
 class CoraSessionHandler {
   private $db; /**< A DBInterface object. */
-  private $xml; /**< An XMLHandler object. */
-  private $exporter; /**< An Exporter object. */
+  private $lh; /**< A LocaleHandler object. */
 
   private $timeout = 30; // session timeout in minutes
 
@@ -54,15 +53,14 @@ class CoraSessionHandler {
    * Initializes a session, constructs a new DBInterface, and sets
    * defaults for various session values if required.
    */
-  function __construct($db, $xml, $exp) {
+  function __construct(DBInterface $db, LocaleHandler $lh) {
     session_name(strtoupper(Cfg::get('session_name')));
     session_start();
 
     $this->db = $db;
-    $this->xml = $xml;
-    $this->exporter = $exp;
+    $this->lh = $lh;
 
-    $defaults = array( "lang"        => Cfg::get('default_language'),
+    $defaults = array( "locale"      => Cfg::get('default_language'),
 		       "loggedIn"    => false,
 		       "admin"       => false,
 		       "failedLogin" => false,
@@ -71,22 +69,19 @@ class CoraSessionHandler {
 
     foreach($defaults as $key => $default) {
       if(!array_key_exists($key, $_SESSION)) {
-			$_SESSION[$key] = $default;
+        $_SESSION[$key] = $default;
       }
     }
+
+    $this->setLocale($_SESSION["locale"]);
   }
 
-  /** Get the language that is currently @em not active.
-   *
-   * @return One of the codes from {@c de, @c en}, depending on which
-   * one is not the current language code.
+  /** Set a locale.
    */
-  public function getInactiveLanguage() {
-    if ($_SESSION["lang"] == "de") {
-      return "en";
-    } else {
-      return "de";
-    }
+  public function setLocale($locale=null) {
+    $locale = $this->lh->set($locale);
+    $_SESSION["locale"] = $locale;
+    return $locale;
   }
 
   public function setUserSettings($lpp,$cl){
@@ -104,10 +99,11 @@ class CoraSessionHandler {
                        "show_error" => "showInputErrors",
                        "columns_order" => "editTableDragHistory");
     if($this->db->setUserSetting($_SESSION['user'],$name,$value)){
-      if(array_key_exists($name, $mapToSVAR)) {
-        $_SESSION[$mapToSVAR[$name]] = $value;
+      if($name === "locale") {
+        $value = $this->setLocale($value);
       } else {
-        $_SESSION[$name] = $value;
+        $key = array_key_exists($name, $mapToSVAR) ? $mapToSVAR[$name] : $name;
+        $_SESSION[$key] = $value;
       }
       return true;
     }
@@ -130,7 +126,7 @@ class CoraSessionHandler {
       if(!$_SESSION["admin"]) {
           return array('success' => false,
                        'errors' => array("Administrator privileges are "
-                                         ." required for this action."));
+                                         ." required for this action."));  //$LOCALE
       }
       // find out what changed
       $oldlinks = $this->db->getTagsetsForFile($fileid);
@@ -156,13 +152,13 @@ class CoraSessionHandler {
                                                   ."denen noch Annotationen verbunden"
                                                   ." sind, können aus Sicherheitsgründen"
                                                   ." über dieses Interface nicht"
-                                                  ." aufgehoben werden."));
+                                                  ." aufgehoben werden."));  //$LOCALE
           }
 
           if(!$this->db->deleteTagsetsForFile($fileid, $to_be_deleted))
               return array('success' => false,
                            'errors'  => array("Konnte bestehende Tagset-"
-                                              ."Verknüpfungen nicht aufheben. "));
+                                              ."Verknüpfungen nicht aufheben. "));  //$LOCALEs
       }
       if(!empty($to_be_added))
           $this->db->addTagsetsForFile($fileid, $to_be_added);
@@ -191,7 +187,7 @@ class CoraSessionHandler {
     }
     return array('success' => false,
                  'errors' => array("Administrator privileges are required "
-                                   ." for this action."));
+                                   ." for this action."));  //$LOCALE
   }
 
   /** Wraps DBInterface::updateLastactive(), updating "last active"
@@ -250,7 +246,8 @@ class CoraSessionHandler {
 
   /** Wraps XMLHandler::import() */
   public function importFile($xmldata, $options) {
-    return $this->xml->import($xmldata, $options, $_SESSION["user_id"]);
+    $xml = new XMLHandler($this->db);
+    return $xml->import($xmldata, $options, $_SESSION["user_id"]);
   }
 
   /** Checks and parses the logfile for the current file import. */
@@ -299,6 +296,7 @@ class CoraSessionHandler {
   public function importTranscriptionFile($transdata, $options) {
     $ch_options = $this->db->getProjectOptions($options['project']);
     $ch = new CommandHandler($ch_options);
+    $xml = new XMLHandler($this->db);
 
     $localname = $transdata['tmp_name'];
     $logfile = fopen($options['logfile'], 'a');
@@ -310,7 +308,7 @@ class CoraSessionHandler {
     }
     if(!empty($errors)) {
       fwrite($logfile, "~ERROR CHECK\n");
-      fwrite($logfile, "Datei ist keine Textdatei und/oder falsches Encoding angegeben.\n\n");
+      fwrite($logfile, "Datei ist keine Textdatei und/oder falsches Encoding angegeben.\n\n");  //$LOCALE
       fwrite($logfile, implode("\n", $errors) . "\n\n");
       fclose($logfile);
       return false;
@@ -329,14 +327,14 @@ class CoraSessionHandler {
     }
     if(!isset($xmlname) || empty($xmlname)) {
       fwrite($logfile, "~ERROR XML\n");
-      fwrite($logfile, "Fehler beim Erzeugen einer temporären Datei.\n");
+      fwrite($logfile, "Fehler beim Erzeugen einer temporären Datei.\n");  //$LOCALE
       fclose($logfile);
       return false;
     }
     // perform import
     fwrite($logfile, "~BEGIN IMPORT\n");
     $xmldata = array("tmp_name" => $xmlname, "name" => $transdata['name']);
-    $status = $this->xml->import($xmldata, $options, $_SESSION["user_id"]);
+    $status = $xml->import($xmldata, $options, $_SESSION["user_id"]);
     if(!isset($status['success']) || !$status['success']) {
       fwrite($logfile, "~ERROR IMPORT\n");
       fwrite($logfile, implode("\n", $status['errors']) . "\n");
@@ -352,7 +350,7 @@ class CoraSessionHandler {
   /** Wraps DBInterface::importTaglist() */
   public function importTaglist($taglist, $cls, $settype, $name) {
     if(!$_SESSION['admin']) {
-      return array('success'=>false, 'errors'=>array("Keine Berechtigung."));
+      return array('success'=>false, 'errors'=>array("Keine Berechtigung."));  //$LOCALE
     }
     return $this->db->importTaglist($taglist, $cls, $settype, $name);
   }
@@ -360,7 +358,7 @@ class CoraSessionHandler {
   /** Wraps DBInterface::deleteFile() */
   public function deleteFile($fileid){
     if(!$_SESSION['admin'] && !$this->db->isAllowedToDeleteFile($fileid, $_SESSION['user'])) {
-      return array("success" => false, "error_msg" => "Keine Berechtigung.");
+      return array("success" => false, "error_msg" => "Keine Berechtigung.");  //$LOCALE
     }
     $status = $this->db->deleteFile($fileid);
     if($status) {
@@ -393,7 +391,7 @@ class CoraSessionHandler {
 
   public function saveMetadata($post) {
     if(!$_SESSION['admin'] && !$this->db->isAllowedToDeleteFile($fileid, $_SESSION['user'])) {
-      return array("success" => false, "error_msg" => "Keine Berechtigung.");
+      return array("success" => false, "error_msg" => "Keine Berechtigung.");  //$LOCALE
     }
     $status = $this->db->changeMetadata($post);
     if($status) {
@@ -452,6 +450,7 @@ class CoraSessionHandler {
       return false;
     }
 
+    $exp = new Exporter($this->db);
     $options = array();
     if(array_key_exists('ccsv', $GET))
       $options = $GET['ccsv'];
@@ -462,7 +461,7 @@ class CoraSessionHandler {
     // header("Content-Transfer-Encoding: Binary");
     // header("Content-Length:".filesize($attachment_location));
     header("Content-Disposition: attachment; filename=".$filename);
-    $this->exporter->export($fileid, $format, $options, $output);
+    $exp->export($fileid, $format, $options, $output);
     return true;
   }
 
@@ -528,9 +527,9 @@ class CoraSessionHandler {
       administrator privileges first */
   public function saveProjectSettings($data) {
     if (!$_SESSION["admin"])
-      return array("success" => false, "errors" => ["Permission denied."]);
+      return array("success" => false, "errors" => ["Permission denied."]); //$LOCALE
     if(!array_key_exists('id', $data))
-      return array("success" => false, "errors" => ["No project ID given."]);
+      return array("success" => false, "errors" => ["No project ID given."]);  //$LOCALE
 
     return $this->db->saveProjectSettings($data['id'], $data);
   }
@@ -539,11 +538,11 @@ class CoraSessionHandler {
       administrator privileges first */
   public function saveUserSettings($data) {
     if (!$_SESSION["admin"])
-      return array("success" => false, "errors" => ["Permission denied."]);
+      return array("success" => false, "errors" => ["Permission denied."]);  //$LOCALE
     if(!array_key_exists('id', $data))
-      return array("success" => false, "errors" => ["No user ID given."]);
+      return array("success" => false, "errors" => ["No user ID given."]);  //$LOCALE
     if($this->db->saveUserSettings($data['id'], $data) < 1)
-      return array("success" => false, "errors" => ["Unknown error."]);
+      return array("success" => false, "errors" => ["Unknown error."]);  //$LOCALE
     return array("success" => true);
   }
 
@@ -613,7 +612,7 @@ class CoraSessionHandler {
         return array("success"=>false,
                      "errors"=>array("Für dieses Projekt wird derzeit bereits ein Tagger"
                                      ." ausgeführt.  Bitte warten Sie einen Moment und"
-                                     ." führen dann den Vorgang erneut aus."));
+                                     ." führen dann den Vorgang erneut aus."));  //$LOCALE
     }
 
     try {
@@ -647,7 +646,7 @@ class CoraSessionHandler {
     // check whether tokenid belongs to currently opened file
     $textid = $this->db->getTextIdForToken($tokenid);
     if($textid !== $_SESSION['currentFileId']) {
-      $errors[] = "Token konnte nicht gelöscht werden, da es nicht zur momentan geöffneten Datei gehört.";
+      $errors[] = "Token konnte nicht gelöscht werden, da es nicht zur momentan geöffneten Datei gehört.";  //$LOCALE
       return array("success" => false, "errors" => $errors);
     }
     // call the DB interface to make the change
@@ -666,7 +665,7 @@ class CoraSessionHandler {
     // check whether tokenid belongs to currently opened file
     $textid = $this->db->getTextIdForToken($tokenid);
     if($textid !== $_SESSION['currentFileId']) {
-      $errors[] = "Token konnte nicht geändert werden, da es nicht zur momentan geöffneten Datei gehört.";
+      $errors[] = "Token konnte nicht geändert werden, da es nicht zur momentan geöffneten Datei gehört.";  //$LOCALE
       return array("success" => false, "errors" => $errors);
     }
     // check and convert transcription
@@ -692,7 +691,7 @@ class CoraSessionHandler {
     // check whether tokenid belongs to currently opened file
     $textid = $this->db->getTextIdForToken($tokenid);
     if($textid !== $_SESSION['currentFileId']) {
-      $errors[] = "Token konnte nicht hinzugefügt werden, da es nicht zur momentan geöffneten Datei gehört.";
+      $errors[] = "Token konnte nicht hinzugefügt werden, da es nicht zur momentan geöffneten Datei gehört.";  //$LOCALE
       return array("success" => false, "errors" => $errors);
     }
     // check and convert transcription
@@ -723,7 +722,7 @@ class CoraSessionHandler {
     $errors = array();
     $converted = $ch->checkConvertToken($value, $errors);
     if(!empty($errors)) {
-      array_unshift($errors, "Bei der Konvertierung des Tokens ist ein Fehler aufgetreten.", "");
+      array_unshift($errors, "Bei der Konvertierung des Tokens ist ein Fehler aufgetreten.", "");  //$LOCALE
       return array("success" => false, "errors" => $errors);
     }
     return null;
@@ -766,7 +765,7 @@ class CoraSessionHandler {
     }
     return array('success' => false,
                  'errors' => array("Administrator privileges are required "
-                                   ." for this action."));
+                                   ." for this action."));  //$LOCALE
   }
 
   /** Deletes a server notice.
@@ -778,7 +777,7 @@ class CoraSessionHandler {
     }
     return array('success' => false,
                  'errors' => array("Administrator privileges are required "
-                                   ." for this action."));
+                                   ." for this action.")); //$LOCALE
   }
 
   /** Fetches all server notices, checking for admin privileges first.
@@ -790,7 +789,7 @@ class CoraSessionHandler {
     }
     return array('success' => false,
                  'errors' => array("Administrator privileges are required "
-                                   ." for this action."));
+                                   ." for this action."));  //$LOCALE
   }
 
   /** Creates a new automatic annotator.
@@ -802,7 +801,7 @@ class CoraSessionHandler {
     }
     return array('success' => false,
                  'errors' => array("Administrator privileges are required "
-                                   ." for this action."));
+                                   ." for this action."));  //$LOCALE
   }
 
   /** Deletes an automatic annotator.
@@ -814,7 +813,7 @@ class CoraSessionHandler {
     }
     return array('success' => false,
                  'errors' => array("Administrator privileges are required "
-                                   ." for this action."));
+                                   ." for this action."));  //$LOCALE
   }
 
   /** Changes the settings of an automatic annotator.
@@ -830,7 +829,7 @@ class CoraSessionHandler {
     }
     return array('success' => false,
                  'errors' => array("Administrator privileges are required "
-                                   ." for this action."));
+                                   ." for this action."));  //$LOCALE
   }
 
   /** Fetches all automatic annotators, checking for admin privileges first.
@@ -842,7 +841,7 @@ class CoraSessionHandler {
     }
     return array('success' => false,
                  'errors' => array("Administrator privileges are required "
-                                   ." for this action."));
+                                   ." for this action."));  //$LOCALE
   }
 
   /** Perform user login.
@@ -880,6 +879,7 @@ class CoraSessionHandler {
 		$_SESSION['hiddenColumns'] = (isset($data['columns_hidden']))? $data['columns_hidden'] : '';
 		$_SESSION['textPreview'] = (isset($data['text_preview']))? $data['text_preview'] : 'off';
 		$_SESSION['showInputErrors'] = (isset($data['show_error']))? ($data['show_error']==1 ? 'true' : 'false') : 'true';
+                $this->setLocale((isset($data['locale']))? $data['locale'] : null);
 	  } else {
 		$_SESSION['noPageLines'] = '30';
 		$_SESSION['contextLines'] = '5';
@@ -887,6 +887,7 @@ class CoraSessionHandler {
 		$_SESSION['textPreview'] = 'off';
 		$_SESSION['hiddenColumns'] = '';
 		$_SESSION['showInputErrors'] = 'true';
+                $this->setLocale();
 	  }
     } else {      // login failed
       $_SESSION["failedLogin"] = true;

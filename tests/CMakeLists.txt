@@ -27,6 +27,7 @@ set(PHP_TESTS
   DocumentAccessor_test.php
   DocumentCreator_test.php
   Exporter_test.php
+  Locale_test.php
   Menu_test.php
   TagsetAccessor_test.php
   XMLHandler_test.php

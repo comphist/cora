@@ -138,7 +138,7 @@ class InstallHelper {
       $cmd .= " --password={$cred['PASSWORD']}";
     list($rc, $stdout, $stderr) = self::exec($cmd, $script);
     if ($rc > 0)
-      throw new InstallException("MySQL command returned code {$rc}:\n{$stderr}");
+      throw new InstallException("MySQL command returned code {$rc}:\n{$stderr}");  //$LOCALE
   }
 
   /** Check if system user exists and has correct settings. */

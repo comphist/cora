@@ -121,7 +121,7 @@ class DocumentWriter extends DocumentAccessor {
   private function checkIDValidity($lines) {
     foreach($lines as $line) {
       if(!$this->isValidModID($line['id'])) {
-	throw new DocumentAccessViolation("Invalid mod ID found: {$line['id']}");
+	throw new DocumentAccessViolation("Invalid mod ID found: {$line['id']}");  //$LOCALE
       }
     }
   }
@@ -231,7 +231,7 @@ class DocumentWriter extends DocumentAccessor {
   protected function saveAnnotation($modid, $current, $annoclass, $value,
                                     $selected=1, $source="user", $score=NULL) {
     if(!array_key_exists($annoclass, $this->tagsets)) {
-      $this->warn("Skipping unknown annotation class '{$annoclass}' for mod {$modid}.");
+      $this->warn("Skipping unknown annotation class '{$annoclass}' for mod {$modid}.");  //$LOCALE
       return;
     }
 
@@ -247,7 +247,7 @@ class DocumentWriter extends DocumentAccessor {
     }
     else {
       if(!array_key_exists($value, $this->tagsets[$annoclass]['tags'])) {
-	$this->warn("Skipping illegal {$annoclass} tag '{$value}'.");
+	$this->warn("Skipping illegal {$annoclass} tag '{$value}'.");  //$LOCALE
 	return;
       }
       $tagid = $this->tagsets[$annoclass]['tags'][$value];
@@ -264,7 +264,7 @@ class DocumentWriter extends DocumentAccessor {
    */
   protected function saveFlag($modid, $flagtype, $value) {
     if(!array_key_exists($flagtype, $this->flagtypes)) {
-      $this->warn("Skipping unknown flag type '{$flagtype}' for mod {$modid}.");
+      $this->warn("Skipping unknown flag type '{$flagtype}' for mod {$modid}.");  //$LOCALE
       return;
     }
 

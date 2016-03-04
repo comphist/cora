@@ -58,7 +58,7 @@ class CommandHandler {
     $errors = array();
     exec("file -b --mime-type " . $filename, $output);
     if($output[0]!=$mimetype) {
-      array_unshift($errors, "Falsches Dateiformat (erwartet: {$mimetype}; gefunden: {$output[0]})");
+      array_unshift($errors, "Falsches Dateiformat (erwartet: {$mimetype}; gefunden: {$output[0]})");  //$LOCALE
     }
     return $errors;
   }
@@ -74,7 +74,7 @@ class CommandHandler {
     }
     exec("iconv -f utf-8 -t utf-8 {$filename} 2>&1", $output, $retval);
     if ($retval) {
-      array_unshift($errors, "Datei konnte nicht nach UTF-8 umgewandelt werden. Prüfen Sie, ob Sie das richtige Encoding angegeben haben.");
+      array_unshift($errors, "Datei konnte nicht nach UTF-8 umgewandelt werden. Prüfen Sie, ob Sie das richtige Encoding angegeben haben."); //$LOCALE
     }
     return $errors;
   }
@@ -83,7 +83,7 @@ class CommandHandler {
   public function checkConvertToken($token, &$errors) {
     if(!array_key_exists('cmd_edittoken', $this->options)
        || empty($this->options['cmd_edittoken'])) {
-        array_unshift($errors, "Kein Konvertierungsskript festgelegt!");
+        array_unshift($errors, "Kein Konvertierungsskript festgelegt!");  //$LOCALE
         return array();
     }
 
@@ -95,13 +95,13 @@ class CommandHandler {
     unlink($tmpfname);
     if($retval) {
         $errors = $output;
-	array_unshift($errors, "Der Befehl gab den Status-Code {$retval} zurück.");
+	array_unshift($errors, "Der Befehl gab den Status-Code {$retval} zurück.");  //$LOCALE
 	return array();
     }
     $result = json_decode($output[0], true);
     if(is_null($result)) {
         $errors = $output;
-        array_unshift($errors, "Das Konvertierungsskript lieferte ungültigen Output.");
+        array_unshift($errors, "Das Konvertierungsskript lieferte ungültigen Output.");  //$LOCALE
         return array();
     }
     return $result;
@@ -111,7 +111,7 @@ class CommandHandler {
   public function callImport(&$infile, &$xmlfile, $logfile) {
       if(!array_key_exists('cmd_import', $this->options)
          || empty($this->options['cmd_import'])) {
-          return array("Kein Importskript festgelegt!");
+          return array("Kein Importskript festgelegt!");  //$LOCALE
       }
 
       $xmlfile = tempnam(sys_get_temp_dir(), 'cora');

@@ -168,19 +168,22 @@ var SearchResults = new Class({
         var text, ul, div = $(this.criteriaHtmlId);
         if (div === null || typeof(div) === "undefined")
             return;
-        div.getElement('.srl-count').set('text', this.data.length);
-        text = (this.data.length == 1) ? "Ergebnis" : "Ergebnisse";
-        div.getElement('.srl-agr-count').set('text', text);
-        text = cora.strings.search_condition.operator[this.criteria.operator];
-        div.getElement('.srl-operator').set('text', text);
-        text = (this.criteria.operator === "all") ? "diese" : "dieser";
-        div.getElement('.srl-agr-operator').set('text', text);
+
+        searchModeStr = (cora.strings.search_condition.operator[this.criteria.operator] === "alle") ? 
+        _("EditorTab.Forms.searchForm.allFulfilled") : _("EditorTab.Forms.searchForm.oneFulfilled");
+        text = _("EditorTab.searchResult.resultInfo", {resultCount : this.data.length, searchMode : searchModeStr});
+        div.getElement('.srl-info').set('html', text);
+
+
         ul = div.getElement('.srl-condition-list');
         ul.empty();
         this.criteria.conditions.each(function(condition) {
             var li = new Element('li');
-            text  = cora.strings.search_condition.field[condition.field] + " ";
-            text += cora.strings.search_condition.match[condition.match] + " ";
+            
+            text = cora.strings.search_condition.field[condition.field] + " ";
+
+            text += _(cora.strings.search_condition.match[condition.match]) + " ";
+            
             li.set('text', text);
             if (condition.match !== "set" && condition.match !== "nset") {
                 if (condition.value === "") {

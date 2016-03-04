@@ -25,7 +25,7 @@
  */
 var NormTypeTagset = new Class({
     Extends: Tagset,
-    classname: 'Modernisierungstyp',
+    classname: "Columns.modType", //'Modernisierungstyp'
     eventString: 'change:relay(select.et-select-norm_type)',
     optgroup: null,
 

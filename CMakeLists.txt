@@ -156,6 +156,8 @@ configure_file(config.defaults.php "${CORA_WEB_DIR}/config.defaults.php" COPYONL
 configure_file(version.php "${CORA_WEB_DIR}/version.php" COPYONLY)
 add_sources(CORA_PHP_SOURCES config.defaults.php version.php)
 
+add_subdirectory(locale)
+
 #########################################################
 ## Documentation
 #########################################################

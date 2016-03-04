@@ -9,6 +9,7 @@ set(LOCAL_PHP_SOURCES
   documentModel.php
   exporter.php
   install.php
+  localeHandler.php
   requestHandler.php
   sessionHandler.php
   xmlHandler.php

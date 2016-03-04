@@ -32,14 +32,18 @@
  */
 class RequestHandler {
   private $sh; /**< Reference to a SessionHandler object. */
+  private $lh;  /**< Reference to a LocaleHandler object. */
 
   /** Create a new RequestHandler.
    *
    * @param SessionHandler $sessionHandler The SessionHandler object
    * that will be used to perform the requests.
+   * @param LocaleHandler $localeHandler The LocaleHandler object
+   * that will be used to localize strings.
    */
-  function __construct($sessionHandler) {
+  function __construct($sessionHandler, $localeHandler) {
     $this->sh = $sessionHandler;
+    $this->lh = $localeHandler;
   }
 
   /** Handle requests sent to index.php.
@@ -47,8 +51,6 @@ class RequestHandler {
    * Supports the following GET requests:
    * <ul>
    *   <li><code>do=logout</code> - Log out the current user.</li>
-   *   <li><code>lang</code> - Set the language code to the given
-   *     argument.</li>
    * </ul>
    *
    * Supports the following POST request:
@@ -60,7 +62,7 @@ class RequestHandler {
    *
    * @note Requests sent to index.php involve a reload of the whole
    * page, and should only be needed in a few circumstances, e.g.\ a
-   * user logging in, or changing the language setting.
+   * user logging in.
    */
   public function handleRequests($get, $post) {
     if(array_key_exists("action", $post)) {
@@ -80,10 +82,6 @@ class RequestHandler {
 	break;
       }
     }
-
-    if(array_key_exists("lang", $get)) {
-      $_SESSION["lang"] = $get["lang"];
-    }
   }
 
   /** Check whether a file was uploaded correctly.
@@ -95,16 +93,16 @@ class RequestHandler {
       switch ($file['error']) {
       case 1:
       case 2:
-	$errmsg = "Die Datei überschreitet die maximal erlaubte Dateigröße.";
+	$errmsg = "Die Datei überschreitet die maximal erlaubte Dateigröße.";  //$LOCALE
 	break;
       case 3:
-	$errmsg = "Die Datei wurde nur unvollständig übertragen.";
+	$errmsg = "Die Datei wurde nur unvollständig übertragen.";  //$LOCALE
 	break;
       case 4:
-	$errmsg = "Die Datei konnte nicht übertragen werden.";
+	$errmsg = "Die Datei konnte nicht übertragen werden.";  //$LOCALE
 	break;
       default:
-	$errmsg = "Ein interner Fehler ist aufgetreten (Fehlernummer: ".$file['error'].").  Bitte kontaktieren Sie einen Administrator unter Angabe der Fehlernummer.";
+	$errmsg = "Ein interner Fehler ist aufgetreten (Fehlernummer: ".$file['error'].").  Bitte kontaktieren Sie einen Administrator unter Angabe der Fehlernummer.";  //$LOCALE
       }
       return $errmsg;
     }
@@ -142,12 +140,12 @@ class RequestHandler {
     catch (PDOException $ex) {
       $status = array('success' => false,
 		      'errors' => array("Unbekannter Datenbankfehler:\n" . $ex->getMessage())
-		      );
+		      );  //$LOCALE
     }
     catch (Exception $ex) {
       $status = array('success' => false,
 		      'errors' => array("Unbekannter Serverfehler:\n" . $ex->getMessage())
-		      );
+		      );  //$LOCALE
     }
 
     // return JSON object
@@ -177,10 +175,10 @@ class RequestHandler {
       case "importTagsetTxt":
 	$errmsg = $this->checkFileUpload($_FILES['txtFile']);
 	if($errmsg) {
-	  return array("errors"=>array("Fehler beim Upload: ".$errmsg));
+	  return array("errors"=>array("Fehler beim Upload: ".$errmsg));  //$LOCALE
 	}
 	if(empty($post['tagset_name'])) {
-	  return array("errors"=>array("Kein Tagset-Name angegeben."));
+	  return array("errors"=>array("Kein Tagset-Name angegeben."));  //$LOCALE
 	}
         $tsclass = empty($post['tagset_class']) ? 'pos' : $post['tagset_class'];
         $settype = empty($post['tagset_settype']) ? 'closed' : $post['tagset_settype'];
@@ -191,7 +189,7 @@ class RequestHandler {
       case "importXMLFile":
 	$errmsg = $this->checkFileUpload($_FILES['xmlFile']);
 	if($errmsg) {
-	  return array("errors"=>array("Fehler beim Upload: ".$errmsg));
+	  return array("errors"=>array("Fehler beim Upload: ".$errmsg));  //$LOCALE
 	}
 	$data = $_FILES['xmlFile'];
 	$options = array();
@@ -212,7 +210,7 @@ class RequestHandler {
 	return $this->importTranscription($post);
 
       default:
-	return array("errors" => array("Unknown POST request."));
+	return array("errors" => array("Unknown POST request."));  //$LOCALE
       }
     }
 
@@ -379,7 +377,7 @@ class RequestHandler {
     ignore_user_abort(true);
     ob_start();
     if ($via && $via === 'iframe') {
-      header("Content-Type: text/html\r\n");
+      header("Content-Type: text/html\r\n"); 
       echo '<pre class="json">';
       echo json_encode($response);
       echo '</pre>';
@@ -408,7 +406,7 @@ class RequestHandler {
 
     $errmsg = $this->checkFileUpload($_FILES['transFile']);
     if($errmsg) {
-      return array("errors"=>array("Fehler beim Upload: ".$errmsg));
+      return array("errors"=>array("Fehler beim Upload: ".$errmsg)); //$LOCALE
     }
 
     if(!isset($post['via'])) { $post['via'] = null; }

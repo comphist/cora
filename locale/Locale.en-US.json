@@ -1,0 +1,580 @@
+{"name": "en-US",
+ "sets": {
+     "Locales": {
+         "de-DE": "German",
+         "en-US": "English"
+     },
+     "Date": {
+         "daysRelative": ["Today", "Yesterday"],
+         "shortTime": "%I:%M %p"
+     },
+     "Menu": {
+         "file": "File",
+         "fileTooltip": "Open or manage documents",
+         "edit": "Editor",
+         "editTooltip": "Edit the opened document",
+         "search": "Search",
+         "searchTooltip": "Show current search results",
+         "settings": "Settings",
+         "settingsTooltip": "Change CorA settings",
+         "admin": "Administration",
+         "adminTooltip": "Manage users and projects",
+         "help": "Help",
+         "helpTooltip": "Information about using CorA",
+         "login": "Login",
+         "loginTooltip": "Login to CorA",
+         "loggedInAs": "logged in as"
+     },
+     "Toolbar": {
+         "closeFile": "Close File"
+     },
+     "Gui": {
+        "collapse" : "Collapse",
+        "expand" : "Expand",
+        "waitForAuthorization" : "Waiting for authorization...",
+        "loginAccessError" : "You've successfully logged in but you currently don't have access to the opened file. Another user might be working on the file.",
+         "loading": "CorA is loading...",
+         "confirmLogin": {
+             "title": "Confirm login",
+             "description": "Please enter your credentials again to continue."
+         },
+         "uncaughtException": {
+             "description": "**An uncaught exception occurred.**  This should not have happened.  It is possible that you have to reload CorA to continue your work.",
+             "details": "Details...",
+             "reload": "Reload CorA"
+         }
+    },
+    "LibFile" : {
+        "invalidXML" : "The file does not contain valid XML. The parser reported:"
+
+    },
+    "Dialog": {
+         "documentInUse": "The document is currently being edited by '{user}' since {lockDate}."
+     },
+     
+     "Forms": {
+         "buttonLogin": "Login",
+         "loginFailed" : "Login failed.",
+         "msgFailedLogin": "Login failed.  Please check your credentials.",
+         "password": "Password",
+         "username": "Username",
+         "close": "Close"
+     },
+     "Help" : {
+        "dontShowAgain" : "Close and do not show again",
+        "dontShowAgainInfo" : "You can always review the news by clicking on the 'Help' tab.",
+        "coraHelpTitle" : "About Using CorA",
+        "helpInGuide" : "All functions of CorA are explained in the CorA Guide. If you would like to know more about how to use CorA or need further information about its features, please take a look at the guide first:",
+        "coraGuideLink" : "CorA Guide, 27.01.2015 [PDF]",
+        "feedbackTitle" : "Questions?  Found any bugs?",
+        "contactUsInfo" : "If you have any questions that couldn't be answered by the CorA Guide or if you have encountered a bug",
+        "contactUs" : "please contact us!",
+        "contactRequest" : "If you would like to report a problem, please send us a **detailed** description of the problem with the information below:",
+        "contactCheck1" : "What **exactly** did you do just before the problem occurred?",
+        "contactCheck2" : "What exactly happens? Is there any error message? If so, please copy the message and send it to us!",
+        "contactCheck3" : "Which file or which line did you edit when the problem occurred?",
+        "contactPerson" : "The person to contact is"
+
+        },
+     "AdminTab" : {
+         "topButton" : {
+            "refresh" : "Refresh",
+            "collapseCategories" : "Collapse all categories",
+            "expandCategories" : "Expand all categories",
+            "newUser" : "Add user",
+            "newProject" : "Add project",
+            "newTagger" : "Add tagger",
+            "newMsg" : "New message",
+            "tagsetBrowser" : "Tagset browser",
+            "importTagset" : "Import tagset"
+         },
+         "userAdministration" : {
+
+            "userAdministrationTitle" : "User Management",
+            "userName" : "User name",
+            "isAdmin" : "Admin?",
+            "isAdminTitle" : "Admin",
+            "isNotAdminTitle" : "No admin",
+            "lastActive" : "Last active",
+            "openFile" : "Opened file",
+            "email" : "E-mail",
+            "note" : "Note",
+            "options" : "Options",
+            "deleteUser" : "Delete user",
+            "deleteUserConfirm" : "Are you sure you want to delete the user '{user}'?",
+            "couldNotLoadUserData" : "The user's data could not be loaded."
+
+
+
+         },
+         "projectAdministration" : {
+
+            "projectAdministrationTitle" : "Project Management",
+            "projectName" : "Project name",
+            "assignedUsers" : "Assigned users",
+            "isEdit" : "Edit?",
+            "isImport" : "Import?",
+            "editScript" : "Edit script set",
+            "noEditScript" : "No edit script",
+            "importScript" : "Import script set",
+            "noImportScript" : "No import script",
+            "projectOptions" : "Project options...",
+            "deleteProject" : "Delete project",
+            "deleteProjectInfo" : "Projects cannot be deleted as long as they contain any documents.",
+            "deleteProjectConfirm" : "Are you sure you want to delete the project {projectName} '{projectId}'?",
+            "visibleForAdmins" : "**Note**: Admins can _always_ see all project groups.",
+            "couldNotLoadSettings" : "The project settings could not be loaded.",
+            "noValidProjectId" : "Received no/an unvalid project ID: '{projectId}'"
+            },
+
+         "autoAnnotation" : {
+            "autoAnnotationTitle" : "Auto Annotation",
+            "annoId" : "ID",
+            "annoName" : "Name",
+            "annoClass" : "Class",
+            "isTrained" : "Train?",
+            "associatedTagsetTypes" : "Associated tagset types",
+            "individuallyTrainable" : "Can be trained individually",
+            "notIndividuallyTrainable" : "Cannot be trained individually",
+            "options" : "Options...",
+            "deleteTagger" : "Delete tagger",
+            "taggerDeleteConfirm" : "Are you sure you want to delete the tagger {taggerNum} '{taggerName}'?"
+
+
+         },
+
+         "serverMessages" : {
+            "serverNotifications" : "Server Notifications",
+            "serverId" : "ID",
+            "serverMsg" : "Message",
+            "serverType" : "Type",
+            "expire" : "Expires",
+            "deleteMsg" : "Delete message",
+            "msgDeleteConfirm" : "Are you sure you want to delete message number {msg}?"
+
+         },
+
+         "Forms" : {
+            "addUser" : {
+                "addUserTitle" : "Add User",
+                "newUserName" : "User name:",
+                "password" : "Password:",
+                "repeatPassword" : "Repeat password:"
+
+
+
+            },
+            "addProjectForm" : {
+                "addProject" : "Create a New Project",
+                "projectName" : "Project name:"
+            },
+            "addTaggerForm" : {
+                "addTagger" : "Define a New Tagger",
+                "newTaggerName" : "Name:"
+                
+            },
+            "addServerMsg" : {
+                "newServerMsg" : "Create a New Server Notification",
+                "type" : "Type:",
+                "expireDate" : "Expires:",
+                "msgText" : "Message:",
+                "preview" : "Preview"
+                
+            },
+            "tagsetBrowserForm" : {
+                "tagsetBrowser" : "Tagset Browser",
+                "preview" : "Preview"
+                
+            },
+            "importTagsetForm" : {
+                "importTagset" : "Import Tagset From Text File",
+                "tagsetName" : "Tagset name:",
+                "tagsetClass" : "Tagset class:",
+                "tagsetFile" : "Tagset file:",
+                "tagsetInfo" : "Note: A tagset file should be a text file containing one tag per line. In the case of POS tagsets dots will be interpreted as boundaries between POS and morph attributes. Tags that need correction should be preceded by a caret (^).",
+                "importBtn" : "Import tagset →",
+                "taggerImportError" : "An unknow error occurred while importing the tagset.",
+                "taggerImportErrorInfo1" : "An error occurred while importing the tagset:",
+                "taggerImportErrorInfo2" : "{nE} errors occurred while importing the tagset:",
+                "tagsetImportFailed" : "Tagset import failed!",
+                "importingTagset" : "Importing tagset...",
+                "tagsetSuccessfullyAdded" : "Successfully added tagset to database.",
+                "importNoSuccess" : "Import failed",
+                "serverResponseInfo" : "The server returned the response below:",
+                "invalidServerResponse" : "Invalid server response",
+                "invalidServerResponseInfo" : "The server returned an invalid response.",
+                "serverResponse" : "Server response",
+                "internalError" : "Internal Error"
+                
+            },
+            "taggerOptionsForm" : {
+                "optionsForTagger" : "Options for tagger {taggerId}",
+                "taggerName" : "Name:",
+                "taggerClass" : "Class:",
+                "taggerOptions" : "Options:",
+                "trainablePerProject" : "Trainable project-individually",
+                "associatedTagsets" : "Associated tagsets:",
+                "tagsetsSelected" : "Tagset(s) selected",
+                "taggerOptionsInfo" : "You can only annotate texts using this tagger if they are associated at least with the tagsets selected here."
+
+
+                                   
+             },
+             "userOptionsForm" : {
+                "settingsForUser" : "Settings for '{user}'",
+                "emailAddress" : "E-mail address:",
+                "userNote" : "Note:",
+                "placeholderMail" : "john@doe.com",
+                "placeholderNote" : "(none)"
+
+             },
+             "changePasswordForm" : {
+                "changePassword" : "Change password",
+                "newPassword" : "New password:",
+                "repeatNewPassword" : "Repeat new password:" 
+             },
+             
+             "projectOptionsForm" : {
+                "projectOptions" : "Settings for Project \"{project}\"",
+                "editTokenCommand" : "Command to edit tokens:",
+                "importCommand" : "Command to import texts:",
+                "placeholderCommand" : "(undefined)",
+                "assignedUsers" : "Assigned users:",
+                "assignUserInfo" : "Only admins and users assigned to the project can see and edit the project and the files it contains.",
+                "usersSelected" : "user(s) selected",
+                "associatedTagsets" : "Associated tagsets:",
+                "associatedTagsetsInfo" : "When new texts are imported into this project they will by default be associated with the tagsets set here. Changing the settings here will **not** change any texts already in the database!",
+                "tagsetsSelected" : "Tagset(s) selected"
+                             
+             }
+
+         }
+
+     },
+     "SettingsTab": {
+        "language" : "Language",
+        "changePassword" : "Change password...",
+        "numberOfLines" : "Number of lines",
+        "linesPerPage" : "Lines per page:",
+        "overlappingLines" : "Overlapping lines:",
+        "applyLineSettings" : "Apply line settings",
+        "visibleCols" : "Columns to display",
+        "horizontalPreview" : "Horizontal preview",
+        "noPreview" : "Off",
+        "editSupport" : "Editing support",
+        "highlightErrorTags" : "Highlight erroneous tags",
+        "passwordForm" : {
+            "oldPassword" : "Current password:",
+            "newPassword" : "New password:",
+            "newPasswordRepeat" : "Repeat new password:",
+            "doNotMatch" : "The passwords you entered do not match!",
+            "oldInvalid" : "The current password you entered is not correct!",
+            "changePasswordBtn" : "Change password",
+            "changePasswordTitle" : "Change password",
+            "passwordChanged" : "ChangedPassword"
+            },
+        "editorLanguage" : {
+            "english" : "English",
+            "german" : "German"
+        }
+     },
+
+
+     "FileTab" : {
+        "topButton" : {
+            "refresh" : "Refresh",
+            "expandProjectGroups" : "Expand all project groups",
+            "collapseProjectGroups" : "Collapse all project groups",
+            "importText" : "Import text file",
+            "importXml" : "Import XML file"
+
+
+        },
+
+        "columnLabels" : {
+            "siglum" : "Custom ID",
+            "fileName" : "File name",
+            "lastEdit" : "Last edited",
+            "by" : "...by",
+            "created" : "Created",
+            "id" : "ID",
+            "deleteFile" : "Delete file",
+            "deleteWarning" : "Are you sure you want to delete the file '{file}'? This action cannot be undone!",
+            "export" : "Export...",
+            "exportFileTitle" : "Export file",
+            "tagsets" : "Tagsets...",
+            "editAssociatedTagsets" : "Edit associated tagsets",
+            "closeFile" : "Close",
+            "closeFileTitle" : "Close file",
+            "noClose" : "You are not permitted to close this file.",
+            "closePrompt" : "You are about to close a file currently not worked on by yourself. If someone else is working on the file, data loss may occur. Continue anyway?"
+            
+
+        },
+
+        "Forms" : {
+            "import" : {
+                "importTextFile" : "Import text file",
+                "importXmlFile" : "Import CorA XML file",
+                "file" : "File:",
+                "encoding" : "Encoding:",
+                "project" : "Project:",
+                "docName" : "Name:",
+                "docNamePlaceholder" : "(File name)",
+                "siglum" : "Custom ID:",
+                "siglumPlaceholder" : "(Custom ID - optional)",
+                "chooseFile" : "Please choose a file to be imported!",
+                "importBtn" : "Import →",
+                "associatedTagsets" : "Associated tagsets:",
+                "tagsetsSelected" : "Tagset(s) selected",
+                "importInfo" : "The fields below do not need to be filled if the information is included in the XML file.",
+                "noImportScriptInfo" : "There is no import script set for the selected project. Without an import script new documents can only be imported as CorA XML files.",
+                "loadingFile" : "Loading file...",
+                "importingData" : "Importing data...",
+                "importSuccess" : "File import successful",
+                "importSuccessInfo" : "The file has been added to the project.",
+                "warnings" : "The system returned {nWarnings} warning(s)",
+                "importUnknownError" : "Import failed due to unknown error!",
+                "importFailed" : "Import failed",
+                "fileImportFailed" : "File import failed",
+                "importErrorInfo" : "{errorStr} occurred while adding file:",
+                "error1" : "An error",
+                "error2" : "{errorCount} errors",
+                "importError" : "Errors occurred during import."
+                
+            },
+            "exportForm" : {
+                "exportFile" : "Export File",
+                "exportPrompt" : "Please choose a format for the export file:",
+                "coraXmlFormat" : "CorA XML",
+                "columnCsvFormat" : "Column format (CSV)",
+                "columnNormFormat" : "Four-column format (Normalization)",
+                "transFormat" : "Transcription format",
+                "columnsSelected" : " column(s) selected",
+                "exportInfoCora" : "Export a CorA XML-file containing the complete document including all annotations. The file can be reimported later on in order to obtain a version of the document identical to the file when exported.",
+                "exportInfoCsv" : "Export a tab-delimited text file suitable for the import into spreadsheet software (e.g. Microsoft Excel). Please choose annotation layers to be exported:"
+                
+
+            },
+
+            "editTagsets" : "Associated tagsets for file '{file}'",
+            "addFileError" : "An unknown error occurred while adding file."
+
+
+        },
+
+        "pleaseWait" : "Please wait...",
+        "noProjectGroups" : "No project groups available!",
+        "noProjectGroupsInfo" : "You have not been assigned to any project groups yet. Please contact an admin in order to get assigned to a project group.",
+        "noFilesInProject" : "There are no files in this project.",
+        "invalidServerResponse" : "Invalid server response",
+        "invalidServerResponseInfo" : "The server returned an invalid response. The file import may have failed.",
+        "serverResponseInterpretation" : "An error occurred when interpreting the server response",
+        "serverResponse" : "The server returned"
+
+    },
+     "EditorTab": {
+        "topButton" : {
+            "page":"Page",
+            "previousPage" : "Previous page",
+            "nextPage" : "Next page",
+            "goToLine" : "Go to line",
+            "lineNumber" : "Line number:",
+            "undo" : "Undo",
+            "redo" : "Redo",
+            "search" : "Search",
+            "previousMatch" : "Previous match",
+            "nextMatch" : "Next match",
+            "autoAnnotation" : "Auto annotation",
+            "metaData" : "Meta data"
+            },
+        "dropDown" : {
+            "searchSimilar" : "Search for similar...",
+            "editToken" : "Edit token...",
+            "addToken" : "Add token...",
+            "deleteToken" : "Delete token",
+            "openDropdownMenu" : "Open dropdown menu"
+
+            },
+        "searchResult" : {
+            "resultPage" : "Results page",
+            "editQuery" : "Edit query",
+            "resultInfo" : "Found **{resultCount}** token(s) fulfilling **{searchMode}** of the criteria below:"
+
+
+            },
+        "Forms" : {
+            "cannotBeUndone" : "This action cannot be undone!",
+            "searchForm" : {
+                "searchTitle" : "Search",
+                "searchForm1" : "Search for tokens fulfilling",
+                "searchForm2" : "of the criteria below:",
+                "allFulfilled" : "all",
+                "oneFulfilled" : "any",
+                "blank" : "(blank)",
+                "tokenAll" : "Token",
+                "tokenTrans" : "Token (transcription)",
+                "annotationLevels" : "Annotation levels",
+                "markups" : "Markups",
+                "posTagMorph" : "POS-Tag (incl. Morphology)",
+                "errorMarkup" : "Error markup",
+                "lemmaMarkup" : "Lemma markup",
+                "sentBoundaryMarkup" : "Boundary markup",
+                "is" : "is",
+                "isNot" : "is not",
+                "contains" : "contains",
+                "containsNot" : "does not contain",
+                "startsWith" : "starts with",
+                "endsWith" : "ends with",
+                "matchesRegEx" : "matches regex",
+                "isSet" : "is set",
+                "isNotSet" : "is not set"
+                },
+
+            "autoAnnotationForm" : {
+                "autoAnnotationTitle" : "Reannotate automatically",
+                "availableTagger" : "Tagger:",
+                "noTaggerAvailable" : "No tagger available",
+                "autoAnnotationInfo" : "\"Annotate\" replaces any annotations in lines **not** marked green in the progress area."
+                },
+
+            "metaDataForm" : {
+                "metaDataTitle" : "Meta data",
+                "siglum" : "Custom ID:",
+                "fileName" : "File name:",
+                "header" : "Header:"
+                },
+
+            "editTranscriptionForm" : {
+                "editTranscription" : "Edit transcription",
+                "transcription" : "Transcription: ",
+                "tokenEdited" : "Token successfully edited."
+                },
+            "addTranscriptionForm" : {
+                "addTranscription" : "Add transcription",
+                "newTranscription" : "Transcription: ",
+                "newTransInfo" : "The new transcription will be inserted into the original file **in front of** the token \"{tokInFront}\" in line \"{lineInfo}\".",
+                "tokenAdded" : "Token successfully added."
+                },
+            "deleteToken" : {
+                "confirmDeletion" : "Confirm deletion",
+                "deletionPrompt" : "Are you sure you want to delete the token \"{tok2del}\"?",
+                "tokenDeleted" : "Token successfully deleted."}
+
+
+            },
+        "general" : {
+            "allTags" : "All tags",
+            "allTagsFor" : "All tags for '{tagClass}'",
+            "warning" : "Warning!",
+            "openExternalLink" : "Open external link",
+            "loadingPreview" : "Loading text preview...",
+            "unsavedChangesWarning" : "There are unsaved changes that may be lost if you continue!",
+            "criticalError" : "Critical error",
+            "criticalErrorInfo" : "A server-side error occurred when saving the document. Please do not continue editing the file and contact an admin in order to prevent data loss.",
+            "couldNotLoadLines" : "An internal error occurred: Could not load lines {startLine} to {endLine}.",
+            "cannotSaveInfo" : "The process has been aborted as the document cannot be saved right now. Please check your internet connection and try again later.",
+            "pleaseWait" : "Please wait...",
+            "primaryDataNotChanged" : "Original data have not been changed."
+            }
+    },
+
+     "Columns": {
+        "line" : "Line",
+        "lineNo" : "Line number",
+        "transTok" : "Token (Trans)",
+        "utfTok" : "Token (UTF)",
+        "norm" : "Normalization",
+        "mod" : "Modernization",
+        "modType" : "Modernization type",
+        "pos" : "POS tag",
+        "morph" : "Morphology tag",
+        "posMorph": "POS tag (incl. morphology)",
+        "lemma" : "Lemma",
+        "lemmaLink" : "Lemma link",
+        "lemmaSuggestion": "Lemma suggestion",
+        "lemmaTag" : "Lemma tag",
+        "comment" : "Comment",
+        "secondaryComment" : "Secondary comment",
+        "sentBoundary" : "Boundary",
+        "asciiTok" : "Token (ASCII)"
+
+     },
+     "Action" : {
+        "cancel" : "Cancel",
+        "noCancel" : "No, cancel",
+        "yesDelete" : "Yes, delete",
+        "yesConfirm" : "Yes, confirm",
+        "ok" : "Ok",
+        "change" : "Save changes",
+        "close" : "Close",
+        "retrain" : "Retrain",
+        "annotate" : "Annotate",
+        "search" : "Search",
+        "reset" : "Reset",
+        "save" : "Save",
+        "export2" : "Export",        
+        "importTagset" : "Import tagset",
+        "addUserBtn" : "Add user",
+        "createProject" : "Create project",
+        "createTagger" : "Create Tagger",
+        "createMsg" : "Create notification",
+        "changePassword" : "Change password...",
+        "change" : "Change",
+        "preview": "Preview"
+     },
+     "Banner" : {
+        "userNameEmpty" : "Please enter a user name.",
+        "passwordEmpty" : "Please enter a password.",
+        "passwordNoMatch" : "The passwords you entered do not match.",
+        "userAdded" : "User added.",
+        "passwordChanged" : "Changed password.",
+        "settingsSaved" : "Saved settings.",
+        "tagsetsChanged" : "Applied tagset settings.",
+        "exporting" : "Exporting file...",
+        "deleteConfirm" : "File deleted.",
+        "fileImportSuccess" : "File successfully imported.",
+        "importUnknownError" : "Import failed due to unknown error!",
+        "noConnection" : "Could not connect to the server.",
+        "openFileError" : "An error occurred while opening file.",
+        "loadTagsetError" : "An error occurred while loading tagset.",
+        "changesApplied" : "Changes applied successfully.",
+        "changesNotApplied" : "The changes were not applied.",
+        "userDeleted" : "User successfully deleted.",
+        "enterExpireDate" : "Please enter an expiry date!",
+        "enterMsg" : "Please enter a message!",
+        "msgAdded" : "Message added successfully.",
+        "msgDeleted" : "Message successfully deleted.",
+        "taggerDeleted" : "Tagger successfully deleted.",
+        "taggerCreated" : "Tagger successfully created.",
+        "taggerOptionsUpdated" : "Tagger options updated successfully.",
+        "enterTaggerName" : "Please enter a name for the tagger.",
+        "projectCreated" : "Project created successfully.",
+        "projectDeleted" : "Project successfully deleted.",
+        "noImportFileSelected" : "No import file selected!",
+        "metaDataChanged" : "Successfully changed meta data.",
+        "cannotSave" : "The document cannot be saved right now.",
+        "retrainSuccess" : "The retraining has been successful.",
+        "autoTagSuccess" : "The auto annotation has been successful.",
+        "transcriptionEmpty" : "Please enter a transcription!",
+        "enterLineNo" : "Please enter a line number.",
+        "lineDoesNotExist" : "The line you entered does not exist.",
+        "numbersOnly" : "Please enter only numbers!",
+        "overlappingLines" : "The number of overlapping lines has to be less than the number of lines per page.",
+        "manyLinesWarning" : "Warning: A high number of lines per page can result in a long loading time and/or your browser performing poorly."
+     },
+
+     "RequestErrors" : {
+        "invalidServerResponseInfo" : "The server returned an invalid response.",
+        "internalError" : "An internal error occurred.",
+        "requestCancelled" : "The request has been cancelled.",
+        "serverNotAvailable" : "The server is temporarily unavailable.",
+        "internalScriptError" : "An internal script error occurred.",
+        "internalScriptErrorInfo" : "\"{hName}\" = \"{val}\" failed.",
+        "actionFailed" : "Action failed",
+        "couldNotPerformAction" : "Could not perform action.",
+        "notLoggedIn" : "You are not logged in."}
+    }
+
+}
+

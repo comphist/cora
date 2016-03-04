@@ -14,6 +14,7 @@
             <file>DocumentAccessor_test.php</file>
             <file>DocumentCreator_test.php</file>
             <file>Exporter_test.php</file>
+            <file>Locale_test.php</file>
             <file>Menu_test.php</file>
             <file>TagsetAccessor_test.php</file>
             <file>XMLHandler_test.php</file>

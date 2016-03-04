@@ -25,17 +25,48 @@
    settings and controls the "settings" tab.
 */
 cora.settings = {
+    languageDiv: 'editorLanguageSettings',
     lineSettingsDiv: 'editLineSettings',
     columnVisibilityDiv: 'editorSettingsHiddenColumns',
     textPreviewDiv: 'editorSettingsTextPreview',
     inputAidsDiv: 'editorSettingsInputAids',
 
     initialize: function() {
+        this._activateLanguageDiv();
         this._activateLineSettingsDiv();
         this._activateColumnVisibilityDiv();
         this._activateTextPreviewDiv();
         this._activateInputAidsDiv();
         this._activatePasswordChangeForm();
+    },
+
+    /* Function: _activateLanguageDiv
+
+       Activates the radio boxes to change language settings.
+     */
+    _activateLanguageDiv: function() {
+        var elem, div = $(this.languageDiv);
+        if (div === null || typeof(div) === "undefined")
+            return;
+
+        // Pre-select currently chosen value
+        elem = div.getElement('input[value="'+this.get('locale')+'"]');
+        if(elem !== null)
+            elem.set('checked', 'yes');
+
+        div.addEvent(
+            'change:relay(input)',
+            function(event, target) {
+                var value = div.getElement('input:checked').get('value');
+                this.set('locale', value);
+                gui.useLocale(value);
+		new Request({url: 'request.php'}).get(
+		    {'do': 'setUserEditorSetting',
+		     'name': 'locale',
+		     'value': value}
+		);
+            }.bind(this)
+        );
     },
 
     /* Function: _activateLineSettingsDiv
@@ -55,16 +86,16 @@ cora.settings = {
 		var cl = div.getElement('input[name="contextLines"]').get('value').toInt();
 		var pl = div.getElement('input[name="noPageLines"]').get('value').toInt();
 		if (isNaN(cl) || isNaN(pl)) {
-                    gui.showNotice('error', "Bitte nur Zahlen eingeben!");
+                    gui.showNotice('error', _("Banner.numbersOnly"));
 		    e.stop(); return;
 		}
 		if (cl >= pl) {
-                    gui.showNotice('error', "Anzahl überlappender Zeilen muss kleiner sein als Anzahl der Zeilen pro Seite.");
+                    gui.showNotice('error', _("Banner.overlappingLines"));
 		    e.stop(); return;
 		}
 		if (pl > 50) {
                     // TODO: change to gui.confirm --- but doesn't work with Form.Request
-		    var doit = confirm("Warnung: Eine hohe Anzahl an Zeilen pro Seite kann zur Folge haben, dass der Seitenaufbau sehr langsam wird bzw. der Browser für längere Zeit nicht mehr reagiert.");
+		    var doit = confirm(_("Banner.manyLinesWarning"));
 		    if (!doit) { e.stop(); return; }
 		}
 	    }
@@ -86,10 +117,10 @@ cora.settings = {
                     em.dataTable.pages.update().setPageByLine(range.from).render();
 		    gui.changeTab('edit');
 		}
-                gui.showNotice('ok', 'Änderungen übernommen.');
+                gui.showNotice('ok', _("Banner.changesApplied"));
             }.bind(this),
             onFailure: function(){
-                gui.showNotice('error', 'Änderungen nicht übernommen.');
+                gui.showNotice('error', _("Banner.changesNotApplied"));
             }
 	});
     },
@@ -182,7 +213,7 @@ cora.settings = {
     _activatePasswordChangeForm: function() {
         /* Change password */
         var pwch = new mBox.Modal({
-	    title: 'Passwort ändern',
+	    title: 'changePasswordForm_title',
 	    content: 'changePasswordFormDiv',
 	    attach: 'changePasswordLink'
         });
@@ -217,7 +248,7 @@ cora.settings = {
 		    pwch.close();
 		    form.reset($('changePasswordForm'));
 		    new mBox.Notice({
-		        content: 'Passwort geändert',
+		        content: _("SettingsTab.passwordForm.passwordChanged"),
 		        type: 'ok',
 		        position: {x: 'right'}
 		    });

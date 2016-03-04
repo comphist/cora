@@ -162,7 +162,7 @@ class TagsetAccessor {
       $parts = $this->splitPOS($value);
       foreach ($parts as $part) {
         if (strlen($part) < 1) {
-          $this->error("POS tag has empty attributes: {$value}");
+          $this->error("POS tag has empty attributes: {$value}");  //$LOCALE
           $consistent = false;
           break;
         }
@@ -172,7 +172,7 @@ class TagsetAccessor {
           $old = $feature_count[$parts[0]];
           $new = count($parts);
           $this->error("POS tag has inconsistent attribute count "
-                      . "(now {$new}, expected {$old}): {$value}");
+                      . "(now {$new}, expected {$old}): {$value}"); //$LOCALE
           $consistent = false;
         }
       }
@@ -237,7 +237,7 @@ class TagsetAccessor {
    */
   public function checkTag($value) {
     if (strlen($value) > 255) {
-      return $this->error("Tag is longer than 255 characters: {$value}");
+      return $this->error("Tag is longer than 255 characters: {$value}");  //$LOCALE
     }
     return true;
   }
@@ -273,12 +273,12 @@ class TagsetAccessor {
    */
   public function setRevisionFlagForTag($value, $needs_rev) {
     if (!isset($this->tags_by_value[$value])) {
-      return $this->error("Tried to change non-existing tag: {$value}");
+      return $this->error("Tried to change non-existing tag: {$value}");  //$LOCALE
     }
     $tag = &$this->tags_by_value[$value];
     if (isset($tag['status'])) {
       if ($tag['status'] === 'delete') {
-        return $this->error("Tried to change already-deleted tag: {$value}");
+        return $this->error("Tried to change already-deleted tag: {$value}");  //$LOCALE
       }
     }
     else {
@@ -295,10 +295,10 @@ class TagsetAccessor {
   public function changeTag($value, $nvalue) {
     $nvalue = trim($nvalue);
     if (!isset($this->tags_by_value[$value])) {
-      return $this->error("Tried to change non-existing tag: {$value}");
+      return $this->error("Tried to change non-existing tag: {$value}");  //$LOCALE
     }
     else if (isset($this->tags_by_value[$nvalue])) {
-      return $this->error("Tried to change to already-existing tag: {$nvalue}");
+      return $this->error("Tried to change to already-existing tag: {$nvalue}");  //$LOCALE
     }
     else if ($value === $nvalue || empty($value)
              || empty($nvalue) || !$this->checkTag($nvalue)) {
@@ -307,7 +307,7 @@ class TagsetAccessor {
     $tag = $this->tags_by_value[$value];
     if (isset($tag['status'])) {
       if ($tag['status'] === 'delete') {
-        return $this->error("Tried to change already-deleted tag: {$value}");
+        return $this->error("Tried to change already-deleted tag: {$value}");  //$LOCALE
       }
     }
     else {
@@ -324,7 +324,7 @@ class TagsetAccessor {
    */
   public function deleteOrMarkTag($value) {
     if (!isset($this->tags_by_value[$value])) {
-      $this->error("Tried to delete non-existing tag: {$value}");
+      $this->error("Tried to delete non-existing tag: {$value}");  //$LOCALEs
       return false;
     }
     $tag = &$this->tags_by_value[$value];

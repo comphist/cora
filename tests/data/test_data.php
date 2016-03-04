@@ -50,7 +50,8 @@ function get_DBInterface_expected() {
                             "columns_order" => null,
                             "columns_hidden" => null,
                             "show_error" => "1",
-                            "text_preview" => "utf")
+                            "text_preview" => "utf",
+                            "locale" => "en-US")
         ),
 	"tagsets" => array(
 			   "ts1" => array("id" => '1',

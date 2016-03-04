@@ -34,24 +34,25 @@ try {
 
 require_once "lib/cfg.php";
 require_once "lib/connect.php";
-require_once "lib/xmlHandler.php";
-require_once "lib/commandHandler.php";
+require_once "lib/localeHandler.php";
 require_once "lib/sessionHandler.php";
 require_once "lib/requestHandler.php";
-require_once "lib/exporter.php";
 
+$dbi;  /**< An instance of the DBInterface object. */
+$lh;   /**< An instance of the LocaleHandler object. */
+$sh;   /**< An instance of the SessionHandler object. */
+$rq;   /**< An instance of the RequestHandler object. */
+
+/* Initiate session */
 $dbi = new DBInterface(Cfg::get('dbinfo'));
-$exp = new Exporter($dbi);
-$xml = new XMLHandler($dbi);
-$ch = new CommandHandler();
+$lh = new LocaleHandler();
+$sh = new CoraSessionHandler($dbi, $lh);
+$rq = new RequestHandler($sh, $lh);
 
-$sh = new CoraSessionHandler($dbi, $xml, $exp, $ch);
-$rq = new RequestHandler($sh);
-
-if($_SESSION["loggedIn"]) {
-  $rq->handleJSONRequest( $_GET, $_POST );
+if ($_SESSION["loggedIn"]) {
+  $rq->handleJSONRequest($_GET, $_POST);
 }
-else if($_GET['do'] == "login") {
+else if ($_GET['do'] == "login") {
   $sh->login($_GET['user'], $_GET['pw']);
   header('Content-Type: application/json');
   echo json_encode(array('success' => !$_SESSION["failedLogin"]));

@@ -694,13 +694,14 @@ button {
 /***************************************************************************/
 
 input[type=text] {
+    max-width: 95%;
     word-break: normal !important;
 }
 
 label.ra
 {
     display: inline-block;
-    width: 8em;
+    width: 9em;
     text-align: right;
     padding-right: 5px;
 }
@@ -710,9 +711,12 @@ label.vt
     vertical-align: top;
 }
 
-form#newFileImportForm label.ra,
-form#newFileImportTransForm label.ra
-{  width: 4.6em; }
+form#newFileImportForm,
+form#newFileImportTransForm
+{
+    label.ra { width: 6em; }
+    select { max-width: 20em; }
+}
 
 textarea.sans {
     font-family: $font-stack;
@@ -802,8 +806,12 @@ span.projectname {
 }
 
 table.fileList {
+    th {
+        white-space: nowrap;
+    }
+
     .ftr-sigle {
-        width: 3.6em;
+        min-width: 3.6em;
         text-align: right;
         padding-right: 0;
     }
@@ -818,7 +826,9 @@ table.fileList {
     }
     .ftr-changed-at, .ftr-created-at {
         width: 9.4em;
+        max-width: 10.4em;
         text-align: right;
+        white-space: nowrap;
     }
     .ftr-changed-by, .ftr-created-by {
         width: 6em;
@@ -829,8 +839,12 @@ table.fileList {
         width: 2.5em;
     }
 
-    .ftr-options a {
-        margin-right: 8px;
+    .ftr-options {
+        white-space: nowrap;
+
+        a {
+            margin-right: 8px;
+        }
     }
 
     a.deleteFileLink.start-hidden {
@@ -987,6 +1001,9 @@ table.editTable{
     th {
         border-bottom: 1px solid #666;
         padding: 0px 6px 4px 6px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
 
         &.editTable_tokenid {
             text-align: right;
@@ -1013,7 +1030,6 @@ table.editTable{
         }
         &.editTable_pos select,
         &.editTable_lemmapos select {
-            width: 100%;
         }
         &.editTable_morph select {
             min-width: 12.5em;
@@ -1150,6 +1166,7 @@ div.editTableDropdownMenu {
     display: none;
     background-color: #d4d4d4;
     font-size: 1.5em;
+    white-space: nowrap;
     padding: 5px;
     margin: 0 0 0 ;
     border: 1px solid #777777;
@@ -1188,11 +1205,11 @@ div.srl-criteria {
     padding-bottom: 0.5em;
 
     .srl-count, .srl-operator {
-        font-weight: 600;
+        font-weight: 700;
     }
 
     .srl-condition-value {
-        font-weight: 600;
+        font-weight: 700;
     }
 
     .srl-condition-list, p {
@@ -1227,6 +1244,7 @@ div#editorSettingsNumberOfLines {
     }
 }
 
+div#editorLanguageSettings,
 div#editorSettingsHiddenColumns,
 div#editorSettingsTextPreview,
 div#editorSettingsInputAids {
@@ -1237,12 +1255,6 @@ div#editorSettingsInputAids {
     label {
         margin-left: 5px;
     }
-}
-
-div#changePasswordFormDiv label {
-    display: inline-block;
-    width: 11em;
-    text-align: right;
 }
 
 /***************************************************************************/

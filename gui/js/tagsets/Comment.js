@@ -26,7 +26,7 @@
  */
 var CommentTagset = new Class({
     Extends: Tagset,
-    classname: 'Kommentar',
+    classname: "Columns.comment", //'Kommentar'
     eventString: 'input:relay(input.et-input-comment)',
     inputElement: '.editTable_comment input',
     dataKey: 'anno_comment',

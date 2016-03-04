@@ -41,17 +41,17 @@ require_once( "lib/contentModel.php" );
 
 /** @copybrief index.php::$menu */
 $menu = new Menu();
-if( $_SESSION["loggedIn"] === true ) {
-  $menu->addMenuItem( "file", "gui/file.php", "", "Datei", "Dokumente öffnen oder hinzufügen" );
-  $menu->addMenuItem( "edit", "gui/edit.php", "", "Editor", "Geöffnetes Dokument bearbeiten" );
-  $menu->addMenuItem( "search", "gui/search.php", "", "Suchen", "Aktuelle Suchergebnisse anzeigen" );
-  $menu->addMenuItem( "settings", "gui/settings.php", "", "Einstellungen", "Einstellungen von CorA ändern" );
-  if ( $_SESSION["admin"] ) {
-    $menu->addMenuItem( "admin", "gui/admin.php", "", "Administration", "Benutzer und Projekte verwalten" );
+if($_SESSION["loggedIn"]) {
+  $menu->addMenuItem("file", "gui/file.php", "", "Menu.file", "Menu.fileTooltip");
+  $menu->addMenuItem("edit", "gui/edit.php", "", "Menu.edit", "Menu.editTooltip");
+  $menu->addMenuItem("search", "gui/search.php", "", "Menu.search", "Menu.searchTooltip");
+  $menu->addMenuItem("settings", "gui/settings.php", "", "Menu.settings", "Menu.settingsTooltip");
+  if ($_SESSION["admin"]) {
+    $menu->addMenuItem("admin", "gui/admin.php", "", "Menu.admin", "Menu.adminTooltip");
   }
-  $menu->addMenuItem( "help", "gui/help.php", "", "Hilfe", "Hilfe zur Benutzung von CorA" );
+  $menu->addMenuItem("help", "gui/help.php", "", "Menu.help", "Menu.helpTooltip");
 } else {
-  $menu->addMenuItem( "login", "gui/login.php", "", "Anmeldung", "In CorA anmelden" );
+  $menu->addMenuItem("login", "gui/login.php", "", "Menu.login", "Menu.loginTooltip");
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -75,7 +75,10 @@ function embedJS($filename, $withtimestamp=false) {
 
 function embedSessionVars($svars) {
     echo "var userdata = { ";
-    $userdata = array('name: "'.$_SESSION['user'].'"');
+    $userdata = array();
+    if(isset($_SESSION['user'])) {
+      $userdata[] = 'name: "'.$_SESSION['user'].'"';
+    }
     foreach($svars as $key => $quoted) {
         if($quoted)
             $userdata[] = $key.': "'.$_SESSION[$key].'"';

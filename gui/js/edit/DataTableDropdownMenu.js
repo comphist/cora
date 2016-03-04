@@ -42,7 +42,7 @@ var DataTableDropdownMenu = new Class({
 	this.table.addEvent(
 	    'click:relay(div.editTableDropdown)',
 	    function(event, target) {
-                var id = this.getRowNumberFromElement(target);
+                var dim, id = this.getRowNumberFromElement(target);
 		if (this.dropdownContent.isVisible()) {
 		    this.dropdownContent.hide();
                     if (this.dropdownCurrentId === id) {
@@ -50,9 +50,10 @@ var DataTableDropdownMenu = new Class({
                         return;
                     }
                 }
+                dim = this.dropdownContent.getDimensions();
                 this.dropdownCurrentId = id;
                 this.dropdownContent.setPosition({
-                    x: target.getPosition().x,
+                    x: target.getPosition().x - dim.width + 10,
                     y: target.getPosition().y + target.getSize().y
                 });
 		this.dropdownContent.show();
@@ -86,7 +87,8 @@ var DataTableDropdownMenu = new Class({
         var li = new Element('li');
         li.grab(new Element('a', {
             class: 'editTableDdButton'+entry.name,
-            text: entry.text,
+            text: _(entry.data_trans_id),
+            'data-trans-id': entry.data_trans_id,
             events: {
                 click: function(event, target) {
                     entry.action(this.dropdownCurrentId);

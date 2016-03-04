@@ -25,7 +25,7 @@
  */
 var SecondaryCommentTagset = new Class({
     Extends: CommentTagset,
-    classname: 'Sekundär-Kommentar',
+    classname: 'Columns.secondaryComment',
     eventString: 'input:relay(input.et-input-sec_comment)',
     inputElement: '.editTable_sec_comment input',
     dataKey: 'anno_sec_comment'

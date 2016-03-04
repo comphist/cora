@@ -460,7 +460,7 @@ cora.fileImporter = {
         var ref = this;
         var importform = $('newFileImportForm');
         var mbox = new mBox.Modal({
-            title: "Importieren aus CorA-XML-Format",
+            title: 'fileImportXMLForm_title',
             content: 'fileImportXMLForm',
             attach: 'importNewXMLLink',
             closeOnBodyClick: false
@@ -470,7 +470,7 @@ cora.fileImporter = {
         new iFrameFormRequest(importform, {
             onRequest: function() {
                 mbox.close();
-                gui.showSpinner({message: 'Importiere Daten...'});
+                gui.showSpinner({message: _("FileTab.Forms.import.importingData")});
             },
             onComplete: function(response) {
                 var success = ref.showImportResponseDialog(response);
@@ -481,7 +481,7 @@ cora.fileImporter = {
                 gui.hideSpinner();
             },
             onFailure: function() {
-                gui.showNotice('error', "Import aus unbekannten Gründen fehlgeschlagen!");
+                gui.showNotice('error', _("FileTab.Forms.import.importUnknownError"));
                 gui.hideSpinner();
             }
         });
@@ -496,7 +496,7 @@ cora.fileImporter = {
         var ref = this;
         var importform = $('newFileImportTransForm');
         var mbox = new mBox.Modal({
-            title: "Importieren aus Textdatei",
+            title: 'fileImportTransForm_title',
             content: 'fileImportTransForm',
             attach: 'importNewTransLink',
             closeOnBodyClick: false
@@ -519,11 +519,11 @@ cora.fileImporter = {
 		        if(status.done == "success") {
                             ref.resetImportForm(importform);
                             cora.projects.performUpdate();
-			    gui.showNotice('ok', "Datei erfolgreich importiert.");
+			    gui.showNotice('ok', _("Banner.fileImportSuccess"));
 		        } else {
-                            gui.showTextDialog("Importieren fehlgeschlagen",
+                            gui.showTextDialog(_("FileTab.Forms.import.importFailed"),
                                                status.message, status.output);
-			    gui.showNotice('error', "Importieren fehlgeschlagen.");
+			    gui.showNotice('error', _("FileTab.Forms.import.importFailed")+".");
 		        }
                     });
                 }
@@ -533,7 +533,7 @@ cora.fileImporter = {
                 }
             },
             onFailure: function() {
-                gui.showNotice('error', "Import aus unbekannten Gründen fehlgeschlagen!");
+                gui.showNotice('error', _("Banner.importUnknownError"));
                 gui.hideSpinner();
             }
         });
@@ -556,8 +556,8 @@ cora.fileImporter = {
 	    displayText: true
         });
         this.transImportProgressDialog = new mBox.Modal({
-	    title: "Importiere Daten...",
-	    content: $('transImportSpinner'),
+	    title: 'transImportSpinner_title',
+	    content: 'transImportSpinner',
 	    closeOnBodyClick: false,
 	    closeOnEsc: false,
 	    closeInTitle: false,
@@ -647,24 +647,24 @@ cora.fileImporter = {
             response = JSON.decode(tmp.getElement('pre.json').get('text'));
         }
         catch (err) {
-            title = "Fehlerhafte Server-Antwort";
-            message = "Der Server lieferte eine ungültige Antwort zurück. "
-                    + "Das Importieren der Datei war möglicherweise nicht erfolgreich.";
-            textarea = "Fehler beim Interpretieren der Server-Antwort:\n\t"
-                     + err.message + "\n\nDer Server antwortete:\n" + response;
+            title = _("FileTab.invalidServerResponse");
+            message = _("FileTab.invalidServerResponseInfo");
+            textarea = _("FileTab.serverResponseInterpretation") + ":\n\t";
+            textarea += err.message + "\n\n" + _("FileTab.serverResponse") + ":\n" + response;
+            
         }
         if(message != "") {}
         else if(!response || typeof response.success == "undefined") {
-            message = "Beim Hinzufügen der Datei ist ein unbekannter Fehler aufgetreten.";
+            message = _("FileTab.Forms.addFileError");
             gui.showMsgDialog('error', message);
             return false;
         }
         else if(!response.success) {
-            title = "Datei-Import fehlgeschlagen";
-            message = "Beim Hinzufügen der Datei "
-                    + ((response.errors.length>1) ?
-                       ("sind " + response.errors.length) : "ist ein")
-                    + " Fehler aufgetreten:";
+            title = _("FileTab.Forms.import.fileImportFailed");
+            var msgInfix = (response.errors.length>1) ?
+                    _("FileTab.Forms.import.error2", {errorCount: response.errors.length}) :
+                    _("FileTab.Forms.import.error1");
+            message = _("FileTab.Forms.import.importErrorInfo", {errorStr:msgInfix});
             textarea = response.errors.join("\n");
         }
         else if(error_only) {
@@ -672,13 +672,11 @@ cora.fileImporter = {
         }
         else {
             success = true;
-            title = "Datei-Import erfolgreich";
-            message = "Die Datei wurde erfolgreich hinzufügt.";
+            title = _("FileTab.Forms.import.importSuccess");
+            message = _("FileTab.Forms.import.importSuccessInfo");
+            
             if(response.warnings instanceof Array && response.warnings.length>0) {
-                message += " Das System lieferte "
-                         + ((response.warnings.length>1) ?
-                            (response.warnings.length + " Warnungen") : "eine Warnung")
-                         + " zurück:";
+                message += " " + _("FileTab.Forms.import.warnings", {nWarnings : response.warnings.length}) + ":";
                 textarea = response.warnings.join("\n");
             } else {
                 gui.showMsgDialog('info', message);
@@ -720,7 +718,7 @@ cora.fileImporter = {
 	    },
             onFailure: function(xhr) {
                 if(failures++ > 3) {
-                    gui.showNotice('notice', "Keine Verbindung zum Server.", true);
+                    gui.showNotice('notice', _("Banner.noConnection"), true);
                 }
             }
 	});
@@ -763,7 +761,7 @@ cora.fileImporter = {
 	    } else {
 		status.done = 'error';
 		if(process.output != null) {
-		    status.message = "Beim Importieren sind Fehler aufgetreten.";
+		    status.message = _("FileTab.Forms.import.importError");
                     status.output  = process.output;
 		}
 	    }
@@ -1078,18 +1076,19 @@ cora.fileManager = {
 
         // 2. If lock was successful, open the file
         onLockSuccess = function() {
-            gui.showSpinner({message: "Datei wird geöffnet..."});
+            gui.showSpinner({message: _("FileTab.Forms.import.loadingFile")});
             cora.files.open(fid, {onSuccess: onOpenSuccess, onError: onOpenError});
         };
         onLockError = function(error) {
             if(error.name === 'Handled' && error.status.lock) {
                 gui.showMsgDialog('info',
-                    "Das Dokument wird zur Zeit bearbeitet von Benutzer '"
-                    + error.status.lock.locked_by + "' seit "
-                    + gui.formatDateString(error.status.lock.locked_since).toLowerCase()
-                    + ".");
+                    _("Dialog.documentInUse", {
+                        'user': error.status.lock.locked_by,
+                        'lockDate': gui.formatDateString(
+                            error.status.lock.locked_since).toLowerCase()
+                    }));
             } else {
-                gui.showNotice('error', "Fehler beim Öffnen der Datei.");
+                gui.showNotice('error', _("Banner.openFileError"));
                 error.showAsDialog();
             }
         };
@@ -1109,7 +1108,7 @@ cora.fileManager = {
                  },
                  onError: function(error) {
                      gui.hideSpinner();
-                     gui.showNotice('error', "Fehler beim Laden der Tagsets.");
+                     gui.showNotice('error', _("Banner.loadTagsetError"));
                      error.showAsDialog();
                      this.closeCurrentlyOpened();
                  }.bind(this)
@@ -1118,7 +1117,7 @@ cora.fileManager = {
         }.bind(this);
         onOpenError = function(error) {
             gui.hideSpinner();
-            gui.showNotice('error', "Fehler beim Laden der Tagsets.");
+            gui.showNotice('error', _("Banner.loadTagsetError"));
             error.showAsDialog();
         };
 
@@ -1150,13 +1149,10 @@ cora.fileManager = {
             // if we're admin, we can close any file
             if(!cora.isAdmin()) {
                 gui.showMsgDialog('error',
-                           "Sie haben keine Berechtigung, diese Datei zu schließen.");
+                           _("FileTab.columnLabels.noClose"));
             } else {
                 gui.confirm(
-                    "Sie sind dabei, eine Datei zu schließen, die aktuell nicht von "
-                        +"Ihnen bearbeitet wird. Falls jemand anderes diese Datei "
-                        +"zur Zeit bearbeitet, könnten Datenverluste auftreten. "
-                        +"Trotzdem schließen?",
+                    _("FileTab.columnLabels.closePrompt"),
                     function() {
                         cora.files.close(
                             fid,
@@ -1204,16 +1200,15 @@ cora.fileManager = {
          fid - ID of the file to be deleted
      */
     deleteFile: function(fid) {
-        var message = "Soll das Dokument '" + cora.files.getDisplayName(fid)
-            + "' wirklich gelöscht werden? Dieser Schritt kann nicht rückgängig "
-            + "gemacht werden!";
+        var message = _("FileTab.columnLabels.deleteWarning",
+                        {file: cora.files.getDisplayName(fid)});
         var performDelete = function() {
-            gui.showSpinner({message: "Bitte warten..."});
+            gui.showSpinner({message: _("FileTab.pleaseWait")});
             cora.files.deleteFile(
                 fid,
                 {noticeOnError: true,
                  onSuccess: function(status) {
-		     gui.showNotice('ok', "Datei gelöscht.");
+		     gui.showNotice('ok', _("Banner.deleteConfirm"));
                  },
                  onComplete: function() {
                      gui.hideSpinner();
@@ -1263,21 +1258,21 @@ cora.fileManager = {
                                                   text: text});
                 div.grab(entry).grab(label);
             };
-        fixed = [['trans', "Token (Transkription)"],
-                 ['ascii', "Token (ASCII)"],
-                 ['utf', "Token (UTF)"]];
+        fixed = [['trans', _("Columns.transTok")],
+                 ['ascii', _("Columns.asciiTok")],
+                 ['utf', _("Columns.utfTok")]];
         Array.each(fixed, function(elem) {
             makeMultiSelectEntry(div, elem[0], elem[1]);
         });
         Array.each(cora.files.get(fid).tagset_links, function(tid) {
             var ts = cora.tagsets.get(tid);
             if (ts.exportable)
-                makeMultiSelectEntry(div, ts.class, ts.classname);
+                makeMultiSelectEntry(div, ts.class, _(ts.classname));
         });
         Object.each(cora.flags, function(flag, key) {
-            makeMultiSelectEntry(div, key, flag.displayname);
+            makeMultiSelectEntry(div, key, _(flag.displayname));
         });
-        new MultiSelect(div, {monitorText: ' Spalte(n) ausgewählt'});
+        new MultiSelect(div, {monitorText: _("FileTab.Forms.exportForm.columnsSelected")});
         return div;
     },
 
@@ -1289,15 +1284,14 @@ cora.fileManager = {
          fid - ID of the file to be exported
      */
     exportFile: function(fid){
-        var content = $('fileExportPopup');
         this.exportMultiSelectForCSV(fid)
-            .replaces(content.getElement('.export_CustomCSV_MS'));
+            .replaces($('fileExportPopup').getElement('.export_CustomCSV_MS'));
 	new mBox.Modal({
-	    content: content,
-	    title: 'Datei exportieren',
+	    content: 'fileExportPopup',
+	    title: 'fileExportPopup_title',
 	    buttons: [
-		{title: 'Abbrechen', addClass: 'mform'},
-		{title: 'Exportieren', addClass: 'mform button_green',
+		{title: _("Action.cancel"), addClass: 'mform'},
+		{title: _("FileTab.columnLabels.export2"), addClass: 'mform button_green',
 		 event: function() {
                      var ccsv = [],
                          data = {do: 'exportFile', fileid: fid};
@@ -1312,7 +1306,7 @@ cora.fileManager = {
                      );
                      if(ccsv) data.ccsv = ccsv;
 		     this.close();
-                     gui.showNotice('info', "Datei wird exportiert...");
+                     gui.showNotice('info', _("Banner.exporting"));
                      gui.download('request.php', data);
 		 }
 		}
@@ -1339,7 +1333,7 @@ cora.fileManager = {
             name: 'changeTagsetsForFile',
             textDialogOnError: true,
             onSuccess: function() {
-                gui.showNotice('ok', "Tagset-Verknüpfungen geändert.");
+                gui.showNotice('ok', _("Banner.tagsetsChanged"));
                 cora.projects.performUpdate();
             }
         }).get({'file_id': fileid, 'linktagsets': tagsets});
@@ -1358,12 +1352,12 @@ cora.fileManager = {
 	var contentdiv = $('tagsetAssociationTable');
         var tagsetLinks = cora.files.get(fileid).tagset_links;
 	var content = new mBox.Modal({
-	    title: "Tagset-Verknüpfungen für '"+fullname+"'",
+	    title: _("FileTab.Forms.editTagsets", {file: fullname}), //"Tagset-Verknüpfungen für '"+fullname+"'",
 	    content: contentdiv,
-	    buttons: [ {title: "Schließen", addClass: "mform",
+	    buttons: [ {title: _("Action.close"), addClass: "mform",
 			id: "editTagsetAssocOK",
 			event: function() { this.close(); }},
-                       {title: "Ändern", addClass: "mform button_red",
+                       {title: _("Action.change"), addClass: "mform button_red",
 			id: "editTagsetAssocPerform",
 			event: function() {
                             ref.performChangeTagsetAssoc(fileid, contentdiv);

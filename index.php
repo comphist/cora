@@ -39,11 +39,14 @@ try {
 /* Includes */
 require_once "lib/cfg.php";
 require_once "lib/connect.php";
+require_once "lib/localeHandler.php";
 require_once "lib/xmlHandler.php";
 require_once "lib/requestHandler.php";
 require_once "lib/sessionHandler.php";
 require_once "lib/exporter.php";
 
+$dbi;  /**< An instance of the DBInterface object. */
+$lh;   /**< An instance of the LocaleHandler object. */
 $sh;   /**< An instance of the SessionHandler object. */
 $rq;   /**< An instance of the RequestHandler object. */
 $menu; /**< A Menu object containing the menu items and references to
@@ -52,10 +55,10 @@ $menu; /**< A Menu object containing the menu items and references to
 
 /* Initiate session */
 $dbi = new DBInterface(Cfg::get('dbinfo'));
-$xml = new XMLHandler($dbi);
-$exp = new Exporter($dbi);
-$sh = new CoraSessionHandler($dbi, $xml, $exp);
-$rq = new RequestHandler( $sh );
+$lh = new LocaleHandler();
+$_ = $lh;
+$sh = new CoraSessionHandler($dbi, $lh);
+$rq = new RequestHandler($sh, $lh);
 $rq->handleRequests($_GET, $_POST);
 
 /* Define site content */
