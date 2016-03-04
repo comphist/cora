@@ -1,573 +1,527 @@
-{"name": "de-DE",
- "sets": {
-     "Locales": {
-         "de-DE": "Deutsch",
-         "en-US": "Englisch"
-     },
-     "Date": {
-         "daysRelative": ["Heute", "Gestern", "Vorgestern"]
-     },
-     "Menu": {
-         "file": "Datei",
-         "fileTooltip": "Dokumente öffnen oder verwalten",
-         "edit": "Editor",
-         "editTooltip": "Geöffnetes Dokument bearbeiten",
-         "search": "Suchen",
-         "searchTooltip": "Aktuelle Suchergebnisse anzeigen",
-         "settings": "Einstellungen",
-         "settingsTooltip": "Einstellungen von CorA ändern",
-         "admin": "Administration",
-         "adminTooltip": "Benutzer und Projekte verwalten",
-         "help": "Hilfe",
-         "helpTooltip": "Hilfe zur Benutzung von CorA",
-         "login": "Anmeldung",
-         "loginTooltip": "In CorA anmelden",
-         "loggedInAs" : "eingeloggt als"
-     },
-     "Toolbar": {
-         "closeFile": "Datei schließen"
-     },
-     "Gui": {
-        "collapse" : "Zuklappen",
-        "expand" : "Aufklappen",
-        "waitForAuthorization" : "Warte auf Authorisierung...",
-        "loginAccessError" : "Anmeldung war erfolgreich, aber Zugriff auf die aktuell geöffnete Datei ist nicht möglich. Eventuell wird diese Datei bereits von einem anderen Nutzer bearbeitet.",
-         "loading": "CorA wird geladen...",
-         "confirmLogin": {
-             "title": "Erneut anmelden",
-             "description": "Bitte geben Sie Ihre Zugangsdaten erneut ein, um fortzufahren."
-         },
-         "uncaughtException": {
-             "description": "**Ein unbekannter Fehler ist aufgetreten.**  Das hätte nicht passieren dürfen.  Möglicherweise müssen Sie CorA neu laden, um weiterarbeiten zu können.",
-             "details": "Details...",
-             "reload": "CorA neu laden"
-         }
-     },
-     "LibFile" : {
-        "invalidXML" : "Datei enthält kein wohlgeformtes XML. Parser meldete:"
-
-     },
-     "Dialog": {
-         "documentInUse": "Das Dokument wird bereits bearbeitet von Benutzer '{user}' seit {lockDate}."
-     },
-     "Forms": {
-         "buttonLogin": "Anmelden",
-         "loginFailed" : "Anmeldung fehlgeschlagen.",
-         "msgFailedLogin": "Anmeldung fehlgeschlagen.  Bitte überprüfen Sie Ihre Eingaben.",
-         "password": "Passwort",
-         "username": "Benutzername",
-         "close": "Schließen"
-     },
-     "Help" : {
-        "dontShowAgain" : "Schließen und nicht wieder anzeigen",
-        "dontShowAgainInfo" : "Sie können sich die Neuigkeiten jederzeit über den Tab 'Hilfe' erneut anzeigen lassen.",
-        "coraHelpTitle" : "Hilfe zur Benutzung von CorA",
-        "helpInGuide" : "Alle Funktionen von CorA sind im Benutzerhandbuch näher erläutert. Falls Sie Fragen zur Bedienung oder zu einer bestimmten Funktion von CorA haben, schauen Sie bitte zunächst dort nach:",
-        "coraGuideLink" : "CorA Benutzerhandbuch, 27.01.2015 [PDF]",
-        "feedbackTitle" : "Ungeklärte Fragen?  Bugs gefunden?",
-        "contactUsInfo" : "Falls Sie Fragen haben, die durch das Benutzerhandbuch nicht geklärt worden sind, oder falls Sie gar einen Fehler in CorA entdeckt haben, ",
-        "contactUs" : "kontaktieren Sie uns bitte!",
-        "contactRequest" : "Bitte senden Sie uns beim Melden von Fehlern eine **aussagekräftige** Beschreibung des Problems! Dazu gehören folgende Informationen:",
-        "contactCheck1" : "Was **genau** haben Sie unmittelbar vor dem Auftreten des Fehlers getan?",
-        "contactCheck2" : "Wie genau äußert sich der Fehler? Gibt es eine Fehlermeldung? Falls ja, die Meldung unbedingt kopieren und einfügen!",
-        "contactCheck3" : "An welcher Datei oder welcher Textstelle genau haben Sie gearbeitet, als der Fehler auftrat?",
-        "contactPerson" : "Ansprechpartner ist dabei"
-
-
-     },
-     "AdminTab" : {
-
-        "topButton" : {
-             "refresh" : "Aktualisieren",
-             "collapseCategories" : "Alle Kategorien zuklappen",
-             "expandCategories" : "Alle Kategorien aufklappen",
-             "newUser" : "Neuer Benutzer",
-             "newProject" : "Neues Projekt",
-             "newTagger" : "Neuer Tagger",
-             "newMsg" : "Neue Benachrichtigung",
-             "tagsetBrowser" : "Tagset-Browser",
-             "importTagset" : "Tagset importieren"
-         },
-
-         "userAdministration" : {
-             "userAdministrationTitle" : "Benutzerverwaltung",
-             "userName" : "Benutzername",
-             "isAdmin" : "Admin?",
-             "isAdminTitle" : "Admin",
-             "isNotAdminTitle" : "Kein Admin",
-             "lastActive" : "Letzte Aktivität",
-             "openFile" : "Geöffnete Datei",
-             "email" : "E-Mail",
-             "note" : "Notiz",
-             "options" : "Optionen...",
-             "deleteUser" : "Benutzer löschen",
-             "deleteUserConfirm" : "Benutzer '{user}' wirklich löschen?",
-             "couldNotLoadUserData" : "Die Daten für den Benutzer konnten nicht geladen werden."
-         },
-         "projectAdministration" : {
-             "projectAdministrationTitle" : "Projektverwaltung",
-             "projectName" : "Projektname",
-             "assignedUsers" : "Zugeordnete Benutzer",
-             "isEdit" : "Edit?",
-             "isImport" : "Import?",
-             "editScript" : "Edit-Skript zugeordnet",
-             "noEditScript" : "Kein Edit-Skript zugeordnet",
-             "importScript" : "Import-Skript zugeordnet",
-             "noImportScript" : "Kein Import-Skript zugeordnet",
-             "projectOptions" : "Projekt verwalten...",
-             "deleteProject" : "Projekt löschen",
-             "deleteProjectInfo" : "Projekte können nicht gelöscht werden, solange noch mindestens ein Dokument dem Projekt zugeordnet ist.",
-             "deleteProjectConfirm" : "Projekt {projectName} '{projectId}' wirklich löschen?",
-             "visibleForAdmins" : "**Hinweis**: Administratoren können _immer_ alle Projektgruppen sehen.",
-             "couldNotLoadSettings" : "Die Einstellungen für das Projekt konnten nicht geladen werden.",
-             "noValidProjectId" : "Keine/ungültige Projekt-ID erhalten: '{projectId}'"
-         
-         },
-         
-         "autoAnnotation" : {
-             "autoAnnotationTitle" : "Automatische Annotation",
-             "annoId" : "ID",
-             "annoName" : "Name",
-             "annoClass" : "Klasse",
-             "isTrained" : "Train?",
-             "associatedTagsetTypes" : "Zugeordnete Tagset-Typen",
-             "individuallyTrainable" : "Individuell trainierbar",
-             "notIndividuallyTrainable" : "Nicht individuell trainierbar",
-             "options" : "Optionen...",
-             "deleteTagger" : "Tagger löschen",
-             "taggerDeleteConfirm" : "Tagger {taggerNum} '{taggerName}' wirklich löschen?"
-         
-         },
-         
-         "serverMessages" : {
-             "serverNotifications" : "Server-Benachrichtigungen",
-             "serverId" : "ID",
-             "serverMsg" : "Nachricht",
-             "serverType" : "Typ",
-             "expire" : "Expires",
-             "deleteMsg" : "Benachrichtigung löschen",
-             "msgDeleteConfirm" : "Benachrichtigung {msg} wirklich löschen?"
-         
-         },
-
-         "Forms" : {
-
-            "addUser" : {
-                "addUserTitle" : "Neuen Benutzer hinzufügen",
-                "newUserName" : "Benutzername:",
-                "password" : "Passwort:",
-                "repeatPassword" : "Passwort wiederholen:"
-            },
-            "addProjectForm" : {
-                "addProject" : "Neues Projekt erstellen",
-                "projectName" : "Projektname:"
-            },
-            "addTaggerForm" : {
-                "addTagger" : "Neuen Tagger definieren",
-                "newTaggerName" : "Name:"
-            },
-            "addServerMsg" : {
-                "newServerMsg" : "Neue Server-Benachrichtigungen erstellen",
-                "type" : "Typ:",
-                "expireDate" : "Expires:",
-                "msgText" : "Nachricht:",
-                "preview" : "Anzeigen"
-            },
-            "tagsetBrowserForm" : {
-                "tagsetBrowser" : "Tagset-Browser",
-                "preview" : "Anzeigen"
-            },
-            "importTagsetForm" : {
-                "importTagset" : "Tagset aus Textdatei importieren",
-                "tagsetName" : "Name des Tagsets:",
-                "tagsetClass" : "Tagset-Klasse:",
-                "tagsetFile" : "Tagset-Datei:",
-                "tagsetInfo" : "Hinweis: Als Tagset-Datei wird eine Textdatei erwartet, die aus einem Tag pro Zeile besteht. Bei POS-Tagsets werden Punkte als Trennsymbole zwischen POS- und Morph-Attributen interpretiert. Tags, die als \"korrekturbedürftig\" markiert werden sollen, muss jeweils ein Caret (^) vorangestellt werden.",
-                "importBtn" : "Tagset importieren →",
-                "taggerImportError" : "Beim Import des Tagsets ist ein unbekannter Fehler aufgetreten.",
-                "taggerImportErrorInfo1" : "Beim Import des Tagsets ist ein Fehler aufgetreten:",
-                "taggerImportErrorInfo2" : "Beim Import des Tagsets sind {nE} Fehler aufgetreten:",
-                "tagsetImportFailed" : "Tagset-Import fehlgeschlagen!",
-                "importingTagset" : "Importiere Tagset...",
-                "tagsetSuccessfullyAdded" : "Das Tagset wurde erfolgreich hinzugefügt.",
-                "importNoSuccess" : "Import nicht erfolgreich",
-                "serverResponseInfo" : "Der Server lieferte folgende Fehlermeldung zurück:",
-                "invalidServerResponse" : "Fehlerhafte Server-Antwort",
-                "invalidServerResponseInfo" : "Der Server lieferte eine ungültige Antwort zurück.",
-                "serverResponse" : "Antwort des Servers",
-                "internalError" : "Interner Fehler"
-            },
-            "taggerOptionsForm" : {
-                 "optionsForTagger" : "Optionen für Tagger {taggerId}",
-                 "taggerName" : "Name:",
-                 "taggerClass" : "Klasse:",
-                 "taggerOptions" : "Optionen:",
-                 "trainablePerProject" : "Projekt-spezifisch trainierbar",
-                 "associatedTagsets" : "Zugeordnete Tagsets:",
-                 "tagsetsSelected" : "Tagset(s) ausgewählt",
-                 "taggerOptionsInfo" : "Nur Texte, denen auch mindestens die hier ausgewählten Tagsets zugeordnet sind, können mit diesem Tagger annotiert werden."
-                  
-             },
-             "userOptionsForm" : {
-                 "settingsForUser" : "Einstellungen für '{user}'",
-                 "emailAddress" : "E-Mail-Adresse:",
-                 "userNote" : "Notiz:",
-                 "placeholderMail" : "max@mustermann.de",
-                 "placeholderNote" : "(keine)"
-             },
-             "changePasswordForm" : {
-                 "changePassword" : "Passwort ändern",
-                 "newPassword" : "Neues Passwort",
-                 "repeatNewPassword" : "Neues Passwort wiederholen"
-             },
-             "projectOptionsForm" : {
-                 "projectOptions" : "Einstellungen für Projekt \"{project}\"",
-                 "editTokenCommand" : "Befehl zum Editieren von Tokens:",
-                 "importCommand" : "Befehl zum Importieren von Texten:",
-                 "placeholderCommand" : "(nicht definiert)",
-                 "assignedUsers" : "Zugeordnete Benutzer:",
-                 "assignUserInfo" : "Nur Administratoren oder dem Projekt zugeordnete Benutzer können dieses Projekt und die darin enthaltenen Dateien sehen und bearbeiten.",
-                 "usersSelected" : "Benutzer ausgewählt",
-                 "associatedTagsets" : "Zugeordnete Tagsets:",
-                 "associatedTagsetsInfo" : "Neue Texte, die in dieses Projekt importiert werden, werden standardmäßig mit den hier zugeordneten Tagsets verknüpft. Änderungen hier haben **keine** Auswirkungen auf bereits in der Datenbank vorhandene Texte!",
-                 "tagsetsSelected" : "Tagset(s) ausgewählt"
-            
-             }
-
-         }
-
-
-     },
-
-     "SettingsTab": {
-        "language" : "Sprache",
-        "changePassword" : "Passwort ändern...",
-        "numberOfLines" : "Zeilenanzahl",
-        "linesPerPage" : "Zeilen pro Seite:",
-        "overlappingLines" : "Überlappende Zeilen:",
-        "applyLineSettings" : "Zeilen-Einstellungen übernehmen",
-        "visibleCols" : "Sichtbare Spalten",
-        "horizontalPreview" : "Horizontale Textvorschau",
-        "noPreview" : "Aus",
-        "editSupport" : "Editierhilfen",
-        "highlightErrorTags" : "Fehlerhafte Tags hervorheben",
-        "passwordForm" : {
-            "oldPassword" : "Altes Passwort:",
-            "newPassword" : "Neues Passwort:",
-            "newPasswordRepeat" : "Neues Passwort (Wdh.):",
-            "doNotMatch" : "Die beiden Passwörter stimmen nicht überein!",
-            "oldInvalid" : "Altes Passwort ist nicht korrekt!",
-            "changePasswordBtn" : "Passwort ändern",
-            "changePasswordTitle" : "Passwort ändern",
-            "passwordChanged" : "Passwort geändert"
-            },
-        "editorLanguage" : {
-            "english" : "Englisch",
-            "german" : "Deutsch"
-        }
-     
-     },
-     "FileTab" : {
-
-        "topButton" : {
-            "refresh" : "Aktualisieren",
-            "expandProjectGroups" : "Alle Projektgruppen aufklappen",
-            "collapseProjectGroups" : "Alle Projektgruppen zuklappen",
-            "importText" : "Import aus Textdatei",
-            "importXml" : "Import aus XML-Datei"
-
+{
+    "name": "de-DE",
+    "sets": {
+        "Action": {
+            "addUserBtn": "Hinzuf\u00fcgen",
+            "annotate": "Annotieren",
+            "cancel": "Abbrechen",
+            "change": "\u00c4ndern",
+            "changePassword": "Passwort \u00e4ndern...",
+            "close": "Schlie\u00dfen",
+            "createMsg": "Erstellen",
+            "createProject": "Erstellen",
+            "createTagger": "Erstellen",
+            "export2": "Exportieren",
+            "importTagset": "Tagset importieren",
+            "noCancel": "Nein, abbrechen",
+            "ok": "Ok",
+            "preview": "Vorschau",
+            "reset": "Zur\u00fccksetzen",
+            "retrain": "Neu trainieren",
+            "save": "Speichern",
+            "search": "Suchen",
+            "yesConfirm": "Ja, best\u00e4tigen",
+            "yesDelete": "Ja, l\u00f6schen"
         },
-
-        "columnLabels" : {
-            "siglum" : "Sigle",
-            "fileName" : "Dateiname",
-            "lastEdit" : "Letzte Änderung",
-            "by" : "...von",
-            "created" : "Erstellt",
-            "id" : "ID",
-            "deleteFile" : "Datei löschen",
-            "deleteWarning" : "Soll das Dokument '{file}' wirklich gelöscht werden? Dieser Schritt kann nicht rückgängig gemacht werden!",
-            "export" : "Exportieren...",
-            "exportFileTitle" : "Datei exportieren",
-            "tagsets" : "Tagsets...",
-            "editAssociatedTagsets" : "Tagset-Verknüpfungen bearbeiten",
-            "closeFile" : "Schließen",
-            "closeFileTitle" : "Datei schließen",
-            "noClose" : "Sie haben keine Berechtigung, diese Datei zu schließen.",
-            "closePrompt" : "Sie sind dabei, eine Datei zu schließen, die aktuell nicht von Ihnen bearbeitet wird. Falls jemand anderes diese Datei zur Zeit bearbeitet, könnten Datenverluste auftreten. Trotzdem schließen?"
-
-        },
-
-        "Forms" : {
-            "import" : {
-                "importTextFile" : "Importieren aus Textdatei",
-                "importXmlFile" : "Importieren aus CorA-XML-Format",
-                "file" : "Datei:",
-                "encoding" : "Kodierung:",
-                "project" : "Projekt:",
-                "docName" : "Name:",
-                "docNamePlaceholder" : "(Dokumentname)",
-                "siglum" : "Sigle:",
-                "siglumPlaceholder" : "(Sigle - optional)",
-                "chooseFile" : "Bitte wählen Sie eine Datei zum Importieren aus!",
-                "importBtn" : "Importieren →",
-                "associatedTagsets" : "Tagset-Verknüpfungen:",
-                "tagsetsSelected" : "Tagset(s) ausgewählt",
-                "importInfo" : "Die folgenden Felder müssen nicht ausgefüllt werden, falls die entsprechenden Informationen bereits in der XML-Datei enthalten sind.",
-                "noImportScriptInfo" : "Für das gewählte Projekt ist kein Importskript festgelegt. Ohne Importskript können neue Dokumente nur als CorA-XML-Datei importiert werden.",
-                "loadingFile" : "Datei wird geöffnet...",
-                "importingData" : "Importiere Daten...",
-                "importSuccess" : "Datei-Import erfolgreich",
-                "importSuccessInfo" : "Die Datei wurde erfolgreich hinzugefügt.",
-                "warnings" : "Das System lieferte {nWarnings} Warnung(en) zurück",
-                "importUnknownError" : "Import aus unbekannten Gründen fehlgeschlagen!",
-                "importFailed" : "Importieren fehlgeschlagen",
-                "fileImportFailed" : "Datei-Import fehlgeschlagen",
-                "importErrorInfo" : "Beim Hinzufügen der Datei {errorStr} Fehler aufgetreten:",
-                "error1" : "ist ein",
-                "error2" : "sind {errorCount}",
-                "importError" : "Beim Importieren sind Fehler aufgetreten."
-
+        "AdminTab": {
+            "Forms": {
+                "addProjectForm": {
+                    "addProject": "Neues Projekt erstellen",
+                    "projectName": "Projektname:"
+                },
+                "addServerMsg": {
+                    "expireDate": "Expires:",
+                    "msgText": "Nachricht:",
+                    "newServerMsg": "Neue Server-Benachrichtigungen erstellen",
+                    "preview": "Anzeigen",
+                    "type": "Typ:"
+                },
+                "addTaggerForm": {
+                    "addTagger": "Neuen Tagger definieren",
+                    "newTaggerName": "Name:"
+                },
+                "addUser": {
+                    "addUserTitle": "Neuen Benutzer hinzuf\u00fcgen",
+                    "newUserName": "Benutzername:",
+                    "password": "Passwort:",
+                    "repeatPassword": "Passwort wiederholen:"
+                },
+                "changePasswordForm": {
+                    "changePassword": "Passwort \u00e4ndern",
+                    "newPassword": "Neues Passwort",
+                    "repeatNewPassword": "Neues Passwort wiederholen"
+                },
+                "importTagsetForm": {
+                    "importBtn": "Tagset importieren \u2192",
+                    "importNoSuccess": "Import nicht erfolgreich",
+                    "importTagset": "Tagset aus Textdatei importieren",
+                    "importingTagset": "Importiere Tagset...",
+                    "internalError": "Interner Fehler",
+                    "invalidServerResponse": "Fehlerhafte Server-Antwort",
+                    "invalidServerResponseInfo": "Der Server lieferte eine ung\u00fcltige Antwort zur\u00fcck.",
+                    "serverResponse": "Antwort des Servers",
+                    "serverResponseInfo": "Der Server lieferte folgende Fehlermeldung zur\u00fcck:",
+                    "taggerImportError": "Beim Import des Tagsets ist ein unbekannter Fehler aufgetreten.",
+                    "taggerImportErrorInfo1": "Beim Import des Tagsets ist ein Fehler aufgetreten:",
+                    "taggerImportErrorInfo2": "Beim Import des Tagsets sind {nE} Fehler aufgetreten:",
+                    "tagsetClass": "Tagset-Klasse:",
+                    "tagsetFile": "Tagset-Datei:",
+                    "tagsetImportFailed": "Tagset-Import fehlgeschlagen!",
+                    "tagsetInfo": "Hinweis: Als Tagset-Datei wird eine Textdatei erwartet, die aus einem Tag pro Zeile besteht. Bei POS-Tagsets werden Punkte als Trennsymbole zwischen POS- und Morph-Attributen interpretiert. Tags, die als \"korrekturbed\u00fcrftig\" markiert werden sollen, muss jeweils ein Caret (^) vorangestellt werden.",
+                    "tagsetName": "Name des Tagsets:",
+                    "tagsetSuccessfullyAdded": "Das Tagset wurde erfolgreich hinzugef\u00fcgt."
+                },
+                "projectOptionsForm": {
+                    "assignUserInfo": "Nur Administratoren oder dem Projekt zugeordnete Benutzer k\u00f6nnen dieses Projekt und die darin enthaltenen Dateien sehen und bearbeiten.",
+                    "assignedUsers": "Zugeordnete Benutzer:",
+                    "associatedTagsets": "Zugeordnete Tagsets:",
+                    "associatedTagsetsInfo": "Neue Texte, die in dieses Projekt importiert werden, werden standardm\u00e4\u00dfig mit den hier zugeordneten Tagsets verkn\u00fcpft. \u00c4nderungen hier haben **keine** Auswirkungen auf bereits in der Datenbank vorhandene Texte!",
+                    "editTokenCommand": "Befehl zum Editieren von Tokens:",
+                    "importCommand": "Befehl zum Importieren von Texten:",
+                    "placeholderCommand": "(nicht definiert)",
+                    "projectOptions": "Einstellungen f\u00fcr Projekt \"{project}\"",
+                    "tagsetsSelected": "Tagset(s) ausgew\u00e4hlt",
+                    "usersSelected": "Benutzer ausgew\u00e4hlt"
+                },
+                "taggerOptionsForm": {
+                    "associatedTagsets": "Zugeordnete Tagsets:",
+                    "optionsForTagger": "Optionen f\u00fcr Tagger {taggerId}",
+                    "taggerClass": "Klasse:",
+                    "taggerName": "Name:",
+                    "taggerOptions": "Optionen:",
+                    "taggerOptionsInfo": "Nur Texte, denen auch mindestens die hier ausgew\u00e4hlten Tagsets zugeordnet sind, k\u00f6nnen mit diesem Tagger annotiert werden.",
+                    "tagsetsSelected": "Tagset(s) ausgew\u00e4hlt",
+                    "trainablePerProject": "Projekt-spezifisch trainierbar"
+                },
+                "tagsetBrowserForm": {
+                    "preview": "Anzeigen",
+                    "tagsetBrowser": "Tagset-Browser"
+                },
+                "userOptionsForm": {
+                    "emailAddress": "E-Mail-Adresse:",
+                    "placeholderMail": "max@mustermann.de",
+                    "placeholderNote": "(keine)",
+                    "settingsForUser": "Einstellungen f\u00fcr '{user}'",
+                    "userNote": "Notiz:"
+                }
             },
-            "exportForm" : {
-                "exportFile" : "Datei exportieren",
-                "exportPrompt" : "In welchem Format möchten Sie die Datei exportieren?",
-                "coraXmlFormat" : "CorA-XML",
-                "columnCsvFormat" : "Spaltenformat (CSV)",
-                "columnNormFormat" : "4-Spaltenformat (Normalisierung)",
-                "transFormat" : "Transkriptionsformat",
-                "columnsSelected" : " Spalte(n) ausgewählt",
-                "exportInfoCora" : "Exportiert eine CorA-XML-Datei, die das vollständige Dokument mitsamt allen Annotationen enthält.  Diese Datei kann auch wieder re-importiert werden, um eine Kopie des Dokuments im selben Zustand wie zum Zeitpunkt des Exports zu erhalten.",
-                "exportInfoCsv" : "Exportiert eine mehrspaltige Textdatei, die sich u.a. zum Import in eine Tabellenkalkulation (z.B. Microsoft Excel) eignet. Wählen Sie aus, welche Annotationsebenen im Export enthalten sein sollen:"
-            
+            "autoAnnotation": {
+                "annoClass": "Klasse",
+                "annoId": "ID",
+                "annoName": "Name",
+                "associatedTagsetTypes": "Zugeordnete Tagset-Typen",
+                "autoAnnotationTitle": "Automatische Annotation",
+                "deleteTagger": "Tagger l\u00f6schen",
+                "individuallyTrainable": "Individuell trainierbar",
+                "isTrained": "Train?",
+                "notIndividuallyTrainable": "Nicht individuell trainierbar",
+                "options": "Optionen...",
+                "taggerDeleteConfirm": "Tagger {taggerNum} '{taggerName}' wirklich l\u00f6schen?"
             },
-
-            "editTagsets" : "Tagset-Verknüpfungen für '{file}'",
-            "addFileError" : "Beim Hinzufügen der Datei ist ein unbekannter Fehler aufgetreten."
-
-        },
-
-        "pleaseWait" : "Bitte warten...",
-        "noProjectGroups" : "Keine Projektgruppen verfügbar!",
-        "noProjectGroupsInfo" : "Sie gehören zur Zeit keiner Projektgruppe an. Wenden Sie sich an einen Administrator, um zu einer Projektgruppe hinzuzufügt zu werden.",
-        "noFilesInProject" : "Dieses Projekt enthält keine Dateien.",
-        "invalidServerResponse" : "Fehlerhafte Server-Antwort",
-        "invalidServerResponseInfo" : "Der Server lieferte eine ungültige Antwort zurück. Das Importieren der Datei war möglicherweise nicht erfolgreich.",
-        "serverResponseInterpretation" : "Fehler beim Interpretieren der Server-Antwort",
-        "serverResponse" : "Der Server antwortete"
-
-     }, 
-
-     "EditorTab": {
-        "topButton" : {
-            "page" : "Seite",
-            "previousPage" : "Seite zurück",
-            "nextPage" : "Seite vor",
-            "goToLine" : "Springe zu Zeile",
-            "lineNumber" : "Zeilennummer:",
-            "undo" : "Rückgängig",
-            "redo" : "Wiederherstellen",
-            "search" : "Suchen",
-            "previousMatch" : "Vorheriges Suchergebnis",
-            "nextMatch" : "Nächstes Suchergebnis",
-            "autoAnnotation" : "Automatisch annotieren",
-            "metaData" : "Metadaten"
-
-        },
-        "dropDown" : {
-            "searchSimilar" : "Suche ähnliche...",
-            "editToken" : "Token bearbeiten...",
-            "addToken" : "Token hinzufügen...",
-            "deleteToken" : "Token löschen",
-            "openDropdownMenu" : "Dropdown-Menü öffnen"
-
-        },
-        "searchResult" : {
-            "resultPage" : "Ergebnis-Seite",
-            "editQuery" : "Suche ändern",
-            "resultInfo" : "Es gibt **{resultCount}** Treffer für Tokens, die **{searchMode}** dieser Bedingungen erfüllen:"
-        },
-        "Forms" : {
-            "cannotBeUndone" : "Diese Aktion kann nicht rückgängig gemacht werden!",
-            "searchForm" : {
-                "searchTitle" : "Suchen",
-                "searchForm1" : "Suche Tokens, die",
-                "searchForm2" : "der folgenden Bedingungen erfüllen:",
-                "allFulfilled" : "alle",
-                "oneFulfilled" : "mindestens eine",
-                "blank" : "(leer)",
-                "tokenAll" : "Token",
-                "tokenTrans" : "Token (Transkription)",
-                "annotationLevels" : "Annotationsebenen",
-                "markups" : "Markierungen",
-                "posTagMorph" : "POS-Tag (inkl. Morphologie)",
-                "errorMarkup" : "Fehler-Markierung",
-                "lemmaMarkup" : "Lemma-Markierung",
-                "sentBoundaryMarkup" : "Satzgrenzen-Markierung",
-                "is" : "ist",
-                "isNot" : "ist nicht",
-                "contains" : "enthält",
-                "containsNot" : "enthält nicht",
-                "startsWith" : "beginnt mit",
-                "endsWith" : "endet auf",
-                "matchesRegEx" : "matcht RegEx",
-                "isSet" : "ist gesetzt",
-                "isNotSet" : "ist nicht gesetzt"
-
+            "projectAdministration": {
+                "assignedUsers": "Zugeordnete Benutzer",
+                "couldNotLoadSettings": "Die Einstellungen f\u00fcr das Projekt konnten nicht geladen werden.",
+                "deleteProject": "Projekt l\u00f6schen",
+                "deleteProjectConfirm": "Projekt {projectName} '{projectId}' wirklich l\u00f6schen?",
+                "deleteProjectInfo": "Projekte k\u00f6nnen nicht gel\u00f6scht werden, solange noch mindestens ein Dokument dem Projekt zugeordnet ist.",
+                "editScript": "Edit-Skript zugeordnet",
+                "importScript": "Import-Skript zugeordnet",
+                "isEdit": "Edit?",
+                "isImport": "Import?",
+                "noEditScript": "Kein Edit-Skript zugeordnet",
+                "noImportScript": "Kein Import-Skript zugeordnet",
+                "noValidProjectId": "Keine/ung\u00fcltige Projekt-ID erhalten: '{projectId}'",
+                "projectAdministrationTitle": "Projektverwaltung",
+                "projectName": "Projektname",
+                "projectOptions": "Projekt verwalten...",
+                "visibleForAdmins": "**Hinweis**: Administratoren k\u00f6nnen _immer_ alle Projektgruppen sehen."
             },
-            "autoAnnotationForm" : {
-                "autoAnnotationTitle" : "Automatisch neu annotieren",
-                "availableTagger" : "Tagger: ",
-                "noTaggerAvailable" : "Keine Tagger verfügbar",
-                "autoAnnotationInfo" : "\"Annotieren\" überschreibt vorhandene Annotationen in allen Zeilen, die **nicht** mittels des Fortschrittsbalkens grün markiert sind."
-
+            "serverMessages": {
+                "deleteMsg": "Benachrichtigung l\u00f6schen",
+                "expire": "Expires",
+                "msgDeleteConfirm": "Benachrichtigung {msg} wirklich l\u00f6schen?",
+                "serverId": "ID",
+                "serverMsg": "Nachricht",
+                "serverNotifications": "Server-Benachrichtigungen",
+                "serverType": "Typ"
             },
-            "metaDataForm" : {
-                "metaDataTitle" : "Metadaten",
-                "siglum" : "Sigle:",
-                "fileName" : "Dateiname:",
-                "header" : "Header:"
+            "topButton": {
+                "collapseCategories": "Alle Kategorien zuklappen",
+                "expandCategories": "Alle Kategorien aufklappen",
+                "importTagset": "Tagset importieren",
+                "newMsg": "Neue Benachrichtigung",
+                "newProject": "Neues Projekt",
+                "newTagger": "Neuer Tagger",
+                "newUser": "Neuer Benutzer",
+                "refresh": "Aktualisieren",
+                "tagsetBrowser": "Tagset-Browser"
             },
-            "editTranscriptionForm" : {
-                "editTranscription" : "Transkription bearbeiten",
-                "transcription" : "Transkription: ",
-                "tokenEdited" : "Token erfolgreich bearbeitet."
-
-
-            },
-            "addTranscriptionForm" : {
-                "addTranscription" : "Transkription hinzufügen",
-                "newTranscription" : "Transkription: ",
-                "newTransInfo" : "Die neue Transkription wird **vor** dem Token \"{tokInFront}\" auf Zeile \"{lineInfo}\" in das Originaldokument eingefügt.",
-                "tokenAdded" : "Token erfolgreich hinzugefügt."
-
-            },
-            "deleteToken" : {
-                "confirmDeletion" : "Löschen bestätigen",
-                "deletionPrompt" : "Soll das Token \"{tok2del}\" wirklich gelöscht werden?",
-                "tokenDeleted" : "Token gelöscht."
+            "userAdministration": {
+                "couldNotLoadUserData": "Die Daten f\u00fcr den Benutzer konnten nicht geladen werden.",
+                "deleteUser": "Benutzer l\u00f6schen",
+                "deleteUserConfirm": "Benutzer '{user}' wirklich l\u00f6schen?",
+                "email": "E-Mail",
+                "isAdmin": "Admin?",
+                "isAdminTitle": "Admin",
+                "isNotAdminTitle": "Kein Admin",
+                "lastActive": "Letzte Aktivit\u00e4t",
+                "note": "Notiz",
+                "openFile": "Ge\u00f6ffnete Datei",
+                "options": "Optionen...",
+                "userAdministrationTitle": "Benutzerverwaltung",
+                "userName": "Benutzername"
             }
-
         },
-        "general" : {
-            "allTags" : "Alle Tags",
-            "allTagsFor" : "Alle Tags für '{tagClass}'",
-            "warning" : "Achtung!",
-            "openExternalLink" : "Externen Link öffnen",
-            "loadingPreview" : "Text-Vorschau wird geladen...",
-            "unsavedChangesWarning" : "Es gibt noch ungespeicherte Änderungen, die verloren gehen könnten, wenn Sie fortfahren!",
-            "criticalError" : "Kritischer Fehler",
-            "criticalErrorInfo" : "Beim Speichern des Dokuments ist ein server-seitiger Fehler aufgetreten.  Um Datenverluste zu vermeiden, bearbeiten Sie das Dokument bitte nicht weiter und melden diesen Fehler einem Administrator.",
-            "couldNotLoadLines" : "Ein interner Fehler ist aufgetreten: Zeilen {startLine} bis {endLine} können nicht geladen werden.",
-            "cannotSaveInfo" : "Das Dokument kann derzeit nicht gespeichert werden; der aktuelle Vorgang wird daher abgebrochen.  Überprüfen Sie Ihre Internetverbindung und versuchen Sie es ggf. erneut.",
-            "pleaseWait" : "Bitte warten...",
-            "primaryDataNotChanged" : "Primärdaten nicht geändert."
-
+        "Banner": {
+            "autoTagSuccess": "Automatische Annotation war erfolgreich.",
+            "cannotSave": "Dokument kann derzeit nicht gespeichert werden.",
+            "changesApplied": "\u00c4nderungen \u00fcbernommen.",
+            "changesNotApplied": "\u00c4nderungen nicht \u00fcbernommen.",
+            "deleteConfirm": "Datei gel\u00f6scht.",
+            "enterExpireDate": "Ablauftermin muss angegeben werden!",
+            "enterLineNo": "Bitte eine Zahl eingeben.",
+            "enterMsg": "Benachrichtigung darf nicht leer sein!",
+            "enterTaggerName": "Name darf nicht leer sein!",
+            "exporting": "Datei wird exportiert...",
+            "fileImportSuccess": "Datei erfolgreich importiert.",
+            "importUnknownError": "Import aus unbekannten Gr\u00fcnden fehlgeschlagen!",
+            "lineDoesNotExist": "Zeilennummer existiert nicht.",
+            "loadTagsetError": "Fehler beim Laden der Tagsets.",
+            "manyLinesWarning": "Warnung: Eine hohe Anzahl an Zeilen pro Seite kann zur Folge haben, dass der Seitenaufbau sehr langsam wird bzw. der Browser f\u00fcr l\u00e4ngere Zeit nicht mehr reagiert.",
+            "metaDataChanged": "Metadaten erfolgreich ge\u00e4ndert.",
+            "msgAdded": "Benachrichtigung hinzugef\u00fcgt.",
+            "msgDeleted": "Benachrichtigung gel\u00f6scht.",
+            "noConnection": "Keine Verbindung zum Server.",
+            "noImportFileSelected": "Keine Datei zum Importieren ausgew\u00e4hlt!",
+            "numbersOnly": "Bitte nur Zahlen eingeben!",
+            "openFileError": "Fehler beim \u00d6ffnen der Datei.",
+            "overlappingLines": "Anzahl \u00fcberlappender Zeilen muss kleiner sein als Anzahl der Zeilen pro Seite.",
+            "passwordChanged": "Passwort ge\u00e4ndert.",
+            "passwordEmpty": "Passwort darf nicht leer sein.",
+            "passwordNoMatch": "Passw\u00f6rter stimmen nicht \u00fcberein.",
+            "projectCreated": "Projekt angelegt.",
+            "projectDeleted": "Projekt gel\u00f6scht.",
+            "retrainSuccess": "Neu trainieren war erfolgreich.",
+            "settingsSaved": "Einstellungen ge\u00e4ndert.",
+            "taggerCreated": "Tagger erstellt.",
+            "taggerDeleted": "Tagger gel\u00f6scht.",
+            "taggerOptionsUpdated": "Tagger-Optionen ge\u00e4ndert.",
+            "tagsetsChanged": "Tagset-Verkn\u00fcpfungen ge\u00e4ndert.",
+            "transcriptionEmpty": "Transkription darf nicht leer sein!",
+            "userAdded": "Benutzer hinzugef\u00fcgt.",
+            "userDeleted": "Benutzer gel\u00f6scht.",
+            "userNameEmpty": "Benutzername darf nicht leer sein."
+        },
+        "Columns": {
+            "asciiTok": "Token (ASCII)",
+            "comment": "Kommentar",
+            "lemma": "Lemma",
+            "lemmaLink": "Lemma-Link",
+            "lemmaSuggestion": "Lemma-Vorschlag",
+            "lemmaTag": "Lemma-Tag",
+            "line": "Zeile",
+            "lineNo": "Zeilennummer",
+            "mod": "Modernisierung",
+            "modType": "Modernisierungstyp",
+            "morph": "Morphologie-Tag",
+            "norm": "Normalisierung",
+            "pos": "POS-Tag",
+            "posMorph": "POS-Tag (inkl. Morphologie)",
+            "secondaryComment": "Sekund\u00e4r-Kommentar",
+            "sentBoundary": "Satzgrenze",
+            "transTok": "Token (Trans)",
+            "utfTok": "Token (UTF)"
+        },
+        "Date": {
+            "daysRelative": [
+                "Heute",
+                "Gestern",
+                "Vorgestern"
+            ]
+        },
+        "Dialog": {
+            "documentInUse": "Das Dokument wird bereits bearbeitet von Benutzer '{user}' seit {lockDate}."
+        },
+        "EditorTab": {
+            "Forms": {
+                "addTranscriptionForm": {
+                    "addTranscription": "Transkription hinzuf\u00fcgen",
+                    "newTransInfo": "Die neue Transkription wird **vor** dem Token \"{tokInFront}\" auf Zeile \"{lineInfo}\" in das Originaldokument eingef\u00fcgt.",
+                    "newTranscription": "Transkription: ",
+                    "tokenAdded": "Token erfolgreich hinzugef\u00fcgt."
+                },
+                "autoAnnotationForm": {
+                    "autoAnnotationInfo": "\"Annotieren\" \u00fcberschreibt vorhandene Annotationen in allen Zeilen, die **nicht** mittels des Fortschrittsbalkens gr\u00fcn markiert sind.",
+                    "autoAnnotationTitle": "Automatisch neu annotieren",
+                    "availableTagger": "Tagger: ",
+                    "noTaggerAvailable": "Keine Tagger verf\u00fcgbar"
+                },
+                "cannotBeUndone": "Diese Aktion kann nicht r\u00fcckg\u00e4ngig gemacht werden!",
+                "deleteToken": {
+                    "confirmDeletion": "L\u00f6schen best\u00e4tigen",
+                    "deletionPrompt": "Soll das Token \"{tok2del}\" wirklich gel\u00f6scht werden?",
+                    "tokenDeleted": "Token gel\u00f6scht."
+                },
+                "editTranscriptionForm": {
+                    "editTranscription": "Transkription bearbeiten",
+                    "tokenEdited": "Token erfolgreich bearbeitet.",
+                    "transcription": "Transkription: "
+                },
+                "metaDataForm": {
+                    "fileName": "Dateiname:",
+                    "header": "Header:",
+                    "metaDataTitle": "Metadaten",
+                    "siglum": "Sigle:"
+                },
+                "searchForm": {
+                    "allFulfilled": "alle",
+                    "annotationLevels": "Annotationsebenen",
+                    "blank": "(leer)",
+                    "contains": "enth\u00e4lt",
+                    "containsNot": "enth\u00e4lt nicht",
+                    "endsWith": "endet auf",
+                    "errorMarkup": "Fehler-Markierung",
+                    "is": "ist",
+                    "isNot": "ist nicht",
+                    "isNotSet": "ist nicht gesetzt",
+                    "isSet": "ist gesetzt",
+                    "lemmaMarkup": "Lemma-Markierung",
+                    "markups": "Markierungen",
+                    "matchesRegEx": "matcht RegEx",
+                    "oneFulfilled": "mindestens eine",
+                    "posTagMorph": "POS-Tag (inkl. Morphologie)",
+                    "searchForm1": "Suche Tokens, die",
+                    "searchForm2": "der folgenden Bedingungen erf\u00fcllen:",
+                    "searchTitle": "Suchen",
+                    "sentBoundaryMarkup": "Satzgrenzen-Markierung",
+                    "startsWith": "beginnt mit",
+                    "tokenAll": "Token",
+                    "tokenTrans": "Token (Transkription)"
+                }
+            },
+            "dropDown": {
+                "addToken": "Token hinzuf\u00fcgen...",
+                "deleteToken": "Token l\u00f6schen",
+                "editToken": "Token bearbeiten...",
+                "openDropdownMenu": "Dropdown-Men\u00fc \u00f6ffnen",
+                "searchSimilar": "Suche \u00e4hnliche..."
+            },
+            "general": {
+                "allTags": "Alle Tags",
+                "allTagsFor": "Alle Tags f\u00fcr '{tagClass}'",
+                "cannotSaveInfo": "Das Dokument kann derzeit nicht gespeichert werden; der aktuelle Vorgang wird daher abgebrochen.  \u00dcberpr\u00fcfen Sie Ihre Internetverbindung und versuchen Sie es ggf. erneut.",
+                "couldNotLoadLines": "Ein interner Fehler ist aufgetreten: Zeilen {startLine} bis {endLine} k\u00f6nnen nicht geladen werden.",
+                "criticalError": "Kritischer Fehler",
+                "criticalErrorInfo": "Beim Speichern des Dokuments ist ein server-seitiger Fehler aufgetreten.  Um Datenverluste zu vermeiden, bearbeiten Sie das Dokument bitte nicht weiter und melden diesen Fehler einem Administrator.",
+                "loadingPreview": "Text-Vorschau wird geladen...",
+                "openExternalLink": "Externen Link \u00f6ffnen",
+                "pleaseWait": "Bitte warten...",
+                "primaryDataNotChanged": "Prim\u00e4rdaten nicht ge\u00e4ndert.",
+                "unsavedChangesWarning": "Es gibt noch ungespeicherte \u00c4nderungen, die verloren gehen k\u00f6nnten, wenn Sie fortfahren!",
+                "warning": "Achtung!"
+            },
+            "searchResult": {
+                "editQuery": "Suche \u00e4ndern",
+                "resultInfo": "Es gibt **{resultCount}** Treffer f\u00fcr Tokens, die **{searchMode}** dieser Bedingungen erf\u00fcllen:",
+                "resultPage": "Ergebnis-Seite"
+            },
+            "topButton": {
+                "autoAnnotation": "Automatisch annotieren",
+                "goToLine": "Springe zu Zeile",
+                "lineNumber": "Zeilennummer:",
+                "metaData": "Metadaten",
+                "nextMatch": "N\u00e4chstes Suchergebnis",
+                "nextPage": "Seite vor",
+                "page": "Seite",
+                "previousMatch": "Vorheriges Suchergebnis",
+                "previousPage": "Seite zur\u00fcck",
+                "redo": "Wiederherstellen",
+                "search": "Suchen",
+                "undo": "R\u00fcckg\u00e4ngig"
+            }
+        },
+        "FileTab": {
+            "Forms": {
+                "addFileError": "Beim Hinzuf\u00fcgen der Datei ist ein unbekannter Fehler aufgetreten.",
+                "editTagsets": "Tagset-Verkn\u00fcpfungen f\u00fcr '{file}'",
+                "exportForm": {
+                    "columnCsvFormat": "Spaltenformat (CSV)",
+                    "columnNormFormat": "4-Spaltenformat (Normalisierung)",
+                    "columnsSelected": " Spalte(n) ausgew\u00e4hlt",
+                    "coraXmlFormat": "CorA-XML",
+                    "exportFile": "Datei exportieren",
+                    "exportInfoCora": "Exportiert eine CorA-XML-Datei, die das vollst\u00e4ndige Dokument mitsamt allen Annotationen enth\u00e4lt.  Diese Datei kann auch wieder re-importiert werden, um eine Kopie des Dokuments im selben Zustand wie zum Zeitpunkt des Exports zu erhalten.",
+                    "exportInfoCsv": "Exportiert eine mehrspaltige Textdatei, die sich u.a. zum Import in eine Tabellenkalkulation (z.B. Microsoft Excel) eignet. W\u00e4hlen Sie aus, welche Annotationsebenen im Export enthalten sein sollen:",
+                    "exportPrompt": "In welchem Format m\u00f6chten Sie die Datei exportieren?",
+                    "transFormat": "Transkriptionsformat"
+                },
+                "import": {
+                    "associatedTagsets": "Tagset-Verkn\u00fcpfungen:",
+                    "chooseFile": "Bitte w\u00e4hlen Sie eine Datei zum Importieren aus!",
+                    "docName": "Name:",
+                    "docNamePlaceholder": "(Dokumentname)",
+                    "encoding": "Kodierung:",
+                    "error1": "ist ein",
+                    "error2": "sind {errorCount}",
+                    "file": "Datei:",
+                    "fileImportFailed": "Datei-Import fehlgeschlagen",
+                    "importBtn": "Importieren \u2192",
+                    "importError": "Beim Importieren sind Fehler aufgetreten.",
+                    "importErrorInfo": "Beim Hinzuf\u00fcgen der Datei {errorStr} Fehler aufgetreten:",
+                    "importFailed": "Importieren fehlgeschlagen",
+                    "importInfo": "Die folgenden Felder m\u00fcssen nicht ausgef\u00fcllt werden, falls die entsprechenden Informationen bereits in der XML-Datei enthalten sind.",
+                    "importSuccess": "Datei-Import erfolgreich",
+                    "importSuccessInfo": "Die Datei wurde erfolgreich hinzugef\u00fcgt.",
+                    "importTextFile": "Importieren aus Textdatei",
+                    "importUnknownError": "Import aus unbekannten Gr\u00fcnden fehlgeschlagen!",
+                    "importXmlFile": "Importieren aus CorA-XML-Format",
+                    "importingData": "Importiere Daten...",
+                    "loadingFile": "Datei wird ge\u00f6ffnet...",
+                    "noImportScriptInfo": "F\u00fcr das gew\u00e4hlte Projekt ist kein Importskript festgelegt. Ohne Importskript k\u00f6nnen neue Dokumente nur als CorA-XML-Datei importiert werden.",
+                    "project": "Projekt:",
+                    "siglum": "Sigle:",
+                    "siglumPlaceholder": "(Sigle - optional)",
+                    "tagsetsSelected": "Tagset(s) ausgew\u00e4hlt",
+                    "warnings": "Das System lieferte {nWarnings} Warnung(en) zur\u00fcck"
+                }
+            },
+            "columnLabels": {
+                "by": "...von",
+                "closeFile": "Schlie\u00dfen",
+                "closeFileTitle": "Datei schlie\u00dfen",
+                "closePrompt": "Sie sind dabei, eine Datei zu schlie\u00dfen, die aktuell nicht von Ihnen bearbeitet wird. Falls jemand anderes diese Datei zur Zeit bearbeitet, k\u00f6nnten Datenverluste auftreten. Trotzdem schlie\u00dfen?",
+                "created": "Erstellt",
+                "deleteFile": "Datei l\u00f6schen",
+                "deleteWarning": "Soll das Dokument '{file}' wirklich gel\u00f6scht werden? Dieser Schritt kann nicht r\u00fcckg\u00e4ngig gemacht werden!",
+                "editAssociatedTagsets": "Tagset-Verkn\u00fcpfungen bearbeiten",
+                "export": "Exportieren...",
+                "exportFileTitle": "Datei exportieren",
+                "fileName": "Dateiname",
+                "id": "ID",
+                "lastEdit": "Letzte \u00c4nderung",
+                "noClose": "Sie haben keine Berechtigung, diese Datei zu schlie\u00dfen.",
+                "siglum": "Sigle",
+                "tagsets": "Tagsets..."
+            },
+            "invalidServerResponse": "Fehlerhafte Server-Antwort",
+            "invalidServerResponseInfo": "Der Server lieferte eine ung\u00fcltige Antwort zur\u00fcck. Das Importieren der Datei war m\u00f6glicherweise nicht erfolgreich.",
+            "noFilesInProject": "Dieses Projekt enth\u00e4lt keine Dateien.",
+            "noProjectGroups": "Keine Projektgruppen verf\u00fcgbar!",
+            "noProjectGroupsInfo": "Sie geh\u00f6ren zur Zeit keiner Projektgruppe an. Wenden Sie sich an einen Administrator, um zu einer Projektgruppe hinzuzuf\u00fcgt zu werden.",
+            "pleaseWait": "Bitte warten...",
+            "serverResponse": "Der Server antwortete",
+            "serverResponseInterpretation": "Fehler beim Interpretieren der Server-Antwort",
+            "topButton": {
+                "collapseProjectGroups": "Alle Projektgruppen zuklappen",
+                "expandProjectGroups": "Alle Projektgruppen aufklappen",
+                "importText": "Import aus Textdatei",
+                "importXml": "Import aus XML-Datei",
+                "refresh": "Aktualisieren"
+            }
+        },
+        "Forms": {
+            "buttonLogin": "Anmelden",
+            "close": "Schlie\u00dfen",
+            "loginFailed": "Anmeldung fehlgeschlagen.",
+            "msgFailedLogin": "Anmeldung fehlgeschlagen.  Bitte \u00fcberpr\u00fcfen Sie Ihre Eingaben.",
+            "password": "Passwort",
+            "username": "Benutzername"
+        },
+        "Gui": {
+            "collapse": "Zuklappen",
+            "confirmLogin": {
+                "description": "Bitte geben Sie Ihre Zugangsdaten erneut ein, um fortzufahren.",
+                "title": "Erneut anmelden"
+            },
+            "expand": "Aufklappen",
+            "loading": "CorA wird geladen...",
+            "loginAccessError": "Anmeldung war erfolgreich, aber Zugriff auf die aktuell ge\u00f6ffnete Datei ist nicht m\u00f6glich. Eventuell wird diese Datei bereits von einem anderen Nutzer bearbeitet.",
+            "uncaughtException": {
+                "description": "**Ein unbekannter Fehler ist aufgetreten.**  Das h\u00e4tte nicht passieren d\u00fcrfen.  M\u00f6glicherweise m\u00fcssen Sie CorA neu laden, um weiterarbeiten zu k\u00f6nnen.",
+                "details": "Details...",
+                "reload": "CorA neu laden"
+            },
+            "waitForAuthorization": "Warte auf Authorisierung..."
+        },
+        "Help": {
+            "contactCheck1": "Was **genau** haben Sie unmittelbar vor dem Auftreten des Fehlers getan?",
+            "contactCheck2": "Wie genau \u00e4u\u00dfert sich der Fehler? Gibt es eine Fehlermeldung? Falls ja, die Meldung unbedingt kopieren und einf\u00fcgen!",
+            "contactCheck3": "An welcher Datei oder welcher Textstelle genau haben Sie gearbeitet, als der Fehler auftrat?",
+            "contactPerson": "Ansprechpartner ist dabei",
+            "contactRequest": "Bitte senden Sie uns beim Melden von Fehlern eine **aussagekr\u00e4ftige** Beschreibung des Problems! Dazu geh\u00f6ren folgende Informationen:",
+            "contactUs": "kontaktieren Sie uns bitte!",
+            "contactUsInfo": "Falls Sie Fragen haben, die durch das Benutzerhandbuch nicht gekl\u00e4rt worden sind, oder falls Sie gar einen Fehler in CorA entdeckt haben, ",
+            "coraGuideLink": "CorA Benutzerhandbuch, 27.01.2015 [PDF]",
+            "coraHelpTitle": "Hilfe zur Benutzung von CorA",
+            "dontShowAgain": "Schlie\u00dfen und nicht wieder anzeigen",
+            "dontShowAgainInfo": "Sie k\u00f6nnen sich die Neuigkeiten jederzeit \u00fcber den Tab 'Hilfe' erneut anzeigen lassen.",
+            "feedbackTitle": "Ungekl\u00e4rte Fragen?  Bugs gefunden?",
+            "helpInGuide": "Alle Funktionen von CorA sind im Benutzerhandbuch n\u00e4her erl\u00e4utert. Falls Sie Fragen zur Bedienung oder zu einer bestimmten Funktion von CorA haben, schauen Sie bitte zun\u00e4chst dort nach:"
+        },
+        "LibFile": {
+            "invalidXML": "Datei enth\u00e4lt kein wohlgeformtes XML. Parser meldete:"
+        },
+        "Locales": {
+            "de-DE": "Deutsch",
+            "en-US": "Englisch"
+        },
+        "Menu": {
+            "admin": "Administration",
+            "adminTooltip": "Benutzer und Projekte verwalten",
+            "edit": "Editor",
+            "editTooltip": "Ge\u00f6ffnetes Dokument bearbeiten",
+            "file": "Datei",
+            "fileTooltip": "Dokumente \u00f6ffnen oder verwalten",
+            "help": "Hilfe",
+            "helpTooltip": "Hilfe zur Benutzung von CorA",
+            "loggedInAs": "eingeloggt als",
+            "login": "Anmeldung",
+            "loginTooltip": "In CorA anmelden",
+            "search": "Suchen",
+            "searchTooltip": "Aktuelle Suchergebnisse anzeigen",
+            "settings": "Einstellungen",
+            "settingsTooltip": "Einstellungen von CorA \u00e4ndern"
+        },
+        "RequestErrors": {
+            "actionFailed": "Aktion fehlgeschlagen",
+            "couldNotPerformAction": "Die Aktion konnte nicht ausgef\u00fchrt werden.",
+            "internalError": "Ein interner Server-Fehler ist aufgetreten.",
+            "internalScriptError": "Ein interner Skript-Fehler ist aufgetreten.",
+            "internalScriptErrorInfo": "\"{hName}\" = \"{val}\" fehlgeschlagen.",
+            "invalidServerResponseInfo": "Der Server lieferte eine ung\u00fcltige Antwort zur\u00fcck.",
+            "notLoggedIn": "Sie sind nicht angemeldet.",
+            "requestCancelled": "Die Anfrage wurde abgebrochen.",
+            "serverNotAvailable": "Der Server ist derzeit nicht erreichbar."
+        },
+        "SettingsTab": {
+            "applyLineSettings": "Zeilen-Einstellungen \u00fcbernehmen",
+            "changePassword": "Passwort \u00e4ndern...",
+            "editSupport": "Editierhilfen",
+            "editorLanguage": {
+                "english": "Englisch",
+                "german": "Deutsch"
+            },
+            "highlightErrorTags": "Fehlerhafte Tags hervorheben",
+            "horizontalPreview": "Horizontale Textvorschau",
+            "language": "Sprache",
+            "linesPerPage": "Zeilen pro Seite:",
+            "noPreview": "Aus",
+            "numberOfLines": "Zeilenanzahl",
+            "overlappingLines": "\u00dcberlappende Zeilen:",
+            "passwordForm": {
+                "changePasswordBtn": "Passwort \u00e4ndern",
+                "changePasswordTitle": "Passwort \u00e4ndern",
+                "doNotMatch": "Die beiden Passw\u00f6rter stimmen nicht \u00fcberein!",
+                "newPassword": "Neues Passwort:",
+                "newPasswordRepeat": "Neues Passwort (Wdh.):",
+                "oldInvalid": "Altes Passwort ist nicht korrekt!",
+                "oldPassword": "Altes Passwort:",
+                "passwordChanged": "Passwort ge\u00e4ndert"
+            },
+            "visibleCols": "Sichtbare Spalten"
+        },
+        "Toolbar": {
+            "closeFile": "Datei schlie\u00dfen"
         }
-
-    },
-
-     "Columns": {
-        "line" : "Zeile",
-        "lineNo" : "Zeilennummer",
-        "transTok" : "Token (Trans)",
-        "utfTok" : "Token (UTF)",
-        "norm" : "Normalisierung",
-        "mod" : "Modernisierung",
-        "modType" : "Modernisierungstyp",
-        "pos" : "POS-Tag",
-        "morph" : "Morphologie-Tag",
-        "posMorph": "POS-Tag (inkl. Morphologie)",
-        "lemma" : "Lemma",
-        "lemmaLink" : "Lemma-Link",
-        "lemmaSuggestion": "Lemma-Vorschlag",
-        "lemmaTag" : "Lemma-Tag",
-        "comment" : "Kommentar",
-        "secondaryComment" : "Sekundär-Kommentar",
-        "sentBoundary" : "Satzgrenze",
-        "asciiTok" : "Token (ASCII)"
-     },
-     "Action" : {
-        "cancel" : "Abbrechen",
-        "noCancel" : "Nein, abbrechen",
-        "yesDelete" : "Ja, löschen",
-        "yesConfirm" : "Ja, bestätigen",
-        "ok" : "Ok",
-        "change" : "Ändern",
-        "close" : "Schließen",
-        "retrain" : "Neu trainieren",
-        "annotate" : "Annotieren",
-        "search" : "Suchen",
-        "reset" : "Zurücksetzen",
-        "save" : "Speichern",
-        "export2" : "Exportieren",
-        "importTagset" : "Tagset importieren",
-        "addUserBtn" : "Hinzufügen",
-        "createProject" : "Erstellen",
-        "createTagger" : "Erstellen",
-        "createMsg" : "Erstellen",
-        "changePassword" : "Passwort ändern...",
-        "change" : "Ändern",
-        "preview": "Vorschau"
-     },
-
-     "Banner" : {
-        "userNameEmpty" : "Benutzername darf nicht leer sein.",
-        "passwordEmpty" : "Passwort darf nicht leer sein.",
-        "passwordNoMatch" : "Passwörter stimmen nicht überein.",
-        "userAdded" : "Benutzer hinzugefügt.",
-        "passwordChanged" : "Passwort geändert.",
-        "settingsSaved" : "Einstellungen geändert.",
-        "tagsetsChanged" : "Tagset-Verknüpfungen geändert.",
-        "exporting" : "Datei wird exportiert...",
-        "deleteConfirm" : "Datei gelöscht.",
-        "fileImportSuccess" : "Datei erfolgreich importiert.",
-        "importUnknownError" : "Import aus unbekannten Gründen fehlgeschlagen!",
-        "noConnection" : "Keine Verbindung zum Server.",
-        "openFileError" : "Fehler beim Öffnen der Datei.",
-        "loadTagsetError" : "Fehler beim Laden der Tagsets.",
-        "changesApplied" : "Änderungen übernommen.",
-        "changesNotApplied" : "Änderungen nicht übernommen.",
-        "userDeleted" : "Benutzer gelöscht.",
-        "enterExpireDate" : "Ablauftermin muss angegeben werden!",
-        "enterMsg" : "Benachrichtigung darf nicht leer sein!",
-        "msgAdded" : "Benachrichtigung hinzugefügt.",
-        "msgDeleted" : "Benachrichtigung gelöscht.",
-        "taggerDeleted" : "Tagger gelöscht.",
-        "taggerCreated" : "Tagger erstellt.",
-        "taggerOptionsUpdated" : "Tagger-Optionen geändert.",
-        "enterTaggerName" : "Name darf nicht leer sein!",
-        "projectCreated" : "Projekt angelegt.",
-        "projectDeleted" : "Projekt gelöscht.",
-        "noImportFileSelected" : "Keine Datei zum Importieren ausgewählt!",
-        "metaDataChanged" : "Metadaten erfolgreich geändert.",
-        "cannotSave" : "Dokument kann derzeit nicht gespeichert werden.",
-        "retrainSuccess" : "Neu trainieren war erfolgreich.",
-        "autoTagSuccess" : "Automatische Annotation war erfolgreich.",
-        "transcriptionEmpty" : "Transkription darf nicht leer sein!",
-        "enterLineNo" : "Bitte eine Zahl eingeben.",
-        "lineDoesNotExist" : "Zeilennummer existiert nicht.",
-        "numbersOnly" : "Bitte nur Zahlen eingeben!",
-        "overlappingLines" : "Anzahl überlappender Zeilen muss kleiner sein als Anzahl der Zeilen pro Seite.",
-        "manyLinesWarning" : "Warnung: Eine hohe Anzahl an Zeilen pro Seite kann zur Folge haben, dass der Seitenaufbau sehr langsam wird bzw. der Browser für längere Zeit nicht mehr reagiert."
-
-
-     },
-
-     "RequestErrors" : {
-        "invalidServerResponseInfo" : "Der Server lieferte eine ungültige Antwort zurück.",
-        "internalError" : "Ein interner Server-Fehler ist aufgetreten.",
-        "requestCancelled" : "Die Anfrage wurde abgebrochen.",
-        "serverNotAvailable" : "Der Server ist derzeit nicht erreichbar.",
-        "internalScriptError" : "Ein interner Skript-Fehler ist aufgetreten.",
-        "internalScriptErrorInfo" : "\"{hName}\" = \"{val}\" fehlgeschlagen.",
-        "actionFailed" : "Aktion fehlgeschlagen",
-        "couldNotPerformAction" : "Die Aktion konnte nicht ausgeführt werden.",
-        "notLoggedIn" : "Sie sind nicht angemeldet."
-
-
-     }
- 
- }
-
+    }
 }

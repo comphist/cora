@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  * Copyright (C) 2015 Marcel Bollmann <bollmann@linguistics.rub.de>
  *
@@ -18,7 +18,8 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */ ?>
+*/
+?>
 <?php
 ini_set('memory_limit', '536870912');
 
@@ -31,41 +32,38 @@ ini_set('memory_limit', '536870912');
  */
 
 try {
+    require_once "lib/cfg.php";
+    require_once "lib/connect.php";
+    require_once "lib/localeHandler.php";
+    require_once "lib/sessionHandler.php";
+    require_once "lib/requestHandler.php";
 
-require_once "lib/cfg.php";
-require_once "lib/connect.php";
-require_once "lib/localeHandler.php";
-require_once "lib/sessionHandler.php";
-require_once "lib/requestHandler.php";
+    $dbi; /**< An instance of the DBInterface object. */
+    $lh; /**< An instance of the LocaleHandler object. */
+    $sh; /**< An instance of the SessionHandler object. */
+    $rq; /**< An instance of the RequestHandler object. */
 
-$dbi;  /**< An instance of the DBInterface object. */
-$lh;   /**< An instance of the LocaleHandler object. */
-$sh;   /**< An instance of the SessionHandler object. */
-$rq;   /**< An instance of the RequestHandler object. */
+    /* Initiate session */
+    $dbi = new DBInterface(Cfg::get('dbinfo'));
+    $lh = new LocaleHandler();
+    $sh = new CoraSessionHandler($dbi, $lh);
+    $rq = new RequestHandler($sh, $lh);
 
-/* Initiate session */
-$dbi = new DBInterface(Cfg::get('dbinfo'));
-$lh = new LocaleHandler();
-$sh = new CoraSessionHandler($dbi, $lh);
-$rq = new RequestHandler($sh, $lh);
-
-if ($_SESSION["loggedIn"]) {
-  $rq->handleJSONRequest($_GET, $_POST);
+    if ($_SESSION["loggedIn"]) {
+        $rq->handleJSONRequest($_GET, $_POST);
+    } else if ($_GET['do'] == "login") {
+        $sh->login($_GET['user'], $_GET['pw']);
+        header('Content-Type: application/json');
+        echo json_encode(array('success' => !$_SESSION["failedLogin"]));
+    } else {
+        header('Content-Type: application/json');
+        echo json_encode(array('success' => false, 'errcode' => - 1));
+    }
 }
-else if ($_GET['do'] == "login") {
-  $sh->login($_GET['user'], $_GET['pw']);
-  header('Content-Type: application/json');
-  echo json_encode(array('success' => !$_SESSION["failedLogin"]));
-}
-else {
-  header('Content-Type: application/json');
-  echo json_encode(array('success' => false, 'errcode' => -1));
-}
-
-} /* Catch all unexpected errors */
-catch (Exception $ex) {
-  header('Content-Type: application/json');
-  echo json_encode(array('success' => false, 'errcode' => -2));
+/* Catch all unexpected errors */
+catch(Exception $ex) {
+    header('Content-Type: application/json');
+    echo json_encode(array('success' => false, 'errcode' => - 2));
 }
 
 ?>

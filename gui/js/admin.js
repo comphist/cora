@@ -333,7 +333,6 @@ cora.userEditor = {
 
             } else {
                 td.set('title', _('AdminTab.userAdministration.isNotAdminTitle'));
-                
             }
         });
     },
@@ -1270,24 +1269,24 @@ cora.tagsetEditor = {
                 // never fires?
                 gui.showTextDialog(_("AdminTab.Forms.importTagsetForm.importNoSuccess"),
                                    _("AdminTab.Forms.importTagsetForm.serverResponseInfo"),
-       	                           xhr.responseText);
-       	    },
-	    onComplete: function(response){
-		var title="", message="", textarea="", error=false, tmp;
-		try {
+                                   xhr.responseText);
+            },
+            onComplete: function(response){
+                var title="", message="", textarea="", error=false, tmp;
+                try {
                     tmp = new Element('div');
                     tmp.innerHTML = response;
                     response = JSON.decode(tmp.getElement('pre.json').get('text'));
-		} catch(err) {
-		    message = _("AdminTab.Forms.importTagsetForm.invalidServerResponse");
-		    textarea = _("AdminTab.Forms.importTagsetForm.serverResponse") + ":\n" + response + "\n\n";
-            textarea += _("AdminTab.Forms.importTagsetForm.internalError") + ":\n" + err.message;
-		    error = true;
-		}
+                } catch(err) {
+                    message = _("AdminTab.Forms.importTagsetForm.invalidServerResponse");
+                    textarea = _("AdminTab.Forms.importTagsetForm.serverResponse") + ":\n" + response + "\n\n";
+                    textarea += _("AdminTab.Forms.importTagsetForm.internalError") + ":\n" + err.message;
+                    error = true;
+                }
                 if (!error) {
                     if (response == null) {
                         error = true;
-		        message = _("AdminTab.Forms.importTagsetForm.taggerImportError");
+                        message = _("AdminTab.Forms.importTagsetForm.taggerImportError");
                     }
                     else if (!response.success) {
                         error = true;
@@ -1302,12 +1301,12 @@ cora.tagsetEditor = {
                     gui.showTextDialog(title, message, textarea);
                 }
                 else {
-		    form.reset($(formname));
+                    form.reset($(formname));
                     gui.showMsgDialog('ok', _("AdminTab.Forms.importTagsetForm.tagsetSuccessfullyAdded"));
                 }
-		gui.hideSpinner();
+                gui.hideSpinner();
             }
-	});
+        });
 
     }
 };

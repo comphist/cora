@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  * Copyright (C) 2015 Marcel Bollmann <bollmann@linguistics.rub.de>
  *
@@ -18,17 +18,16 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */ ?>
+*/
+?>
 <?php
-
 /** @file RFTagger.php
  * Wrapper class for the RFTagger.
  *
  * @author Marcel Bollmann
  * @date March 2014
  */
-
-require_once( "AutomaticAnnotator.php" );
+require_once ("AutomaticAnnotator.php");
 
 /** Annotates POS tagsets by wrapping the RFTagger.
  */
@@ -42,42 +41,41 @@ class RFTagger extends AutomaticAnnotator {
 
     public function __construct($prfx, $opts) {
         parent::__construct($prfx, $opts);
-        if(!array_key_exists("par", $this->options)) {
+        if (!array_key_exists("par", $this->options)) {
             $this->options["par"] = $this->prefix . "RFTagger.par";
         }
-        if(!array_key_exists("wc", $this->options)) {
+        if (!array_key_exists("wc", $this->options)) {
             $this->options["wc"] = $this->prefix . "RFTagger.wc";
         }
-        if(!array_key_exists("flags", $this->options)) {
+        if (!array_key_exists("flags", $this->options)) {
             $this->options["flags"] = "-c 2 -q";
         }
-        if(array_key_exists("use_layer", $this->options)) {
+        if (array_key_exists("use_layer", $this->options)) {
             $this->use_layer = $this->options["use_layer"];
         }
-        if(array_key_exists("use_norm", $this->options)) {  // backwards-compatibility
-            if((bool) $this->options["use_norm"]) {
+        if (array_key_exists("use_norm", $this->options)) { // backwards-compatibility
+            if ((bool)$this->options["use_norm"]) {
                 $this->use_layer = "norm";
             }
         }
-        if(array_key_exists("lowercase_all", $this->options)) {
-            $this->lowercase_all = (bool) $this->options["lowercase_all"];
+        if (array_key_exists("lowercase_all", $this->options)) {
+            $this->lowercase_all = (bool)$this->options["lowercase_all"];
         }
-        if(array_key_exists("minimum_span_size", $this->options)) {
+        if (array_key_exists("minimum_span_size", $this->options)) {
             $this->minimum_span_size = $this->options["minimum_span_size"];
         }
     }
 
     public function __destruct() {
-        foreach($this->tmpfiles as $tmpfile) {
+        foreach ($this->tmpfiles as $tmpfile) {
             unlink($tmpfile);
         }
     }
 
     public function setParameterFile($filename) {
-        if(empty($filename)) { // revert to default
+        if (empty($filename)) { // revert to default
             $this->options["par"] = $this->prefix . "RFTagger.par";
-        }
-        else {
+        } else {
             $this->options["par"] = $filename;
         }
     }
@@ -89,14 +87,14 @@ class RFTagger extends AutomaticAnnotator {
      *
      * @return Name of the newly created file
      */
-    private function writeTaggerInput($tokens, $training=false) {
+    private function writeTaggerInput($tokens, $training = false) {
         $filename = tempnam(sys_get_temp_dir(), "cora_rft");
         $this->tmpfiles[] = $filename;
         $handle = fopen($filename, "w");
-        foreach($tokens as $tok) {
+        foreach ($tokens as $tok) {
             fwrite($handle, $tok[$this->use_layer]);
-            if($training) {
-                fwrite($handle, "\t".$tok['tags']['pos']);
+            if ($training) {
+                fwrite($handle, "\t" . $tok['tags']['pos']);
             }
             fwrite($handle, "\n");
         }
@@ -114,7 +112,7 @@ class RFTagger extends AutomaticAnnotator {
         $filename = tempnam(sys_get_temp_dir(), "cora_rft");
         $this->tmpfiles[] = $filename;
         $handle = fopen($filename, "w");
-        foreach($lines as $line) {
+        foreach ($lines as $line) {
             fwrite($handle, $line);
         }
         fclose($handle);
@@ -130,17 +128,15 @@ class RFTagger extends AutomaticAnnotator {
      */
     private function makeAnnotationArray($mod, $line) {
         $line = explode("\t", $line);
-        if(empty($line) || empty($mod) || count($line) != 2) {
+        if (empty($line) || empty($mod) || count($line) != 2) {
             return array();
         }
-        if($mod[$this->use_layer] != $line[0]) {
-            throw new Exception("Token mismatch: ".$mod[$this->use_layer]." != ".$line[0]);  //$LOCALE
+        if ($mod[$this->use_layer] != $line[0]) {
+            throw new Exception("Token mismatch: " . $mod[$this->use_layer]
+                                . " != " . $line[0]); //$LOCALE
         }
-        return array("id" => $mod['id'],
-                     $this->use_layer => $mod[$this->use_layer],
-                     "anno_pos" => $line[1]);
+        return array("id" => $mod['id'], $this->use_layer => $mod[$this->use_layer], "anno_pos" => $line[1]);
     }
-
 
     /** Filter a list of tokens to be used for training.
      *
@@ -159,24 +155,21 @@ class RFTagger extends AutomaticAnnotator {
      * lexicon.
      */
     private function filterForTraining($tokens) {
-        $filtered = array();   /**< sequence of tokens for training */
+        $filtered = array(); /**< sequence of tokens for training */
         $additional = array(); /**< tokens discarded for training due to
                                     context length restrictions, but still
                                     usable for lexicon comparison */
         $currentlist = array();
         $currentspan = 0;
-        foreach($tokens as $tok) {
-            if($tok['verified'] && isset($tok['tags']['pos'])
-               && !empty($tok[$this->use_layer])) {
+        foreach ($tokens as $tok) {
+            if ($tok['verified'] && isset($tok['tags']['pos']) && !empty($tok[$this->use_layer])) {
                 $currentspan++;
                 $currentlist[] = $tok;
-            }
-            else {
-                if($currentspan == 0) continue;
-                if($currentspan >= $this->minimum_span_size) {
+            } else {
+                if ($currentspan == 0) continue;
+                if ($currentspan >= $this->minimum_span_size) {
                     $filtered = array_merge($filtered, $currentlist);
-                }
-                else {
+                } else {
                     $additional = array_merge($additional, $currentlist);
                 }
                 $currentlist = array();
@@ -187,17 +180,16 @@ class RFTagger extends AutomaticAnnotator {
     }
 
     private function mapNormToAscii($tok) {
-        if(isset($tok['tags']['norm_broad']) && !empty($tok['tags']['norm_broad'])) {
+        if (isset($tok['tags']['norm_broad']) && !empty($tok['tags']['norm_broad'])) {
             $tok['norm'] = $tok['tags']['norm_broad'];
-        }
-        else if(isset($tok['tags']['norm']) && !empty($tok['tags']['norm'])) {
+        } else if (isset($tok['tags']['norm']) && !empty($tok['tags']['norm'])) {
             $tok['norm'] = $tok['tags']['norm'];
         }
         return $tok;
     }
 
     private function lowercaseAscii($tok) {
-        if(isset($tok[$this->use_layer])) {
+        if (isset($tok[$this->use_layer])) {
             $tok[$this->use_layer] = mb_strtolower($tok[$this->use_layer], 'UTF-8');
         }
         return $tok;
@@ -208,10 +200,10 @@ class RFTagger extends AutomaticAnnotator {
     }
 
     protected function preprocessTokens($tokens) {
-        if($this->use_layer == "norm") {
+        if ($this->use_layer == "norm") {
             $tokens = array_map(array($this, 'mapNormToAscii'), $tokens);
         }
-        if($this->lowercase_all) {
+        if ($this->lowercase_all) {
             $tokens = array_map(array($this, 'lowercaseAscii'), $tokens);
         }
         return $tokens;
@@ -219,24 +211,18 @@ class RFTagger extends AutomaticAnnotator {
 
     public function annotate($tokens) {
         $tokens = array_filter($this->preprocessTokens($tokens), array($this, 'filterEmpty'));
-
         // write tokens to temporary file
         $tmpfname = $this->writeTaggerInput($tokens, false);
-
         // call RFTagger
         $output = array();
         $retval = 0;
-        $cmd = implode(" ", array($this->options["annotate"],
-                                  $this->options["par"],
-                                  $tmpfname,
-                                  "2>/dev/null"));
+        $cmd = implode(" ", array($this->options["annotate"], $this->options["par"], $tmpfname, "2>/dev/null"));
         exec($cmd, $output, $retval);
-        if($retval) {
-            error_log("CorA: RFTaggerAnnotator.php: RFTagger returned status code {$retval}; call was: {$cmd}"); 
-            throw new Exception("RFTagger gab den Status-Code {$retval} zurück.");   //$LOCALE
-                                // "\nAufruf war: {$cmd}"
+        if ($retval) {
+            error_log("CorA: RFTaggerAnnotator.php: RFTagger returned status code {$retval}; call was: {$cmd}");
+            throw new Exception("RFTagger gab den Status-Code {$retval} zurück."); //$LOCALE
+            // "\nAufruf war: {$cmd}"
         }
-
         // process RFTagger output & return
         return array_map(array($this, 'makeAnnotationArray'), $tokens, $output);
     }
@@ -247,45 +233,36 @@ class RFTagger extends AutomaticAnnotator {
     }
 
     public function bufferTrain($tokens) {
-        list($tokens, $lextokens)
-            = $this->filterForTraining($this->preprocessTokens($tokens));
-        if(empty($tokens)) return;
-
-        foreach($tokens as $tok) {
-            $this->train_lines[]
-                = $tok[$this->use_layer] . "\t" . $tok['tags']['pos'] . "\n";
+        list($tokens, $lextokens) = $this->filterForTraining($this->preprocessTokens($tokens));
+        if (empty($tokens)) return;
+        foreach ($tokens as $tok) {
+            $this->train_lines[] = $tok[$this->use_layer] . "\t" . $tok['tags']['pos'] . "\n";
         }
-        foreach($lextokens as $tok) {
-            $this->train_lex_lines[]
-                = $tok[$this->use_layer] . "\t" . $tok['tags']['pos'] . "\n";
+        foreach ($lextokens as $tok) {
+            $this->train_lex_lines[] = $tok[$this->use_layer] . "\t" . $tok['tags']['pos'] . "\n";
         }
     }
 
     public function performTrain() {
-        if(empty($this->train_lines)) return;
+        if (empty($this->train_lines)) return;
         $tmpfname = $this->writeTrainInput($this->train_lines);
         $flags = $this->options["flags"];
-        if(!empty($this->train_lex_lines)) {
+        if (!empty($this->train_lex_lines)) {
             $tmplname = $this->writeTrainInput($this->train_lex_lines);
             $flags = $flags . " -l " . $tmplname;
         }
-
         // call RFTagger
         $output = array();
         $retval = 0;
-        $cmd = implode(" ", array($this->options["train"],
-                                  $tmpfname,
-                                  $this->options["wc"],
-                                  $this->options["par"],
-                                  $flags));
+        $cmd = implode(" ", array($this->options["train"], $tmpfname,
+                                  $this->options["wc"], $this->options["par"], $flags));
         exec($cmd, $output, $retval);
-        if($retval) {
-            throw new Exception("RFTagger gab den Status-Code {$retval} zurück.");  //$LOCALE
+        if ($retval) {
+            throw new Exception("RFTagger gab den Status-Code {$retval} zurück."); //$LOCALE
             // "\nAufruf war: {$cmd}");
         }
         $this->train_lines = null;
         $this->train_lex_lines = null;
     }
 }
-
 ?>

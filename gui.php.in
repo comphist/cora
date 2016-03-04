@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  * Copyright (C) 2015 Marcel Bollmann <bollmann@linguistics.rub.de>
  *
@@ -25,10 +25,10 @@
  */
 
 function _gui_make_title() {
-  $title = Cfg::get('title');
-  $longtitle = Cfg::get('longtitle');
-  $version = Cfg::get('version');
-  return "$title ($longtitle) $version";
+    $title = Cfg::get('title');
+    $longtitle = Cfg::get('longtitle');
+    $version = Cfg::get('version');
+    return "$title ($longtitle) $version";
 }
 
 ?>

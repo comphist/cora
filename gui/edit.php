@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  * Copyright (C) 2015 Marcel Bollmann <bollmann@linguistics.rub.de>
  *
@@ -30,7 +30,7 @@
   <div class="btn-toolbar" id="pagePanel">
     <span class="btn-toolbar-entry btn-page-count">
       <span class="oi" aria-hidden="true"></span>
-      <span data-trans-id="EditorTab.topButton.page"><?=$lh("EditorTab.topButton.page"); ?></span> 
+      <span data-trans-id="EditorTab.topButton.page"><?=$lh("EditorTab.topButton.page"); ?></span>
       <input type="text" class="btn-page-to" size="2" />
       <span class="page-active"></span>/<span class="page-max"></span>
     </span>

@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  * Copyright (C) 2015 Marcel Bollmann <bollmann@linguistics.rub.de>
  *
@@ -18,9 +18,9 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */ ?>
+*/
+?>
 <?php
-
 /**
  * @file index.php
  * The main file.
@@ -31,49 +31,48 @@
  * @author Marcel Bollmann
  * @date   January 2012
  */
-
-header( "Content-Type: text/html; charset=utf-8" );
+header("Content-Type: text/html; charset=utf-8");
 
 try {
+    /* Includes */
+    require_once "lib/cfg.php";
+    require_once "lib/connect.php";
+    require_once "lib/localeHandler.php";
+    require_once "lib/xmlHandler.php";
+    require_once "lib/requestHandler.php";
+    require_once "lib/sessionHandler.php";
+    require_once "lib/exporter.php";
 
-/* Includes */
-require_once "lib/cfg.php";
-require_once "lib/connect.php";
-require_once "lib/localeHandler.php";
-require_once "lib/xmlHandler.php";
-require_once "lib/requestHandler.php";
-require_once "lib/sessionHandler.php";
-require_once "lib/exporter.php";
-
-$dbi;  /**< An instance of the DBInterface object. */
-$lh;   /**< An instance of the LocaleHandler object. */
-$sh;   /**< An instance of the SessionHandler object. */
-$rq;   /**< An instance of the RequestHandler object. */
-$menu; /**< A Menu object containing the menu items and references to
+    $dbi; /**< An instance of the DBInterface object. */
+    $lh; /**< An instance of the LocaleHandler object. */
+    $sh; /**< An instance of the SessionHandler object. */
+    $rq; /**< An instance of the RequestHandler object. */
+    $menu; /**< A Menu object containing the menu items and references to
             the corresponding web pages, instantiated in
             content.php. */
 
-/* Initiate session */
-$dbi = new DBInterface(Cfg::get('dbinfo'));
-$lh = new LocaleHandler();
-$_ = $lh;
-$sh = new CoraSessionHandler($dbi, $lh);
-$rq = new RequestHandler($sh, $lh);
-$rq->handleRequests($_GET, $_POST);
+    /* Initiate session */
+    $dbi = new DBInterface(Cfg::get('dbinfo'));
+    $lh = new LocaleHandler();
+    $_ = $lh;
+    $sh = new CoraSessionHandler($dbi, $lh);
+    $rq = new RequestHandler($sh, $lh);
 
-/* Define site content */
-include "content.php";
-/* Load the actual HTML page */
-include "gui.php";
+    $rq->handleRequests($_GET, $_POST);
 
-} /* Catch all unexpected errors */
-catch (Exception $ex) {
-  if (file_exists("error.php")) {
-    include "error.php";
-  } else {
-    echo "<p>There was an error instantiating CorA.</p>";
-    echo "<p>Additionally, there was an error accessing the error page.</p>";
-  }
+    /* Define site content */
+    include "content.php";
+    /* Load the actual HTML page */
+    include "gui.php";
+}
+/* Catch all unexpected errors */
+catch(Exception $ex) {
+    if (file_exists("error.php")) {
+        include "error.php";
+    } else {
+        echo "<p>There was an error instantiating CorA.</p>";
+        echo "<p>Additionally, there was an error accessing the error page.</p>";
+    }
 }
 
 ?>

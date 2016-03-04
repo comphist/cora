@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  * Copyright (C) 2015 Marcel Bollmann <bollmann@linguistics.rub.de>
  *
@@ -18,9 +18,9 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */ ?>
+*/
+?>
 <?php
-
 /** @file content.php
  * Define the site content.
  *
@@ -37,21 +37,22 @@
  * @date January 2012 - September 2014
  */
 
-require_once( "lib/contentModel.php" );
+require_once ("lib/contentModel.php");
 
 /** @copybrief index.php::$menu */
 $menu = new Menu();
-if($_SESSION["loggedIn"]) {
-  $menu->addMenuItem("file", "gui/file.php", "", "Menu.file", "Menu.fileTooltip");
-  $menu->addMenuItem("edit", "gui/edit.php", "", "Menu.edit", "Menu.editTooltip");
-  $menu->addMenuItem("search", "gui/search.php", "", "Menu.search", "Menu.searchTooltip");
-  $menu->addMenuItem("settings", "gui/settings.php", "", "Menu.settings", "Menu.settingsTooltip");
-  if ($_SESSION["admin"]) {
-    $menu->addMenuItem("admin", "gui/admin.php", "", "Menu.admin", "Menu.adminTooltip");
-  }
-  $menu->addMenuItem("help", "gui/help.php", "", "Menu.help", "Menu.helpTooltip");
+
+if ($_SESSION["loggedIn"]) {
+    $menu->addMenuItem("file", "gui/file.php", "", "Menu.file", "Menu.fileTooltip");
+    $menu->addMenuItem("edit", "gui/edit.php", "", "Menu.edit", "Menu.editTooltip");
+    $menu->addMenuItem("search", "gui/search.php", "", "Menu.search", "Menu.searchTooltip");
+    $menu->addMenuItem("settings", "gui/settings.php", "", "Menu.settings", "Menu.settingsTooltip");
+    if ($_SESSION["admin"]) {
+        $menu->addMenuItem("admin", "gui/admin.php", "", "Menu.admin", "Menu.adminTooltip");
+    }
+    $menu->addMenuItem("help", "gui/help.php", "", "Menu.help", "Menu.helpTooltip");
 } else {
-  $menu->addMenuItem("login", "gui/login.php", "", "Menu.login", "Menu.loginTooltip");
+    $menu->addMenuItem("login", "gui/login.php", "", "Menu.login", "Menu.loginTooltip");
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -59,16 +60,16 @@ if($_SESSION["loggedIn"]) {
 // Basically all dirty hacks, but collected in one place now
 ///////////////////////////////////////////////////////////////////
 
-function embedCSS($filename, $media="all", $withtimestamp=false) {
-    if($withtimestamp) {
-        $filename .= '?' . filemtime(dirname(__FILE__) . "/" . $filename);
+function embedCSS($filename, $media = "all", $withtimestamp = false) {
+    if ($withtimestamp) {
+        $filename.= '?' . filemtime(dirname(__FILE__) . "/" . $filename);
     }
     echo "<link rel='stylesheet' type='text/css' href='$filename' media='$media' />";
 }
 
-function embedJS($filename, $withtimestamp=false) {
-    if($withtimestamp) {
-        $filename .= '?' . filemtime(dirname(__FILE__) . "/" . $filename);
+function embedJS($filename, $withtimestamp = false) {
+    if ($withtimestamp) {
+        $filename.= '?' . filemtime(dirname(__FILE__) . "/" . $filename);
     }
     echo "<script type='text/javascript' src='$filename'></script>";
 }
@@ -76,14 +77,12 @@ function embedJS($filename, $withtimestamp=false) {
 function embedSessionVars($svars) {
     echo "var userdata = { ";
     $userdata = array();
-    if(isset($_SESSION['user'])) {
-      $userdata[] = 'name: "'.$_SESSION['user'].'"';
+    if (isset($_SESSION['user'])) {
+        $userdata[] = 'name: "' . $_SESSION['user'] . '"';
     }
-    foreach($svars as $key => $quoted) {
-        if($quoted)
-            $userdata[] = $key.': "'.$_SESSION[$key].'"';
-        else
-            $userdata[] = $key.': '.$_SESSION[$key];
+    foreach ($svars as $key => $quoted) {
+        if ($quoted) $userdata[] = $key . ': "' . $_SESSION[$key] . '"';
+        else $userdata[] = $key . ': ' . $_SESSION[$key];
     }
     echo join(", ", $userdata);
     echo " };\n";
@@ -92,7 +91,7 @@ function embedSessionVars($svars) {
 function embedTagsets($tagsets_all) {
     echo "var PHP_tagsets = [ ";
     $php_tagsets = array();
-    foreach($tagsets_all as $set) {
+    foreach ($tagsets_all as $set) {
         $set['id'] = $set['shortname'];
         $php_tagsets[] = json_encode($set);
     }

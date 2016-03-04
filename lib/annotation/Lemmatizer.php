@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  * Copyright (C) 2015 Marcel Bollmann <bollmann@linguistics.rub.de>
  *
@@ -18,17 +18,16 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */ ?>
+*/
+?>
 <?php
-
 /** @file Lemmatizer.php
  * Perl-based lemmatizer similar to what RFTagger uses.
  *
  * @author Marcel Bollmann
  * @date March 2014
  */
-
-require_once( "AutomaticAnnotator.php" );
+require_once ("AutomaticAnnotator.php");
 
 /** Annotates lemma tagsets by wrapping an external lemmatization script.
  *
@@ -43,31 +42,30 @@ class Lemmatizer extends AutomaticAnnotator {
     private $use_norm = false;
     private $filter_unknown = true;
     private $lines = null;
-
     // lemmatizer return value if lemma could not be found:
     private $unknown_lemma = "<unknown>";
 
     public function __construct($prfx, $opts) {
         parent::__construct($prfx, $opts);
-        if(!array_key_exists("par", $this->options)) {
+        if (!array_key_exists("par", $this->options)) {
             $this->options["par"] = $this->prefix . "Lemmatizer.par";
         }
-        if(array_key_exists("use_pos", $this->options)) {
+        if (array_key_exists("use_pos", $this->options)) {
             $this->use_pos = ($this->options["use_pos"] == 1) ? true : false;
         }
-        if(array_key_exists("use_norm", $this->options)) {
-            $this->use_norm = (bool) $this->options["use_norm"];
+        if (array_key_exists("use_norm", $this->options)) {
+            $this->use_norm = (bool)$this->options["use_norm"];
         }
-        if(array_key_exists("lowercase_all", $this->options)) {
-            $this->lowercase_all = (bool) $this->options["lowercase_all"];
+        if (array_key_exists("lowercase_all", $this->options)) {
+            $this->lowercase_all = (bool)$this->options["lowercase_all"];
         }
-        if(array_key_exists("filter_unknown", $this->options)) {
-            $this->filter_unknown = (bool) $this->options["filter_unknown"];
+        if (array_key_exists("filter_unknown", $this->options)) {
+            $this->filter_unknown = (bool)$this->options["filter_unknown"];
         }
     }
 
     public function __destruct() {
-        foreach($this->tmpfiles as $tmpfile) {
+        foreach ($this->tmpfiles as $tmpfile) {
             unlink($tmpfile);
         }
     }
@@ -82,10 +80,10 @@ class Lemmatizer extends AutomaticAnnotator {
         $filename = tempnam(sys_get_temp_dir(), "cora_lem");
         $this->tmpfiles[] = $filename;
         $handle = fopen($filename, "w");
-        foreach($tokens as $tok) {
+        foreach ($tokens as $tok) {
             fwrite($handle, $tok['ascii']);
-            if($this->use_pos) {
-                fwrite($handle, "\t".$tok['tags']['pos']);
+            if ($this->use_pos) {
+                fwrite($handle, "\t" . $tok['tags']['pos']);
             }
             fwrite($handle, "\n");
         }
@@ -94,8 +92,8 @@ class Lemmatizer extends AutomaticAnnotator {
     }
 
     private function lowercaseAscii(&$tokens) {
-        foreach($tokens as &$tok) {
-            if(isset($tok['ascii'])) {
+        foreach ($tokens as & $tok) {
+            if (isset($tok['ascii'])) {
                 $tok['ascii'] = mb_strtolower($tok['ascii'], 'UTF-8');
             }
         }
@@ -110,37 +108,30 @@ class Lemmatizer extends AutomaticAnnotator {
      * @return An array element suitable for DBInterface::saveLines()
      */
     private function makeAnnotationArray($mod, $line) {
-        if($this->filter_unknown && ($line == $this->unknown_lemma)) {
+        if ($this->filter_unknown && ($line == $this->unknown_lemma)) {
             return array();
         }
-        return array("id" => $mod['id'],
-                     "ascii" => $mod['ascii'],
-                     "anno_lemma" => $line);
+        return array("id" => $mod['id'], "ascii" => $mod['ascii'], "anno_lemma" => $line);
     }
 
     public function annotate($tokens) {
-        if($this->use_norm) {
+        if ($this->use_norm) {
             $tokens = array_map(array($this, 'mapNormToAscii'), $tokens);
         }
-        if($this->lowercase_all) {
+        if ($this->lowercase_all) {
             $this->lowercaseAscii($tokens);
         }
-
         $tmpfname = $this->writeLemmatizerInput($tokens);
-
         // call lemmatizer
         $output = array();
         $retval = 0;
-        $cmd = implode(" ", array($this->options["bin"],
-                                  $this->options["par"],
-                                  $tmpfname));
+        $cmd = implode(" ", array($this->options["bin"], $this->options["par"], $tmpfname));
         exec($cmd, $output, $retval);
-        if($retval) {
+        if ($retval) {
             error_log("CorA: Lemmatizer.php: Lemmatizer returned status code {$retval}; call was: {$cmd}"); //$LOCALE
             throw new Exception("Lemmatisierer gab den Status-Code {$retval} zurück."); //$LOCALE
             // "\nAufruf war: {$cmd}");
         }
-
         return array_map(array($this, 'makeAnnotationArray'), $tokens, $output);
     }
 
@@ -149,22 +140,21 @@ class Lemmatizer extends AutomaticAnnotator {
     }
 
     public function bufferTrain($tokens) {
-        if($this->use_norm) {
+        if ($this->use_norm) {
             $tokens = array_map(array($this, 'mapNormToAscii'), $tokens);
         }
-        if($this->lowercase_all) {
+        if ($this->lowercase_all) {
             $this->lowercaseAscii($tokens);
         }
-
-        foreach($tokens as $tok) {
-            if(!$tok['verified'] ||
-               !isset($tok['tags']['pos']) || empty($tok['tags']['pos']) ||
-               !isset($tok['tags']['lemma']) || empty($tok['tags']['lemma'])) {
+        foreach ($tokens as $tok) {
+            if (!$tok['verified'] || !isset($tok['tags']['pos'])
+                || empty($tok['tags']['pos']) || !isset($tok['tags']['lemma'])
+                || empty($tok['tags']['lemma'])) {
                 continue;
             }
-            $newline = $tok['ascii']."\t";
-            if($this->use_pos) {
-                $newline = $newline . $tok['tags']['pos']."\t";
+            $newline = $tok['ascii'] . "\t";
+            if ($this->use_pos) {
+                $newline = $newline . $tok['tags']['pos'] . "\t";
             }
             $newline = $newline . $tok['tags']['lemma'];
             $this->lines[] = $newline;
@@ -174,11 +164,11 @@ class Lemmatizer extends AutomaticAnnotator {
 
     public function performTrain() {
         $handle = fopen($this->options['par'], "w");
-        if(!$handle) {
-            throw new Exception("Konnte Parameterdatei nicht zum Schreiben öffnen:".      //$LOCALE
-                                $this->options['par']);
+        if (!$handle) {
+            throw new Exception("Konnte Parameterdatei nicht zum Schreiben öffnen:" . //$LOCALE
+            $this->options['par']);
         }
-        foreach($this->lines as $line) {
+        foreach ($this->lines as $line) {
             fwrite($handle, $line);
             fwrite($handle, "\n");
         }
@@ -186,5 +176,4 @@ class Lemmatizer extends AutomaticAnnotator {
         $this->lines = null;
     }
 }
-
 ?>

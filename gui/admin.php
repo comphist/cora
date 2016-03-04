@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  * Copyright (C) 2015 Marcel Bollmann <bollmann@linguistics.rub.de>
  *
@@ -24,13 +24,10 @@
  * The administrator page.
  */
 
-
- if ($_SESSION["admin"]):
-
-$tlist = $sh->getTagsetList();
-$ulist = array();
-
- ?>
+if ($_SESSION["admin"]):
+    $tlist = $sh->getTagsetList();
+    $ulist = array();
+?>
 
 <div id="adminDiv" class="content" style="display: none;">
   <div class="panel">
@@ -399,4 +396,6 @@ $ulist = array();
   </div>
 </div>
 
-<?php endif; ?>
+<?php
+endif;
+?>

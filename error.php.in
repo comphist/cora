@@ -25,16 +25,15 @@
  */
 
 function _gui_make_title() {
-  if (class_exists('Cfg')) {
-    $title = Cfg::get('title');
-    $longtitle = Cfg::get('longtitle');
-    $version = Cfg::get('version');
-    return "Error | $title ($longtitle) $version";
-  } else {
-    return "Error | CorA (Corpus Annotator)";
-  }
+    if (class_exists('Cfg')) {
+        $title = Cfg::get('title');
+        $longtitle = Cfg::get('longtitle');
+        $version = Cfg::get('version');
+        return "Error | $title ($longtitle) $version";
+    } else {
+        return "Error | CorA (Corpus Annotator)";
+    }
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="en" xml:lang="en">

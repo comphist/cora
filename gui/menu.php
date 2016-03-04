@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  * Copyright (C) 2015 Marcel Bollmann <bollmann@linguistics.rub.de>
  *
@@ -32,11 +32,11 @@
 
 <?php
 /* Generate a button for each menu entry */
-foreach( $menu->getItems() as $item ) {
-   $tooltipID = $menu->getItemTooltip($item);
-   $tooltip = $_($tooltipID);
-   $transID = $menu->getItemCaption($item);
-   $text = $_($transID);
+foreach($menu->getItems() as $item) {
+    $tooltipID = $menu->getItemTooltip($item);
+    $tooltip = $_($tooltipID);
+    $transID = $menu->getItemCaption($item);
+    $text = $_($transID);
 echo <<<MENUITEM
       <li class="tabButton" id="{$item}TabButton" data-trans-title-id="{$tooltipID}" title="{$tooltip}" active="false">
          <a onclick="gui.changeTab('$item');" data-trans-id="{$transID}">$text</a>

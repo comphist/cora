@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  * Copyright (C) 2015 Marcel Bollmann <bollmann@linguistics.rub.de>
  *
@@ -18,18 +18,17 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */ ?>
+*/
+?>
 <?php
-
 /** @file DualRFTagger.php
  * Combination of two RFTaggers.
  *
  * @author Marcel Bollmann
  * @date March 2014
  */
-
-require_once( "AutomaticAnnotator.php" );
-require_once( "RFTagger.php" );
+require_once ("AutomaticAnnotator.php");
+require_once ("RFTagger.php");
 
 /** Annotates POS tagsets using RFTagger and two distinct models.
  *
@@ -47,7 +46,7 @@ class DualRFTagger extends AutomaticAnnotator {
     private $fixedRFT;
     private $variableRFT;
     private $vocabulary = array();
-    private $threshold  = 1;
+    private $threshold = 1;
     private $use_layer = "ascii";
 
     public function __construct($prfx, $opts) {
@@ -55,35 +54,38 @@ class DualRFTagger extends AutomaticAnnotator {
         $this->fixedRFT = new RFTagger($prfx, $opts);
         $this->variableRFT = new RFTagger($prfx, $opts);
         $this->variableRFT->setParameterFile(null);
-
-        if(!array_key_exists("vocab", $this->options)) {
+        if (!array_key_exists("vocab", $this->options)) {
             $this->options["vocab"] = $this->prefix . "RFTagger.vocab";
         }
-        if(array_key_exists("threshold", $this->options)) {
+        if (array_key_exists("threshold", $this->options)) {
             $this->threshold = $this->options["threshold"];
         }
-        if(array_key_exists("use_layer", $this->options)) {
+        if (array_key_exists("use_layer", $this->options)) {
             $this->use_layer = $this->options["use_layer"];
         }
     }
 
-    public function getThreshold() { return $this->threshold; }
-    public function setThreshold($t) { $this->threshold = $t; }
+    public function getThreshold() {
+        return $this->threshold;
+    }
+
+    public function setThreshold($t) {
+        $this->threshold = $t;
+    }
 
     /** Load a vocabulary file.
      *
      * Will only actually read the file if vocabulary is currently
      * empty or $force parameter is set to true.
      */
-    private function loadVocabulary($force=false) {
-        if(!empty($this->vocabulary) && !$force) return;
+    private function loadVocabulary($force = false) {
+        if (!empty($this->vocabulary) && !$force) return;
         $this->vocabulary = array();
-        if(!is_file($this->options["vocab"])
-           || !is_readable($this->options["vocab"])) {
+        if (!is_file($this->options["vocab"]) || !is_readable($this->options["vocab"])) {
             return;
         }
         $vocabfile = explode("\n", file_get_contents($this->options["vocab"]));
-        foreach($vocabfile as $vocabline) {
+        foreach ($vocabfile as $vocabline) {
             $line = explode("\t", $vocabline);
             $this->vocabulary[$line[0]] = $line[1];
         }
@@ -92,13 +94,12 @@ class DualRFTagger extends AutomaticAnnotator {
     /** Constructs the internal vocabulary out of a list of tokens.
      */
     private function makeVocabulary($tokens) {
-        foreach($tokens as $tok) {
-            if(!array_key_exists($this->use_layer, $tok)) continue;
-            if(!array_key_exists($tok[$this->use_layer], $this->vocabulary)) {
+        foreach ($tokens as $tok) {
+            if (!array_key_exists($this->use_layer, $tok)) continue;
+            if (!array_key_exists($tok[$this->use_layer], $this->vocabulary)) {
                 $this->vocabulary[$tok[$this->use_layer]] = 1;
-            }
-            else {
-                $this->vocabulary[$tok[$this->use_layer]] += 1;
+            } else {
+                $this->vocabulary[$tok[$this->use_layer]]+= 1;
             }
         }
     }
@@ -108,8 +109,8 @@ class DualRFTagger extends AutomaticAnnotator {
     private function saveVocabulary() {
         $filename = $this->options["vocab"];
         $handle = fopen($filename, "w");
-        foreach($this->vocabulary as $ascii => $count) {
-            fwrite($handle, $ascii."\t".strval($count)."\n");
+        foreach ($this->vocabulary as $ascii => $count) {
+            fwrite($handle, $ascii . "\t" . strval($count) . "\n");
         }
         fclose($handle);
     }
@@ -127,18 +128,18 @@ class DualRFTagger extends AutomaticAnnotator {
      * @return Either $fixline or $varline
      */
     private function chooseTag($fixline, $varline) {
-        if($fixline["id"] != $varline["id"]) {
-            throw new Exception("Fehler beim Zusammenführen der Tagger-Outputs:"  //$LOCALE
-                                ."Token sind nicht identisch.");
+        if ($fixline["id"] != $varline["id"]) {
+            throw new Exception("Fehler beim Zusammenführen der Tagger-Outputs:" //$LOCALE
+             . "Token sind nicht identisch.");
         }
-        if(isset($fixline["anno_pos"]) && $fixline["anno_pos"] == "?") {
+        if (isset($fixline["anno_pos"]) && $fixline["anno_pos"] == "?") {
             return $varline;
         }
-        if(isset($varline["anno_pos"]) && $varline["anno_pos"] == "?") {
+        if (isset($varline["anno_pos"]) && $varline["anno_pos"] == "?") {
             return $fixline;
         }
-        if(array_key_exists($fixline[$this->use_layer], $this->vocabulary)
-           && $this->vocabulary[$fixline[$this->use_layer]] >= $this->threshold) {
+        if (array_key_exists($fixline[$this->use_layer], $this->vocabulary)
+            && $this->vocabulary[$fixline[$this->use_layer]] >= $this->threshold) {
             return $varline;
         }
         return $fixline;
@@ -148,7 +149,6 @@ class DualRFTagger extends AutomaticAnnotator {
         $fixed = $this->fixedRFT->annotate($tokens);
         $variable = $this->variableRFT->annotate($tokens);
         $this->loadVocabulary();
-
         return array_map(array($this, 'chooseTag'), $fixed, $variable);
     }
 
@@ -167,5 +167,4 @@ class DualRFTagger extends AutomaticAnnotator {
         $this->saveVocabulary();
     }
 }
-
 ?>

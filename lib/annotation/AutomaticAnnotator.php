@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  * Copyright (C) 2015 Marcel Bollmann <bollmann@linguistics.rub.de>
  *
@@ -18,9 +18,9 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */ ?>
+*/
+?>
 <?php
-
 /** @file AutomaticAnnotator.php
  * Base class for an automatic annotator object.
  *
@@ -38,20 +38,20 @@ class AutomaticAnnotator {
     protected $options = array();
     protected $prefix = "";
 
-   /** Constructs a new automatic annotator.
-    *
-    * @param string $prfx  A filename prefix specific to this annotator
-    *                      and the current project.  Can be used when the
-    *                      annotator should be trainable from within CorA,
-    *                      in which case it can use this prefix to build
-    *                      filenames for storing its trained
-    *                      parametrization (e.g., $prfx."paramfile.txt").
-    * @param array $opts   An associative array containing tagger-specific
-    *                      options that are set in the database.  This can
-    *                      be arbitrary key/value pairs.
-    */
+    /** Constructs a new automatic annotator.
+     *
+     * @param string $prfx  A filename prefix specific to this annotator
+     *                      and the current project.  Can be used when the
+     *                      annotator should be trainable from within CorA,
+     *                      in which case it can use this prefix to build
+     *                      filenames for storing its trained
+     *                      parametrization (e.g., $prfx."paramfile.txt").
+     * @param array $opts   An associative array containing tagger-specific
+     *                      options that are set in the database.  This can
+     *                      be arbitrary key/value pairs.
+     */
     public function __construct($prfx, $opts) {
-        $this->prefix  = $prfx;
+        $this->prefix = $prfx;
         $this->options = $opts;
     }
 
@@ -128,5 +128,4 @@ class AutomaticAnnotator {
     public function performTrain() {
     }
 }
-
 ?>
