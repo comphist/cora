@@ -68,6 +68,7 @@ project:
 
 + Marcel Bollmann <bollmann@linguistics.rub.de>
 + Florian Petran <petran@linguistics.rub.de>
++ Fabian Simonjetz <fabian.simonjetz@rub.de>
 
 Many thanks to all users who provided feedback on this software!
 
