@@ -43,9 +43,7 @@ class LocaleHandler {
       $localedir = __DIR__ . "/../locale/";
     }
     $this->localedir = $localedir;
-    $this->supported = json_decode(
-      file_get_contents($localedir . "supported_locales.json")
-    );
+    $this->supported = include $localedir . "supported_locales.php";
   }
 
   /** Set a locale. */
