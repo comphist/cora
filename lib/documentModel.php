@@ -567,6 +567,9 @@ class CoraDocument {
     /** Set token arrays directly.
      */
     public function setTokens($toks, $dipls, $mods) {
+        if (count($toks) < 2 || count($dipls) < 1 || count($mods) < 1) {
+            throw new DocumentValueException("Document appears to be empty!");
+        }
         $this->tokens = $toks;
         $this->dipls = $dipls;
         $this->moderns = $mods;
