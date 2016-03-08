@@ -21,6 +21,7 @@
  */ ?>
 <?php
 require_once"DB_fixture.php";
+require_once"LocaleHandler_mock.php";
 require_once"data/test_data.php";
 
 require_once"{$GLOBALS['CORA_WEB_DIR']}/lib/connect.php";
@@ -54,7 +55,7 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         'PASSWORD' => $GLOBALS["DB_PASSWD"],
         'DBNAME' => $GLOBALS["DB_DBNAME"]
       );
-      $this->dbi = new DBInterface($dbinfo);
+      $this->dbi = new DBInterface($dbinfo, new MockLocaleHandler());
       $this->expected = get_DBInterface_expected();
       parent::setUp();
     }
@@ -470,14 +471,7 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
     public function testEditToken() {
         // $this->editToken($textid, $tokenid, $toktrans, $converted);
         $this->assertEquals(array("success" => false,
-            "errors" => array(
-                 "Die neue Transkription enthält einen Zeilenumbruch mehr "
-                 ."als die vorherige, es konnte jedoch keine passende Zeile "
-                 ."gefunden werden. (Befindet sich die Transkription in der "
-                 ."letzten Zeile des Dokuments?)"
-                //"Die neue Transkription enthält 1 Zeilenumbrüche, "
-                //."die alte Transkription enthielt jedoch nur 0."
-            )),
+                                  "errors" => array("TranscriptionError.lineBreakDangling")),
                             $this->dbi->editToken("4", "6", "neutest", "test neu", "3"));
 
         $actual = $this->dbi->editToken("3", "3",

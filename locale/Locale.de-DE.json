@@ -522,6 +522,56 @@
         },
         "Toolbar": {
             "closeFile": "Datei schlie\u00dfen"
+        },
+        "ServerError": {
+            "adminRequired": "Administrator-Privilegien sind erforderlich f\u00fcr diese Aktion.",
+            "databaseException": "Ein unbekannter Datenbankfehler ist aufgetreten.",
+            "fieldEmpty": "Feld darf nicht leer sein: {field}",
+            "fileFormatMismatch": "Falsches Dateiformat (erwartet: {expected}; gefunden: {found})",
+            "fileIncomplete": "Die Datei wurde nur unvollst\u00e4ndig \u00fcbertragen.",
+            "fileNotReceived": "Die Datei konnte nicht \u00fcbertragen werden.",
+            "fileTooBig": "Die Datei \u00fcberschreitet die maximal erlaubte Dateigr\u00f6\u00dfe.",
+            "genericException": "Ein unbekannter Fehler ist aufgetreten.",
+            "internal": "Ein interner Fehler ist aufgetreten (Code: {code}).",
+            "noConverterScript": "Kein Konvertierungsskript festgelegt!",
+            "noImportScript": "Kein Importskript festgelegt!",
+            "nonZeroExit": "Der Befehl gab den Status-Code {code} zur\u00fcck.",
+            "savedWithWarnings": "Der Speichervorgang wurde abgeschlossen, einige Informationen wurden jedoch m\u00f6glicherweise nicht gespeichert.  Das System meldete:",
+            "upload": "Fehler beim Upload:",
+            "utf8Failure": "Datei konnte nicht nach UTF-8 umgewandelt werden. Pr\u00fcfen Sie, ob Sie das richtige Encoding angegeben haben."
+        },
+        "DocumentError": {
+            "outOfColumnsForPage": "Keine Spalten mehr \u00fcbrig beim Verarbeiten von Seite '{id}'.",
+            "outOfLinesForColumn": "Keine Zeilen mehr \u00fcbrig beim Verarbeiten von Spalte '{id}'.",
+            "outOfDiplsForLine": "Keine diplomatischen Tokens mehr \u00fcbrig beim Verarbeiten von Zeile '{id}'.",
+            "outOfPagesForColumn": "Keine Seiten mehr \u00fcbrig, die auf Spalte '{id}' referenzieren.",
+            "outOfColumnsForLine": "Keine Spalten mehr \u00fcbrig, die auf Zeile '{id}' referenzieren.",
+            "outOfLinesForDipl": "Keine Zeilen mehr \u00fcbrig, die auf diplomatisches Token '{id}' referenzieren.",
+            "wrongColumn": "Falsche Spalte f\u00fcr Seite '{page}' (erwartet: '{expected}'; gefunden: '{found}').",
+            "wrongLine": "Falsche Zeile f\u00fcr Spalte '{column}' (erwartet: '{expected}'; gefunden: '{found}').",
+            "wrongDipl": "Falsches diplomatisches Token f\u00fcr Zeile '{line}' (erwartet: '{expected}'; gefunden: '{found}').",
+            "cantUnlinkTagset": {
+                "generic": "Konnte bestehende Tagset-Verkn\u00fcpfungen nicht aufheben.",
+                "hasAnnotations": "F\u00fcr das Tagset mit der ID {id} gibt es derzeit noch {annotations} eingetragene Annotationen.  Verkn\u00fcpfungen f\u00fcr Tagsets, mit denen noch Annotationen verbunden sind, k\u00f6nnen aus Sicherheitsgr\u00fcnden \u00fcber dieses Interface nicht aufgehoben werden."
+            }
+        },
+        "TranscriptionError": {
+            "conversionFailed": "Bei der Konvertierung des Tokens ist ein Fehler aufgetreten.",
+            "lineCountMismatch": "Token enth\u00e4lt zuviele Zeilenumbr\u00fcche.",
+            "lineCountMismatchDetails": "Die neue Transkription enth\u00e4lt {new} Zeilenumbr\u00fcche, die alte Transkription enthielt jedoch nur {old}.",
+            "lineBreakDangling": "Die neue Transkription enth\u00e4lt einen Zeilenumbruch mehr als die vorherige, es konnte jedoch keine passende Zeile gefunden werden. (Befindet sich die Transkription in der letzten Zeile des Dokuments?)",
+            "lineBreakMisplaced": "Die neue Transkription enth\u00e4lt einen Zeilenumbruch mehr als die vorherige, steht jedoch nicht am Ende einer Zeile.",
+            "wrongConverterOutput": "Das Konvertierungsskript lieferte ung\u00fcltigen Output.",
+            "wrongFile": "Datei ist keine Textdatei und/oder falsches Encoding angegeben."
+        },
+        "XMLError": {
+            "generic": "XML-Fehler:",
+            "invalid": "Datei enth\u00e4lt kein wohlgeformtes XML.  Parser meldete:",
+            "noTextTag": "XML-Format nicht erkannt: <text>-Tag nicht gefunden.",
+            "missingNameAndID": "Das Dokument hat weder Name noch Sigle; benutze Dateiname als Dokumentname."
+        },
+        "AnnotationError": {
+            "inProgress": "F\u00fcr dieses Projekt wird derzeit bereits ein Tagger ausgef\u00fchrt.  Bitte warten Sie einen Moment und f\u00fchren dann den Vorgang erneut aus."
         }
     }
 }

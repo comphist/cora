@@ -61,10 +61,11 @@ class CoraDocument {
     private $dipls = array();
     private $moderns = array();
 
-    function __construct($options) {
+    function __construct($options, $lh) {
         if ($options && $options != null) {
             $this->setMetadata($options);
         }
+        $this->lh = $lh;
     }
 
     /** Construct a new document from a file stored in the database.
@@ -247,41 +248,46 @@ class CoraDocument {
             list($pagestart, $pageend) = $currentpage['range'];
             if (empty($pagestart)) continue;
             if ($currentcol_idx >= count($this->columns)) {
-                throw new DocumentValueException("Out of columns for page '"
-                                                 . $currentpage['xml_id'] . "'."); //$LOCALE
+                throw new DocumentValueException($this->lh->_("DocumentError.outOfColumnsForPage",
+                                                           array("id" => $currentpage['xml_id']))
+                );
             }
             $currentcol = $this->columns[$currentcol_idx];
             if ($currentcol['xml_id'] !== $pagestart) {
-                throw new DocumentValueException("Expected column '{$pagestart}' for page '"
-                                                 . $currentpage['xml_id']
-                                                 . "', but found column '"
-                                                 . $currentcol['xml_id'] . "'."); //$LOCALE
+                throw new DocumentValueException($this->lh->_("DocumentError.wrongColumn",
+                                                           array("page" => $currentpage['xml_id'],
+                                                                 "expected" => $pagestart,
+                                                                 "found" => $currentcol['xml_id'])
+                ));
             }
             do {
                 if ($currentcol_idx >= count($this->columns)) {
-                    throw new DocumentValueException("Out of columns for page '"
-                                                     . $currentpage['xml_id'] . "'."); //$LOCALE
+                    throw new DocumentValueException($this->lh->_("DocumentError.outOfColumnsForPage",
+                                                               array("id" => $currentpage['xml_id']))
+                    );
                 }
                 $currentcol = $this->columns[$currentcol_idx];
                 $this->columns[$currentcol_idx]['parent_xml_id'] = $currentpage['xml_id'];
                 list($colstart, $colend) = $currentcol['range'];
                 if (empty($colstart)) continue;
                 if ($currentline_idx >= count($this->lines)) {
-                    throw new DocumentValueException("Out of lines for column '"
-                                                     . $currentcol['xml_id'] . "'."); //$LOCALE
+                    throw new DocumentValueException($this->lh->_("DocumentError.outOfLinesForColumn",
+                                                               array("id" => $currentcol['xml_id']))
+                    );
                 }
                 $currentline = $this->lines[$currentline_idx];
                 if ($currentline['xml_id'] !== $colstart) {
-                    throw new DocumentValueException("Expected line '{$colstart}' for column '"
-                                                     . $currentcol['xml_id']
-                                                     . "', but found line '"
-                                                     . $currentline['xml_id'] . "'."); //$LOCALE
+                    throw new DocumentValueException($this->lh->_("DocumentError.wrongLine",
+                                                               array("column" => $currentcol['xml_id'],
+                                                                     "expected" => $colstart,
+                                                                     "found" => $currentline['xml_id']))
+                    );
                 }
                 do {
                     if ($currentline_idx >= count($this->lines)) {
-                        throw new DocumentValueException("Out of lines for column '"
-                                                         . $currentcol['xml_id']
-                                                         . "'."); //$LOCALE
+                        throw new DocumentValueException($this->lh->_("DocumentError.outOfLinesForColumn",
+                                                                   array("id" => $currentcol['xml_id']))
+                        );
                     }
                     $currentline = $this->lines[$currentline_idx];
                     $this->lines[$currentline_idx]['parent_xml_id'] = $currentcol['xml_id'];
@@ -294,12 +300,14 @@ class CoraDocument {
             while ($lastcolid !== $pageend);
         } unset($currentpage);
         if ($currentcol_idx < count($this->columns)) {
-            throw new DocumentValueException("No pages left at column '"
-                                             . $currentcol['xml_id'] . "'."); //$LOCALE
+            throw new DocumentValueException($this->lh->_("DocumentError.outOfPagesForColumn",
+                                                       array("id" => $currentcol['xml_id']))
+            );
         }
         if ($currentline_idx < count($this->lines)) {
-            throw new DocumentValueException("No columns left at line '"
-                                             . $currentline['xml_id'] . "'."); //$LOCALE
+            throw new DocumentValueException($this->lh->_("DocumentError.outOfColumnsForLine",
+                                                       array("id" => $currentline['xml_id']))
+            );
         }
         // map diplomatic tokens to lines (done separately mainly for legibility)
         $currentdipl_idx = 0;
@@ -308,15 +316,17 @@ class CoraDocument {
             list($linestart, $lineend) = $currentline['range'];
             if (empty($linestart)) continue;
             if ($currentdipl['xml_id'] !== $linestart) {
-                throw new DocumentValueException("Expected dipl '{$linestart}' for line '"
-                                                 . $currentline['xml_id']
-                                                 . "', but found dipl '"
-                                                 . $currentdipl['xml_id'] . "'."); //$LOCALE
+                throw new DocumentValueException($this->lh->_("DocumentError.wrongDipl",
+                                                           array("line" => $currentline['xml_id'],
+                                                                 "expected" => $linestart,
+                                                                 "found" => $currentdipl['xml_id']))
+                );
             }
             do {
                 if ($currentdipl_idx >= count($this->dipls)) {
-                    throw new DocumentValueException("Out of diplomatic tokens for line '"
-                                                     . $currentline['xml_id'] . "'."); //$LOCALE
+                    throw new DocumentValueException($this->lh->_("DocumentError.outOfDiplsForLine",
+                                                               array("id" => $currentline['xml_id']))
+                    );
                 }
                 $currentdipl = $this->dipls[$currentdipl_idx];
                 $this->dipls[$currentdipl_idx]['parent_line_xml_id'] = $currentline['xml_id'];
@@ -326,8 +336,9 @@ class CoraDocument {
         }
         unset($currentline);
         if ($currentdipl_idx < count($this->dipls)) {
-            throw new DocumentValueException("No lines left at diplomatic token '"
-                                             . $currentdipl['xml_id'] . "'."); //$LOCALE
+            throw new DocumentValueException($this->lh->_("DocumentError.outOfLinesForDipl",
+                                                       array("id" => $currentdipl['xml_id']))
+            );
         }
         return $this;
     }

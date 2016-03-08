@@ -22,6 +22,7 @@
 <?php
 require_once 'DB_fixture.php';
 require_once 'DocumentAccessor_mocks.php';
+require_once 'LocaleHandler_mock.php';
 require_once 'data/test_data.php';
 require_once "{$GLOBALS['CORA_WEB_DIR']}/lib/connect.php";
 require_once "{$GLOBALS['CORA_WEB_DIR']}/lib/connect/DocumentCreator.php";
@@ -41,7 +42,7 @@ class Cora_Tests_DocumentCreator_test extends Cora_Tests_DbTestCase {
       'PASSWORD' => $GLOBALS["DB_PASSWD"],
       'DBNAME' => $GLOBALS["DB_DBNAME"]
     );
-    $this->dbi = new DBInterface($dbinfo);
+    $this->dbi = new DBInterface($dbinfo, new MockLocaleHandler());
     $this->dbo = new PDO($GLOBALS["DB_DSN"],
                          $GLOBALS["DB_USER"],
                          $GLOBALS["DB_PASSWD"]);

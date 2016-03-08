@@ -35,8 +35,9 @@ class XMLHandler {
     private $output_suggestions; /**< Boolean indicating whether to output tagger suggestions. */
     private $xml_header_options; /**< Valid attributes for the XML <header> tag. */
 
-    function __construct($db) {
+    function __construct($db, $lh) {
         $this->db = $db;
+        $this->lh = $lh;
         $this->output_suggestions = true;
         $this->xml_header_options = array('sigle', 'name', 'tagset', 'progress');
     }
@@ -66,7 +67,7 @@ class XMLHandler {
                 return False;
             }
         }
-        return "XML-Format nicht erkannt: <text>-Tag nicht gefunden."; //$LOCALE
+        return $this->lh->_("XMLError.noTextTag");
     }
 
     /** Parses a range string ("t1..t4" or just "t1") into an array
@@ -214,7 +215,7 @@ class XMLHandler {
     /** Process XML data. */
     private function processXMLData(&$reader, &$options) {
         $doc = new DOMDocument();
-        $document = new CoraDocument($options);
+        $document = new CoraDocument($options, $this->lh);
         $tokens = array();
         $dipls = array();
         $moderns = array();
@@ -281,16 +282,16 @@ class XMLHandler {
         $doc->loadXML(file_get_contents($xmlfile['tmp_name']));
         $errors = libxml_get_errors();
         if (!empty($errors) && $errors[0]->level > 0) {
-            $message = "Datei enthält kein wohlgeformtes XML. Parser meldete:\n"; //$LOCALE
-            $message.= $errors[0]->message . ' at line ' . $errors[0]->line . '.';
-            return array("success" => False, "errors" => array("XML-Fehler: " . $message));
+            $message = $this->lh->_("XMLError.invalid");
+            $message.= "\n" . $errors[0]->message . ' at line ' . $errors[0]->line . '.';
+            return array("success" => False,
+                         "errors" => array($this->lh->_("XMLError.generic") . " " . $message));
         }
         // process XML
         $reader = new XMLReader();
         if (!$reader->open($xmlfile['tmp_name'])) {
             return array("success" => False,
-                         "errors" => array("Interner Fehler: Konnte temporäre Datei '"
-                                           . $xmlfile['tmp_name'] . "' nicht öffnen.")); //$LOCALE
+                         "errors" => $this->lh->_("ServerError.internal", array("code" => "xml1")));
         }
         $format = '';
         $xmlerror = $this->processXMLHeader($reader, $options, $format);
@@ -310,7 +311,7 @@ class XMLHandler {
         $warnings = $this->checkIntegrity($options, $data);
         if (!(isset($options['name']) && !empty($options['name']))
             && !(isset($options['sigle']) && !empty($options['sigle']))) {
-            array_unshift($warnings, "Dokument hat weder Name noch Sigle; benutze Dateiname als Dokumentname."); //$LOCALE
+            array_unshift($warnings, $this->lh->_("XMLError.missingNameAndID"));
             $options['name'] = $xmlfile['name'];
         }
         if (!(isset($options['ext_id']) && !empty($options['ext_id']))) {

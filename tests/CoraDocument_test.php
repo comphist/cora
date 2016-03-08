@@ -20,6 +20,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */ ?>
 <?php
+require_once"LocaleHandler_mock.php";
 require_once"data/test_data.php";
 
 require_once"{$GLOBALS['CORA_WEB_DIR']}/lib/documentModel.php";
@@ -37,7 +38,7 @@ class Cora_Tests_CoraDocument_test extends PHPUnit_Framework_TestCase {
     protected function setUp() {
         $options = array('sigle' => 't1', 'name' => 'testdocument');
         $this->test_data = get_CoraDocument_data();
-        $this->cd = new CoraDocument($options);
+        $this->cd = new CoraDocument($options, new MockLocaleHandler());
         $this->cd->setLayoutInfo($this->test_data["pages"],
                                  $this->test_data["columns"],
                                  $this->test_data["lines"]);

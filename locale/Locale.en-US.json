@@ -522,6 +522,56 @@
         },
         "Toolbar": {
             "closeFile": "Close File"
+        },
+        "ServerError": {
+            "adminRequired": "Administrator privileges are required for this action.",
+            "databaseException": "An unknown database error occurred.",
+            "fieldEmpty": "Field must not be empty: {field}",
+            "fileFormatMismatch": "Wrong file format (expected: {expected}; found: {found})",
+            "fileIncomplete": "File transmission is incomplete.",
+            "fileNotReceived": "File could not be transmitted.",
+            "fileTooBig": "File exceeds the maximum allowed file size.",
+            "genericException": "An unknown exception has occurred.",
+            "internal": "An internal error occurred (Code: {code}).",
+            "noConverterScript": "No converter script defined!",
+            "noImportScript": "No import script defined!",
+            "nonZeroExit": "The command returned the status code {code}.",
+            "savedWithWarnings": "Saving succeeded, but some information might not have been saved properly.",
+            "upload": "Error during upload:",
+            "utf8Failure": "File could not be converted to UTF-8.  Please check whether you specified the correct encoding."
+        },
+        "DocumentError": {
+            "outOfColumnsForPage": "No columns left while processing page '{id}'.",
+            "outOfLinesForColumn": "No lines left while processing column '{id}'.",
+            "outOfDiplsForLine": "No diplomatic tokens left while processing line '{id}'.",
+            "outOfPagesForColumn": "No pages left to refer to column '{id}'.",
+            "outOfColumnsForLine": "No columns left to refer to line '{id}'.",
+            "outOfLinesForDipl": "No lines left to refer to diplomatic token '{id}'.",
+            "wrongColumn": "Wrong column for page '{page}' (expected: '{expected}'; found: '{found}').",
+            "wrongLine": "Wrong line for column '{column}' (expected: '{expected}'; found: '{found}').",
+            "wrongDipl": "Wrong diplomatic token for line '{line}' (expected: '{expected}'; found: '{found}').",
+            "cantUnlinkTagset": {
+                "generic": "Could not unlink tagsets from file.",
+                "hasAnnotations": "There are still {annotations} associated annotations for the tagset with ID {id}.  Tagsets that still have annotations associated with them cannot be unlinked via this GUI for safety reasons."
+            }
+        },
+        "TranscriptionError": {
+            "conversionFailed": "An error occurred while converting the token.",
+            "lineCountMismatch": "Token contains too many line breaks.",
+            "lineCountMismatchDetails": "The new transcription contains {new} line breaks, while the previous one only had {old}.",
+            "lineBreakDangling": "The new transcription contains one more line break than the previous one, but there is no matching line to associate with.  (Is this transcription in the last line of the document?)",
+            "lineBreakMisplaced": "The new transcription contains one more line break than the previous one, but is not located at the end of a line.",
+            "wrongConverterOutput": "The converter script returned invalid output.",
+            "wrongFile": "File is not a text file and/or wrong encoding given."
+        },
+        "XMLError": {
+            "generic": "XML error:",
+            "invalid": "File does not contain well-formed XML.  Parser returned:",
+            "noTextTag": "XML format not recognized: no <text> tag found.",
+            "missingNameAndID": "The document has neither name nor a custom ID; using filename as document name."
+        },
+        "AnnotationError": {
+            "inProgress": "A tagger for this project is already running.  Please wait a few moments and re-try this action."
         }
     }
 }

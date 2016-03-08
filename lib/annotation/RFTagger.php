@@ -220,8 +220,7 @@ class RFTagger extends AutomaticAnnotator {
         exec($cmd, $output, $retval);
         if ($retval) {
             error_log("CorA: RFTaggerAnnotator.php: RFTagger returned status code {$retval}; call was: {$cmd}");
-            throw new Exception("RFTagger gab den Status-Code {$retval} zurück."); //$LOCALE
-            // "\nAufruf war: {$cmd}"
+            throw new Exception("RFTagger returned status code {$retval}."); //$LOCALE
         }
         // process RFTagger output & return
         return array_map(array($this, 'makeAnnotationArray'), $tokens, $output);
@@ -258,8 +257,7 @@ class RFTagger extends AutomaticAnnotator {
                                   $this->options["wc"], $this->options["par"], $flags));
         exec($cmd, $output, $retval);
         if ($retval) {
-            throw new Exception("RFTagger gab den Status-Code {$retval} zurück."); //$LOCALE
-            // "\nAufruf war: {$cmd}");
+            throw new Exception("RFTagger returned status code {$retval}."); //$LOCALE
         }
         $this->train_lines = null;
         $this->train_lex_lines = null;

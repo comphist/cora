@@ -37,7 +37,7 @@ if(WITH_EXPENSIVE_TESTS)
 endif()
 
 configure_file(phpunit.xml.in "${CMAKE_CURRENT_BINARY_DIR}/phpunit.xml" @ONLY)
-configure_all_copyonly("${CMAKE_CURRENT_BINARY_DIR}" ${PHP_TESTS} DB_fixture.php DocumentAccessor_mocks.php)
+configure_all_copyonly("${CMAKE_CURRENT_BINARY_DIR}" ${PHP_TESTS} DB_fixture.php DocumentAccessor_mocks.php LocaleHandler_mock.php)
 file(COPY data DESTINATION .)
 
 #########################################################

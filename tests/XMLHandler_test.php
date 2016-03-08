@@ -20,6 +20,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */ ?>
 <?php
+require_once"LocaleHandler_mock.php";
 require_once"data/test_data.php";
 require_once"{$GLOBALS['CORA_WEB_DIR']}/lib/xmlHandler.php";
 
@@ -93,7 +94,7 @@ class Cora_Tests_XMLHandler_test extends PHPUnit_Framework_TestCase {
     protected function setUp() {
         $this->test_data = get_XMLHandler_expected();
         $this->dbi = new Cora_Tests_DBInterface_Mock();
-        $this->xh = new XMLHandler($this->dbi);
+        $this->xh = new XMLHandler($this->dbi, new MockLocaleHandler());
     }
 
     public function testImport() {

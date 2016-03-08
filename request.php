@@ -44,8 +44,8 @@ try {
     $rq; /**< An instance of the RequestHandler object. */
 
     /* Initiate session */
-    $dbi = new DBInterface(Cfg::get('dbinfo'));
     $lh = new LocaleHandler();
+    $dbi = new DBInterface(Cfg::get('dbinfo'), $lh);
     $sh = new CoraSessionHandler($dbi, $lh);
     $rq = new RequestHandler($sh, $lh);
 

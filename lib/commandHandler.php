@@ -33,8 +33,9 @@
  */
 class CommandHandler {
     private $options;
-    function __construct($options = array()) {
+    function __construct($options = array(), $lh) {
         $this->options = $options;
+        $this->lh = $lh;
     }
 
     /** Create a temporary file containing the given token.
@@ -56,7 +57,9 @@ class CommandHandler {
         $errors = array();
         exec("file -b --mime-type " . $filename, $output);
         if ($output[0] != $mimetype) {
-            array_unshift($errors, "Falsches Dateiformat (erwartet: {$mimetype}; gefunden: {$output[0]})"); //$LOCALE
+            array_unshift($errors,
+                          $this->lh->_("ServerError.fileFormatMismatch",
+                                    array("expected" => $mimetype, "found" => $output[0])));
         }
         return $errors;
     }
@@ -74,7 +77,7 @@ class CommandHandler {
         }
         exec("iconv -f utf-8 -t utf-8 {$filename} 2>&1", $output, $retval);
         if ($retval) {
-            array_unshift($errors, "Datei konnte nicht nach UTF-8 umgewandelt werden. Prüfen Sie, ob Sie das richtige Encoding angegeben haben."); //$LOCALE
+            array_unshift($errors, $this->lh->_("ServerError.utf8Failure"));
         }
         return $errors;
     }
@@ -83,7 +86,7 @@ class CommandHandler {
     public function checkConvertToken($token, &$errors) {
         if (!array_key_exists('cmd_edittoken', $this->options)
             || empty($this->options['cmd_edittoken'])) {
-            array_unshift($errors, "Kein Konvertierungsskript festgelegt!"); //$LOCALE
+            array_unshift($errors, $this->lh->_("ServerError.noConverterScript"));
             return array();
         }
         $tmpfname = $this->writeTokenToTmpfile($token);
@@ -94,13 +97,13 @@ class CommandHandler {
         unlink($tmpfname);
         if ($retval) {
             $errors = $output;
-            array_unshift($errors, "Der Befehl gab den Status-Code {$retval} zurück."); //$LOCALE
+            array_unshift($errors, $this->lh->_("ServerError.nonZeroExit", array("code" => $retval)));
             return array();
         }
         $result = json_decode($output[0], true);
         if (is_null($result)) {
             $errors = $output;
-            array_unshift($errors, "Das Konvertierungsskript lieferte ungültigen Output."); //$LOCALE
+            array_unshift($errors, $this->lh->_("TranscriptionError.wrongConverterOutput"));
             return array();
         }
         return $result;
@@ -109,7 +112,7 @@ class CommandHandler {
     /** Calls the import script to create an XML file for import. */
     public function callImport(&$infile, &$xmlfile, $logfile) {
         if (!array_key_exists('cmd_import', $this->options) || empty($this->options['cmd_import'])) {
-            return array("Kein Importskript festgelegt!"); //$LOCALE
+            return array($this->lh->_("ServerError.noImportScript"));
         }
         $xmlfile = tempnam(sys_get_temp_dir(), 'cora');
         $output = array();

@@ -78,8 +78,9 @@ class ExportType {
 class Exporter {
     private $db; /**< A DBInterface object. */
 
-    function __construct($db) {
+    function __construct($db, $lh = null) {
         $this->db = $db;
+        $this->lh = $lh;
     }
 
     /** Export a file.
@@ -249,7 +250,7 @@ class Exporter {
 
     /** Export a file as CorA XML. */
     protected function exportCoraXML($document, $handle) {
-        $xmlhandler = new XMLHandler($this->db);
+        $xmlhandler = new XMLHandler($this->db, $this->lh);
         $dom = $xmlhandler->serializeDocument($document);
         $dom->formatOutput = true;
         fwrite($handle, $dom->saveXML());

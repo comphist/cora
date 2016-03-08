@@ -52,19 +52,21 @@ class DBInterface {
     private $db;
     private $timeout = 30; // timeout value in minutes
     private $dbo; /* new PDO object for database interaction */
+    private $lh;
 
     /** Create a new DBInterface.
      *
      * @param array $dbinfo An associative array expected to contain at least
      *                      HOST, USER, PASSWORD, and DBNAME.
      */
-    function __construct($dbinfo) {
+    function __construct($dbinfo, $lh) {
         $this->dbo = new PDO('mysql:host=' . $dbinfo['HOST']
                              . ';dbname=' . $dbinfo['DBNAME']
                              . ';charset=utf8',
                              $dbinfo['USER'], $dbinfo['PASSWORD']);
         $this->dbo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->db = $dbinfo['DBNAME'];
+        $this->lh = $lh;
     }
 
     /** Return the hash of a given password string. */
@@ -844,7 +846,8 @@ class DBInterface {
             $deletetag = $stmt->fetchAll(PDO::FETCH_COLUMN);
         }
         catch(PDOException $ex) {
-            return "Ein interner Fehler ist aufgetreten (Code: 1040).\n" . $ex->getMessage(); //$LOCALE
+            $internalError = $this->lh->_("ServerError.internal", array("code" => "1040"));
+            return $internalError . "\n" . $ex->getMessage();
         }
         $this->dbo->beginTransaction();
         // delete associated open class tags
@@ -856,7 +859,8 @@ class DBInterface {
             }
             catch(PDOException $ex) {
                 $this->dbo->rollBack();
-                return "Ein interner Fehler ist aufgetreten (Code: 1041).\n" . $ex->getMessage(); //$LOCALE
+                $internalError = $this->lh->_("ServerError.internal", array("code" => "1041"));
+                return $internalError . "\n" . $ex->getMessage();
             }
             $qs = "DELETE FROM tag WHERE `id` IN (" . implode(",", $deletetag) . ")";
             try {
@@ -865,7 +869,8 @@ class DBInterface {
             }
             catch(PDOException $ex) {
                 $this->dbo->rollBack();
-                return "Ein interner Fehler ist aufgetreten (Code: 1043).\n" . $ex->getMessage(); //$LOCALE
+                $internalError = $this->lh->_("ServerError.internal", array("code" => "1043"));
+                return $internalError . "\n" . $ex->getMessage();
             }
         }
         // delete text---deletions in all other tables are triggered
@@ -877,7 +882,8 @@ class DBInterface {
         }
         catch(PDOException $ex) {
             $this->dbo->rollBack();
-            return "Ein interner Fehler ist aufgetreten (Code: 1042).\n" . $ex->getMessage(); //$LOCALEs
+            $internalError = $this->lh->_("ServerError.internal", array("code" => "1042"));
+            return $internalError . "\n" . $ex->getMessage();
         }
         $this->dbo->commit();
         return false;
@@ -897,8 +903,8 @@ class DBInterface {
                                  ':header' => $options['header']));
         }
         catch(PDOException $ex) {
-            return "Ein interner Fehler ist aufgetreten (Code: 1061).\n"
-                . $ex->getMessage(); //$LOCALE
+            $internalError = $this->lh->_("ServerError.internal", array("code" => "1061"));
+            return $internalError . "\n" . $ex->getMessage();
         }
     }
 
@@ -936,7 +942,8 @@ class DBInterface {
         }
         catch(Exception $ex) {
             return array('success' => false,
-                         'errors' => ["An exception occured.", $ex->getMessage()]); //$LOCALE
+                         'errors' => array($this->lh->_("ServerError.genericException"),
+                                           $ex->getMessage()));
         }
         return array('success' => true);
     }
@@ -1511,7 +1518,7 @@ class DBInterface {
         $userid = $this->getUserIDFromName($uname);
         $this->updateChangedTimestamp($fileid, $userid);
         if (!empty($warnings)) {
-            return "Der Speichervorgang wurde abgeschlossen, einige Informationen wurden jedoch möglicherweise nicht gespeichert.  Das System meldete:\n" . implode("\n", $warnings); //$LOCALE
+            return $this->lh->_("ServerError.savedWithWarnings") . "\n" . implode("\n", $warnings);
         }
         return False;
     }
@@ -1570,7 +1577,7 @@ class DBInterface {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
         }
         catch(PDOException $ex) {
-            $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1220)."; //$LOCALE
+            $errors[] = $this->lh->_("ServerError.internal", array("code" => "1220"));
             $errors[] = $ex->getMessage() . "\n" . $qs;
             return array("success" => false, "errors" => $errors);
         }
@@ -1588,7 +1595,7 @@ class DBInterface {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
         }
         catch(PDOException $ex) {
-            $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1220)."; //$LOCALE
+            $errors[] = $this->lh->_("ServerError.internal", array("code" => "1221"));
             $errors[] = $ex->getMessage() . "\n" . $qs;
             return array("success" => false, "errors" => $errors);
         }
@@ -1605,7 +1612,7 @@ class DBInterface {
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
         catch(PDOException $ex) {
-            $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1222)."; //$LOCALE
+            $errors[] = $this->lh->_("ServerError.internal", array("code" => "1222"));
             $errors[] = $ex->getMessage() . "\n" . $qs;
             return array("success" => false, "errors" => $errors);
         }
@@ -1637,7 +1644,7 @@ class DBInterface {
                 }
             }
             catch(PDOException $ex) {
-                $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1223)."; //$LOCALE
+                $errors[] = $this->lh->_("ServerError.internal", array("code" => "1223"));
                 $errors[] = $ex->getMessage() . "\n" . $qs;
                 $this->dbo->rollBack();
                 return array("success" => false, "errors" => $errors);
@@ -1652,7 +1659,7 @@ class DBInterface {
                 $stmt->execute(array(':ctokid' => $commtokenid, ':tokid' => $tokenid));
             }
             catch(PDOException $ex) {
-                $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1224).";
+                $errors[] = $this->lh->_("ServerError.internal", array("code" => "1224"));
                 $errors[] = $ex->getMessage() . "\n" . $qs;
                 $this->dbo->rollBack();
                 return array("success" => false, "errors" => $errors);
@@ -1665,7 +1672,7 @@ class DBInterface {
             $stmt->execute(array(':tokid' => $tokenid));
         }
         catch(PDOException $ex) {
-            $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1225)."; //$LOCALE
+            $errors[] = $this->lh->_("ServerError.internal", array("code" => "1225"));
             $errors[] = $ex->getMessage() . "\n" . $qs;
             $this->dbo->rollBack();
             return array("success" => false, "errors" => $errors);
@@ -1724,7 +1731,7 @@ class DBInterface {
             $stmt->execute(array(':tid' => $textid, ':id' => $oldtokenid, ':ordnr' => $ordnr));
         }
         catch(PDOException $ex) {
-            $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1231)."; //$LOCALE
+            $errors[] = $this->lh->_("ServerError.internal", array("code" => "1231"));
             $errors[] = $ex->getMessage() . "\n" . $qs;
             $this->dbo->rollBack();
             return array("success" => false, "errors" => $errors);
@@ -1743,7 +1750,7 @@ class DBInterface {
             }
         }
         catch(PDOException $ex) {
-            $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1232)."; //$LOCALEs
+            $errors[] = $this->lh->_("ServerError.internal", array("code" => "1232"));
             $errors[] = $ex->getMessage() . "\n" . $qs;
             $this->dbo->rollBack();
             return array("success" => false, "errors" => $errors);
@@ -1762,7 +1769,7 @@ class DBInterface {
             }
         }
         catch(PDOException $ex) {
-            $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1233)."; //$LOCALE
+            $errors[] = $this->lh->_("ServerError.internal", array("code" => "1233"));
             $errors[] = $ex->getMessage() . "\n" . $qs;
             $this->dbo->rollBack();
             return array("success" => false, "errors" => $errors);
@@ -1805,9 +1812,10 @@ class DBInterface {
         // --- this takes up an awful lot of space ...
         if ($newlinecount > $oldlinecount) {
             if (($newlinecount - $oldlinecount) > 1) {
-                $errors[] = "Token enthält zuviele Zeilenumbrüche."; //$LOCALE
-                $errors[] = "Die neue Transkription enthält {$newlinecount} Zeilenumbrüche, "
-                          . "die alte Transkription enthielt jedoch nur {$oldlinecount}.";
+                $errors[] = $this->lh->_("TranscriptionError.lineCountMismatch");
+                $errors[] = $this->lh->_("TranscriptionError.lineCountMismatchDetails",
+                                      array("new" => $newlinecount,
+                                            "old" => $oldlinecount));
                 return array("success" => false, "errors" => $errors);
             }
             // fetch the first dipl of the next token and check if it is on
@@ -1831,11 +1839,11 @@ class DBInterface {
                 return array("success" => false, "errors" => $errors);
             }
             if (empty($row) || !isset($row['line_id'])) {
-                $errors[] = "Die neue Transkription enthält einen Zeilenumbruch mehr als die vorherige, es konnte jedoch keine passende Zeile gefunden werden. (Befindet sich die Transkription in der letzten Zeile des Dokuments?)"; //$LOCALE
+                $errors[] = $this->lh->_("TranscriptionError.lineBreakDangling");
                 return array("success" => false, "errors" => $errors);
             }
             if ($row['line_id'] == $lastline) {
-                $errors[] = "Die neue Transkription enthält einen Zeilenumbruch mehr als die vorherige, steht jedoch nicht am Ende einer Zeile."; //$LOCALE
+                $errors[] = $this->lh->_("TranscriptionError.lineBreakMisplaced");
                 return array("success" => false, "errors" => $errors);
             }
             $lineids[] = $row['line_id'];
@@ -1895,7 +1903,7 @@ class DBInterface {
                 }
             }
             catch(PDOException $ex) {
-                $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1211)."; //$LOCALE
+                $errors[] = $this->lh->_("ServerError.internal", array("code" => "1211"));
                 $errors[] = $ex->getMessage() . "\n" . $qs;
                 $this->dbo->rollBack();
                 return array("success" => false, "errors" => $errors);
@@ -1907,7 +1915,7 @@ class DBInterface {
                 $this->dbo->exec($qs);
             }
             catch(PDOException $ex) {
-                $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1212)."; //$LOCALE
+                $errors[] = $this->lh->_("ServerError.internal", array("code" => "1212"));
                 $errors[] = $ex->getMessage() . "\n" . $qs;
                 $this->dbo->rollBack();
                 return array("success" => false, "errors" => $errors);
@@ -1926,7 +1934,7 @@ class DBInterface {
                 }
             }
             catch(PDOException $ex) {
-                $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1213)."; //$LOCALE
+                $errors[] = $this->lh->_("ServerError.internal", array("code" => "1213"));
                 $errors[] = $ex->getMessage() . "\n" . $qs;
                 $this->dbo->rollBack();
                 return array("success" => false, "errors" => $errors);
@@ -1938,7 +1946,7 @@ class DBInterface {
                 $this->dbo->exec($qs);
             }
             catch(PDOException $ex) {
-                $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1214)."; //$LOCALE
+                $errors[] = $this->lh->_("ServerError.internal", array("code" => "1214"));
                 $errors[] = $ex->getMessage() . "\n" . $qs;
                 $this->dbo->rollBack();
                 return array("success" => false, "errors" => $errors);
@@ -1962,7 +1970,7 @@ class DBInterface {
             $stmt->execute(array(':tokid' => $tokenid, ':trans' => $toktrans));
         }
         catch(PDOException $ex) {
-            $errors[] = "Ein interner Fehler ist aufgetreten (Code: 1215)."; //$LOCALE
+            $errors[] = $this->lh->_("ServerError.internal", array("code" => "1215"));
             $errors[] = $ex->getMessage() . "\n" . $qs;
             $this->dbo->rollBack();
             return array("success" => false, "errors" => $errors);

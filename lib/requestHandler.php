@@ -94,16 +94,16 @@ class RequestHandler {
             switch ($file['error']) {
                 case 1:
                 case 2:
-                    $errmsg = "Die Datei überschreitet die maximal erlaubte Dateigröße."; //$LOCALE
+                    $errmsg = $this->lh->_("ServerError.fileTooBig");
                 break;
                 case 3:
-                    $errmsg = "Die Datei wurde nur unvollständig übertragen."; //$LOCALE
+                    $errmsg = $this->lh->_("ServerError.fileIncomplete");
                 break;
                 case 4:
-                    $errmsg = "Die Datei konnte nicht übertragen werden."; //$LOCALE
+                    $errmsg = $this->lh->_("ServerError.fileNotReceived");
                 break;
                 default:
-                    $errmsg = "Ein interner Fehler ist aufgetreten (Fehlernummer: " . $file['error'] . ").  Bitte kontaktieren Sie einen Administrator unter Angabe der Fehlernummer."; //$LOCALE
+                    $errmsg = $this->lh->_("ServerError.internal", array("code" => $file['error']));
             }
             return $errmsg;
         }
@@ -138,10 +138,14 @@ class RequestHandler {
             }
         }
         catch(PDOException $ex) {
-            $status = array('success' => false, 'errors' => array("Unbekannter Datenbankfehler:\n" . $ex->getMessage())); //$LOCALE
+            $status = array('success' => false,
+                            'errors' => array($this->lh->_("ServerError.databaseException"),
+                                              $ex->getMessage()));
         }
         catch(Exception $ex) {
-            $status = array('success' => false, 'errors' => array("Unbekannter Serverfehler:\n" . $ex->getMessage())); //$LOCALE
+            $status = array('success' => false,
+                            'errors' => array($this->lh->_("ServerError.genericException"),
+                                              $ex->getMessage()));
         }
         // return JSON object
         if (isset($post['via']) && $post['via'] === 'iframe') {
@@ -168,10 +172,13 @@ class RequestHandler {
                 case "importTagsetTxt":
                     $errmsg = $this->checkFileUpload($_FILES['txtFile']);
                     if ($errmsg) {
-                        return array("errors" => array("Fehler beim Upload: " . $errmsg)); //$LOCALE
+                        return array("errors" =>
+                                     array($this->lh->_("ServerError.upload") . " " . $errmsg));
                     }
                     if (empty($post['tagset_name'])) {
-                        return array("errors" => array("Kein Tagset-Name angegeben.")); //$LOCALE
+                        return array("errors" => array($this->lh->_("ServerError.fieldEmpty",
+                                                                 array("field" => "Tagset-Name")))
+                        );
                     }
                     $tsclass = empty($post['tagset_class']) ? 'pos' : $post['tagset_class'];
                     $settype = empty($post['tagset_settype']) ? 'closed' : $post['tagset_settype'];
@@ -180,7 +187,8 @@ class RequestHandler {
                 case "importXMLFile":
                     $errmsg = $this->checkFileUpload($_FILES['xmlFile']);
                     if ($errmsg) {
-                        return array("errors" => array("Fehler beim Upload: " . $errmsg)); //$LOCALE
+                        return array("errors" =>
+                                     array($this->lh->_("ServerError.upload") . " " . $errmsg));
                     }
                     $data = $_FILES['xmlFile'];
                     $options = array();
@@ -199,7 +207,7 @@ class RequestHandler {
                 case "importTransFile":
                     return $this->importTranscription($post);
                 default:
-                    return array("errors" => array("Unknown POST request.")); //$LOCALE
+                    return array("errors" => array("Unknown POST request."));
             }
         }
 
@@ -346,7 +354,7 @@ class RequestHandler {
         $_SESSION['importInProgress'] = true;
         $errmsg = $this->checkFileUpload($_FILES['transFile']);
         if ($errmsg) {
-            return array("errors" => array("Fehler beim Upload: " . $errmsg)); //$LOCALE
+            return array("errors" => array($this->lh->_("ServerError.upload") . " " . $errmsg));
         }
         if (!isset($post['via'])) {
             $post['via'] = null;

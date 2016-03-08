@@ -120,8 +120,7 @@ class CoraSessionHandler {
     public function changeTagsetsForFile($fileid, $tagset_ids) {
         if (!$_SESSION["admin"]) {
             return array('success' => false,
-                         'errors' => array("Administrator privileges are "
-                                           . " required for this action.")); //$LOCALE
+                         'errors' => array($this->lh->_("ServerError.adminRequired")));
         }
         // find out what changed
         $oldlinks = $this->db->getTagsetsForFile($fileid);
@@ -139,19 +138,13 @@ class CoraSessionHandler {
             foreach ($to_be_deleted as $tagset) {
                 if ($num = $this->db->doAnnotationsExist($fileid, $tagset))
                     return array('success' => false,
-                                 'errors' => array("Für das Tagset mit der ID "
-                                                   . "{$tagset} gibt es derzeit noch "
-                                                   . "{$num} eingetragene Annotationen."
-                                                   . " Verknüpfungen für Tagsets, mit "
-                                                   . "denen noch Annotationen verbunden"
-                                                   . " sind, können aus Sicherheitsgründen"
-                                                   . " über dieses Interface nicht"
-                                                   . " aufgehoben werden.")); //$LOCALE
+                                 'errors' => array($this->lh->_("DocumentError.cantUnlinkTagset.hasAnnotations"),
+                                                   array("id" => $tagset,
+                                                         "annotations" => $num)));
             }
             if (!$this->db->deleteTagsetsForFile($fileid, $to_be_deleted))
                 return array('success' => false,
-                             'errors' => array("Konnte bestehende Tagset-"
-                                               . "Verknüpfungen nicht aufheben. ")); //$LOCALEs
+                             'errors' => array($this->lh->_("DocumentError.cantUnlinkTagset.generic")));
         }
         if (!empty($to_be_added))
             $this->db->addTagsetsForFile($fileid, $to_be_added);
@@ -178,8 +171,7 @@ class CoraSessionHandler {
             return array('success' => true, 'data' => $this->db->getUserList($this->timeout));
         }
         return array('success' => false,
-                     'errors' => array("Administrator privileges are required "
-                                       . " for this action.")); //$LOCALE
+                     'errors' => array($this->lh->_("ServerError.adminRequired")));
     }
 
     /** Wraps DBInterface::updateLastactive(), updating "last active"
@@ -240,7 +232,7 @@ class CoraSessionHandler {
 
     /** Wraps XMLHandler::import() */
     public function importFile($xmldata, $options) {
-        $xml = new XMLHandler($this->db);
+        $xml = new XMLHandler($this->db, $this->lh);
         return $xml->import($xmldata, $options, $_SESSION["user_id"]);
     }
 
@@ -285,8 +277,8 @@ class CoraSessionHandler {
      */
     public function importTranscriptionFile($transdata, $options) {
         $ch_options = $this->db->getProjectOptions($options['project']);
-        $ch = new CommandHandler($ch_options);
-        $xml = new XMLHandler($this->db);
+        $ch = new CommandHandler($ch_options, $this->lh);
+        $xml = new XMLHandler($this->db, $this->lh);
         $localname = $transdata['tmp_name'];
         $logfile = fopen($options['logfile'], 'a');
         // convert to utf-8
@@ -297,7 +289,7 @@ class CoraSessionHandler {
         }
         if (!empty($errors)) {
             fwrite($logfile, "~ERROR CHECK\n");
-            fwrite($logfile, "Datei ist keine Textdatei und/oder falsches Encoding angegeben.\n\n"); //$LOCALE
+            fwrite($logfile, $this->lh->_("TranscriptionError.wrongFile") . "\n\n");
             fwrite($logfile, implode("\n", $errors) . "\n\n");
             fclose($logfile);
             return false;
@@ -316,7 +308,7 @@ class CoraSessionHandler {
         }
         if (!isset($xmlname) || empty($xmlname)) {
             fwrite($logfile, "~ERROR XML\n");
-            fwrite($logfile, "Fehler beim Erzeugen einer temporären Datei.\n"); //$LOCALE
+            fwrite($logfile, $this->lh->_("ServerError.internal", array("code" => "tmp1")) . "\n");
             fclose($logfile);
             return false;
         }
@@ -339,7 +331,8 @@ class CoraSessionHandler {
     /** Wraps DBInterface::importTaglist() */
     public function importTaglist($taglist, $cls, $settype, $name) {
         if (!$_SESSION['admin']) {
-            return array('success' => false, 'errors' => array("Keine Berechtigung.")); //$LOCALE
+            return array('success' => false,
+                         'errors' => $this->lh->_("ServerError.adminRequired"));
         }
         return $this->db->importTaglist($taglist, $cls, $settype, $name);
     }
@@ -347,7 +340,8 @@ class CoraSessionHandler {
     /** Wraps DBInterface::deleteFile() */
     public function deleteFile($fileid) {
         if (!$_SESSION['admin'] && !$this->db->isAllowedToDeleteFile($fileid, $_SESSION['user'])) {
-            return array("success" => false, "error_msg" => "Keine Berechtigung."); //$LOCALE
+            return array("success" => false,
+                         "error_msg" => $this->lh->_("ServerError.adminRequired"));
         }
         $status = $this->db->deleteFile($fileid);
         if ($status) {
@@ -378,7 +372,8 @@ class CoraSessionHandler {
 
     public function saveMetadata($post) {
         if (!$_SESSION['admin'] && !$this->db->isAllowedToDeleteFile($fileid, $_SESSION['user'])) {
-            return array("success" => false, "error_msg" => "Keine Berechtigung."); //$LOCALE
+            return array("success" => false,
+                         "error_msg" => $this->lh->_("ServerError.adminRequired"));
         }
         $status = $this->db->changeMetadata($post);
         if ($status) {
@@ -511,10 +506,12 @@ class CoraSessionHandler {
     public function saveProjectSettings($data) {
         if (!$_SESSION["admin"])
             return array("success" => false,
-                         "errors" => ["Permission denied."]); //$LOCALE
+                         "errors" => array($this->lh->_("ServerError.adminRequired")));
         if (!array_key_exists('id', $data))
             return array("success" => false,
-                         "errors" => ["No project ID given."]); //$LOCALE
+                         "errors" => array($this->lh->_("ServerError.internal",
+                                                     array("code" => "pjs1")))
+            );
         return $this->db->saveProjectSettings($data['id'], $data);
     }
 
@@ -524,13 +521,17 @@ class CoraSessionHandler {
     public function saveUserSettings($data) {
         if (!$_SESSION["admin"])
             return array("success" => false,
-                         "errors" => ["Permission denied."]); //$LOCALE
+                         "errors" => array($this->lh->_("ServerError.adminRequired")));
         if (!array_key_exists('id', $data))
             return array("success" => false,
-                         "errors" => ["No user ID given."]); //$LOCALE
+                         "errors" => array($this->lh->_("ServerError.internal",
+                                                     array("code" => "sus1")))
+            );
         if ($this->db->saveUserSettings($data['id'], $data) < 1)
             return array("success" => false,
-                         "errors" => ["Unknown error."]); //$LOCALE
+                         "errors" => array($this->lh->_("ServerError.internal",
+                                                     array("code" => "sus2")))
+            );
         return array("success" => true);
     }
 
@@ -595,9 +596,8 @@ class CoraSessionHandler {
         if (!$this->db->lockProjectForTagger($pid, $taggerid)) {
             // TODO: find more elegant way to handle this
             return array("success" => false,
-                         "errors" => array("Für dieses Projekt wird derzeit bereits ein Tagger"
-                                           . " ausgeführt.  Bitte warten Sie einen Moment und"
-                                           . " führen dann den Vorgang erneut aus.")); //$LOCALE
+                         "errors" => array($this->lh->_("AnnotationError.inProgress"))
+            );
         }
         try {
             $exp = new Exporter($this->db);
@@ -628,7 +628,7 @@ class CoraSessionHandler {
         // check whether tokenid belongs to currently opened file
         $textid = $this->db->getTextIdForToken($tokenid);
         if ($textid !== $_SESSION['currentFileId']) {
-            $errors[] = "Token konnte nicht gelöscht werden, da es nicht zur momentan geöffneten Datei gehört."; //$LOCALE
+            $errors[] = $this->lh->_("ServerError.internal", array("code" => "1311"));
             return array("success" => false, "errors" => $errors);
         }
         // call the DB interface to make the change
@@ -647,7 +647,7 @@ class CoraSessionHandler {
         // check whether tokenid belongs to currently opened file
         $textid = $this->db->getTextIdForToken($tokenid);
         if ($textid !== $_SESSION['currentFileId']) {
-            $errors[] = "Token konnte nicht geändert werden, da es nicht zur momentan geöffneten Datei gehört."; //$LOCALE
+            $errors[] = $this->lh->_("ServerError.internal", array("code" => "1312"));
             return array("success" => false, "errors" => $errors);
         }
         // check and convert transcription
@@ -672,7 +672,7 @@ class CoraSessionHandler {
         // check whether tokenid belongs to currently opened file
         $textid = $this->db->getTextIdForToken($tokenid);
         if ($textid !== $_SESSION['currentFileId']) {
-            $errors[] = "Token konnte nicht hinzugefügt werden, da es nicht zur momentan geöffneten Datei gehört."; //$LOCALE
+            $errors[] = $this->lh->_("ServerError.internal", array("code" => "1313"));
             return array("success" => false, "errors" => $errors);
         }
         // check and convert transcription
@@ -697,11 +697,11 @@ class CoraSessionHandler {
         // instantiate CommandHandler
         $pid = $this->db->getProjectForFile($textid);
         $options = $this->db->getProjectOptions($pid);
-        $ch = new CommandHandler($options);
+        $ch = new CommandHandler($options, $this->lh);
         $errors = array();
         $converted = $ch->checkConvertToken($value, $errors);
         if (!empty($errors)) {
-            array_unshift($errors, "Bei der Konvertierung des Tokens ist ein Fehler aufgetreten.", ""); //$LOCALE
+            array_unshift($errors, $this->lh->_("TranscriptionError.conversionFailed"), "");
             return array("success" => false, "errors" => $errors);
         }
         return null;
@@ -740,8 +740,7 @@ class CoraSessionHandler {
             return array('success' => (bool)$status);
         }
         return array('success' => false,
-                     'errors' => array("Administrator privileges are required "
-                                       . " for this action.")); //$LOCALE
+                     'errors' => array($this->lh->_("ServerError.adminRequired")));
     }
 
     /** Deletes a server notice.
@@ -752,8 +751,7 @@ class CoraSessionHandler {
             return array('success' => (bool)$status);
         }
         return array('success' => false,
-                     'errors' => array("Administrator privileges are required "
-                                       . " for this action.")); //$LOCALE
+                     'errors' => array($this->lh->_("ServerError.adminRequired")));
     }
 
     /** Fetches all server notices, checking for admin privileges first.
@@ -764,8 +762,7 @@ class CoraSessionHandler {
             return array('success' => true, 'notices' => $notices);
         }
         return array('success' => false,
-                     'errors' => array("Administrator privileges are required "
-                                       . " for this action.")); //$LOCALE
+                     'errors' => array($this->lh->_("ServerError.adminRequired")));
     }
 
     /** Creates a new automatic annotator.
@@ -775,8 +772,7 @@ class CoraSessionHandler {
             return $this->db->addTagger($data['name'], $data['class']);
         }
         return array('success' => false,
-                     'errors' => array("Administrator privileges are required "
-                                       . " for this action.")); //$LOCALE
+                     'errors' => array($this->lh->_("ServerError.adminRequired")));
     }
 
     /** Deletes an automatic annotator.
@@ -787,8 +783,7 @@ class CoraSessionHandler {
             return array('success' => (bool)$status);
         }
         return array('success' => false,
-                     'errors' => array("Administrator privileges are required "
-                                       . " for this action.")); //$LOCALE
+                     'errors' => array($this->lh->_("ServerError.adminRequired")));
     }
 
     /** Changes the settings of an automatic annotator.
@@ -804,8 +799,7 @@ class CoraSessionHandler {
             }
         }
         return array('success' => false,
-                     'errors' => array("Administrator privileges are required "
-                                       . " for this action.")); //$LOCALE
+                     'errors' => array($this->lh->_("ServerError.adminRequired")));
     }
 
     /** Fetches all automatic annotators, checking for admin privileges first.
@@ -816,8 +810,7 @@ class CoraSessionHandler {
             return array('success' => true, 'taggers' => $taggers);
         }
         return array('success' => false,
-                     'errors' => array("Administrator privileges are required "
-                                       . " for this action.")); //$LOCALE
+                     'errors' => array($this->lh->_("ServerError.adminRequired")));
     }
 
     /** Perform user login.

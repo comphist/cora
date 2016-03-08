@@ -52,9 +52,9 @@ try {
             content.php. */
 
     /* Initiate session */
-    $dbi = new DBInterface(Cfg::get('dbinfo'));
     $lh = new LocaleHandler();
     $_ = $lh;
+    $dbi = new DBInterface(Cfg::get('dbinfo'), $lh);
     $sh = new CoraSessionHandler($dbi, $lh);
     $rq = new RequestHandler($sh, $lh);
 
