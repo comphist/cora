@@ -16,7 +16,7 @@ set(PHPUNIT_OPTIONS
   --configuration phpunit.xml
 )
 if(DEBUG_MODE)
-  list(APPEND PHPUNIT_OPTIONS --strict --verbose)
+  list(APPEND PHPUNIT_OPTIONS --verbose)
 endif()
 
 set(PHP_TESTS
