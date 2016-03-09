@@ -1,0 +1,1388 @@
+<?xml version="1.0" encoding="utf-8"?>
+<text id="fk">
+	<header>
+		Excerpt from Franz Kafka&apos;s &quot;Der Prozeß&quot;, taken from &lt;http://gutenberg.spiegel.de/buch/der-prozess-157/2&gt;.
+	</header>
+
+	<layoutinfo>
+		<page id="p1" side="r" range="c1" no="02"/>
+		<page id="p2" side="v" range="c2" no="02"/>
+		<page id="p3" side="r" range="c3" no="03"/>
+		<page id="p4" side="v" range="c4..c6" no="03"/>
+		<page id="p5" range="c7" no="04"/>
+		<page id="p6" range="c8" no="06"/>
+		<page id="p7" range="c9..c10" no="10"/>
+
+		<column id="c1" range="l1..l3"/>
+		<column id="c2" range="l4"/>
+		<column id="c3" range="l5"/>
+		<column id="c4" name="a" range="l6..l8"/>
+		<column id="c5" name="b" range="l9"/>
+		<column id="c6" name="c" range="l10"/>
+		<column id="c7" range="l11..l17"/>
+		<column id="c8" range="l18..l22"/>
+		<column id="c9" name="a" range="l23..l25"/>
+		<column id="c10" name="b" range="l26..l27"/>
+
+		<line id="l1" name="01" range="t1_d1..t10_d1"/>
+		<line id="l2" name="02" range="t11_d1"/>
+		<line id="l3" name="03" range="t12_d1..t19_d1"/>
+		<line id="l4" name="01" range="t20_d1..t26_d1"/>
+		<line id="l5" name="01" range="t27_d1..t37_d1"/>
+		<line id="l6" name="01" range="t38_d1..t47_d1"/>
+		<line id="l7" name="02" range="t48_d1..t58_d1"/>
+		<line id="l8" name="03" range="t59_d1..t70_d1"/>
+		<line id="l9" name="01" range="t71_d1..t76_d1"/>
+		<line id="l10" name="02" range="t77_d1..t81_d1"/>
+		<line id="l11" name="01" range="t82_d1..t91_d1"/>
+		<line id="l12" name="02" range="t92_d1..t95_d1"/>
+		<line id="l13" name="03" range="t96_d1..t110_d1"/>
+		<line id="l14" name="04" range="t111_d1..t117_d1"/>
+		<line id="l15" name="05" range="t118_d1..t127_d2"/>
+		<line id="l16" name="06" range="t128_d1..t132_d1"/>
+		<line id="l17" name="07" range="t132_d2..t140_d1"/>
+		<line id="l18" name="01" range="t141_d1..t158_d2"/>
+		<line id="l19" name="02" range="t158_d3..t160_d1"/>
+		<line id="l20" name="03" range="t160_d2"/>
+		<line id="l21" name="04" range="t160_d3"/>
+		<line id="l22" name="05" range="t161_d1..t171_d1"/>
+		<line id="l23" name="01" range="t172_d1..t180_d1"/>
+		<line id="l24" name="02" range="t181_d1"/>
+		<line id="l25" name="03" range="t182_d1..t190_d1"/>
+		<line id="l26" name="01" range="t191_d1..t198_d1"/>
+		<line id="l27" name="02" range="t199_d1..t202_d1"/>
+	</layoutinfo>
+
+	<shifttags>
+		<lat range="t177"/>
+		<rub range="t174"/>
+		<rub range="t181"/>
+		<rub range="t192..t195"/>
+	</shifttags>
+
+	<token id="t1" trans="Jemand">
+		<dipl id="t1_d1" trans="Jemand" utf="Jemand"/>
+		<mod id="t1_m1" trans="Jemand" ascii="Jemand" utf="Jemand">
+		</mod>
+	</token>
+
+	<token id="t2" trans="mußte">
+		<dipl id="t2_d1" trans="mußte" utf="mußte"/>
+		<mod id="t2_m1" trans="mußte" ascii="mußte" utf="mußte">
+		</mod>
+	</token>
+
+	<token id="t3" trans="Josef">
+		<dipl id="t3_d1" trans="Josef" utf="Josef"/>
+		<mod id="t3_m1" trans="Josef" ascii="Josef" utf="Josef">
+		</mod>
+	</token>
+
+	<token id="t4" trans="K.">
+		<dipl id="t4_d1" trans="K." utf="K."/>
+		<mod id="t4_m1" trans="K" ascii="K" utf="K">
+		</mod>
+		<mod id="t4_m2" trans="." ascii="." utf=".">
+		</mod>
+	</token>
+
+	<token id="t5" trans="verleumdet">
+		<dipl id="t5_d1" trans="verleumdet" utf="verleumdet"/>
+		<mod id="t5_m1" trans="verleumdet" ascii="verleumdet" utf="verleumdet">
+		</mod>
+	</token>
+
+	<token id="t6" trans="haben,">
+		<dipl id="t6_d1" trans="haben," utf="haben,"/>
+		<mod id="t6_m1" trans="haben" ascii="haben" utf="haben">
+		</mod>
+		<mod id="t6_m2" trans="," ascii="," utf=",">
+		</mod>
+	</token>
+
+	<token id="t7" trans="denn">
+		<dipl id="t7_d1" trans="denn" utf="denn"/>
+		<mod id="t7_m1" trans="denn" ascii="denn" utf="denn">
+		</mod>
+	</token>
+
+	<token id="t8" trans="ohne">
+		<dipl id="t8_d1" trans="ohne" utf="ohne"/>
+		<mod id="t8_m1" trans="ohne" ascii="ohne" utf="ohne">
+		</mod>
+	</token>
+
+	<token id="t9" trans="daß">
+		<dipl id="t9_d1" trans="daß" utf="daß"/>
+		<mod id="t9_m1" trans="daß" ascii="daß" utf="daß">
+		</mod>
+	</token>
+
+	<token id="t10" trans="er">
+		<dipl id="t10_d1" trans="er" utf="er"/>
+		<mod id="t10_m1" trans="er" ascii="er" utf="er">
+		</mod>
+	</token>
+
+	<token id="t11" trans="etwas">
+		<dipl id="t11_d1" trans="etwas" utf="etwas"/>
+		<mod id="t11_m1" trans="etwas" ascii="etwas" utf="etwas">
+		</mod>
+	</token>
+
+	<token id="t12" trans="Böses">
+		<dipl id="t12_d1" trans="Böses" utf="Böses"/>
+		<mod id="t12_m1" trans="Böses" ascii="Böses" utf="Böses">
+		</mod>
+	</token>
+
+	<token id="t13" trans="getan">
+		<dipl id="t13_d1" trans="getan" utf="getan"/>
+		<mod id="t13_m1" trans="getan" ascii="getan" utf="getan">
+		</mod>
+	</token>
+
+	<token id="t14" trans="hätte,">
+		<dipl id="t14_d1" trans="hätte," utf="hätte,"/>
+		<mod id="t14_m1" trans="hätte" ascii="hätte" utf="hätte">
+		</mod>
+		<mod id="t14_m2" trans="," ascii="," utf=",">
+		</mod>
+	</token>
+
+	<token id="t15" trans="wurde">
+		<dipl id="t15_d1" trans="wurde" utf="wurde"/>
+		<mod id="t15_m1" trans="wurde" ascii="wurde" utf="wurde">
+		</mod>
+	</token>
+
+	<token id="t16" trans="er">
+		<dipl id="t16_d1" trans="er" utf="er"/>
+		<mod id="t16_m1" trans="er" ascii="er" utf="er">
+		</mod>
+	</token>
+
+	<token id="t17" trans="eines">
+		<dipl id="t17_d1" trans="eines" utf="eines"/>
+		<mod id="t17_m1" trans="eines" ascii="eines" utf="eines">
+		</mod>
+	</token>
+
+	<token id="t18" trans="Morgens">
+		<dipl id="t18_d1" trans="Morgens" utf="Morgens"/>
+		<mod id="t18_m1" trans="Morgens" ascii="Morgens" utf="Morgens">
+		</mod>
+	</token>
+
+	<token id="t19" trans="verhaftet.">
+		<dipl id="t19_d1" trans="verhaftet." utf="verhaftet."/>
+		<mod id="t19_m1" trans="verhaftet" ascii="verhaftet" utf="verhaftet">
+		</mod>
+		<mod id="t19_m2" trans="." ascii="." utf=".">
+		</mod>
+	</token>
+
+	<token id="t20" trans="Die">
+		<dipl id="t20_d1" trans="Die" utf="Die"/>
+		<mod id="t20_m1" trans="Die" ascii="Die" utf="Die">
+		</mod>
+	</token>
+
+	<token id="t21" trans="Köchin">
+		<dipl id="t21_d1" trans="Köchin" utf="Köchin"/>
+		<mod id="t21_m1" trans="Köchin" ascii="Köchin" utf="Köchin">
+		</mod>
+	</token>
+
+	<token id="t22" trans="der">
+		<dipl id="t22_d1" trans="der" utf="der"/>
+		<mod id="t22_m1" trans="der" ascii="der" utf="der">
+		</mod>
+	</token>
+
+	<token id="t23" trans="Frau">
+		<dipl id="t23_d1" trans="Frau" utf="Frau"/>
+		<mod id="t23_m1" trans="Frau" ascii="Frau" utf="Frau">
+		</mod>
+	</token>
+
+	<token id="t24" trans="Grubach,">
+		<dipl id="t24_d1" trans="Grubach," utf="Grubach,"/>
+		<mod id="t24_m1" trans="Grubach" ascii="Grubach" utf="Grubach">
+		</mod>
+		<mod id="t24_m2" trans="," ascii="," utf=",">
+		</mod>
+	</token>
+
+	<token id="t25" trans="seiner">
+		<dipl id="t25_d1" trans="seiner" utf="seiner"/>
+		<mod id="t25_m1" trans="seiner" ascii="seiner" utf="seiner">
+		</mod>
+	</token>
+
+	<token id="t26" trans="Zimmervermieterin,">
+		<dipl id="t26_d1" trans="Zimmervermieterin," utf="Zimmervermieterin,"/>
+		<mod id="t26_m1" trans="Zimmervermieterin" ascii="Zimmervermieterin" utf="Zimmervermieterin">
+		</mod>
+		<mod id="t26_m2" trans="," ascii="," utf=",">
+		</mod>
+	</token>
+
+	<token id="t27" trans="die">
+		<dipl id="t27_d1" trans="die" utf="die"/>
+		<mod id="t27_m1" trans="die" ascii="die" utf="die">
+		</mod>
+	</token>
+
+	<token id="t28" trans="ihm">
+		<dipl id="t28_d1" trans="ihm" utf="ihm"/>
+		<mod id="t28_m1" trans="ihm" ascii="ihm" utf="ihm">
+		</mod>
+	</token>
+
+	<token id="t29" trans="jeden">
+		<dipl id="t29_d1" trans="jeden" utf="jeden"/>
+		<mod id="t29_m1" trans="jeden" ascii="jeden" utf="jeden">
+		</mod>
+	</token>
+
+	<token id="t30" trans="Tag">
+		<dipl id="t30_d1" trans="Tag" utf="Tag"/>
+		<mod id="t30_m1" trans="Tag" ascii="Tag" utf="Tag">
+		</mod>
+	</token>
+
+	<token id="t31" trans="gegen">
+		<dipl id="t31_d1" trans="gegen" utf="gegen"/>
+		<mod id="t31_m1" trans="gegen" ascii="gegen" utf="gegen">
+		</mod>
+	</token>
+
+	<token id="t32" trans="acht">
+		<dipl id="t32_d1" trans="acht" utf="acht"/>
+		<mod id="t32_m1" trans="acht" ascii="acht" utf="acht">
+		</mod>
+	</token>
+
+	<token id="t33" trans="Uhr">
+		<dipl id="t33_d1" trans="Uhr" utf="Uhr"/>
+		<mod id="t33_m1" trans="Uhr" ascii="Uhr" utf="Uhr">
+		</mod>
+	</token>
+
+	<token id="t34" trans="früh">
+		<dipl id="t34_d1" trans="früh" utf="früh"/>
+		<mod id="t34_m1" trans="früh" ascii="früh" utf="früh">
+		</mod>
+	</token>
+
+	<token id="t35" trans="das">
+		<dipl id="t35_d1" trans="das" utf="das"/>
+		<mod id="t35_m1" trans="das" ascii="das" utf="das">
+		</mod>
+	</token>
+
+	<token id="t36" trans="Frühstück">
+		<dipl id="t36_d1" trans="Frühstück" utf="Frühstück"/>
+		<mod id="t36_m1" trans="Frühstück" ascii="Frühstück" utf="Frühstück">
+		</mod>
+	</token>
+
+	<token id="t37" trans="brachte,">
+		<dipl id="t37_d1" trans="brachte," utf="brachte,"/>
+		<mod id="t37_m1" trans="brachte" ascii="brachte" utf="brachte">
+		</mod>
+		<mod id="t37_m2" trans="," ascii="," utf=",">
+		</mod>
+	</token>
+
+	<token id="t38" trans="kam">
+		<dipl id="t38_d1" trans="kam" utf="kam"/>
+		<mod id="t38_m1" trans="kam" ascii="kam" utf="kam">
+		</mod>
+	</token>
+
+	<token id="t39" trans="diesmal">
+		<dipl id="t39_d1" trans="diesmal" utf="diesmal"/>
+		<mod id="t39_m1" trans="diesmal" ascii="diesmal" utf="diesmal">
+		</mod>
+	</token>
+
+	<token id="t40" trans="nicht.">
+		<dipl id="t40_d1" trans="nicht." utf="nicht."/>
+		<mod id="t40_m1" trans="nicht" ascii="nicht" utf="nicht">
+		</mod>
+		<mod id="t40_m2" trans="." ascii="." utf=".">
+		</mod>
+	</token>
+
+	<token id="t41" trans="Das">
+		<dipl id="t41_d1" trans="Das" utf="Das"/>
+		<mod id="t41_m1" trans="Das" ascii="Das" utf="Das">
+		</mod>
+	</token>
+
+	<token id="t42" trans="war">
+		<dipl id="t42_d1" trans="war" utf="war"/>
+		<mod id="t42_m1" trans="war" ascii="war" utf="war">
+		</mod>
+	</token>
+
+	<token id="t43" trans="noch">
+		<dipl id="t43_d1" trans="noch" utf="noch"/>
+		<mod id="t43_m1" trans="noch" ascii="noch" utf="noch">
+		</mod>
+	</token>
+
+	<token id="t44" trans="niemals">
+		<dipl id="t44_d1" trans="niemals" utf="niemals"/>
+		<mod id="t44_m1" trans="niemals" ascii="niemals" utf="niemals">
+		</mod>
+	</token>
+
+	<token id="t45" trans="geschehen.">
+		<dipl id="t45_d1" trans="geschehen." utf="geschehen."/>
+		<mod id="t45_m1" trans="geschehen" ascii="geschehen" utf="geschehen">
+		</mod>
+		<mod id="t45_m2" trans="." ascii="." utf=".">
+		</mod>
+	</token>
+
+	<token id="t46" trans="K.">
+		<dipl id="t46_d1" trans="K." utf="K."/>
+		<mod id="t46_m1" trans="K" ascii="K" utf="K">
+		</mod>
+		<mod id="t46_m2" trans="." ascii="." utf=".">
+		</mod>
+	</token>
+
+	<token id="t47" trans="wartete">
+		<dipl id="t47_d1" trans="wartete" utf="wartete"/>
+		<mod id="t47_m1" trans="wartete" ascii="wartete" utf="wartete">
+		</mod>
+	</token>
+
+	<token id="t48" trans="noch">
+		<dipl id="t48_d1" trans="noch" utf="noch"/>
+		<mod id="t48_m1" trans="noch" ascii="noch" utf="noch">
+		</mod>
+	</token>
+
+	<token id="t49" trans="ein">
+		<dipl id="t49_d1" trans="ein" utf="ein"/>
+		<mod id="t49_m1" trans="ein" ascii="ein" utf="ein">
+		</mod>
+	</token>
+
+	<token id="t50" trans="Weilchen,">
+		<dipl id="t50_d1" trans="Weilchen," utf="Weilchen,"/>
+		<mod id="t50_m1" trans="Weilchen" ascii="Weilchen" utf="Weilchen">
+		</mod>
+		<mod id="t50_m2" trans="," ascii="," utf=",">
+		</mod>
+	</token>
+
+	<token id="t51" trans="sah">
+		<dipl id="t51_d1" trans="sah" utf="sah"/>
+		<mod id="t51_m1" trans="sah" ascii="sah" utf="sah">
+		</mod>
+	</token>
+
+	<token id="t52" trans="von">
+		<dipl id="t52_d1" trans="von" utf="von"/>
+		<mod id="t52_m1" trans="von" ascii="von" utf="von">
+		</mod>
+	</token>
+
+	<token id="t53" trans="seinem">
+		<dipl id="t53_d1" trans="seinem" utf="seinem"/>
+		<mod id="t53_m1" trans="seinem" ascii="seinem" utf="seinem">
+		</mod>
+	</token>
+
+	<token id="t54" trans="Kopfkissen">
+		<dipl id="t54_d1" trans="Kopfkissen" utf="Kopfkissen"/>
+		<mod id="t54_m1" trans="Kopfkissen" ascii="Kopfkissen" utf="Kopfkissen">
+		</mod>
+	</token>
+
+	<token id="t55" trans="aus">
+		<dipl id="t55_d1" trans="aus" utf="aus"/>
+		<mod id="t55_m1" trans="aus" ascii="aus" utf="aus">
+		</mod>
+	</token>
+
+	<token id="t56" trans="die">
+		<dipl id="t56_d1" trans="die" utf="die"/>
+		<mod id="t56_m1" trans="die" ascii="die" utf="die">
+		</mod>
+	</token>
+
+	<token id="t57" trans="alte">
+		<dipl id="t57_d1" trans="alte" utf="alte"/>
+		<mod id="t57_m1" trans="alte" ascii="alte" utf="alte">
+		</mod>
+	</token>
+
+	<token id="t58" trans="Frau,">
+		<dipl id="t58_d1" trans="Frau," utf="Frau,"/>
+		<mod id="t58_m1" trans="Frau" ascii="Frau" utf="Frau">
+		</mod>
+		<mod id="t58_m2" trans="," ascii="," utf=",">
+		</mod>
+	</token>
+
+	<token id="t59" trans="die">
+		<dipl id="t59_d1" trans="die" utf="die"/>
+		<mod id="t59_m1" trans="die" ascii="die" utf="die">
+		</mod>
+	</token>
+
+	<token id="t60" trans="ihm">
+		<dipl id="t60_d1" trans="ihm" utf="ihm"/>
+		<mod id="t60_m1" trans="ihm" ascii="ihm" utf="ihm">
+		</mod>
+	</token>
+
+	<token id="t61" trans="gegenüber">
+		<dipl id="t61_d1" trans="gegenüber" utf="gegenüber"/>
+		<mod id="t61_m1" trans="gegenüber" ascii="gegenüber" utf="gegenüber">
+		</mod>
+	</token>
+
+	<token id="t62" trans="wohnte">
+		<dipl id="t62_d1" trans="wohnte" utf="wohnte"/>
+		<mod id="t62_m1" trans="wohnte" ascii="wohnte" utf="wohnte">
+		</mod>
+	</token>
+
+	<token id="t63" trans="und">
+		<dipl id="t63_d1" trans="und" utf="und"/>
+		<mod id="t63_m1" trans="und" ascii="und" utf="und">
+		</mod>
+	</token>
+
+	<token id="t64" trans="die">
+		<dipl id="t64_d1" trans="die" utf="die"/>
+		<mod id="t64_m1" trans="die" ascii="die" utf="die">
+		</mod>
+	</token>
+
+	<token id="t65" trans="ihn">
+		<dipl id="t65_d1" trans="ihn" utf="ihn"/>
+		<mod id="t65_m1" trans="ihn" ascii="ihn" utf="ihn">
+		</mod>
+	</token>
+
+	<token id="t66" trans="mit">
+		<dipl id="t66_d1" trans="mit" utf="mit"/>
+		<mod id="t66_m1" trans="mit" ascii="mit" utf="mit">
+		</mod>
+	</token>
+
+	<token id="t67" trans="einer">
+		<dipl id="t67_d1" trans="einer" utf="einer"/>
+		<mod id="t67_m1" trans="einer" ascii="einer" utf="einer">
+		</mod>
+	</token>
+
+	<token id="t68" trans="an">
+		<dipl id="t68_d1" trans="an" utf="an"/>
+		<mod id="t68_m1" trans="an" ascii="an" utf="an">
+		</mod>
+	</token>
+
+	<token id="t69" trans="ihr">
+		<dipl id="t69_d1" trans="ihr" utf="ihr"/>
+		<mod id="t69_m1" trans="ihr" ascii="ihr" utf="ihr">
+		</mod>
+	</token>
+
+	<token id="t70" trans="ganz">
+		<dipl id="t70_d1" trans="ganz" utf="ganz"/>
+		<mod id="t70_m1" trans="ganz" ascii="ganz" utf="ganz">
+		</mod>
+	</token>
+
+	<token id="t71" trans="ungewöhnlichen">
+		<dipl id="t71_d1" trans="ungewöhnlichen" utf="ungewöhnlichen"/>
+		<mod id="t71_m1" trans="ungewöhnlichen" ascii="ungewöhnlichen" utf="ungewöhnlichen">
+		</mod>
+	</token>
+
+	<token id="t72" trans="Neugierde">
+		<dipl id="t72_d1" trans="Neugierde" utf="Neugierde"/>
+		<mod id="t72_m1" trans="Neugierde" ascii="Neugierde" utf="Neugierde">
+		</mod>
+	</token>
+
+	<token id="t73" trans="beobachtete,">
+		<dipl id="t73_d1" trans="beobachtete," utf="beobachtete,"/>
+		<mod id="t73_m1" trans="beobachtete" ascii="beobachtete" utf="beobachtete">
+		</mod>
+		<mod id="t73_m2" trans="," ascii="," utf=",">
+		</mod>
+	</token>
+
+	<token id="t74" trans="dann">
+		<dipl id="t74_d1" trans="dann" utf="dann"/>
+		<mod id="t74_m1" trans="dann" ascii="dann" utf="dann">
+		</mod>
+	</token>
+
+	<token id="t75" trans="aber,">
+		<dipl id="t75_d1" trans="aber," utf="aber,"/>
+		<mod id="t75_m1" trans="aber" ascii="aber" utf="aber">
+		</mod>
+		<mod id="t75_m2" trans="," ascii="," utf=",">
+		</mod>
+	</token>
+
+	<token id="t76" trans="gleichzeitig">
+		<dipl id="t76_d1" trans="gleichzeitig" utf="gleichzeitig"/>
+		<mod id="t76_m1" trans="gleichzeitig" ascii="gleichzeitig" utf="gleichzeitig">
+		</mod>
+	</token>
+
+	<token id="t77" trans="befremdet">
+		<dipl id="t77_d1" trans="befremdet" utf="befremdet"/>
+		<mod id="t77_m1" trans="befremdet" ascii="befremdet" utf="befremdet">
+		</mod>
+	</token>
+
+	<token id="t78" trans="und">
+		<dipl id="t78_d1" trans="und" utf="und"/>
+		<mod id="t78_m1" trans="und" ascii="und" utf="und">
+		</mod>
+	</token>
+
+	<token id="t79" trans="hungrig,">
+		<dipl id="t79_d1" trans="hungrig," utf="hungrig,"/>
+		<mod id="t79_m1" trans="hungrig" ascii="hungrig" utf="hungrig">
+		</mod>
+		<mod id="t79_m2" trans="," ascii="," utf=",">
+		</mod>
+	</token>
+
+	<token id="t80" trans="läutete">
+		<dipl id="t80_d1" trans="läutete" utf="läutete"/>
+		<mod id="t80_m1" trans="läutete" ascii="läutete" utf="läutete">
+		</mod>
+	</token>
+
+	<token id="t81" trans="er.">
+		<dipl id="t81_d1" trans="er." utf="er."/>
+		<mod id="t81_m1" trans="er" ascii="er" utf="er">
+		</mod>
+		<mod id="t81_m2" trans="." ascii="." utf=".">
+		</mod>
+	</token>
+
+	<token id="t82" trans="Sofort">
+		<dipl id="t82_d1" trans="Sofort" utf="Sofort"/>
+		<mod id="t82_m1" trans="Sofort" ascii="Sofort" utf="Sofort">
+		</mod>
+	</token>
+
+	<token id="t83" trans="klopfte">
+		<dipl id="t83_d1" trans="klopfte" utf="klopfte"/>
+		<mod id="t83_m1" trans="klopfte" ascii="klopfte" utf="klopfte">
+		</mod>
+	</token>
+
+	<token id="t84" trans="es">
+		<dipl id="t84_d1" trans="es" utf="es"/>
+		<mod id="t84_m1" trans="es" ascii="es" utf="es">
+		</mod>
+	</token>
+
+	<token id="t85" trans="und">
+		<dipl id="t85_d1" trans="und" utf="und"/>
+		<mod id="t85_m1" trans="und" ascii="und" utf="und">
+		</mod>
+	</token>
+
+	<token id="t86" trans="ein">
+		<dipl id="t86_d1" trans="ein" utf="ein"/>
+		<mod id="t86_m1" trans="ein" ascii="ein" utf="ein">
+		</mod>
+	</token>
+
+	<token id="t87" trans="Mann,">
+		<dipl id="t87_d1" trans="Mann," utf="Mann,"/>
+		<mod id="t87_m1" trans="Mann" ascii="Mann" utf="Mann">
+		</mod>
+		<mod id="t87_m2" trans="," ascii="," utf=",">
+		</mod>
+	</token>
+
+	<token id="t88" trans="den|er">
+		<dipl id="t88_d1" trans="den|er" utf="dener"/>
+		<mod id="t88_m1" trans="den|" ascii="den" utf="den">
+		</mod>
+		<mod id="t88_m2" trans="er" ascii="er" utf="er">
+		</mod>
+	</token>
+
+	<token id="t89" trans="in">
+		<dipl id="t89_d1" trans="in" utf="in"/>
+		<mod id="t89_m1" trans="in" ascii="in" utf="in">
+		</mod>
+	</token>
+
+	<token id="t90" trans="dieser">
+		<dipl id="t90_d1" trans="dieser" utf="dieser"/>
+		<mod id="t90_m1" trans="dieser" ascii="dieser" utf="dieser">
+		</mod>
+	</token>
+
+	<token id="t91" trans="Wohnung">
+		<dipl id="t91_d1" trans="Wohnung" utf="Wohnung"/>
+		<mod id="t91_m1" trans="Wohnung" ascii="Wohnung" utf="Wohnung">
+		</mod>
+	</token>
+
+	<token id="t92" trans="noch">
+		<dipl id="t92_d1" trans="noch" utf="noch"/>
+		<mod id="t92_m1" trans="noch" ascii="noch" utf="noch">
+		</mod>
+	</token>
+
+	<token id="t93" trans="n|i|e|m|a|l|s">
+		<dipl id="t93_d1" trans="n|i|e|m|a|l|s" utf="niemals"/>
+		<mod id="t93_m1" trans="n|" ascii="n" utf="n">
+		</mod>
+		<mod id="t93_m2" trans="i|" ascii="i" utf="i">
+		</mod>
+		<mod id="t93_m3" trans="e|" ascii="e" utf="e">
+		</mod>
+		<mod id="t93_m4" trans="m|" ascii="m" utf="m">
+		</mod>
+		<mod id="t93_m5" trans="a|" ascii="a" utf="a">
+		</mod>
+		<mod id="t93_m6" trans="l|" ascii="l" utf="l">
+		</mod>
+		<mod id="t93_m7" trans="s" ascii="s" utf="s">
+		</mod>
+	</token>
+
+	<token id="t94" trans="gesehen">
+		<dipl id="t94_d1" trans="gesehen" utf="gesehen"/>
+		<mod id="t94_m1" trans="gesehen" ascii="gesehen" utf="gesehen">
+		</mod>
+	</token>
+
+	<token id="t95" trans="hatte,">
+		<dipl id="t95_d1" trans="hatte," utf="hatte,"/>
+		<mod id="t95_m1" trans="hatte" ascii="hatte" utf="hatte">
+		</mod>
+		<mod id="t95_m2" trans="," ascii="," utf=",">
+		</mod>
+	</token>
+
+	<token id="t96" trans="trat">
+		<dipl id="t96_d1" trans="trat" utf="trat"/>
+		<mod id="t96_m1" trans="trat" ascii="trat" utf="trat">
+		</mod>
+	</token>
+
+	<token id="t97" trans="ein.">
+		<dipl id="t97_d1" trans="ein." utf="ein."/>
+		<mod id="t97_m1" trans="ein" ascii="ein" utf="ein">
+		</mod>
+		<mod id="t97_m2" trans="." ascii="." utf=".">
+		</mod>
+	</token>
+
+	<token id="t98" trans="Er">
+		<dipl id="t98_d1" trans="Er" utf="Er"/>
+		<mod id="t98_m1" trans="Er" ascii="Er" utf="Er">
+		</mod>
+	</token>
+
+	<token id="t99" trans="war">
+		<dipl id="t99_d1" trans="war" utf="war"/>
+		<mod id="t99_m1" trans="war" ascii="war" utf="war">
+		</mod>
+	</token>
+
+	<token id="t100" trans="schlank">
+		<dipl id="t100_d1" trans="schlank" utf="schlank"/>
+		<mod id="t100_m1" trans="schlank" ascii="schlank" utf="schlank">
+		</mod>
+	</token>
+
+	<token id="t101" trans="und">
+		<dipl id="t101_d1" trans="und" utf="und"/>
+		<mod id="t101_m1" trans="und" ascii="und" utf="und">
+		</mod>
+	</token>
+
+	<token id="t102" trans="doch">
+		<dipl id="t102_d1" trans="doch" utf="doch"/>
+		<mod id="t102_m1" trans="doch" ascii="doch" utf="doch">
+		</mod>
+	</token>
+
+	<token id="t103" trans="fest">
+		<dipl id="t103_d1" trans="fest" utf="fest"/>
+		<mod id="t103_m1" trans="fest" ascii="fest" utf="fest">
+		</mod>
+	</token>
+
+	<token id="t104" trans="ge#baut,">
+		<dipl id="t104_d1" trans="ge#" utf="ge"/>
+		<dipl id="t104_d2" trans="baut," utf="baut,"/>
+		<mod id="t104_m1" trans="ge#baut" ascii="gebaut" utf="gebaut">
+		</mod>
+		<mod id="t104_m2" trans="," ascii="," utf=",">
+		</mod>
+	</token>
+
+	<token id="t105" trans="er">
+		<dipl id="t105_d1" trans="er" utf="er"/>
+		<mod id="t105_m1" trans="er" ascii="er" utf="er">
+		</mod>
+	</token>
+
+	<token id="t106" trans="trug">
+		<dipl id="t106_d1" trans="trug" utf="trug"/>
+		<mod id="t106_m1" trans="trug" ascii="trug" utf="trug">
+		</mod>
+	</token>
+
+	<token id="t107" trans="ein">
+		<dipl id="t107_d1" trans="ein" utf="ein"/>
+		<mod id="t107_m1" trans="ein" ascii="ein" utf="ein">
+		</mod>
+	</token>
+
+	<token id="t108" trans="an#liegendes">
+		<dipl id="t108_d1" trans="an#" utf="an"/>
+		<dipl id="t108_d2" trans="liegendes" utf="liegendes"/>
+		<mod id="t108_m1" trans="an#liegendes" ascii="anliegendes" utf="anliegendes">
+		</mod>
+	</token>
+
+	<token id="t109" trans="schwarzes">
+		<dipl id="t109_d1" trans="schwarzes" utf="schwarzes"/>
+		<mod id="t109_m1" trans="schwarzes" ascii="schwarzes" utf="schwarzes">
+		</mod>
+	</token>
+
+	<token id="t110" trans="Kleid,">
+		<dipl id="t110_d1" trans="Kleid," utf="Kleid,"/>
+		<mod id="t110_m1" trans="Kleid" ascii="Kleid" utf="Kleid">
+		</mod>
+		<mod id="t110_m2" trans="," ascii="," utf=",">
+		</mod>
+	</token>
+
+	<token id="t111" trans="das,">
+		<dipl id="t111_d1" trans="das," utf="das,"/>
+		<mod id="t111_m1" trans="das" ascii="das" utf="das">
+		</mod>
+		<mod id="t111_m2" trans="," ascii="," utf=",">
+		</mod>
+	</token>
+
+	<token id="t112" trans="ähnlich">
+		<dipl id="t112_d1" trans="ähnlich" utf="ähnlich"/>
+		<mod id="t112_m1" trans="ähnlich" ascii="ähnlich" utf="ähnlich">
+		</mod>
+	</token>
+
+	<token id="t113" trans="den">
+		<dipl id="t113_d1" trans="den" utf="den"/>
+		<mod id="t113_m1" trans="den" ascii="den" utf="den">
+		</mod>
+	</token>
+
+	<token id="t114" trans="Reise#an#züg#en,">
+		<dipl id="t114_d1" trans="Reise#" utf="Reise"/>
+		<dipl id="t114_d2" trans="an#" utf="an"/>
+		<dipl id="t114_d3" trans="züg#" utf="züg"/>
+		<dipl id="t114_d4" trans="en," utf="en,"/>
+		<mod id="t114_m1" trans="Reise#an#züg#en" ascii="Reiseanzügen" utf="Reiseanzügen">
+		</mod>
+		<mod id="t114_m2" trans="," ascii="," utf=",">
+		</mod>
+	</token>
+
+	<token id="t115" trans="mit">
+		<dipl id="t115_d1" trans="mit" utf="mit"/>
+		<mod id="t115_m1" trans="mit" ascii="mit" utf="mit">
+		</mod>
+	</token>
+
+	<token id="t116" trans="verschiedenen">
+		<dipl id="t116_d1" trans="verschiedenen" utf="verschiedenen"/>
+		<mod id="t116_m1" trans="verschiedenen" ascii="verschiedenen" utf="verschiedenen">
+		</mod>
+	</token>
+
+	<token id="t117" trans="Falten,">
+		<dipl id="t117_d1" trans="Falten," utf="Falten,"/>
+		<mod id="t117_m1" trans="Falten" ascii="Falten" utf="Falten">
+		</mod>
+		<mod id="t117_m2" trans="," ascii="," utf=",">
+		</mod>
+	</token>
+
+	<token id="t118" trans="Taschen,">
+		<dipl id="t118_d1" trans="Taschen," utf="Taschen,"/>
+		<mod id="t118_m1" trans="Taschen" ascii="Taschen" utf="Taschen">
+		</mod>
+		<mod id="t118_m2" trans="," ascii="," utf=",">
+		</mod>
+	</token>
+
+	<token id="t119" trans="Schnallen,">
+		<dipl id="t119_d1" trans="Schnallen," utf="Schnallen,"/>
+		<mod id="t119_m1" trans="Schnallen" ascii="Schnallen" utf="Schnallen">
+		</mod>
+		<mod id="t119_m2" trans="," ascii="," utf=",">
+		</mod>
+	</token>
+
+	<token id="t120" trans="Knöpfen">
+		<dipl id="t120_d1" trans="Knöpfen" utf="Knöpfen"/>
+		<mod id="t120_m1" trans="Knöpfen" ascii="Knöpfen" utf="Knöpfen">
+		</mod>
+	</token>
+
+	<token id="t121" trans="und">
+		<dipl id="t121_d1" trans="und" utf="und"/>
+		<mod id="t121_m1" trans="und" ascii="und" utf="und">
+		</mod>
+	</token>
+
+	<token id="t122" trans="einem">
+		<dipl id="t122_d1" trans="einem" utf="einem"/>
+		<mod id="t122_m1" trans="einem" ascii="einem" utf="einem">
+		</mod>
+	</token>
+
+	<token id="t123" trans="Gürtel">
+		<dipl id="t123_d1" trans="Gürtel" utf="Gürtel"/>
+		<mod id="t123_m1" trans="Gürtel" ascii="Gürtel" utf="Gürtel">
+		</mod>
+	</token>
+
+	<token id="t124" trans="versehen">
+		<dipl id="t124_d1" trans="versehen" utf="versehen"/>
+		<mod id="t124_m1" trans="versehen" ascii="versehen" utf="versehen">
+		</mod>
+	</token>
+
+	<token id="t125" trans="war">
+		<dipl id="t125_d1" trans="war" utf="war"/>
+		<mod id="t125_m1" trans="war" ascii="war" utf="war">
+		</mod>
+	</token>
+
+	<token id="t126" trans="und">
+		<dipl id="t126_d1" trans="und" utf="und"/>
+		<mod id="t126_m1" trans="und" ascii="und" utf="und">
+		</mod>
+	</token>
+
+	<token id="t127" trans="in#folge|dessen,">
+		<dipl id="t127_d1" trans="in#" utf="in"/>
+		<dipl id="t127_d2" trans="folge|dessen," utf="folgedessen,"/>
+		<mod id="t127_m1" trans="in#folge|" ascii="infolge" utf="infolge">
+		</mod>
+		<mod id="t127_m2" trans="dessen" ascii="dessen" utf="dessen">
+		</mod>
+		<mod id="t127_m3" trans="," ascii="," utf=",">
+		</mod>
+	</token>
+
+	<token id="t128" trans="ohne">
+		<dipl id="t128_d1" trans="ohne" utf="ohne"/>
+		<mod id="t128_m1" trans="ohne" ascii="ohne" utf="ohne">
+		</mod>
+	</token>
+
+	<token id="t129" trans="daß">
+		<dipl id="t129_d1" trans="daß" utf="daß"/>
+		<mod id="t129_m1" trans="daß" ascii="daß" utf="daß">
+		</mod>
+	</token>
+
+	<token id="t130" trans="man">
+		<dipl id="t130_d1" trans="man" utf="man"/>
+		<mod id="t130_m1" trans="man" ascii="man" utf="man">
+		</mod>
+	</token>
+
+	<token id="t131" trans="sich">
+		<dipl id="t131_d1" trans="sich" utf="sich"/>
+		<mod id="t131_m1" trans="sich" ascii="sich" utf="sich">
+		</mod>
+	</token>
+
+	<token id="t132" trans="dar=über">
+		<dipl id="t132_d1" trans="dar=" utf="dar="/>
+		<dipl id="t132_d2" trans="über" utf="über"/>
+		<mod id="t132_m1" trans="dar=über" ascii="darüber" utf="darüber">
+		</mod>
+	</token>
+
+	<token id="t133" trans="klar">
+		<dipl id="t133_d1" trans="klar" utf="klar"/>
+		<mod id="t133_m1" trans="klar" ascii="klar" utf="klar">
+		</mod>
+	</token>
+
+	<token id="t134" trans="wurde,">
+		<dipl id="t134_d1" trans="wurde," utf="wurde,"/>
+		<mod id="t134_m1" trans="wurde" ascii="wurde" utf="wurde">
+		</mod>
+		<mod id="t134_m2" trans="," ascii="," utf=",">
+		</mod>
+	</token>
+
+	<token id="t135" trans="wozu">
+		<dipl id="t135_d1" trans="wozu" utf="wozu"/>
+		<mod id="t135_m1" trans="wozu" ascii="wozu" utf="wozu">
+		</mod>
+	</token>
+
+	<token id="t136" trans="es">
+		<dipl id="t136_d1" trans="es" utf="es"/>
+		<mod id="t136_m1" trans="es" ascii="es" utf="es">
+		</mod>
+	</token>
+
+	<token id="t137" trans="dienen">
+		<dipl id="t137_d1" trans="dienen" utf="dienen"/>
+		<mod id="t137_m1" trans="dienen" ascii="dienen" utf="dienen">
+		</mod>
+	</token>
+
+	<token id="t138" trans="sollte,">
+		<dipl id="t138_d1" trans="sollte," utf="sollte,"/>
+		<mod id="t138_m1" trans="sollte" ascii="sollte" utf="sollte">
+		</mod>
+		<mod id="t138_m2" trans="," ascii="," utf=",">
+		</mod>
+	</token>
+
+	<token id="t139" trans="be#son#ders|prak#tisch">
+		<dipl id="t139_d1" trans="be#" utf="be"/>
+		<dipl id="t139_d2" trans="son#" utf="son"/>
+		<dipl id="t139_d3" trans="ders|prak#" utf="dersprak"/>
+		<dipl id="t139_d4" trans="tisch" utf="tisch"/>
+		<mod id="t139_m1" trans="be#son#ders|" ascii="besonders" utf="besonders">
+		</mod>
+		<mod id="t139_m2" trans="prak#tisch" ascii="praktisch" utf="praktisch">
+		</mod>
+	</token>
+
+	<token id="t140" trans="erschien.">
+		<dipl id="t140_d1" trans="erschien." utf="erschien."/>
+		<mod id="t140_m1" trans="erschien" ascii="erschien" utf="erschien">
+		</mod>
+		<mod id="t140_m2" trans="." ascii="." utf=".">
+		</mod>
+	</token>
+
+	<token id="t141" trans="Es">
+		<dipl id="t141_d1" trans="Es" utf="Es"/>
+		<mod id="t141_m1" trans="Es" ascii="Es" utf="Es">
+		</mod>
+	</token>
+
+	<token id="t142" trans="fiel">
+		<dipl id="t142_d1" trans="fiel" utf="fiel"/>
+		<mod id="t142_m1" trans="fiel" ascii="fiel" utf="fiel">
+		</mod>
+	</token>
+
+	<token id="t143" trans="ihm">
+		<dipl id="t143_d1" trans="ihm" utf="ihm"/>
+		<mod id="t143_m1" trans="ihm" ascii="ihm" utf="ihm">
+		</mod>
+	</token>
+
+	<token id="t144" trans="zwar">
+		<dipl id="t144_d1" trans="zwar" utf="zwar"/>
+		<mod id="t144_m1" trans="zwar" ascii="zwar" utf="zwar">
+		</mod>
+	</token>
+
+	<token id="t145" trans="gleich">
+		<dipl id="t145_d1" trans="gleich" utf="gleich"/>
+		<mod id="t145_m1" trans="gleich" ascii="gleich" utf="gleich">
+		</mod>
+	</token>
+
+	<token id="t146" trans="ein,">
+		<dipl id="t146_d1" trans="ein," utf="ein,"/>
+		<mod id="t146_m1" trans="ein" ascii="ein" utf="ein">
+		</mod>
+		<mod id="t146_m2" trans="," ascii="," utf=",">
+		</mod>
+	</token>
+
+	<token id="t147" trans="daß">
+		<dipl id="t147_d1" trans="daß" utf="daß"/>
+		<mod id="t147_m1" trans="daß" ascii="daß" utf="daß">
+		</mod>
+	</token>
+
+	<token id="t148" trans="er">
+		<dipl id="t148_d1" trans="er" utf="er"/>
+		<mod id="t148_m1" trans="er" ascii="er" utf="er">
+		</mod>
+	</token>
+
+	<token id="t149" trans="das">
+		<dipl id="t149_d1" trans="das" utf="das"/>
+		<mod id="t149_m1" trans="das" ascii="das" utf="das">
+		</mod>
+	</token>
+
+	<token id="t150" trans="nicht">
+		<dipl id="t150_d1" trans="nicht" utf="nicht"/>
+		<mod id="t150_m1" trans="nicht" ascii="nicht" utf="nicht">
+		</mod>
+	</token>
+
+	<token id="t151" trans="hätte">
+		<dipl id="t151_d1" trans="hätte" utf="hätte"/>
+		<mod id="t151_m1" trans="hätte" ascii="hätte" utf="hätte">
+		</mod>
+	</token>
+
+	<token id="t152" trans="laut">
+		<dipl id="t152_d1" trans="laut" utf="laut"/>
+		<mod id="t152_m1" trans="laut" ascii="laut" utf="laut">
+		</mod>
+	</token>
+
+	<token id="t153" trans="sagen">
+		<dipl id="t153_d1" trans="sagen" utf="sagen"/>
+		<mod id="t153_m1" trans="sagen" ascii="sagen" utf="sagen">
+		</mod>
+	</token>
+
+	<token id="t154" trans="müssen">
+		<dipl id="t154_d1" trans="müssen" utf="müssen"/>
+		<mod id="t154_m1" trans="müssen" ascii="müssen" utf="müssen">
+		</mod>
+	</token>
+
+	<token id="t155" trans="und">
+		<dipl id="t155_d1" trans="und" utf="und"/>
+		<mod id="t155_m1" trans="und" ascii="und" utf="und">
+		</mod>
+	</token>
+
+	<token id="t156" trans="daß">
+		<dipl id="t156_d1" trans="daß" utf="daß"/>
+		<mod id="t156_m1" trans="daß" ascii="daß" utf="daß">
+		</mod>
+	</token>
+
+	<token id="t157" trans="er">
+		<dipl id="t157_d1" trans="er" utf="er"/>
+		<mod id="t157_m1" trans="er" ascii="er" utf="er">
+		</mod>
+	</token>
+
+	<token id="t158" trans="dadurch|ge#wisser=maßen">
+		<dipl id="t158_d1" trans="dadurch|ge#" utf="dadurchge"/>
+		<dipl id="t158_d2" trans="wisser=" utf="wisser="/>
+		<dipl id="t158_d3" trans="maßen" utf="maßen"/>
+		<mod id="t158_m1" trans="dadurch|" ascii="dadurch" utf="dadurch">
+		</mod>
+		<mod id="t158_m2" trans="ge#wisser=maßen" ascii="gewissermaßen" utf="gewissermaßen">
+		</mod>
+	</token>
+
+	<token id="t159" trans="ein">
+		<dipl id="t159_d1" trans="ein" utf="ein"/>
+		<mod id="t159_m1" trans="ein" ascii="ein" utf="ein">
+		</mod>
+	</token>
+
+	<token id="t160" trans="Be(=)aufsichtigungs(=)recht">
+		<dipl id="t160_d1" trans="Be(=)" utf="Be"/>
+		<dipl id="t160_d2" trans="aufsichtigungs(=)" utf="aufsichtigungs"/>
+		<dipl id="t160_d3" trans="recht" utf="recht"/>
+		<mod id="t160_m1" trans="Be(=)aufsichtigungs(=)recht" ascii="Beaufsichtigungsrecht" utf="Beaufsichtigungsrecht">
+		</mod>
+	</token>
+
+	<token id="t161" trans="des">
+		<dipl id="t161_d1" trans="des" utf="des"/>
+		<mod id="t161_m1" trans="des" ascii="des" utf="des">
+		</mod>
+	</token>
+
+	<token id="t162" trans="Fremden">
+		<dipl id="t162_d1" trans="Fremden" utf="Fremden"/>
+		<mod id="t162_m1" trans="Fremden" ascii="Fremden" utf="Fremden">
+		</mod>
+	</token>
+
+	<token id="t163" trans="anerkannte,">
+		<dipl id="t163_d1" trans="anerkannte," utf="anerkannte,"/>
+		<mod id="t163_m1" trans="anerkannte" ascii="anerkannte" utf="anerkannte">
+		</mod>
+		<mod id="t163_m2" trans="," ascii="," utf=",">
+		</mod>
+	</token>
+
+	<token id="t164" trans="aber">
+		<dipl id="t164_d1" trans="aber" utf="aber"/>
+		<mod id="t164_m1" trans="aber" ascii="aber" utf="aber">
+		</mod>
+	</token>
+
+	<token id="t165" trans="es">
+		<dipl id="t165_d1" trans="es" utf="es"/>
+		<mod id="t165_m1" trans="es" ascii="es" utf="es">
+		</mod>
+	</token>
+
+	<token id="t166" trans="*[schein*]">
+		<dipl id="t166_d1" trans="*[schein*]" utf="schein"/>
+	</token>
+
+	<token id="t167" trans="schien">
+		<dipl id="t167_d1" trans="schien" utf="schien"/>
+		<mod id="t167_m1" trans="schien" ascii="schien" utf="schien">
+		</mod>
+	</token>
+
+	<token id="t168" trans="ihm">
+		<dipl id="t168_d1" trans="ihm" utf="ihm"/>
+		<mod id="t168_m1" trans="ihm" ascii="ihm" utf="ihm">
+		</mod>
+	</token>
+
+	<token id="t169" trans="jetzt">
+		<dipl id="t169_d1" trans="jetzt" utf="jetzt"/>
+		<mod id="t169_m1" trans="jetzt" ascii="jetzt" utf="jetzt">
+		</mod>
+	</token>
+
+	<token id="t170" trans="nicht">
+		<dipl id="t170_d1" trans="nicht" utf="nicht"/>
+		<mod id="t170_m1" trans="nicht" ascii="nicht" utf="nicht">
+		</mod>
+	</token>
+
+	<token id="t171" trans="wichtig.">
+		<dipl id="t171_d1" trans="wichtig." utf="wichtig."/>
+		<mod id="t171_m1" trans="wichtig" ascii="wichtig" utf="wichtig">
+		</mod>
+		<mod id="t171_m2" trans="." ascii="." utf=".">
+		</mod>
+	</token>
+
+	<token id="t172" trans="Wir">
+		<dipl id="t172_d1" trans="Wir" utf="Wir"/>
+		<mod id="t172_m1" trans="Wir" ascii="Wir" utf="Wir">
+		</mod>
+	</token>
+
+	<token id="t173" trans="sind">
+		<dipl id="t173_d1" trans="sind" utf="sind"/>
+		<mod id="t173_m1" trans="sind" ascii="sind" utf="sind">
+		</mod>
+	</token>
+
+	<token id="t174" trans="nicht">
+		<dipl id="t174_d1" trans="nicht" utf="nicht"/>
+		<mod id="t174_m1" trans="nicht" ascii="nicht" utf="nicht">
+		</mod>
+	</token>
+
+	<token id="t175" trans="dazu">
+		<dipl id="t175_d1" trans="dazu" utf="dazu"/>
+		<mod id="t175_m1" trans="dazu" ascii="dazu" utf="dazu">
+		</mod>
+	</token>
+
+	<token id="t176" trans="bestellt,">
+		<dipl id="t176_d1" trans="bestellt," utf="bestellt,"/>
+		<mod id="t176_m1" trans="bestellt" ascii="bestellt" utf="bestellt">
+		</mod>
+		<mod id="t176_m2" trans="," ascii="," utf=",">
+		</mod>
+	</token>
+
+	<token id="t177" trans="Ihnen">
+		<dipl id="t177_d1" trans="Ihnen" utf="Ihnen"/>
+		<mod id="t177_m1" trans="Ihnen" ascii="Ihnen" utf="Ihnen">
+		</mod>
+	</token>
+
+	<token id="t178" trans="das">
+		<dipl id="t178_d1" trans="das" utf="das"/>
+		<mod id="t178_m1" trans="das" ascii="das" utf="das">
+		</mod>
+	</token>
+
+	<token id="t179" trans="zu">
+		<dipl id="t179_d1" trans="zu" utf="zu"/>
+		<mod id="t179_m1" trans="zu" ascii="zu" utf="zu">
+		</mod>
+	</token>
+
+	<token id="t180" trans="sagen.">
+		<dipl id="t180_d1" trans="sagen." utf="sagen."/>
+		<mod id="t180_m1" trans="sagen" ascii="sagen" utf="sagen">
+		</mod>
+		<mod id="t180_m2" trans="." ascii="." utf=".">
+		</mod>
+	</token>
+
+	<token id="t181" trans="Gehen">
+		<dipl id="t181_d1" trans="Gehen" utf="Gehen"/>
+		<mod id="t181_m1" trans="Gehen" ascii="Gehen" utf="Gehen">
+		</mod>
+	</token>
+
+	<token id="t182" trans="Sie">
+		<dipl id="t182_d1" trans="Sie" utf="Sie"/>
+		<mod id="t182_m1" trans="Sie" ascii="Sie" utf="Sie">
+		</mod>
+	</token>
+
+	<token id="t183" trans="in">
+		<dipl id="t183_d1" trans="in" utf="in"/>
+		<mod id="t183_m1" trans="in" ascii="in" utf="in">
+		</mod>
+	</token>
+
+	<token id="t184" trans="Ihr">
+		<dipl id="t184_d1" trans="Ihr" utf="Ihr"/>
+		<mod id="t184_m1" trans="Ihr" ascii="Ihr" utf="Ihr">
+		</mod>
+	</token>
+
+	<token id="t185" trans="Zimmer">
+		<dipl id="t185_d1" trans="Zimmer" utf="Zimmer"/>
+		<mod id="t185_m1" trans="Zimmer" ascii="Zimmer" utf="Zimmer">
+		</mod>
+	</token>
+
+	<token id="t186" trans="und">
+		<dipl id="t186_d1" trans="und" utf="und"/>
+		<mod id="t186_m1" trans="und" ascii="und" utf="und">
+		</mod>
+	</token>
+
+	<token id="t187" trans="warten">
+		<dipl id="t187_d1" trans="warten" utf="warten"/>
+		<mod id="t187_m1" trans="warten" ascii="warten" utf="warten">
+		</mod>
+	</token>
+
+	<token id="t188" trans="Sie.">
+		<dipl id="t188_d1" trans="Sie." utf="Sie."/>
+		<mod id="t188_m1" trans="Sie" ascii="Sie" utf="Sie">
+		</mod>
+		<mod id="t188_m2" trans="." ascii="." utf=".">
+		</mod>
+	</token>
+
+	<comment type="K">Tintenfleck</comment>
+
+	<token id="t189" trans="Das">
+		<dipl id="t189_d1" trans="Das" utf="Das"/>
+		<mod id="t189_m1" trans="Das" ascii="Das" utf="Das">
+		</mod>
+	</token>
+
+	<token id="t190" trans="Verfahren">
+		<dipl id="t190_d1" trans="Verfahren" utf="Verfahren"/>
+		<mod id="t190_m1" trans="Verfahren" ascii="Verfahren" utf="Verfahren">
+		</mod>
+	</token>
+
+	<token id="t191" trans="ist">
+		<dipl id="t191_d1" trans="ist" utf="ist"/>
+		<mod id="t191_m1" trans="ist" ascii="ist" utf="ist">
+		</mod>
+	</token>
+
+	<token id="t192" trans="nun">
+		<dipl id="t192_d1" trans="nun" utf="nun"/>
+		<mod id="t192_m1" trans="nun" ascii="nun" utf="nun">
+		</mod>
+	</token>
+
+	<token id="t193" trans="einmal">
+		<dipl id="t193_d1" trans="einmal" utf="einmal"/>
+		<mod id="t193_m1" trans="einmal" ascii="einmal" utf="einmal">
+		</mod>
+	</token>
+
+	<token id="t194" trans="eingeleitet,">
+		<dipl id="t194_d1" trans="eingeleitet," utf="eingeleitet,"/>
+		<mod id="t194_m1" trans="eingeleitet" ascii="eingeleitet" utf="eingeleitet">
+		</mod>
+		<mod id="t194_m2" trans="," ascii="," utf=",">
+		</mod>
+	</token>
+
+	<token id="t195" trans="und">
+		<dipl id="t195_d1" trans="und" utf="und"/>
+		<mod id="t195_m1" trans="und" ascii="und" utf="und">
+		</mod>
+	</token>
+
+	<token id="t196" trans="Sie">
+		<dipl id="t196_d1" trans="Sie" utf="Sie"/>
+		<mod id="t196_m1" trans="Sie" ascii="Sie" utf="Sie">
+		</mod>
+	</token>
+
+	<token id="t197" trans="werden">
+		<dipl id="t197_d1" trans="werden" utf="werden"/>
+		<mod id="t197_m1" trans="werden" ascii="werden" utf="werden">
+		</mod>
+	</token>
+
+	<token id="t198" trans="alles">
+		<dipl id="t198_d1" trans="alles" utf="alles"/>
+		<mod id="t198_m1" trans="alles" ascii="alles" utf="alles">
+		</mod>
+	</token>
+
+	<comment type="K">sic</comment>
+
+	<token id="t199" trans="zur">
+		<dipl id="t199_d1" trans="zur" utf="zur"/>
+		<mod id="t199_m1" trans="zur" ascii="zur" utf="zur">
+		</mod>
+	</token>
+
+	<token id="t200" trans="richtigen">
+		<dipl id="t200_d1" trans="richtigen" utf="richtigen"/>
+		<mod id="t200_m1" trans="richtigen" ascii="richtigen" utf="richtigen">
+		</mod>
+	</token>
+
+	<token id="t201" trans="Zeit">
+		<dipl id="t201_d1" trans="Zeit" utf="Zeit"/>
+		<mod id="t201_m1" trans="Zeit" ascii="Zeit" utf="Zeit">
+		</mod>
+	</token>
+
+	<token id="t202" trans="erfahren.">
+		<dipl id="t202_d1" trans="erfahren." utf="erfahren."/>
+		<mod id="t202_m1" trans="erfahren" ascii="erfahren" utf="erfahren">
+		</mod>
+		<mod id="t202_m2" trans="." ascii="." utf=".">
+		</mod>
+	</token>
+
+
+</text>

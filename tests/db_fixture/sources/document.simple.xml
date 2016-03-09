@@ -1,0 +1,170 @@
+<?xml version='1.0' encoding='utf-8'?>
+<text>
+  <header/>
+  <layoutinfo>
+    <page range="c1" id="p1" no="1"/>
+    <column range="l1" id="c1"/>
+    <line range="t1_d1..t40_d1" name="1" id="l1"/>
+  </layoutinfo>
+  <token trans="Jemand" id="t1">
+    <dipl trans="Jemand" id="t1_d1"/>
+    <mod utf="Jemand" trans="Jemand" ascii="Jemand" id="t1_m1"/>
+  </token>
+  <token trans="mußte" id="t2">
+    <dipl trans="mußte" id="t2_d1"/>
+    <mod utf="mußte" trans="mußte" ascii="mußte" id="t2_m1"/>
+  </token>
+  <token trans="Josef" id="t3">
+    <dipl trans="Josef" id="t3_d1"/>
+    <mod utf="Josef" trans="Josef" ascii="Josef" id="t3_m1"/>
+  </token>
+  <token trans="K." id="t4">
+    <dipl trans="K." id="t4_d1"/>
+    <mod utf="K." trans="K." ascii="K." id="t4_m1"/>
+  </token>
+  <token trans="verleumdet" id="t5">
+    <dipl trans="verleumdet" id="t5_d1"/>
+    <mod utf="verleumdet" trans="verleumdet" ascii="verleumdet" id="t5_m1"/>
+  </token>
+  <token trans="haben," id="t6">
+    <dipl trans="haben," id="t6_d1"/>
+    <mod utf="haben," trans="haben," ascii="haben," id="t6_m1"/>
+  </token>
+  <token trans="denn" id="t7">
+    <dipl trans="denn" id="t7_d1"/>
+    <mod utf="denn" trans="denn" ascii="denn" id="t7_m1"/>
+  </token>
+  <token trans="ohne" id="t8">
+    <dipl trans="ohne" id="t8_d1"/>
+    <mod utf="ohne" trans="ohne" ascii="ohne" id="t8_m1"/>
+  </token>
+  <token trans="daß" id="t9">
+    <dipl trans="daß" id="t9_d1"/>
+    <mod utf="daß" trans="daß" ascii="daß" id="t9_m1"/>
+  </token>
+  <token trans="er" id="t10">
+    <dipl trans="er" id="t10_d1"/>
+    <mod utf="er" trans="er" ascii="er" id="t10_m1"/>
+  </token>
+  <token trans="etwas" id="t11">
+    <dipl trans="etwas" id="t11_d1"/>
+    <mod utf="etwas" trans="etwas" ascii="etwas" id="t11_m1"/>
+  </token>
+  <token trans="Böses" id="t12">
+    <dipl trans="Böses" id="t12_d1"/>
+    <mod utf="Böses" trans="Böses" ascii="Böses" id="t12_m1"/>
+  </token>
+  <token trans="getan" id="t13">
+    <dipl trans="getan" id="t13_d1"/>
+    <mod utf="getan" trans="getan" ascii="getan" id="t13_m1"/>
+  </token>
+  <token trans="hätte," id="t14">
+    <dipl trans="hätte," id="t14_d1"/>
+    <mod utf="hätte," trans="hätte," ascii="hätte," id="t14_m1"/>
+  </token>
+  <token trans="wurde" id="t15">
+    <dipl trans="wurde" id="t15_d1"/>
+    <mod utf="wurde" trans="wurde" ascii="wurde" id="t15_m1"/>
+  </token>
+  <token trans="er" id="t16">
+    <dipl trans="er" id="t16_d1"/>
+    <mod utf="er" trans="er" ascii="er" id="t16_m1"/>
+  </token>
+  <token trans="eines" id="t17">
+    <dipl trans="eines" id="t17_d1"/>
+    <mod utf="eines" trans="eines" ascii="eines" id="t17_m1"/>
+  </token>
+  <token trans="Morgens" id="t18">
+    <dipl trans="Morgens" id="t18_d1"/>
+    <mod utf="Morgens" trans="Morgens" ascii="Morgens" id="t18_m1"/>
+  </token>
+  <token trans="verhaftet." id="t19">
+    <dipl trans="verhaftet." id="t19_d1"/>
+    <mod utf="verhaftet." trans="verhaftet." ascii="verhaftet." id="t19_m1"/>
+  </token>
+  <token trans="Die" id="t20">
+    <dipl trans="Die" id="t20_d1"/>
+    <mod utf="Die" trans="Die" ascii="Die" id="t20_m1"/>
+  </token>
+  <token trans="Köchin" id="t21">
+    <dipl trans="Köchin" id="t21_d1"/>
+    <mod utf="Köchin" trans="Köchin" ascii="Köchin" id="t21_m1"/>
+  </token>
+  <token trans="der" id="t22">
+    <dipl trans="der" id="t22_d1"/>
+    <mod utf="der" trans="der" ascii="der" id="t22_m1"/>
+  </token>
+  <token trans="Frau" id="t23">
+    <dipl trans="Frau" id="t23_d1"/>
+    <mod utf="Frau" trans="Frau" ascii="Frau" id="t23_m1"/>
+  </token>
+  <token trans="Grubach," id="t24">
+    <dipl trans="Grubach," id="t24_d1"/>
+    <mod utf="Grubach," trans="Grubach," ascii="Grubach," id="t24_m1"/>
+  </token>
+  <token trans="seiner" id="t25">
+    <dipl trans="seiner" id="t25_d1"/>
+    <mod utf="seiner" trans="seiner" ascii="seiner" id="t25_m1"/>
+  </token>
+  <token trans="Zimmervermieterin," id="t26">
+    <dipl trans="Zimmervermieterin," id="t26_d1"/>
+    <mod utf="Zimmervermieterin," trans="Zimmervermieterin," ascii="Zimmervermieterin," id="t26_m1"/>
+  </token>
+  <token trans="die" id="t27">
+    <dipl trans="die" id="t27_d1"/>
+    <mod utf="die" trans="die" ascii="die" id="t27_m1"/>
+  </token>
+  <token trans="ihm" id="t28">
+    <dipl trans="ihm" id="t28_d1"/>
+    <mod utf="ihm" trans="ihm" ascii="ihm" id="t28_m1"/>
+  </token>
+  <token trans="jeden" id="t29">
+    <dipl trans="jeden" id="t29_d1"/>
+    <mod utf="jeden" trans="jeden" ascii="jeden" id="t29_m1"/>
+  </token>
+  <token trans="Tag" id="t30">
+    <dipl trans="Tag" id="t30_d1"/>
+    <mod utf="Tag" trans="Tag" ascii="Tag" id="t30_m1"/>
+  </token>
+  <token trans="gegen" id="t31">
+    <dipl trans="gegen" id="t31_d1"/>
+    <mod utf="gegen" trans="gegen" ascii="gegen" id="t31_m1"/>
+  </token>
+  <token trans="acht" id="t32">
+    <dipl trans="acht" id="t32_d1"/>
+    <mod utf="acht" trans="acht" ascii="acht" id="t32_m1"/>
+  </token>
+  <token trans="Uhr" id="t33">
+    <dipl trans="Uhr" id="t33_d1"/>
+    <mod utf="Uhr" trans="Uhr" ascii="Uhr" id="t33_m1"/>
+  </token>
+  <token trans="früh" id="t34">
+    <dipl trans="früh" id="t34_d1"/>
+    <mod utf="früh" trans="früh" ascii="früh" id="t34_m1"/>
+  </token>
+  <token trans="das" id="t35">
+    <dipl trans="das" id="t35_d1"/>
+    <mod utf="das" trans="das" ascii="das" id="t35_m1"/>
+  </token>
+  <token trans="Frühstück" id="t36">
+    <dipl trans="Frühstück" id="t36_d1"/>
+    <mod utf="Frühstück" trans="Frühstück" ascii="Frühstück" id="t36_m1"/>
+  </token>
+  <token trans="brachte," id="t37">
+    <dipl trans="brachte," id="t37_d1"/>
+    <mod utf="brachte," trans="brachte," ascii="brachte," id="t37_m1"/>
+  </token>
+  <token trans="kam" id="t38">
+    <dipl trans="kam" id="t38_d1"/>
+    <mod utf="kam" trans="kam" ascii="kam" id="t38_m1"/>
+  </token>
+  <token trans="diesmal" id="t39">
+    <dipl trans="diesmal" id="t39_d1"/>
+    <mod utf="diesmal" trans="diesmal" ascii="diesmal" id="t39_m1"/>
+  </token>
+  <token trans="nicht." id="t40">
+    <dipl trans="nicht." id="t40_d1"/>
+    <mod utf="nicht." trans="nicht." ascii="nicht." id="t40_m1"/>
+  </token>
+</text>
+
