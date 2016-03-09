@@ -20,19 +20,20 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */ ?>
 <?php
-require_once 'DB_fixture.php';
+require_once 'db_fixture/fixture.php';
 require_once "{$GLOBALS['CORA_WEB_DIR']}/lib/connect/TagsetAccessor.php";
 
 class Cora_Tests_TagsetAccessor_test extends Cora_Tests_DbTestCase {
   private $dbo;
   private $tagset;
+  protected $dbCleanInsertBeforeEveryTest = false;
 
   public function setUp() {
-    $this->dbo = new PDO($GLOBALS["DB_DSN"],
-                         $GLOBALS["DB_USER"],
-                         $GLOBALS["DB_PASSWD"]);
-    $this->tagset = new TagsetAccessor($this->dbo, 1);
-    parent::setUp();
+      $this->dbo = new PDO($GLOBALS["DB_DSN"],
+                           $GLOBALS["DB_USER"],
+                           $GLOBALS["DB_PASSWD"]);
+      $this->tagset = new TagsetAccessor($this->dbo, 6);
+      parent::setUp();
   }
 
   public function testWithoutID() {
@@ -56,20 +57,20 @@ class Cora_Tests_TagsetAccessor_test extends Cora_Tests_DbTestCase {
   public function testBasicGetters() {
     $this->assertFalse($this->tagset->hasErrors(),
                        "Constructing with legal tagset ID should report no error");
-    $this->assertEquals(1, $this->tagset->getID(),
+    $this->assertEquals(6, $this->tagset->getID(),
                         "Accessor should report the correct tagset ID");
-    $this->assertEquals("ImportTest", $this->tagset->getName(),
+    $this->assertEquals("STTS", $this->tagset->getName(),
                         "Accessor should report the correct tagset name");
     $this->assertEquals("closed", $this->tagset->getSetType(),
                         "Accessor should report the correct set type");
     $this->assertEquals("pos", $this->tagset->getClass(),
                         "Accessor should report the correct tagset class");
-    $this->assertEquals(509, $this->tagset->count(),
+    $this->assertEquals(2795, $this->tagset->count(),
                         "Accessor should report the correct number of tags");
     $this->assertTrue($this->tagset->contains("$."),
                       "Accessor's tag list should include '$.'");
     $tag = $this->tagset->getTag("$.");
-    $this->assertEquals(2, $tag['id'],
+    $this->assertEquals(1, $tag['id'],
                         "Accessor's tag data for '$.' should be correct");
     $this->assertEquals(0, $tag['needs_revision'],
                         "Accessor's tag data for '$.' should be correct");
@@ -109,11 +110,12 @@ class Cora_Tests_TagsetAccessor_test extends Cora_Tests_DbTestCase {
   }
 
   public function testAddTag_New() {
+    $oldcount = $this->tagset->count();
     $this->assertTrue($this->tagset->addTag("FOO"),
                       "Accessor should accept a new tag 'FOO'");
     $this->assertTrue($this->tagset->needsCommit(),
                       "Accessor should require a commit after adding a new tag");
-    $this->assertEquals(510, $this->tagset->count(),
+    $this->assertEquals($oldcount + 1, $this->tagset->count(),
                         "Tag list count should increase after adding a new tag");
     $tag = $this->tagset->getTag("FOO");
     $this->assertEquals("FOO", $tag['value'],
@@ -133,7 +135,7 @@ class Cora_Tests_TagsetAccessor_test extends Cora_Tests_DbTestCase {
     $this->assertTrue($this->tagset->addTag("$."),
                       "Adding an already existing tag should be accepted");
     $tag = $this->tagset->getTag("$.");
-    $this->assertEquals(2, $tag['id'],
+    $this->assertEquals(1, $tag['id'],
                         "Adding an already existing tag should have no side-effects");
     $this->assertEquals(0, $tag['needs_revision'],
                         "Adding an already existing tag should have no side-effects");
@@ -142,7 +144,7 @@ class Cora_Tests_TagsetAccessor_test extends Cora_Tests_DbTestCase {
     $this->assertTrue($this->tagset->addTag("$.", true),
                       "Adding an already existing tag should be accepted");
     $tag = $this->tagset->getTag("$.");
-    $this->assertEquals(2, $tag['id'],
+    $this->assertEquals(1, $tag['id'],
                         "Adding an already existing tag should have no side-effects");
     $this->assertEquals(1, $tag['needs_revision'],
                         "Adding an already existing tag can change 'needs_revision' flag");
@@ -216,7 +218,7 @@ class Cora_Tests_TagsetAccessor_test extends Cora_Tests_DbTestCase {
     $this->assertTrue($this->tagset->contains("FOO"),
                       "Tagset should contain the new value after a change");
     $tag = $this->tagset->getTag("FOO");
-    $this->assertEquals(73, $tag['id'],
+    $this->assertEquals(1927, $tag['id'],
                         "Changing a tag value should NOT change the tag ID");
     $this->assertEquals(0, $tag['needs_revision'],
                         "Changing a tag value should NOT change the revision flag");
@@ -240,9 +242,9 @@ class Cora_Tests_TagsetAccessor_test extends Cora_Tests_DbTestCase {
   }
 
   public function testDeleteOrMarkTag_WithLink() {
-    $this->assertTrue($this->tagset->deleteOrMarkTag("PPOSAT.Fem.Nom.Sg"),
+    $this->assertTrue($this->tagset->deleteOrMarkTag("NE.Masc.Akk.Sg"),
                       "Deleting an existing tag should succeed");
-    $tag = $this->tagset->getTag("PPOSAT.Fem.Nom.Sg");
+    $tag = $this->tagset->getTag("NE.Masc.Akk.Sg");
     $this->assertEquals(1, $tag['needs_revision'],
                         "Deleting a tag that is referenced by a tag_suggestion"
                         . " should mark it as needing revision");
@@ -340,7 +342,7 @@ class Cora_Tests_TagsetAccessor_test extends Cora_Tests_DbTestCase {
                        "Committing changes to the database should produce no errors");
     $this->assertEquals(1,
                         $this->getConnection()->createQueryTable("testtags",
-                        "SELECT * FROM tag WHERE value='FOO' and tagset_id=1")->getRowCount(),
+                        "SELECT * FROM tag WHERE value='FOO' and tagset_id=6")->getRowCount(),
                         "Database should contain a new entry for 'FOO'");
   }
 
@@ -353,12 +355,12 @@ class Cora_Tests_TagsetAccessor_test extends Cora_Tests_DbTestCase {
                        "Committing changes to the database should produce no errors");
     $this->assertEquals(1,
                         $this->getConnection()->createQueryTable("testtags",
-                        "SELECT * FROM tag WHERE value='BAR' and id=73")->getRowCount(),
+                        "SELECT * FROM tag WHERE value='BAR' and id=1927")->getRowCount(),
                         "Database should contain an entry for 'BAR' under the old ID");
   }
 
   public function testCommitChanges_markTag() {
-    $this->assertTrue($this->tagset->deleteOrMarkTag("PPOSAT.Fem.Nom.Sg"),
+    $this->assertTrue($this->tagset->deleteOrMarkTag("NE.Masc.Akk.Sg"),
                       "Deleting an existing tag should succeed");
     $this->assertTrue($this->tagset->commitChanges(),
                       "Committing changes to the database should succeed");
@@ -366,7 +368,7 @@ class Cora_Tests_TagsetAccessor_test extends Cora_Tests_DbTestCase {
                        "Committing changes to the database should produce no errors");
     $this->assertEquals(1,
                         $this->getConnection()->createQueryTable("testtags",
-                        "SELECT needs_revision FROM tag WHERE value='PPOSAT.Fem.Nom.Sg'")->getValue(0, "needs_revision"),
+                        "SELECT needs_revision FROM tag WHERE value='NE.Masc.Akk.Sg'")->getValue(0, "needs_revision"),
                         "Tag should be marked as needing revision in the database");
   }
 
