@@ -1,0 +1,57 @@
+#!/bin/bash
+
+# 03/2016 Marcel Bollmann
+
+# This script can be used to easily invoke CMake and build CorA.  It supports
+# the following command-line arguments:
+#
+#     debug - Turns debug mode on (default)
+#   release - Turns debug mode off
+#     clean - Deletes the build directory before calling CMake; **but** keeps
+#             any existing `config.php` file so local settings do not get
+#             lost.
+#
+# We also set the directory for external downloads to be outside of the build
+# directory, so external tools don't get re-downloaded for every clean build.
+
+set -o errexit
+
+DEBUGMODE=ON
+
+exists_in_path () {
+  case $(command -v -- "$1") in
+    /*) return 0;;
+    alias\ *) return 1;; # alias
+    *) return 1;; # built-in or function
+  esac
+}
+
+for var in "$@"; do
+    if [ "$var" = "clean" ]; then
+        if [ -d ./build ]; then
+            if [ -f ./build/www/config.php ]; then
+                cp ./build/www/config.php /tmp/CORA_MAKE_WITH_CMAKE_config.php
+            fi
+            rm -rf ./build
+        fi
+    elif [ "$var" = "debug" ]; then
+        DEBUGMODE=ON
+    elif [ "$var" = "release" ]; then
+        DEBUGMODE=OFF
+    fi
+done
+
+if [ ! -d ./build ]; then
+    mkdir build/
+fi
+
+cd build/
+cmake -DDEBUG_MODE=$DEBUGMODE -DWITH_EXPENSIVE_TESTS=NO -DEXTERNALS_DOWNLOAD_DIR=../cmake-downloads ../ && make
+
+if [ -f /tmp/CORA_MAKE_WITH_CMAKE_config.php ]; then
+    mv /tmp/CORA_MAKE_WITH_CMAKE_config.php www/config.php
+fi
+
+if exists_in_path restorecon; then
+    restorecon -R .
+fi
