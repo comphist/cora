@@ -37,11 +37,13 @@ class InstallHelper {
     private $dbo;
     private $dbi;
     private $can_connect;
+    private $lh;
     public $pdo_exception = null;
     public $mysql_bin = "mysql";
 
-    public function __construct($dbinfo) {
+    public function __construct($dbinfo, $lh) {
         $this->setDBInfo($dbinfo);
+        $this->lh = $lh;
     }
 
     public function setDBInfo($dbinfo) {
@@ -51,7 +53,7 @@ class InstallHelper {
                                  . ';dbname=' . $dbinfo['DBNAME']
                                  . ';charset=utf8',
                                  $dbinfo['USER'], $dbinfo['PASSWORD']);
-            $this->dbi = new DBInterface($dbinfo);
+            $this->dbi = new DBInterface($dbinfo, $this->lh);
             $this->can_connect = true;
         }
         catch(PDOException $ex) {

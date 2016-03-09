@@ -23,6 +23,7 @@
 <?php
 require_once __DIR__ . "/../lib/cfg.php";
 require_once __DIR__ . "/../lib/install.php";
+require_once __DIR__ . "/../lib/localeHandler.php";
 
 $migration_dir = __DIR__ . "/migration";
 $default_settings = array("DBINFO" => array("HOST" => "127.0.0.1",
@@ -108,7 +109,7 @@ function get_settings_from_post($post) {
 }
 
 function make_installer($settings) {
-    $installer = new InstallHelper($settings["DBINFO"]);
+    $installer = new InstallHelper($settings["DBINFO"], new LocaleHandler());
     $installer->mysql_bin = $settings["MYSQL_BIN"];
     return $installer;
 }
