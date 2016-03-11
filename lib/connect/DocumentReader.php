@@ -89,7 +89,7 @@ class DocumentReader extends DocumentAccessor {
               . "  LEFT JOIN (tag_suggestion ts, tag) "
               . "         ON (ts.tag_id=tag.id AND ts.mod_id=modern.id) "
               . "  LEFT JOIN tagset tt ON tag.tagset_id=tt.id "
-              . "WHERE  modern.id=:modid ";
+              . "WHERE  modern.id=:modid";
         $this->stmt_getAllAnnotations = $this->dbo->prepare($stmt);
     }
     /**********************************************/
@@ -170,6 +170,12 @@ class DocumentReader extends DocumentAccessor {
      */
     public function getAllAnnotations($modid) {
         $this->stmt_getAllAnnotations->execute(array(':modid' => $modid));
-        return $this->stmt_getAllAnnotations->fetchAll(PDO::FETCH_ASSOC);
+        $anno = $this->stmt_getAllAnnotations->fetchAll(PDO::FETCH_ASSOC);
+        if (count($anno) == 1 && is_null($anno[0]['class'])) {
+            // if no annotations exist, we get one record with all NULLs --
+            // checking "class" should be a certain way to detect this
+            return array();
+        }
+        return $anno;
     }
 }

@@ -26,6 +26,7 @@ set(PHP_TESTS
   DBInterface_test.php
   DocumentAccessor_test.php
   DocumentCreator_test.php
+  DocumentReader_test.php
   Exporter_test.php
   Locale_test.php
   Menu_test.php
