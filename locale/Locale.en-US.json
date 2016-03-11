@@ -444,19 +444,20 @@
             "waitForAuthorization": "Waiting for authorization..."
         },
         "Help": {
-            "contactCheck1": "What **exactly** did you do just before the problem occurred?",
-            "contactCheck2": "What exactly happens? Is there any error message? If so, please copy the message and send it to us!",
-            "contactCheck3": "Which file or which line did you edit when the problem occurred?",
-            "contactPerson": "The person to contact is",
-            "contactRequest": "If you would like to report a problem, please send us a **detailed** description of the problem with the information below:",
-            "contactUs": "please contact us!",
-            "contactUsInfo": "If you have any questions that couldn't be answered by the CorA Guide or if you have encountered a bug",
-            "coraGuideLink": "CorA Guide, 27.01.2015 [PDF]",
-            "coraHelpTitle": "About Using CorA",
+            "title": "Help",
+            "guideTitle": "CorA User Documentation",
+            "paragraphGuide": "Questions about the usage and functionality of CorA are covered in the user guide.",
+            "feedbackTitle": "Open questions?  Found bugs?",
+            "paragraphFeedback": "When reporting problems of any kind, please include a **detailed** description of the problem.  This includes the following information:",
+            "contactCheck1": "What **exactly** did you do when the problem occurred?",
+            "contactCheck2": "How does the problem manifest?  What exactly happens?  If there is an error message, please include it in your report!",
+            "contactCheck3": "Which file or which line did you work on when the problem occurred?",
+            "paragraphAskAnAdmin": "The first person to contact should always your **local server administrator**, i.e., the person who set up your CorA instance.",
+            "paragraphAdminIs": "Local administrator is:",
+            "paragraphUseTheIssueTracker": "If you believe you've found a bug in CorA itself, or if there are any unresolved questions or feature requests, please use our **issue tracker.**",
+            "issueTracker": "CorA Issue Tracker",
             "dontShowAgain": "Close and do not show again",
-            "dontShowAgainInfo": "You can always review the news by clicking on the 'Help' tab.",
-            "feedbackTitle": "Questions?  Found any bugs?",
-            "helpInGuide": "All functions of CorA are explained in the CorA Guide. If you would like to know more about how to use CorA or need further information about its features, please take a look at the guide first:"
+            "dontShowAgainInfo": "You can always review the news by clicking on the 'Help' tab."
         },
         "LibFile": {
             "invalidXML": "The file does not contain valid XML. The parser reported:"

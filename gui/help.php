@@ -23,28 +23,26 @@
 /** @file help.php
  * A help page.
  */
+
+$maintainer = Cfg::get('local_maintainer');
 ?>
 
 <div id="helpDiv" class="content">
   <div class="panel">
     <div class="text-content">
-      <h3 data-trans-id="Help.coraHelpTitle"><?=$lh("Help.coraHelpTitle"); ?></h3>
-      <p data-trans-id="Help.helpInGuide">
-        <?=$lh("Help.helpInGuide"); ?>
+      <h3 data-trans-id="Help.title"><?=$lh("Help.title"); ?></h3>
+      <p data-trans-id="Help.paragraphGuide">
+        <?=$lh("Help.paragraphGuide"); ?>
       </p>
       <ul>
         <li>
-          <a href="doc/cora-guide.pdf" download="cora-guide.pdf" data-trans-id="Help.coraGuideLink"><?=$lh("Help.coraGuideLink"); ?></a>
+          <a href="http://cora.readthedocs.org/" data-trans-id="Help.guideTitle"><?=$lh("Help.guideTitle"); ?></a>
         </li>
       </ul>
 
       <h3 data-trans-id="Help.feedbackTitle"><?=$lh("Help.feedbackTitle"); ?></h3>
-      <p>
-        <span data-trans-id="Help.contactUsInfo"><?=$lh("Help.contactUsInfo"); ?></span>
-        <a href="mailto:bollmann@linguistics.rub.de" data-trans-id="Help.contactUs"><?=$lh("Help.contactUs"); ?></a>
-      </p>
-      <p data-trans-id="Help.contactRequest">
-        <?=$lh("Help.contactRequest"); ?>    
+      <p data-trans-id="Help.paragraphFeedback">
+        <?=$lh("Help.paragraphFeedback"); ?>
       </p>
       <ul>
         <li data-trans-id="Help.contactCheck1"><?=$lh("Help.contactCheck1"); ?></li>
@@ -52,10 +50,37 @@
         <li data-trans-id="Help.contactCheck3"><?=$lh("Help.contactCheck3"); ?></li>
       </ul>
 
-      <p>
-        <span data-trans-id="Help.contactPerson"><?=$lh("Help.contactPerson"); ?></span>
-        <a href="mailto:bollmann@linguistics.rub.de">Marcel Bollmann &lsaquo;bollmann@linguistics.rub.de&rsaquo;</a>
+      <p data-trans-id="Help.paragraphAskAnAdmin">
+        <?=$lh("Help.paragraphAskAnAdmin"); ?>
       </p>
+
+      <?php if (isset($maintainer['name']) || isset($maintainer['email'])):
+                $contact_info = "";
+                if (isset($maintainer['name'])):
+                    $contact_info = $maintainer['name'] . " ";
+                endif;
+                if (isset($maintainer['email'])):
+                    $contact_info = "<a href=\"mailto:" . $maintainer['email'] .
+                                    "\">" . $contact_info .
+                                    "&lsaquo;" . $maintainer['email'] . "&rsaquo;</a>";
+                endif;
+      ?>
+        <p>
+          <span data-trans-id="Help.paragraphAdminIs"><?=$lh("Help.paragraphAdminIs"); ?></span>
+          <ul>
+            <li><?=$contact_info;?></li>
+          </ul>
+        </p>
+      <?php endif; ?>
+
+      <?php if ($_SESSION["admin"]): ?>
+        <p data-trans-id="Help.paragraphUseTheIssueTracker"><?=$lh("Help.paragraphUseTheIssueTracker"); ?></p>
+        <ul>
+          <li><a href="https://bitbucket.org/mbollmann/cora/issues" data-trans-id="Help.issueTracker">
+            <?=$lh("Help.issueTracker"); ?>
+          </a></li>
+        </ul>
+      <?php endif; ?>
     </div>
   </div>
 </div>

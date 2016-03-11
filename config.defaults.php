@@ -53,6 +53,13 @@ return array(
     "DBNAME" => 'cora'
   ),
 
+  /** Person to contact in case of problems; will show up on the "Help" page. */
+  "local_maintainer" => array(
+    /** At least one of 'name' or 'email' should be filled. */
+    "name" => "",
+    "email" => ""
+  ),
+
   /** Default interface language for new users. */
   "default_language" => 'en-US',
 

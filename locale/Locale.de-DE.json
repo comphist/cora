@@ -444,19 +444,20 @@
             "waitForAuthorization": "Warte auf Authorisierung..."
         },
         "Help": {
-            "contactCheck1": "Was **genau** haben Sie unmittelbar vor dem Auftreten des Fehlers getan?",
-            "contactCheck2": "Wie genau \u00e4u\u00dfert sich der Fehler? Gibt es eine Fehlermeldung? Falls ja, die Meldung unbedingt kopieren und einf\u00fcgen!",
-            "contactCheck3": "An welcher Datei oder welcher Textstelle genau haben Sie gearbeitet, als der Fehler auftrat?",
-            "contactPerson": "Ansprechpartner ist dabei",
-            "contactRequest": "Bitte senden Sie uns beim Melden von Fehlern eine **aussagekr\u00e4ftige** Beschreibung des Problems! Dazu geh\u00f6ren folgende Informationen:",
-            "contactUs": "kontaktieren Sie uns bitte!",
-            "contactUsInfo": "Falls Sie Fragen haben, die durch das Benutzerhandbuch nicht gekl\u00e4rt worden sind, oder falls Sie gar einen Fehler in CorA entdeckt haben, ",
-            "coraGuideLink": "CorA Benutzerhandbuch, 27.01.2015 [PDF]",
-            "coraHelpTitle": "Hilfe zur Benutzung von CorA",
-            "dontShowAgain": "Schlie\u00dfen und nicht wieder anzeigen",
-            "dontShowAgainInfo": "Sie k\u00f6nnen sich die Neuigkeiten jederzeit \u00fcber den Tab 'Hilfe' erneut anzeigen lassen.",
+            "title": "Hilfe zur Benutzung von CorA",
+            "guideTitle": "CorA User Documentation",
+            "paragraphGuide": "Fragen zur Bedienung und Funktionalit\u00e4t von CorA werden im Benutzerhandbuch n\u00e4her erl\u00e4utert.",
             "feedbackTitle": "Ungekl\u00e4rte Fragen?  Bugs gefunden?",
-            "helpInGuide": "Alle Funktionen von CorA sind im Benutzerhandbuch n\u00e4her erl\u00e4utert. Falls Sie Fragen zur Bedienung oder zu einer bestimmten Funktion von CorA haben, schauen Sie bitte zun\u00e4chst dort nach:"
+            "paragraphFeedback": "Bitte denken Sie bei jeder Art von Fehlermeldung an eine **aussagekr\u00e4ftige** Beschreibung des Problems. Dazu geh\u00f6ren folgende Informationen:",
+            "contactCheck1": "Was **genau** haben Sie unmittelbar vor dem Auftreten des Problems getan?",
+            "contactCheck2": "Wie genau \u00e4u\u00dfert sich das Problem? Gibt es eine Fehlermeldung? Falls ja, die Meldung unbedingt kopieren und einf\u00fcgen!",
+            "contactCheck3": "An welcher Datei oder welcher Textstelle genau haben Sie gearbeitet, als das Problem auftrat?",
+            "paragraphAskAnAdmin": "Ansprechpartner für Probleme sollte dabei immer zuerst Ihr **lokaler Server-Administrator** sein, also diejenige Person, die Ihre CorA-Instanz eingerichtet hat.",
+            "paragraphAdminIs": "Lokaler Administrator ist:",
+            "paragraphUseTheIssueTracker": "Falls Sie glauben, einen Bug in CorA gefunden zu haben, oder sonstige ungeklärte Fragen oder Featurewünsche haben, benutzen Sie bitte den **Issue Tracker.**",
+            "issueTracker": "CorA Issue Tracker",
+            "dontShowAgain": "Schlie\u00dfen und nicht wieder anzeigen",
+            "dontShowAgainInfo": "Sie k\u00f6nnen sich die Neuigkeiten jederzeit \u00fcber den Tab 'Hilfe' erneut anzeigen lassen."
         },
         "LibFile": {
             "invalidXML": "Datei enth\u00e4lt kein wohlgeformtes XML. Parser meldete:"
