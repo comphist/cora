@@ -59,22 +59,22 @@
           <tr id="tIS_upload">
             <td class="proc proc-running"><span class="oi oi-proc-success oi-shadow" data-glyph="check" aria-hidden="true"></span>
               <span class="oi oi-proc-error oi-shadow" data-glyph="x" aria-hidden="true"></span></td>
-            <td>Datei übermitteln</td>
+            <td data-trans-id="FileTab.importDialog.transferringFile"><?=$lh("FileTab.importDialog.transferringFile"); ?></td>
           </tr>
           <tr id="tIS_check">
             <td class="proc"><span class="oi oi-proc-success oi-shadow" data-glyph="check" aria-hidden="true"></span>
               <span class="oi oi-proc-error oi-shadow" data-glyph="x" aria-hidden="true"></span></td>
-            <td>Gültigkeit prüfen</td>
+            <td data-trans-id="FileTab.importDialog.checkingValidity"><?=$lh("FileTab.importDialog.checkingValidity"); ?></td>
           </tr>
           <tr id="tIS_convert">
             <td class="proc"><span class="oi oi-proc-success oi-shadow" data-glyph="check" aria-hidden="true"></span>
               <span class="oi oi-proc-error oi-shadow" data-glyph="x" aria-hidden="true"></span></td>
-            <td>Umwandeln in CorA-XML</td>
+            <td data-trans-id="FileTab.importDialog.convertToXML"><?=$lh("FileTab.importDialog.convertToXML"); ?></td>
           </tr>
           <tr id="tIS_import">
             <td class="proc"><span class="oi oi-proc-success oi-shadow" data-glyph="check" aria-hidden="true"></span>
               <span class="oi oi-proc-error oi-shadow" data-glyph="x" aria-hidden="true"></span></td>
-            <td>Importieren</td>
+            <td data-trans-id="FileTab.importDialog.import"><?=$lh("FileTab.importDialog.import"); ?></td>
           </tr>
         </table>
         <div id="tIS_progress"></div>

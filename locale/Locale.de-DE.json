@@ -403,6 +403,12 @@
                 "siglum": "Sigle",
                 "tagsets": "Tagsets..."
             },
+            "importDialog": {
+                "transferringFile": "Datei \u00fcbermitteln",
+                "checkingValidity": "G\u00fcltigkeit \u00fcberpr\u00fcfen",
+                "convertToXML": "Umwandeln in CorA-XML",
+                "import": "Importieren"
+            },
             "invalidServerResponse": "Fehlerhafte Server-Antwort",
             "invalidServerResponseInfo": "Der Server lieferte eine ung\u00fcltige Antwort zur\u00fcck. Das Importieren der Datei war m\u00f6glicherweise nicht erfolgreich.",
             "noFilesInProject": "Dieses Projekt enth\u00e4lt keine Dateien.",
@@ -458,9 +464,6 @@
             "issueTracker": "CorA Issue Tracker",
             "dontShowAgain": "Schlie\u00dfen und nicht wieder anzeigen",
             "dontShowAgainInfo": "Sie k\u00f6nnen sich die Neuigkeiten jederzeit \u00fcber den Tab 'Hilfe' erneut anzeigen lassen."
-        },
-        "LibFile": {
-            "invalidXML": "Datei enth\u00e4lt kein wohlgeformtes XML. Parser meldete:"
         },
         "Locales": {
             "de-DE": "Deutsch",

@@ -403,6 +403,12 @@
                 "siglum": "Custom ID",
                 "tagsets": "Tagsets..."
             },
+            "importDialog": {
+                "transferringFile": "Transfer file",
+                "checkingValidity": "Check validity",
+                "convertToXML": "Convert to CorA XML",
+                "import": "Import"
+            },
             "invalidServerResponse": "Invalid server response",
             "invalidServerResponseInfo": "The server returned an invalid response. The file import may have failed.",
             "noFilesInProject": "There are no files in this project.",
@@ -458,9 +464,6 @@
             "issueTracker": "CorA Issue Tracker",
             "dontShowAgain": "Close and do not show again",
             "dontShowAgainInfo": "You can always review the news by clicking on the 'Help' tab."
-        },
-        "LibFile": {
-            "invalidXML": "The file does not contain valid XML. The parser reported:"
         },
         "Locales": {
             "de-DE": "German",
