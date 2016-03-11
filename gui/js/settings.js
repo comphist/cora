@@ -282,7 +282,7 @@ cora.settings = {
        Checks whether a given column is set to be visible in the settings tab.
      */
     isColumnVisible: function(name) {
-        var elem = $(this.columnVisibilityDiv).getElement('input#eshc-'+name);
+        var elem = $(this.columnVisibilityDiv).getElement('input[value="'+name+'"]');
         if (elem != null)
             return elem.get('checked');
         return true;
@@ -296,11 +296,9 @@ cora.settings = {
     setColumnActive: function(name, active) {
         var div = $(this.columnVisibilityDiv);
         if(active) {
-            div.getElements('input#eshc-'+name).show();
-            div.getElements('label[for="eshc-'+name+'"]').show();
+            div.getElements('label#eshc-'+name).show();
         } else {
-            div.getElements('input#eshc-'+name).hide();
-            div.getElements('label[for="eshc-'+name+'"]').hide();
+            div.getElements('label#eshc-'+name).hide();
         }
     }
 };

@@ -1248,12 +1248,17 @@ div#editorLanguageSettings,
 div#editorSettingsHiddenColumns,
 div#editorSettingsTextPreview,
 div#editorSettingsInputAids {
-    input {
-        margin-left: 0.5em;
-        vertical-align: middle;
-    }
     label {
-        margin-left: 5px;
+        margin-left: 0.5em;
+    }
+    input {
+        vertical-align: baseline;
+    }
+}
+
+div#editorSettingsHiddenColumns {
+    label {
+        display: block;
     }
 }
 

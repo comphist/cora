@@ -44,14 +44,14 @@
           </span>
         </h4>
         <p>
-          <input type="radio" name="language" value="en-US" id="lang_en" />
-          <label for="lang_en">
+          <label>
+            <input type="radio" name="language" value="en-US" />
             <span data-trans-id="SettingsTab.editorLanguage.english">
               <?=$lh("SettingsTab.editorLanguage.english");?>
             </span>
           </label>
-          <input type="radio" name="language" value="de-DE" id="lang_de" />
-          <label for="lang_de">
+          <label>
+            <input type="radio" name="language" value="de-DE" />
             <span data-trans-id="SettingsTab.editorLanguage.german">
             <?=$lh("SettingsTab.editorLanguage.german");?>
             </span>
@@ -64,7 +64,6 @@
           <span data-trans-id="SettingsTab.numberOfLines">
             <?=$lh("SettingsTab.numberOfLines"); ?>
           </span>
-          
         </h4>
         <form action="request.php" id="editLineSettings" method="get" accept-charset="utf-8">
           <p>
@@ -72,7 +71,6 @@
               <span data-trans-id="SettingsTab.linesPerPage">
                 <?=$lh("SettingsTab.linesPerPage"); ?>
               </span>
-              
 
             </label>
             <input type="text" name="noPageLines" value="<?php echo $_SESSION['noPageLines'];?>" size="2" maxlength="3" data-number="" />
@@ -97,57 +95,57 @@
           <?=$lh("SettingsTab.visibleCols"); ?>
         </h4>
         <p>
-          <input type="checkbox" name="displayedColumns" id="eshc-tokenid" value="tokenid" checked="yes" />
-            <label for="eshc-tokenid" data-trans-id="Columns.lineNo">
-              <?=$lh("Columns.lineNo"); ?>
+            <label id="eshc-tokenid">
+              <input type="checkbox" name="displayedColumns" value="tokenid" checked="yes" />
+              <span data-trans-id="Columns.lineNo"><?=$lh("Columns.lineNo"); ?></span>
             </label>
-          <input type="checkbox" name="displayedColumns" id="eshc-tok_trans" value="tok_trans" checked="yes" />
-            <label for="eshc-tok_trans" data-trans-id="Columns.transTok">
-              <?=$lh("Columns.transTok"); ?>
+            <label id="eshc-tok_trans">
+              <input type="checkbox" name="displayedColumns" value="tok_trans" checked="yes" />
+              <span data-trans-id="Columns.transTok"><?=$lh("Columns.transTok"); ?></span>
             </label>
-          <input type="checkbox" name="displayedColumns" id="eshc-token" value="token" checked="yes" />
-            <label for="eshc-token" data-trans-id="Columns.utfTok">
-              <?=$lh("Columns.utfTok"); ?>
+            <label id="eshc-token">
+              <input type="checkbox" name="displayedColumns" value="token" checked="yes" />
+              <span data-trans-id="Columns.utfTok"><?=$lh("Columns.utfTok"); ?></span>
             </label>
-          <input type="checkbox" name="displayedColumns" id="eshc-norm" value="norm" checked="yes" />
-            <label for="eshc-norm" data-trans-id="Columns.norm">
-              <?=$lh("Columns.norm"); ?>
+            <label id="eshc-norm">
+              <input type="checkbox" name="displayedColumns" value="norm" checked="yes" />
+              <span data-trans-id="Columns.norm"><?=$lh("Columns.norm"); ?></span>
             </label>
-          <input type="checkbox" name="displayedColumns" id="eshc-norm_broad" value="norm_broad" checked="yes" />
-            <label for="eshc-norm_broad" data-trans-id="Columns.mod">
-              <?=$lh("Columns.mod"); ?>
+            <label id="eshc-norm_broad">
+              <input type="checkbox" name="displayedColumns" value="norm_broad" checked="yes" />
+              <span data-trans-id="Columns.mod"><?=$lh("Columns.mod"); ?></span>
             </label>
-          <input type="checkbox" name="displayedColumns" id="eshc-norm_type" value="norm_type" checked="yes" />
-            <label for="eshc-norm_type" data-trans-id="Columns.modType">
-              <?=$lh("Columns.modType"); ?>
+            <label id="eshc-norm_type">
+              <input type="checkbox" name="displayedColumns" value="norm_type" checked="yes" />
+              <span data-trans-id="Columns.modType"><?=$lh("Columns.modType"); ?></span>
             </label>
-          <input type="checkbox" name="displayedColumns" id="eshc-pos" value="pos" checked="yes" />
-            <label for="eshc-pos" data-trans-id="Columns.pos">
-              <?=$lh("Columns.pos"); ?>
+            <label id="eshc-pos">
+              <input type="checkbox" name="displayedColumns" value="pos" checked="yes" />
+              <span data-trans-id="Columns.pos"><?=$lh("Columns.pos"); ?></span>
             </label>
-          <input type="checkbox" name="displayedColumns" id="eshc-morph" value="morph" checked="yes" />
-            <label for="eshc-morph" data-trans-id="Columns.morph">
-              <?=$lh("Columns.morph"); ?>
+            <label id="eshc-morph">
+              <input type="checkbox" name="displayedColumns" value="morph" checked="yes" />
+              <span data-trans-id="Columns.morph"><?=$lh("Columns.morph"); ?></span>
             </label>
-          <input type="checkbox" name="displayedColumns" id="eshc-lemma" value="lemma" checked="yes" />
-            <label for="eshc-lemma" data-trans-id="Columns.lemma">
-              <?=$lh("Columns.lemma"); ?>
+            <label id="eshc-lemma">
+              <input type="checkbox" name="displayedColumns" value="lemma" checked="yes" />
+              <span data-trans-id="Columns.lemma"><?=$lh("Columns.lemma"); ?></span>
             </label>
-          <input type="checkbox" name="displayedColumns" id="eshc-lemma_sugg" value="lemma_sugg" checked="yes" />
-            <label for="eshc-lemma_sugg" data-trans-id="Columns.lemmaLink">
-              <?=$lh("Columns.lemmaLink"); ?>
+            <label id="eshc-lemma_sugg">
+              <input type="checkbox" name="displayedColumns" value="lemma_sugg" checked="yes" />
+              <span data-trans-id="Columns.lemmaLink"><?=$lh("Columns.lemmaLink"); ?></span>
             </label>
-          <input type="checkbox" name="displayedColumns" id="eshc-lemmapos" value="lemmapos" checked="yes" />
-            <label for="eshc-lemmapos" data-trans-id="Columns.lemmaTag">
-              <?=$lh("Columns.lemmaTag"); ?>
+            <label id="eshc-lemmapos">
+              <input type="checkbox" name="displayedColumns" value="lemmapos" checked="yes" />
+              <span data-trans-id="Columns.lemmaTag"><?=$lh("Columns.lemmaTag"); ?></span>
             </label>
-          <input type="checkbox" name="displayedColumns" id="eshc-comment" value="comment" checked="yes" />
-            <label for="eshc-comment" data-trans-id="Columns.comment">
-              <?=$lh("Columns.comment"); ?>
+            <label id="eshc-comment">
+              <input type="checkbox" name="displayedColumns" value="comment" checked="yes" />
+              <span data-trans-id="Columns.comment"><?=$lh("Columns.comment"); ?></span>
             </label>
-          <input type="checkbox" name="displayedColumns" id="eshc-sec_comment" value="sec_comment" checked="yes" />
-            <label for="eshc-sec_comment" data-trans-id="Columns.secondaryComment">
-              <?=$lh("Columns.secondaryComment"); ?>
+            <label id="eshc-sec_comment">
+              <input type="checkbox" name="displayedColumns" value="sec_comment" checked="yes" />
+              <span data-trans-id="Columns.secondaryComment"><?=$lh("Columns.secondaryComment"); ?></span>
             </label>
         </p>
       </div>
@@ -157,18 +155,18 @@
           <?=$lh("SettingsTab.horizontalPreview"); ?>
         </h4>
         <p>
-          <input type="radio" name="es_text_preview" value="off" id="estp-off" />
-            <label for="estp-off" data-trans-id="SettingsTab.noPreview">
-              <?=$lh("SettingsTab.noPreview"); ?>
-            </label>
-          <input type="radio" name="es_text_preview" value="trans" id="estp-trans" />
-            <label for="estp-trans" data-trans-id="Columns.transTok">
-              <?=$lh("Columns.transTok"); ?>
-            </label>
-          <input type="radio" name="es_text_preview" value="utf" id="estp-utf" />
-            <label for="estp-utf" data-trans-id="Columns.utfTok">
-              <?=$lh("Columns.utfTok"); ?>
-            </label>
+          <label>
+            <input type="radio" name="es_text_preview" value="off" />
+            <span data-trans-id="SettingsTab.noPreview"><?=$lh("SettingsTab.noPreview"); ?></span>
+          </label>
+          <label>
+            <input type="radio" name="es_text_preview" value="trans" />
+            <span data-trans-id="Columns.transTok"><?=$lh("Columns.transTok"); ?></span>
+          </label>
+          <label>
+            <input type="radio" name="es_text_preview" value="utf" />
+            <span data-trans-id="Columns.utfTok"><?=$lh("Columns.utfTok"); ?></span>
+          </label>
         </p>
       </div>
 
@@ -177,10 +175,10 @@
           <?=$lh("SettingsTab.editSupport"); ?>
         </h4>
         <p>
-          <input type="checkbox" name="show_error" value="show_error" checked="yes" id="esia-showerror" />
-            <label for="esia-showerror" data-trans-id="SettingsTab.highlightErrorTags">
-              <?=$lh("SettingsTab.highlightErrorTags"); ?>
-            </label>
+          <label>
+            <input type="checkbox" name="show_error" value="show_error" checked="yes" />
+            <span data-trans-id="SettingsTab.highlightErrorTags"><?=$lh("SettingsTab.highlightErrorTags"); ?></span>
+          </label>
         </p>
       </div>
     </div>
