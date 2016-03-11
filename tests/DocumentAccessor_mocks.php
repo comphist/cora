@@ -47,12 +47,13 @@ class Cora_Tests_DBInterface_Mock {
   }
 
   public function getTagsetsForFile($fileid) {
-    if ($fileid == 3) {
+    if ($fileid == 2) {
       return array(
-        array('id' => 1, 'name' => 'ImportTest', 'class' => 'pos', 'set_type' => 'closed'),
-        array('id' => 2, 'name' => 'NormTest', 'class' => 'norm', 'set_type' => 'open'),
-        array('id' => 3, 'name' => 'LemmaTest', 'class' => 'lemma', 'set_type' => 'open'),
-        array('id' => 4, 'name' => 'Comment', 'class' => 'comment', 'set_type' => 'open')
+        array('id' => 1, 'name' => 'Normalization', 'class' => 'norm', 'set_type' => 'open'),
+        array('id' => 7, 'name' => 'Boundary-Demo', 'class' => 'boundary', 'set_type' => 'closed'),
+        array('id' => 6, 'name' => 'STTS', 'class' => 'pos', 'set_type' => 'closed'),
+        array('id' => 3, 'name' => 'Lemma', 'class' => 'lemma', 'set_type' => 'open'),
+        array('id' => 8, 'name' => 'LemmaPOS-Demo', 'class' => 'lemmapos', 'set_type' => 'closed')
       );
     } else {
       return array();
