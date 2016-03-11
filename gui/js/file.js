@@ -1291,7 +1291,7 @@ cora.fileManager = {
 	    title: 'fileExportPopup_title',
 	    buttons: [
 		{title: _("Action.cancel"), addClass: 'mform'},
-		{title: _("FileTab.columnLabels.export2"), addClass: 'mform button_green',
+		{title: _("Action.export"), addClass: 'mform button_green',
 		 event: function() {
                      var ccsv = [],
                          data = {do: 'exportFile', fileid: fid};

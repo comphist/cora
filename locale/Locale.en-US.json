@@ -11,7 +11,7 @@
             "createMsg": "Create notification",
             "createProject": "Create project",
             "createTagger": "Create Tagger",
-            "export2": "Export",
+            "export": "Export",
             "importTagset": "Import tagset",
             "noCancel": "No, cancel",
             "ok": "Ok",
@@ -342,17 +342,17 @@
         },
         "FileTab": {
             "Forms": {
-                "addFileError": "An unknown error occurred while adding file.",
+                "addFileError": "An unknown error occurred while adding the file.",
                 "editTagsets": "Associated tagsets for file '{file}'",
                 "exportForm": {
-                    "columnCsvFormat": "Column format (CSV)",
+                    "columnCsvFormat": "Tabular format (CSV)",
                     "columnNormFormat": "Four-column format (Normalization)",
                     "columnsSelected": " column(s) selected",
                     "coraXmlFormat": "CorA XML",
                     "exportFile": "Export File",
-                    "exportInfoCora": "Export a CorA XML-file containing the complete document including all annotations. The file can be reimported later on in order to obtain a version of the document identical to the file when exported.",
-                    "exportInfoCsv": "Export a tab-delimited text file suitable for the import into spreadsheet software (e.g. Microsoft Excel). Please choose annotation layers to be exported:",
-                    "exportPrompt": "Please choose a format for the export file:",
+                    "exportInfoCora": "Export a CorA XML file containing the complete document with annotations.  It is possible to re-import this file to create an identical clone of the exported document.",
+                    "exportInfoCsv": "Export a tab-delimited text file suitable for import into spreadsheet software (e.g. Microsoft Excel).  Select the annotation layers to be exported:",
+                    "exportPrompt": "Select a format for the file export:",
                     "transFormat": "Transcription format"
                 },
                 "import": {
