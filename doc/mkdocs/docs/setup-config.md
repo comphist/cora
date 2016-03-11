@@ -31,6 +31,14 @@ external_param_dir
     `/var/lib/cora/` regardless of host system (i.e., if you're running CorA on
     Windows, you definitely need to change this to something sensible).
 
+local_maintainer
+:   An array with information about a person to contact in case of problems or
+    questions; will appear on the "Help" tab if filled.  Recognized the following
+    fields:
+
+      + `name`: Name of the maintainer
+      + `email`: E-mail address (will be displayed and hyperlinked)
+
 longtitle
 :   Long name of this CorA instance, currently only used in the
     HTML title tag.

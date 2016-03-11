@@ -34,8 +34,8 @@ img.inline {
 }
 
 /* tables */
-td.min-120 {
-  min-width: 120px;
+td.min-125 {
+  min-width: 125px;
 }
 
 .rst-content .section ul li p:last-child {

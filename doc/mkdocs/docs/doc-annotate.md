@@ -11,7 +11,7 @@ perform various actions.
 
 Button     | Function
 ---------- | -------------------------------------------------------------------
-{: .min-120}![](img/editor-toolbar-page.png) | Your current position in the document.  Values shown here depend on your [editor settings](doc-customize.md).  Click on this element to **navigate** to a page by number.
+{: .min-125}![](img/editor-toolbar-page.png) | Your current position in the document.  Values shown here depend on your [editor settings](doc-customize.md).  Click on this element to **navigate** to a page by number.
 ![](img/editor-toolbar-prev.png) | Go to the **previous page**.
 ![](img/editor-toolbar-next.png) | Go to the **next page**.
 Jump to Line | Go to a **specific line number** (the bold number at the beginning of a row).
