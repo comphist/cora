@@ -35,6 +35,26 @@ require_once "commandHandler.php";
 require_once "exporter.php";
 require_once "automaticAnnotation.php";
 
+/** Manages global function calls related to session management. */
+class CoraSessionWrapper {
+    public function startSession($name) {
+        session_name(strtoupper(Cfg::get('session_name')));
+        session_start();
+    }
+
+    public function destroySession() {
+        session_destroy();
+    }
+
+    public function sendHeader($header) {
+        header($header);
+    }
+
+    public function openOutput() {
+        return fopen('php://output', 'wb');
+    }
+}
+
 /** Manages session-specific data.
  *
  * This class keeps track of user settings and general session
@@ -46,17 +66,18 @@ class CoraSessionHandler {
     private $db; /**< A DBInterface object. */
     private $lh; /**< A LocaleHandler object. */
     private $timeout = 30; // session timeout in minutes
+    private $wrapper; /**< A CoraSessionWrapper object. */
 
     /** Create a new CoraSessionHandler.
      *
      * Initializes a session, constructs a new DBInterface, and sets
      * defaults for various session values if required.
      */
-    function __construct(DBInterface $db, LocaleHandler $lh) {
-        session_name(strtoupper(Cfg::get('session_name')));
-        session_start();
+    function __construct(DBInterface $db, LocaleHandler $lh, CoraSessionWrapper $sw) {
+        $sw->startSession(strtoupper(Cfg::get('session_name')));
         $this->db = $db;
         $this->lh = $lh;
+        $this->wrapper = $sw;
         $defaults = array("locale" => Cfg::get('default_language'),
                           "loggedIn" => false,
                           "admin" => false,
@@ -423,19 +444,19 @@ class CoraSessionHandler {
     /** Wraps Exporter::export() */
     public function exportFile($fileid, $format, $GET) {
         if (!$_SESSION['admin'] && !$this->db->isAllowedToOpenFile($fileid, $_SESSION['user'])) {
-            header("HTTP/1.1 404 Not Found");
+            $this->wrapper->sendHeader("HTTP/1.1 404 Not Found");
             return false;
         }
         $exp = new Exporter($this->db);
         $options = array();
         if (array_key_exists('ccsv', $GET)) $options = $GET['ccsv'];
         $filename = $this->makeExportFilename($this->db->getFilenameFromID($fileid), $format);
-        $output = fopen('php://output', 'wb');
-        header("Cache-Control: public");
-        header("Content-Type: " . ExportType::mapToContentType($format));
-        // header("Content-Transfer-Encoding: Binary");
-        // header("Content-Length:".filesize($attachment_location));
-        header("Content-Disposition: attachment; filename=" . $filename);
+        $output = $this->wrapper->openOutput('php://output', 'wb');
+        $this->wrapper->sendHeader("Cache-Control: public");
+        $this->wrapper->sendHeader("Content-Type: " . ExportType::mapToContentType($format));
+        // $this->wrapper->sendHeader("Content-Transfer-Encoding: Binary");
+        // $this->wrapper->sendHeader("Content-Length:".filesize($attachment_location));
+        $this->wrapper->sendHeader("Content-Disposition: attachment; filename=" . $filename);
         $exp->export($fileid, $format, $options, $output);
         return true;
     }
@@ -867,8 +888,7 @@ class CoraSessionHandler {
         if (isset($_SESSION["currentFileId"]) && !empty($_SESSION["currentFileId"])) {
             $this->unlockFile($_SESSION["currentFileId"], $_SESSION["user"]);
         }
-        session_destroy();
-        // setcookie();
+        $this->wrapper->destroySession();
         $_SESSION["loggedIn"] = false;
         $_SESSION["failedLogin"] = false;
         $_SESSION["admin"] = false;

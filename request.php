@@ -46,7 +46,7 @@ try {
     /* Initiate session */
     $lh = new LocaleHandler();
     $dbi = new DBInterface(Cfg::get('dbinfo'), $lh);
-    $sh = new CoraSessionHandler($dbi, $lh);
+    $sh = new CoraSessionHandler($dbi, $lh, new CoraSessionWrapper());
     $rq = new RequestHandler($sh, $lh);
 
     if ($_SESSION["loggedIn"]) {

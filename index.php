@@ -55,7 +55,7 @@ try {
     $lh = new LocaleHandler();
     $_ = $lh;
     $dbi = new DBInterface(Cfg::get('dbinfo'), $lh);
-    $sh = new CoraSessionHandler($dbi, $lh);
+    $sh = new CoraSessionHandler($dbi, $lh, new CoraSessionWrapper());
     $rq = new RequestHandler($sh, $lh);
 
     $rq->handleRequests($_GET, $_POST);
