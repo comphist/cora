@@ -30,6 +30,7 @@ set(PHP_TESTS
   Exporter_test.php
   Locale_test.php
   Menu_test.php
+  RequestHandler_login_test.php
   TagsetAccessor_test.php
   XMLHandler_test.php
 )
@@ -38,7 +39,12 @@ if(WITH_EXPENSIVE_TESTS)
 endif()
 
 configure_file(phpunit.xml.in "${CMAKE_CURRENT_BINARY_DIR}/phpunit.xml" @ONLY)
-configure_all_copyonly("${CMAKE_CURRENT_BINARY_DIR}" ${PHP_TESTS} DB_fixture.php DocumentAccessor_mocks.php LocaleHandler_mock.php)
+configure_all_copyonly("${CMAKE_CURRENT_BINARY_DIR}"
+  ${PHP_TESTS}
+  DB_fixture.php
+  CoraSessionWrapper_mock.php
+  DocumentAccessor_mocks.php
+  LocaleHandler_mock.php)
 file(COPY data DESTINATION .)
 file(COPY db_fixture DESTINATION .)
 
