@@ -21,7 +21,7 @@
  */ ?>
 <?php
 require_once 'db_fixture/fixture.php';
-require_once 'DocumentAccessor_mocks.php';
+require_once 'mocks/DocumentAccessor_mocks.php';
 require_once "{$GLOBALS['CORA_WEB_DIR']}/lib/connect/DocumentAccessor.php";
 
 class Cora_Tests_DocumentAccessor_test extends Cora_Tests_DbTestCase {

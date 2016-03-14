@@ -21,7 +21,7 @@
  */ ?>
 <?php
 require_once 'db_fixture/fixture.php';
-require_once 'CoraSessionWrapper_mock.php';
+require_once 'mocks/CoraSessionWrapper_mock.php';
 require_once "{$GLOBALS['CORA_WEB_DIR']}/lib/sessionHandler.php";
 require_once "{$GLOBALS['CORA_WEB_DIR']}/lib/localeHandler.php";
 require_once "{$GLOBALS['CORA_WEB_DIR']}/lib/requestHandler.php";

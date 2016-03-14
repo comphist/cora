@@ -38,13 +38,14 @@ if(WITH_EXPENSIVE_TESTS)
   list(APPEND PHP_TESTS DBInterface_Expensive_test.php)
 endif()
 
+set(PHP_MOCKS
+  mocks/CoraSessionWrapper_mock.php
+  mocks/DocumentAccessor_mocks.php
+  mocks/LocaleHandler_mock.php
+)
+
 configure_file(phpunit.xml.in "${CMAKE_CURRENT_BINARY_DIR}/phpunit.xml" @ONLY)
-configure_all_copyonly("${CMAKE_CURRENT_BINARY_DIR}"
-  ${PHP_TESTS}
-  DB_fixture.php
-  CoraSessionWrapper_mock.php
-  DocumentAccessor_mocks.php
-  LocaleHandler_mock.php)
+configure_all_copyonly("${CMAKE_CURRENT_BINARY_DIR}" ${PHP_TESTS} ${PHP_MOCKS} DB_fixture.php)
 file(COPY data DESTINATION .)
 file(COPY db_fixture DESTINATION .)
 

@@ -21,9 +21,9 @@
  */ ?>
 <?php
 require_once 'DB_fixture.php';
-require_once 'DocumentAccessor_mocks.php';
-require_once 'LocaleHandler_mock.php';
 require_once 'data/test_data.php';
+require_once 'mocks/DocumentAccessor_mocks.php';
+require_once 'mocks/LocaleHandler_mock.php';
 require_once "{$GLOBALS['CORA_WEB_DIR']}/lib/connect.php";
 require_once "{$GLOBALS['CORA_WEB_DIR']}/lib/connect/DocumentCreator.php";
 

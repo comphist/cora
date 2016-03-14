@@ -20,8 +20,8 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */ ?>
 <?php
-require_once"LocaleHandler_mock.php";
 require_once"data/test_data.php";
+require_once"mocks/LocaleHandler_mock.php";
 
 require_once"{$GLOBALS['CORA_WEB_DIR']}/lib/documentModel.php";
 
