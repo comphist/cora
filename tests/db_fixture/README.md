@@ -22,8 +22,8 @@ files are kept up-to-date! (See "Updating the data files" below.)
 Data files (`coratest_data.*`) are created by dumping an existing CorA test
 instance:
 
-    mysqldump -uroot -p --no-create-info cora_test > coratest_data.sql
-    mysqldump -uroot -p --no-create-info --xml cora_test > coratest_data.xml
+    mysqldump -uroot -p --no-create-info --replace -c cora_testdev > coratest_data.sql
+    mysqldump -uroot -p --no-create-info --xml cora_testdev > coratest_data.xml
 
 Both SQL and XML versions are kept because
 
@@ -47,13 +47,13 @@ dumping the database again.
 To do so, build CorA from a commit with the same database schema used to create
 the test data, then call
 
-    php <build-dir>/www/db/configure_db_cli.php -d cora_test -a install -P <mysql-root-password>
-    mysql -uroot -p < coratest_data.sql
+    php <build-dir>/www/db/configure_db_cli.php -d cora_testdev -a install -P <mysql-root-password>
+    mysql -uroot -p<mysql-root-password> cora_testdev < coratest_data.sql
 
 If the database schema has changed, checkout the latest version now, then
 perform a database upgrade:
 
-    php <build-dir>/www/db/configure_db_cli.php -d cora_test -a upgrade -P <mysql-root-password>
+    php <build-dir>/www/db/configure_db_cli.php -d cora_testdev -a upgrade -P <mysql-root-password>
 
 Make any changes to the test database you want, then dump it (see "Creating the
 data files" above), and don't forget to drop your test database from MySQL

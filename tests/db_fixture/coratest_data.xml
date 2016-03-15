@@ -38976,14 +38976,14 @@
 		<field name="admin">1</field>
 		<field name="email" xsi:nil="true" />
 		<field name="comment" xsi:nil="true" />
-		<field name="locale">en-US</field>
+		<field name="locale">de-DE</field>
 		<field name="lines_per_page">30</field>
 		<field name="lines_context">5</field>
 		<field name="columns_order" xsi:nil="true" />
 		<field name="columns_hidden" xsi:nil="true" />
 		<field name="show_error">1</field>
 		<field name="text_preview">utf</field>
-		<field name="lastactive">2016-03-09 12:50:41</field>
+		<field name="lastactive">2016-03-11 16:45:01</field>
 	</row>
 	<row>
 		<field name="id">3</field>
@@ -38999,7 +38999,7 @@
 		<field name="columns_hidden">token,lemma_sugg,</field>
 		<field name="show_error">1</field>
 		<field name="text_preview">trans</field>
-		<field name="lastactive">2016-03-09 13:04:46</field>
+		<field name="lastactive">2016-03-11 15:51:40</field>
 	</row>
 	</table_data>
 	<table_data name="versioning">
