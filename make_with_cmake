@@ -17,6 +17,7 @@
 set -o errexit
 
 DEBUGMODE=ON
+BUILDZIP=OFF
 
 exists_in_path () {
   case $(command -v -- "$1") in
@@ -38,6 +39,8 @@ for var in "$@"; do
         DEBUGMODE=ON
     elif [ "$var" = "release" ]; then
         DEBUGMODE=OFF
+    elif [ "$var" = "zip" ]; then
+        BUILDZIP=ON
     fi
 done
 
@@ -46,7 +49,19 @@ if [ ! -d ./build ]; then
 fi
 
 cd build/
-cmake -DDEBUG_MODE=$DEBUGMODE -DWITH_EXPENSIVE_TESTS=NO -DEXTERNALS_DOWNLOAD_DIR=../cmake-downloads ../ && make
+cmake -DDEBUG_MODE=$DEBUGMODE -DWITH_EXPENSIVE_TESTS=NO -DEXTERNALS_DOWNLOAD_DIR=../cmake-downloads ../
+make
+make docs
+
+if [ "$BUILDZIP" = "ON" ]; then
+    ZIPDIR=/tmp/CORA_MAKE_WITH_CMAKE/cora
+    mkdir -p "$ZIPDIR"
+    cp -r www "$ZIPDIR/www"
+    cp -r docs/user "$ZIPDIR/docs"
+    cp -r ../README* "$ZIPDIR"
+    tar czf current_build.tar.gz -C "$ZIPDIR/.." cora
+    rm -rf "$ZIPDIR"
+fi
 
 if [ -f /tmp/CORA_MAKE_WITH_CMAKE_config.php ]; then
     mv /tmp/CORA_MAKE_WITH_CMAKE_config.php www/config.php
