@@ -113,7 +113,7 @@ class MainApplication(object):
                   }
 
         for conv_type in result:
-            command = ['ruby', self.script]
+            command = [self.script]
             command.extend(CHECK_SCRIPT_OPTIONS[conv_type])
             if self.transenc:
                 command.extend(['-E', self.transenc])
