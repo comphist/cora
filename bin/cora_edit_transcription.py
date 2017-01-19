@@ -46,7 +46,7 @@ CHECK_SCRIPT_OPTIONS = {
     "dipl_trans": ["-L", "-T", "-S", "-c", "orig", "-t", "historical", "-p", "leave", "-r", "leave", "-i", "original", "-d", "leave", "-s", "original", "-e", "leave"],
     "dipl_utf": ["-L", "-T", "-S", "-c", "utf", "-t", "historical", "-p", "delete", "-r", "delete", "-i", "leave", "-d", "leave", "-s", "leave", "-e", "delete"]
     }
-    
+
 class MainApplication(object):
     def __init__(self, args):
         self.script   = args.bin
@@ -66,7 +66,7 @@ class MainApplication(object):
             transencfile.close()
             return valid_seps
         return DEFAULT_VALID_SEPARATORS
-            
+
     def endsWithSeparator(self, line):
         for elem in self.valid_separators:
             if line.endswith(elem):
@@ -94,7 +94,7 @@ class MainApplication(object):
         self.callCheckScript()
 
     def callCheckScript(self):
-        command = ['ruby', self.script]
+        command = [self.script]
         command.extend(CHECK_SCRIPT_OPTIONS['check'])
         if self.transenc:
             command.extend(['-E', self.transenc])
@@ -124,10 +124,10 @@ class MainApplication(object):
                 self.throw_error("Das Umwandeln der Transkription ist fehlgeschlagen (Code %i):\n%s\n" % (inst.returncode, inst.output))
             result[conv_type] = output.strip().split("\n")
 
-        result["dipl_breaks"] = []    
+        result["dipl_breaks"] = []
         for dipl in result["dipl_trans"]:
             result["dipl_breaks"].append(1 if self.endsWithSeparator(dipl) else 0)
-            
+
         return result
 
     def run(self):
