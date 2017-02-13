@@ -50,10 +50,14 @@ def print_utf8(handle, text):
     except UnicodeError:
         print >> handle, text
 
-#function reads out ascii data from given file and write them in an output file        
+#function reads out ascii data from given file and write them in an output file
 def read_out(root,file_out):
-    for mod in root.iter('mod'):
-        print_utf8(file_out, mod.attrib['ascii'])
+    try:
+        for mod in root.iter('mod'):
+            print_utf8(file_out, mod.attrib['ascii'])
+    except KeyError:
+        print("KeyError: mod '{}' has no 'ascii' attribute".format(mod.attrib['id']))
+        raise
 
 def change_data(number,column, create_log):
     word = diff_list[number][column]
