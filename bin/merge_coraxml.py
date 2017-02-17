@@ -1,359 +1,190 @@
-#!/usr/bin/python
-# coding=utf-8
+#!/usr/bin/python3
 
-'''
-author: Aiko Freyth
-Last Update: 19-October-2014
-
-'''
-
-from __future__ import division
-
-import os
 import argparse
-import nltk
-import re
+from difflib import SequenceMatcher
+import itertools as it
+import logging
 from lxml import etree
-from tempfile import NamedTemporaryFile
-from diffMatcher import DiffMatcher
+from mblevenshtein import LevenshteinAligner
+import sys
 
-description = "Merges two CorA XML files based on their modern tokenization."
-epilog = "The output is a CorA XML file identical to TRANS_XML, but enriched with annotations from the parallel file ANNO_XML."
-parser = argparse.ArgumentParser(description=description, epilog=epilog)
-parser.add_argument('fileA',
-                    metavar='TRANS_XML',
-                    type=argparse.FileType('r'),
-                    help='XML file with the definitive transcription')
-parser.add_argument('fileB',
-                    metavar='ANNO_XML',
-                    type=argparse.FileType('r'),
-                    help='XML file with the definitive annotation')
-parser.add_argument('-i', '--ignore',
-                    action='store_true',
-                    help='If on, then script ignores case-sensitivity')
-parser.add_argument('-l', '--log',
-                    dest='logfile',
-                    metavar='LOGFILE',
-                    type=argparse.FileType('w'),
-                    help='Write logfile of changes to LOGFILE')
+log = logging
+aligner = LevenshteinAligner()
 
-args = parser.parse_args()
+class ApplicationException(Exception):
+    pass
 
-log_file = args.logfile
-diff_list = []
-complete_list = {}
-seen = {}
+def posstring(a, b, c, d):
+    l = str(a) if a == b or a == b-1 else '-'.join((str(a), str(b)))
+    r = str(c) if c == d or c == d-1 else '-'.join((str(c), str(d)))
+    return ','.join((l, r))
 
-def print_utf8(handle, text):
+def levenshtein(a, b):
+    d, _ = aligner.perform_levenshtein(a, b)
+    return d / max(len(a), len(b))
+
+def extract_mod_ascii(tree, fname):
+    mods = list(tree.getroot().iter('mod'))
+    asciis = [mod.get('ascii') for mod in mods]
+    if any(m is None for m in asciis):
+        log.error("There were empty 'ascii' attributes in {} file!".format(fname))
+        exit(1)
+    return mods, asciis
+
+def make_diff(a, b):
+    matcher = SequenceMatcher(a=a, b=b, autojunk=False)
+    opcodes = matcher.get_opcodes()
+    log.info("Similarity ratio: {:.4f}".format(matcher.ratio()))
+    return opcodes
+
+def merge_mod(a, b):
+    for child in a:
+        if b.find(child.tag) is not None:
+            b.replace(b.find(child.tag), child)
+        else:
+            b.append(child)
+    if a.get('checked') is not None:
+        b.set('checked', a.get('checked'))
+
+def flag_change(tag, a_str, b):
+    if tag == "replace":
+        comment = "#>MATCH: {}".format(a_str)
+    elif tag == "delete":
+        comment = "#>DEL: {}".format(a_str)
+    elif tag == "insert":
+        comment = "#>INS"
+    if b.find("cora-flag[@name='general error']") is None:
+        b.append(etree.Element('cora-flag', name="general error"))
+    if b.find("comment") is not None:
+        tag = b.find("comment")
+        tag.set('tag', ' '.join((tag.get('tag'), comment)))
+    else:
+        b.append(etree.Element('comment', tag=comment))
+
+def disambiguate_opcodes(modsA, modsB, opcodes, maxspan=0):
+    new_opcodes = []
+    for tag, i1, i2, j1, j2 in opcodes:
+        if tag == "replace" and (i2-i1) != (j2-j1):
+            assert i1 != i2 and j1 != j2
+            if (i2-i1) > maxspan or (j2-j1) > maxspan:
+                raise ApplicationException("Span of replace op exceeds limit: {}"\
+                                           .format(posstring(i1, i2, j1, j2)))
+            distances = []
+            mappings = {}
+            # calculate Levenshtein distance for all pairs of tokens
+            for i, j in it.product(range(i1, i2), range(j1, j2)):
+                d = levenshtein(modsA[i].get('ascii'), modsB[j].get('ascii'))
+                distances.append((i, j, d))
+            distances.sort(key=lambda x: x[-1])
+            # extract pairs with lowest distance, so that each token is only
+            # ever chosen once
+            while distances:
+                best = distances[0]
+                mappings[best[0]] = best[1]
+                distances = [d for d in distances if d[0] != best[0] and d[1] != best[1]]
+            # produce new opcodes
+            ix, jx = i1, j1
+            while ix < i2:
+                if ix not in mappings:
+                    new_opcodes.append(('delete', ix, ix+1, jx, jx))
+                    ix += 1
+                else:
+                    target_j = mappings[ix]
+                    if target_j > jx:
+                        new_opcodes.append(('insert', ix, ix, jx, target_j))
+                        jx = target_j
+                    new_opcodes.append(('replace', ix, ix+1, jx, jx+1))
+                    ix += 1
+                    jx += 1
+            if jx < j2:
+                new_opcodes.append(('insert', ix, ix, jx, j2))
+        else:
+            new_opcodes.append((tag, i1, i2, j1, j2))
+    return new_opcodes
+
+def perform_merge(modsA, modsB, opcodes, flag_changes=False):
+    for tag, i1, i2, j1, j2 in opcodes:
+        if tag in ("equal", "replace"):
+            assert (i2-i1) == (j2-j1)
+            for i, j in zip(range(i1, i2), range(j1, j2)):
+                merge_mod(modsA[i], modsB[j])
+                if tag == "replace" and flag_changes:
+                    flag_change("replace", modsA[i].get('ascii'), modsB[j])
+        elif tag == "delete" and flag_changes:
+            del_mods = ' '.join(m.get('ascii') for m in modsA[i1:i2])
+            flag_change("delete", del_mods, modsB[j1])
+        elif tag == "insert" and flag_changes:
+            for j in range(j1, j2):
+                flag_change("insert", None, modsB[j])
+        # log changes
+        if tag != "equal":
+            msg = "{:19s}  {:20s} |  {:20s}"
+            log.info(msg.format(
+                posstring(i1, i2, j1, j2),
+                ' '.join(mod.get('ascii') for mod in modsA[i1:i2]),
+                ' '.join(mod.get('ascii') for mod in modsB[j1:j2])
+                ))
+
+
+if __name__ == '__main__':
+    description = "Merges annotation from a CorA-XML file into another one."
+    epilog = ("The output is TARGET_XML with additional annotations copied over "
+              "from SOURCE_XML.  A log output of changes is written to STDERR.")
+    parser = argparse.ArgumentParser(description=description, epilog=epilog)
+    parser.add_argument('fileA',
+                        metavar='SOURCE_XML',
+                        type=argparse.FileType('r'),
+                        help='XML file with annotations to merge')
+    parser.add_argument('fileB',
+                        metavar='TARGET_XML',
+                        type=argparse.FileType('r'),
+                        help='XML file to merge into')
+    parser.add_argument('-f', '--flag-changes',
+                        action='store_true',
+                        default=False,
+                        help=('Set the "general error" flag and add a comment to'
+                              ' the XML output of all tokens where changes'
+                              ' occurred'))
+    parser.add_argument('-m', '--maximum-span',
+                        metavar='N',
+                        type=int,
+                        default=5,
+                        help=('Maximum span for matching consecutive replacements'
+                              ' via Levenshtein distance; will produce an error'
+                              ' if longer spans occur (default: %(default)i)'))
+    parser.add_argument('-n', '--dry-run',
+                        action='store_true',
+                        default=False,
+                        help=('Only calculate merge and generate log info, do not'
+                              ' output merged XML document'))
+    parser.add_argument('-q', '--quiet',
+                        action='store_true',
+                        default=False,
+                        help=('Don\'t print log messages to STDERR except in case'
+                              ' of errors'))
+
+    args = parser.parse_args()
+    if args.maximum_span < 0:
+        args.maximum_span = 2147483647
+
+    log_level = logging.ERROR if args.quiet else logging.INFO
+    log.basicConfig(format='%(levelname)-8s %(message)s', level=log_level)
+
+    fileA = etree.parse(args.fileA)
+    fileB = etree.parse(args.fileB)
     try:
-        print >> handle, text.encode("utf-8")
-    except UnicodeError:
-        print >> handle, text
+        modsA, asciiA = extract_mod_ascii(fileA, 'source')
+        modsB, asciiB = extract_mod_ascii(fileB, 'target')
+        opcodes = make_diff(asciiA, asciiB)
+        opcodes = disambiguate_opcodes(modsA, modsB, opcodes, maxspan=args.maximum_span)
+        perform_merge(modsA, modsB, opcodes, flag_changes=args.flag_changes)
+    except ApplicationException as e:
+        log.error(str(e))
+        exit(1)
 
-#function reads out ascii data from given file and write them in an output file
-def read_out(root,file_out):
-    try:
-        for mod in root.iter('mod'):
-            print_utf8(file_out, mod.attrib['ascii'])
-    except KeyError:
-        print("KeyError: mod '{}' has no 'ascii' attribute".format(mod.attrib['id']))
-        raise
-
-def change_data(number,column, create_log):
-    word = diff_list[number][column]
-    look = 'token/mod[@ascii="'+word+'"]'
-    result_list = []
-    #if word is more than one time in file
-    if word in seen:
-        seen[word]+=1
-        #create list for every match with the searched word
-        result_list = complete_list[word]
-        #take right word
-        actual_word = result_list[seen[word]]
-        id_b = actual_word.get("id")
-        #take sub elements and put them in file A
-        if create_log == 'no':
-            for match in actual_word.iterfind(".//"):
-                etree.SubElement(mod_a, match.tag, match.attrib)
-    
-    #if word is for the first time in file    
-    else:
-        #take only first word
-        seen[word]=0
-        if word not in complete_list:
-            #look = 'token/mod[@ascii="'+word+'"]'
-            complete_list[word] = root_b.findall(look)
-            result_list = complete_list[word]
-            
-        actual_word = result_list[seen[word]]
-        id_b = actual_word.get("id")
-        if create_log == 'no':
-            for match in actual_word.iterfind(".//"):
-                etree.SubElement(mod_a, match.tag, match.attrib)
-            
-    return id_b
-
-file_a = etree.parse(args.fileA)
-root_a = file_a.getroot()
-file_b = etree.parse(args.fileB)
-root_b = file_b.getroot()
-   
-listA = NamedTemporaryFile(delete=False)
-listB = NamedTemporaryFile(delete=False)
-read_out(root_a,listA)
-read_out(root_b,listB)
-listA.close()
-listB.close()
-
-new_list = DiffMatcher(listA, listB)
-diff_list = new_list.create_diff(listA, listB,args.ignore)
-
-os.unlink(listA.name)
-os.unlink(listB.name)
-
-counter = -1
-
-#calculates the ratio of 2 words
-def calculate_ratio(word1,word2):
-    lensum = len(word1)+len(word2)
-    levdis = nltk.edit_distance(word1, word2)
-    
-    nltkratio = ((lensum-levdis)/lensum)
-    
-    return nltkratio
-
-def make_log(type,id_a,b,counter):
-    if type == 'DEL':
-        print_utf8(log_file, 'DEL: \t'+diff_list[counter][1]+' ['+diff_list[counter+1][1]+' -> [] '+diff_list[counter+1][0]+'\t'+b)
-    elif type == 'MATCH':
-        print_utf8(log_file, 'MATCH: \t'+diff_list[counter-1][0]+' ['+diff_list[counter][2]+' -> '+diff_list[counter][0]+'] '+diff_list[counter+1][0]+'\t'+b+' > '+id_a)
-    elif type == 'INS':
-        print_utf8(log_file, 'INS: \t'+diff_list[counter-1][0]+' [ -> '+diff_list[counter][0]+' ] '+diff_list[counter+1][0]+'\t'+id_a)
-
-#case ">"
-def delete(counter):
-    if len(diff_list[counter-1]) == 3:
-        r1 = calculate_ratio(diff_list[counter][1], diff_list[counter-1][0])
-    else:
-        r1 = 0.0
-    if diff_list[counter-1][0] == ">" and len(diff_list[counter-2]) == 3:
-        r2 = calculate_ratio(diff_list[counter][1], diff_list[counter-2][0])
-    else:
-        r2 = 0.0
-    if diff_list[counter-1][0] == ">" and diff_list[counter-2][0] == ">" and len(diff_list[counter-3]) == 3:
-        r3 = calculate_ratio(diff_list[counter][1], diff_list[counter-3][0])
-    else:
-        r3 = 0.0
-    
-    #if all values are zero, no match is found -> delete
-    if r1 == 0.0 and r2 == 0.0 and r3 == 0.0:
-        b = change_data(counter,1, 'yes')
-        make_log('DEL',0,b,counter)
-        
-    
-
-#case 3 words in line
-def difference(counter):
-    #if in next line no other possibility, merge this words
-    if diff_list[counter+1][0] != ">" and diff_list[counter+1][1] != "<" and len(diff_list[counter+1]) == 2:
-        b = change_data(counter, 2, 'no')
-        make_log('MATCH',id_a,b,counter)
-       
-    else:
-        #in next line there is also a difference -> 3 words in line
-        # word1 | word2
-        # word3 | word4
-        if len(diff_list[counter+1]) == 3:
-            r = []
-            r.append(calculate_ratio(diff_list[counter][0], diff_list[counter][2]))
-            r.append(calculate_ratio(diff_list[counter+1][0], diff_list[counter][2]))
-            if r[0] > r[1]:
-                b = change_data(counter,2, 'no')
-                make_log('MATCH',id_a,b,counter)
-            
-        #in next line other possibility
-        elif diff_list[counter+1][0] == ">":
-            r = []
-            r.append(calculate_ratio(diff_list[counter][0], diff_list[counter][2]))
-            r.append(calculate_ratio(diff_list[counter][0], diff_list[counter+1][1]))
-            if diff_list[counter+2][0] == ">":
-                r.append(calculate_ratio(diff_list[counter][0], diff_list[counter+2][1]))
-                if diff_list[counter+3][0] == ">":
-                    r.append(calculate_ratio(diff_list[counter][0], diff_list[counter+3][1]))
-            max_value = max(r)
-            c = 0
-            #find best ratio
-            for i in r:
-                if r[c] == max_value:
-                    tmp = c
-                c+=1
-            
-                
-            #make log and merge
-            if tmp == 0:
-                b = change_data(counter,2, 'no')
-                make_log('MATCH',id_a,b,counter)
-                number = re.search(r'\d+', b).group()
-                new_b = b.replace(number,str(int(number)+1))
-                print_utf8(log_file, 'DEL: \t'+diff_list[counter][0]+' ['+diff_list[counter+1][1]+' -> ] '+diff_list[counter+2][0]+'\t'+new_b)
-            elif tmp == 1:
-                b = change_data(counter+tmp,1, 'no')
-                number = re.search(r'\d+', b).group()
-                new_b = b.replace(number,str(int(number)-1))
-                print_utf8(log_file, 'DEL: \t'+diff_list[counter][0]+' ['+diff_list[counter][2]+' -> ] '+diff_list[counter+2][0]+'\t'+new_b)
-                print_utf8(log_file, 'MATCH: \t'+diff_list[counter-1][0]+' ['+diff_list[counter+tmp][1]+' -> '+diff_list[counter][0]+'] '+diff_list[counter+tmp+1][0]+'\t'+b+' > '+id_a)
-            elif tmp == 2:
-                b = change_data(counter+tmp,1, 'no')
-                number = re.search(r'\d+', b).group()
-                new_b = b.replace(number,str(int(number)-2))
-                print_utf8(log_file, 'DEL: \t'+diff_list[counter][0]+' ['+diff_list[counter][2]+' -> ] '+diff_list[counter+tmp+1][0]+'\t'+new_b)
-                new_b = b.replace(number,str(int(number)-1))
-                print_utf8(log_file, 'DEL: \t'+diff_list[counter][0]+' ['+diff_list[counter+1][1]+' -> ] '+diff_list[counter+tmp+1][0]+'\t'+new_b)
-                print_utf8(log_file, 'MATCH: \t'+diff_list[counter-1][0]+' ['+diff_list[counter+tmp][1]+' -> '+diff_list[counter][0]+'] '+diff_list[counter+tmp+1][0]+'\t'+b+' > '+id_a)
-            elif tmp == 3:
-                b = change_data(counter+tmp,1, 'no')
-                number = re.search(r'\d+', b).group()
-                new_b = b.replace(number,str(int(number)-3))
-                print_utf8(log_file, 'DEL: \t'+diff_list[counter][0]+' ['+diff_list[counter][2]+' -> ] '+diff_list[counter++tmp+1][0]+'\t'+new_b)
-                new_b = b.replace(number,str(int(number)-2))
-                print_utf8(log_file, 'DEL: \t'+diff_list[counter][0]+' ['+diff_list[counter+1][1]+' -> ] '+diff_list[counter+tmp+2][0]+'\t'+new_b)
-                new_b = b.replace(number,str(int(number)-1))
-                print_utf8(log_file, 'DEL: \t'+diff_list[counter][0]+' ['+diff_list[counter+2][1]+' -> ] '+diff_list[counter+tmp+3][0]+'\t'+new_b)
-                print_utf8(log_file, 'MATCH: \t'+diff_list[counter-1][0]+' ['+diff_list[counter+tmp][1]+' -> '+diff_list[counter][0]+'] '+diff_list[counter+tmp+1][0]+'\t'+b+' > '+id_a)
-                
-        
-        #other possibility    
-        elif diff_list[counter+1][1] == "<":
-            #calculate all possible ratios
-            r = []
-            max_tmp = calculate_ratio(diff_list[counter][0], diff_list[counter][2])
-            r.append(calculate_ratio(diff_list[counter+1][0], diff_list[counter][2]))
-            if diff_list[counter+2][1] == "<":
-                r.append(calculate_ratio(diff_list[counter+2][0], diff_list[counter][2]))
-                if diff_list[counter+3][1] == "<":
-                    r.append(calculate_ratio(diff_list[counter+3][0], diff_list[counter][2]))
-            max_value = max(r)
-            #if current one is the best: merge and create log
-            if max_value < max_tmp:
-                b = change_data(counter, 2, 'no')
-                make_log('MATCH',id_a,b,counter)
-                ##########################
-            else:
-                print_utf8(log_file, 'INS: \t'+diff_list[counter-1][0]+' [ -> '+diff_list[counter][0]+' ] '+diff_list[counter+1][0]+'\t'+id_a)
-                
-            if len(diff_list[counter-1]) == 3:
-                #first check the line with difference with line before
-                value_1 = calculate_ratio(diff_list[counter-1][0], diff_list[counter-1][2])
-                value_2 = calculate_ratio(diff_list[counter][0], diff_list[counter-1][2])
-                if value_1 < value_2:
-                    b = change_data(counter-1,2, 'no')
-                    print_utf8(log_file, 'MATCH: \t'+diff_list[counter-1][0]+' ['+diff_list[counter-1][2]+' -> '+diff_list[counter][0]+'] '+diff_list[counter+1][0]+'\t'+b+' > '+id_a)
-                
-        
-        elif len(diff_list[counter-1]) == 3:
-            value_1 = calculate_ratio(diff_list[counter-1][0], diff_list[counter-1][2])
-            value_2 = calculate_ratio(diff_list[counter][0], diff_list[counter-1][2])
-            if value_1 < value_2:
-                b = change_data(counter-1,2, 'no')
-                print_utf8(log_file, 'MATCH: \t'+diff_list[counter-1][0]+' ['+diff_list[counter-1][2]+' -> '+diff_list[counter][0]+'] '+diff_list[counter+1][0]+'\t'+b+' > '+id_a)
-
-#case "<"                    
-def insert(counter):
-    #line before has 3 entries
-    if len(diff_list[counter-1]) == 3:
-        #calculate ratios
-        r_a = calculate_ratio(diff_list[counter-1][0], diff_list[counter-1][2])
-        r1 = calculate_ratio(diff_list[counter][0], diff_list[counter-1][2])
-        if diff_list[counter+1][1] == "<":
-            r2 = calculate_ratio(diff_list[counter+1][0], diff_list[counter-1][2])
-        else:
-            r2 = 0.0
-        if diff_list[counter+2][1] == "<":
-            r3 = calculate_ratio(diff_list[counter+2][0], diff_list[counter-1][2])
-        else:
-            r3 = 0.0
-        
-        #ratio of first word in line is best    
-        if r1 > r_a and r1 > r2 and r1 > r3:
-            b = change_data(counter-1, 2, 'no')
-            print_utf8(log_file, 'MATCH: \t'+diff_list[counter-1][0]+' ['+diff_list[counter-1][2]+' -> '+diff_list[counter][0]+'] '+diff_list[counter+1][0]+'\t'+b+' > '+id_a)
-        else:
-            make_log('INS',id_a,0,counter)
-            
-    
-    #Word1 | Word2
-    #Word3 <
-    #Word4 <  
-    elif diff_list[counter-1][1] == "<" and len(diff_list[counter-2]) == 3:
-        r_a = calculate_ratio(diff_list[counter-2][0], diff_list[counter-2][2])
-        r1 = calculate_ratio(diff_list[counter-1][0], diff_list[counter-2][2])
-        r2 = calculate_ratio(diff_list[counter][0], diff_list[counter-2][2])
-        if diff_list[counter+1][1] == "<":
-            r3 = calculate_ratio(diff_list[counter+1][0], diff_list[counter-2][2])
-        else:
-            r3 = 0.0
-        #ratio of Word4 and Word2 is best
-        if r2 > r_a and r2 > r1 and r2 > r3:
-            b = change_data(counter-2, 2, 'no')
-            print_utf8(log_file, 'MATCH: \t'+diff_list[counter-1][0]+' ['+diff_list[counter-2][2]+' -> '+diff_list[counter][0]+'] '+diff_list[counter+1][0]+'\t'+b+' > '+id_a)
-        else:
-            make_log('INS',id_a,0,counter)
-    
-    #Word1 | Word2
-    #Word3 <
-    #Word4 <
-    #Word5 <
-    elif diff_list[counter-1][1] == "<" and diff_list[counter-2][1] == "<" and len(diff_list[counter-3]) == 3:
-        r_a = calculate_ratio(diff_list[counter-3][0], diff_list[counter-3][2])
-        r1 = calculate_ratio(diff_list[counter-1][0], diff_list[counter-3][2])
-        r2 = calculate_ratio(diff_list[counter-2][0], diff_list[counter-3][2])
-        r3 = calculate_ratio(diff_list[counter][0], diff_list[counter-3][2])
-        #ratio of Word5 and Word2 is best
-        if r3 > r_a and r3 > r1 and r3 > r2:
-            b = change_data(counter-3, 2, 'no')
-            print_utf8(log_file, 'MATCH: \t'+diff_list[counter-1][0]+' ['+diff_list[counter-3][2]+' -> '+diff_list[counter][0]+'] '+diff_list[counter+1][0]+'\t'+b+' > '+id_a)
-        else:
-            make_log('INS',id_a,0,counter)
-    
-    else:
-        if counter == 0:
-            print_utf8(log_file, 'INS: \t [ -> '+diff_list[counter][0]+' ] '+diff_list[counter+1][0]+'\t'+id_a)
-        elif counter < (len(diff_list)-1):
-            make_log('INS',id_a,0,counter)
-        else:
-            print_utf8(log_file, 'INS: \t'+diff_list[counter-1][0]+' [ -> '+diff_list[counter][0]+' ] \t'+id_a)
-                        
-#function for process of one line in list of first file
-def treat_of_mod(c,id_a):
-    counter = c+1
-    #case: Only connect if two asciis are similar
-    #now this way, because of case-sensitive
-    if diff_list[counter][0] != ">" and diff_list[counter][1] != "<" and len(diff_list[counter]) == 2:
-    #if diff_list[counter][0] == diff_list[counter][1]:
-        b = change_data(counter, 1, 'no')
-        
-    #case: Only in 2nd file
-    elif diff_list[counter][0] == ">":
-        delete(counter)
-        counter = treat_of_mod(counter,id_a)
-    
-    #case: difference in line       
-    elif len(diff_list[counter]) == 3:
-        difference(counter)
-    
-    #case: Only in first file
-    elif diff_list[counter][1] == "<":
-        insert(counter)
-       
-    return counter
-
-#run through every mod in first file
-for mod_a in file_a.iter("mod"):
-    id_a = mod_a.get("id")
-    #treatment for every mod
-    counter = treat_of_mod(counter,id_a)
-    
-
-print_utf8(log_file, '\nmerge completed')
-log_file.close()
-print (etree.tostring(root_a, encoding="utf-8", xml_declaration=True))
+    if not args.dry_run:
+        document = etree.tostring(fileB,
+                                  encoding="utf-8",
+                                  xml_declaration=True,
+                                  pretty_print=True)
+        print(document.decode("utf-8"))
