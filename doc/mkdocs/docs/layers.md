@@ -75,14 +75,6 @@ are *not required* to use morphological attributes in your tags --- it is
 perfectly fine to use tagsets with only plain POS tags; the "Morphology" column
 can be [conveniently hidden](doc-customize.md) in this case.
 
-!!! attention "Attention"
-    For historical reasons, each document is **required to have at least one
-    part-of-speech tagset associated with it.** The web interface will currently
-    not function correctly without one.  This requirement will likely be removed
-    in future versions --- meanwhile, if you'd like to annotate a text without
-    a POS tagset, the recommended workaround is to assign a "dummy tagset" and
-    hide the POS-related columns in the editor settings.
-
 ### Lemmatization
 
 Lemma annotation is an open annotation layer represented by a text box.

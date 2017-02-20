@@ -239,7 +239,7 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         $this->assertEquals(
             array("lastEditedRow" => -1,
                   "data" => array_merge($this->expected["texts"]["t1_reduced"],
-                                        array("tagset_id" => "1",
+                                        array(
 					      "taggers" => array(),
 					      "tagsets" => array(
 						 $this->expected["tagsets"]["ts1"],
@@ -261,7 +261,7 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         $this->assertEquals(
             array("lastEditedRow" => 1,
                   "data" => array_merge($this->expected["texts"]["t2_reduced"],
-                                        array("tagset_id" => "1",
+                                        array(
 					      "taggers" => array(),
 					      "tagsets" => array(
 						 $this->expected["tagsets"]["ts1"]

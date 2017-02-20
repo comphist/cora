@@ -757,10 +757,9 @@ class DBInterface {
             return array('success' => false, 'errors' => array("lock failed"));
         }
         $qs = "SELECT text.id, text.sigle, text.fullname, text.project_id, ";
-        $qs.= "       text.currentmod_id, text.header, tagset.id AS 'tagset_id' ";
-        $qs.= "  FROM (text, text2tagset ttt) ";
-        $qs.= "  LEFT JOIN tagset ON ttt.tagset_id=tagset.id ";
-        $qs.= " WHERE text.id=:tid AND LOWER(tagset.class)='pos' AND ttt.text_id=:tid";
+        $qs.= "       text.currentmod_id, text.header ";
+        $qs.= "  FROM text ";
+        $qs.= " WHERE text.id=:tid";
         $stmt = $this->dbo->prepare($qs);
         $stmt->execute(array(':tid' => $fileid));
         $metadata = $stmt->fetch(PDO::FETCH_ASSOC);
