@@ -79,7 +79,7 @@ class CoraXMLValidator(object):
             self.tree = etree.parse(fstream)
             self.root = self.tree.getroot()
         except etree.ParseError as err:
-            self._error(str(err))
+            self._log(str(err))
 
     def _parse_range(self, range):
         if '..' in range:
