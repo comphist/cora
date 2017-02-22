@@ -1,6 +1,6 @@
 <?php 
 /*
- * Copyright (C) 2015 Marcel Bollmann <bollmann@linguistics.rub.de>
+ * Copyright (C) 2015-2017 Marcel Bollmann <bollmann@linguistics.rub.de>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -23,12 +23,6 @@
 require_once"data/test_data.php";
 require_once"mocks/LocaleHandler_mock.php";
 require_once"{$GLOBALS['CORA_WEB_DIR']}/lib/xmlHandler.php";
-
-/**
- *
- * TODO
- *          export($fileid, $format)
- */
 
 /** A mock DBInterface to trick the XMLHandler with
  */
@@ -95,6 +89,18 @@ class Cora_Tests_XMLHandler_test extends PHPUnit_Framework_TestCase {
         $this->test_data = get_XMLHandler_expected();
         $this->dbi = new Cora_Tests_DBInterface_Mock();
         $this->xh = new XMLHandler($this->dbi, new MockLocaleHandler());
+
+        $options = array('sigle' => 't1', 'name' => 'testdocument');
+        $test_doc_data = get_CoraDocument_data();
+        $this->cd = new CoraDocument($options, new MockLocaleHandler());
+        $this->cd->setLayoutInfo($test_doc_data["pages"],
+                                 $test_doc_data["columns"],
+                                 $test_doc_data["lines"]);
+        $this->cd->setTokens($test_doc_data["tokens"],
+                             $test_doc_data["dipls"],
+                             $test_doc_data["mods"]);
+        $this->cd->setShiftTags($test_doc_data["shifttags"]);
+        $this->cd->setComments($test_doc_data["comments"]);
     }
 
     public function testImport() {
@@ -136,26 +142,12 @@ class Cora_Tests_XMLHandler_test extends PHPUnit_Framework_TestCase {
             $this->dbi->document->getHeader());
     }
 
-    public function testExportNonexistent() {
-        try{
-            // exporting a nonexistent file must throw
-	    // MB: not even implemented yet, leaving lines in for
-	    // future implementation
-	    // $this->xh->export("512", "cora");
-        } catch (Exception $e) {
-            return;
-        }
-	return;
-        // $this->fail("Exporting nonexistent file didn't throw exception!");
-    }
-
     public function testExport() {
-        // not yet implemented
-        return;
-        $result_filename = "";
-        $this->xh->export("1", "cora");
-        $this->assertFileEquals("data/cora-importtest.xml",
-                                $result_filename);
+        $dom = $this->xh->serializeDocument($this->cd);
+        $this->assertNotEmpty($dom);
+        $xml = $dom->saveXML();
+        $this->assertXmlStringEqualsXmlFile('data/XMLHandler_test_expected.xml',
+                                            $xml);
     }
 }
 ?>

@@ -1,0 +1,71 @@
+<text id="t1">
+  <cora-header name="testdocument" sigle="t1"/>
+  <header/>
+  <layoutinfo>
+    <page id="p1" no="42" range="c1" side="v"/>
+    <column id="c1" name="a" range="l1..l2"/>
+    <line id="l1" name="01" range="t1_d1..t2_d1"/>
+    <line id="l2" name="02" range="t2_d2..t3_d1"/>
+  </layoutinfo>
+  <shifttags>
+    <Ü range="t3..t3"/>
+  </shifttags>
+  <token id="t1" trans="$ol|tu">
+    <dipl id="t1_d1" trans="$ol|tu" utf=""/>
+    <mod ascii="" checked="y" id="t1_m1" trans="$ol" utf="">
+      <norm tag="sollst"/>
+      <suggestions>
+        <pos score="0.91" source="user" tag="VVFIN.2.Sg.Pres.Ind"/>
+        <lemma source="user" tag="sollen"/>
+      </suggestions>
+    </mod>
+    <mod ascii="" checked="n" id="t1_m2" trans="tu" utf="">
+      <norm tag="du"/>
+      <comment tag="Interessantes Phänomen hier"/>
+      <suggestions>
+        <pos score="0.91" source="user" tag="PPER.2.Sg.*.Nom"/>
+        <lemma source="user" tag="du"/>
+      </suggestions>
+      <cora-flag name="inflection"/>
+    </mod>
+  </token>
+  <token id="t2" trans="ge#e$$en">
+    <dipl id="t2_d1" trans="ge#" utf=""/>
+    <dipl id="t2_d2" trans="e$$en" utf=""/>
+    <mod ascii="" checked="n" id="t2_m1" trans="ge#e$$en" utf="">
+      <norm tag="gegessen"/>
+      <suggestions>
+        <pos score="0.91" source="user" tag="VVPP"/>
+        <lemma source="user" tag="essen"/>
+      </suggestions>
+    </mod>
+  </token>
+  <comment type="K">yay foo bar whoo</comment>
+  <token id="t3" trans="Anshelm/(.)">
+    <dipl id="t3_d1" trans="Anshelm/" utf=""/>
+    <mod ascii="" checked="n" id="t3_m1" trans="Anshelm" utf="">
+      <norm tag="Anselm"/>
+      <suggestions>
+        <pos score="0.91" source="user" tag="NE.Masc.Nom.Sg"/>
+        <lemma source="user" tag="Anselm"/>
+      </suggestions>
+    </mod>
+    <mod ascii="" checked="n" id="t3_m2" trans="/" utf="">
+      <norm tag="/"/>
+      <suggestions>
+        <pos score="0.91" source="user" tag="$_"/>
+        <lemma source="user" tag="/"/>
+      </suggestions>
+      <cora-flag name="general error"/>
+    </mod>
+    <mod ascii="" checked="n" id="t3_m3" trans="(.)" utf="">
+      <norm tag="."/>
+      <suggestions>
+        <pos score="0.91" source="user" tag="$."/>
+        <lemma source="user" tag="."/>
+      </suggestions>
+      <cora-flag name="general error"/>
+      <cora-flag name="inflection"/>
+    </mod>
+  </token>
+</text>

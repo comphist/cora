@@ -614,6 +614,8 @@ function get_XMLHandler_initial() {
  * it's also used for CoraDocument Mock objects,
  * e.g. in DBInterface tests.
  *
+ * 02/0217: Also as an example document to serialize for XMLHandler tests --MB
+ *
  */
 function get_CoraDocument_data() {
     return array(
@@ -631,7 +633,8 @@ function get_CoraDocument_data() {
                                "side" => 'v',
                                'range' => array('c1', 'c1'),
                                'name' => '42',
-                               'num' => '1'
+                               'num' => '1',
+                               "db_id" => '3'
                            )
                     ),
         "columns" => array( // column
@@ -639,7 +642,8 @@ function get_CoraDocument_data() {
                               'range' => array('l1', 'l2'),
                               'name' => 'a',
                               'num' => '1',
-                              'parent_db_id' => '3'
+                              'parent_db_id' => '3',
+                              'db_id' => '4'
                         )
                     ),
         "lines" => array( // lines
@@ -647,50 +651,59 @@ function get_CoraDocument_data() {
                               'name' => '01',
                               'num' => '1',
                               'parent_db_id' => '4',
-                              'range' => array('t1_d1', 't2_d2')),
+                              'range' => array('t1_d1', 't2_d2'),
+                              'db_id' => '8'
+                        ),
                         array('xml_id' => 'l2', // 9
                               'name' => '02',
                               'num' => '2',
                               'parent_db_id' => '4',
-                              'range' => array('t3_d1', 't3_d1'))
+                              'range' => array('t3_d1', 't3_d1'),
+                              'db_id' => '9'
+                        )
                     ),
         "tokens" => array( // tokens
-                        array("db_id" => "",
-                              "xml_id" => "t1",
+                        // first token is always an empty dummy token!
+                        array("db_id" => "1",
+                              "xml_id" => '',
                               'ordnr' => 1,
-                              'trans' => '$ol|tu'),
-                        array("db_id" => "",
-                              "xml_id" => "t2",
+                              'trans' => ''),
+                        array("db_id" => "7",
+                              "xml_id" => "t1",
                               'ordnr' => 2,
-                              'trans' => 'ge#e$$en'),
-                        array("db_id" => "",
-                              "xml_id" => "t3",
+                              'trans' => '$ol|tu'),
+                        array("db_id" => "8",
+                              "xml_id" => "t2",
                               'ordnr' => 3,
+                              'trans' => 'ge#e$$en'),
+                        array("db_id" => "9",
+                              "xml_id" => "t3",
+                              'ordnr' => 4,
                               'trans' => "Anshelm/(.)")
                     ),
         "dipls" => array( // dipl
-                        array("db_id" => "",
+                        array("db_id" => "10",
                               "xml_id" => "t1_d1",
                               "parent_tok_xml_id" => "t1",
                               'parent_tok_db_id' => '7',
                               'parent_line_db_id' => '8',
                               'utf' => '',
                               'trans' => "\$ol|tu"),
-                        array("db_id" => "",
+                        array("db_id" => "11",
                               "xml_id" => "t2_d1",
                               "parent_tok_xml_id" => "t2",
                               'parent_tok_db_id' => '8',
                               'parent_line_db_id' => '8',
                               'utf' => '',
                               'trans' => "ge#"),
-                        array("db_id" => "",
+                        array("db_id" => "12",
                               "xml_id" => "t2_d2",
                               "parent_tok_xml_id" => "t2",
                               'parent_tok_db_id' => '8',
                               'parent_line_db_id' => '9',
                               'utf' => '',
                               'trans' => 'e$$en'),
-                        array("db_id" => "",
+                        array("db_id" => "13",
                               "xml_id" => "t3_d1",
                               "parent_tok_xml_id" => "t3",
                               'parent_tok_db_id' => '9',
@@ -705,14 +718,14 @@ function get_CoraDocument_data() {
                               'tags' => array(
                                   array(
                                       'type' => 'pos',
-                                      'tag' => 'ADJA.Comp.Fem.Dat.Sg',
+                                      'tag' => 'VVFIN.2.Sg.Pres.Ind',
                                       'score' => '0.91',
                                       'source' => 'user',
                                       'selected' => '0'
                                   ),
                                   array(
                                       'type' => 'norm',
-                                      'tag' => 'soll',
+                                      'tag' => 'sollst',
                                       'score' => '1.0',
                                       'source' => 'user',
                                       'selected' => '1',
@@ -727,6 +740,8 @@ function get_CoraDocument_data() {
                               ),
                               'flags' => array(),
                               'parent_db_id' => '7',
+                              'parent_tok_db_id' => '7',
+                              'verified' => true,
                               'ascii' => '', // XXX
                               'utf' => '', // XXX
                               'trans' => '$ol'),
@@ -736,28 +751,37 @@ function get_CoraDocument_data() {
                               'tags' => array(
                                   array(
                                       'type' => 'pos',
-                                      'tag' => 'ADJA.Comp.Fem.Dat.Sg',
+                                      'tag' => 'PPER.2.Sg.*.Nom',
                                       'score' => '0.91',
                                       'source' => 'user',
                                       'selected' => '0'
                                   ),
                                   array(
                                       'type' => 'norm',
-                                      'tag' => 'soll',
+                                      'tag' => 'du',
                                       'score' => '1.0',
                                       'source' => 'user',
                                       'selected' => '1',
                                   ),
                                   array(
                                       'type' => 'lemma',
-                                      'tag' => 'sollen',
+                                      'tag' => 'du',
                                       'score' => null,
                                       'source' => 'user',
                                       'selected' => '0'
+                                  ),
+                                  array(
+                                      'type' => 'comment',
+                                      'tag' => 'Interessantes Phänomen hier',
+                                      'score' => null,
+                                      'source' => 'user',
+                                      'selected' => '1'
                                   )
                               ),
                               'flags' => array("inflection"),
                               'parent_db_id' => '7',
+                              'parent_tok_db_id' => '7',
+                              'verified' => false,
                               'ascii' => '', // XXX
                               'utf' => '', // XXX
                               'trans' => 'tu'),
@@ -767,21 +791,21 @@ function get_CoraDocument_data() {
                               'tags' => array(
                                   array(
                                       'type' => 'pos',
-                                      'tag' => 'ADJA.Comp.Fem.Dat.Sg',
+                                      'tag' => 'VVPP',
                                       'score' => '0.91',
                                       'source' => 'user',
                                       'selected' => '0'
                                   ),
                                   array(
                                       'type' => 'norm',
-                                      'tag' => 'soll',
+                                      'tag' => 'gegessen',
                                       'score' => '1.0',
                                       'source' => 'user',
                                       'selected' => '1',
                                   ),
                                   array(
                                       'type' => 'lemma',
-                                      'tag' => 'sollen',
+                                      'tag' => 'essen',
                                       'score' => null,
                                       'source' => 'user',
                                       'selected' => '0'
@@ -789,6 +813,8 @@ function get_CoraDocument_data() {
                               ),
                               'flags' => array(),
                               'parent_db_id' => '8',
+                              'parent_tok_db_id' => '8',
+                              'verified' => false,
                               'ascii' => '', // XXX
                               'utf' => '', // XXX
                               'trans' => 'ge#e$$en'),
@@ -798,21 +824,21 @@ function get_CoraDocument_data() {
                               'tags' => array(
                                   array(
                                       'type' => 'pos',
-                                      'tag' => 'ADJA.Comp.Fem.Dat.Sg',
+                                      'tag' => 'NE.Masc.Nom.Sg',
                                       'score' => '0.91',
                                       'source' => 'user',
                                       'selected' => '0'
                                   ),
                                   array(
                                       'type' => 'norm',
-                                      'tag' => 'soll',
+                                      'tag' => 'Anselm',
                                       'score' => '1.0',
                                       'source' => 'user',
                                       'selected' => '1',
                                   ),
                                   array(
                                       'type' => 'lemma',
-                                      'tag' => 'sollen',
+                                      'tag' => 'Anselm',
                                       'score' => null,
                                       'source' => 'user',
                                       'selected' => '0'
@@ -820,6 +846,8 @@ function get_CoraDocument_data() {
                               ),
                               'flags' => array(),
                               'parent_db_id' => '9',
+                              'parent_tok_db_id' => '9',
+                              'verified' => false,
                               'ascii' => '', // XXX
                               'utf' => '', // XXX
                               'trans' => 'Anshelm'),
@@ -829,21 +857,21 @@ function get_CoraDocument_data() {
                               'tags' => array(
                                   array(
                                       'type' => 'pos',
-                                      'tag' => 'ADJA.Comp.Fem.Dat.Sg',
+                                      'tag' => '$_',
                                       'score' => '0.91',
                                       'source' => 'user',
                                       'selected' => '0'
                                   ),
                                   array(
                                       'type' => 'norm',
-                                      'tag' => 'soll',
+                                      'tag' => '/',
                                       'score' => '1.0',
                                       'source' => 'user',
                                       'selected' => '1',
                                   ),
                                   array(
                                       'type' => 'lemma',
-                                      'tag' => 'sollen',
+                                      'tag' => '/',
                                       'score' => null,
                                       'source' => 'user',
                                       'selected' => '0'
@@ -851,6 +879,8 @@ function get_CoraDocument_data() {
                               ),
                               'flags' => array("general error"),
                               'parent_db_id' => '9',
+                              'parent_tok_db_id' => '9',
+                              'verified' => false,
                               'ascii' => '', // XXX
                               'utf' => '', // XXX
                               'trans' => '/'),
@@ -860,21 +890,21 @@ function get_CoraDocument_data() {
                               'tags' => array(
                                   array(
                                       'type' => 'pos',
-                                      'tag' => 'ADJA.Comp.Fem.Dat.Sg',
+                                      'tag' => '$.',
                                       'score' => '0.91',
                                       'source' => 'user',
                                       'selected' => '0'
                                   ),
                                   array(
                                       'type' => 'norm',
-                                      'tag' => 'soll',
+                                      'tag' => '.',
                                       'score' => '1.0',
                                       'source' => 'user',
                                       'selected' => '1',
                                   ),
                                   array(
                                       'type' => 'lemma',
-                                      'tag' => 'sollen',
+                                      'tag' => '.',
                                       'score' => null,
                                       'source' => 'user',
                                       'selected' => '0'
@@ -882,6 +912,8 @@ function get_CoraDocument_data() {
                               ),
                               'flags' => array("general error", "inflection"),
                               'parent_db_id' => '9',
+                              'parent_tok_db_id' => '9',
+                              'verified' => false,
                               'ascii' => '', // XXX
                               'utf' => '', // XXX
                               'trans' => '(.)')

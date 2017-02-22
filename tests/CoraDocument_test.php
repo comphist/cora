@@ -42,7 +42,8 @@ class Cora_Tests_CoraDocument_test extends PHPUnit_Framework_TestCase {
         $this->cd->setLayoutInfo($this->test_data["pages"],
                                  $this->test_data["columns"],
                                  $this->test_data["lines"]);
-        $this->cd->setTokens($this->test_data["tokens"],
+        // array_slice(..., 1) is to ignore the dummy token
+        $this->cd->setTokens(array_slice($this->test_data["tokens"], 1),
                              $this->test_data["dipls"],
                              $this->test_data["mods"]);
         $this->cd->setShiftTags($this->test_data["shifttags"]);
@@ -192,7 +193,7 @@ class Cora_Tests_CoraDocument_test extends PHPUnit_Framework_TestCase {
         array_unshift($this->test_data["dipls"], array(
             "xml_id" => "t1_d0"
         ));
-        $this->cd->setTokens($this->test_data["tokens"],
+        $this->cd->setTokens(array_slice($this->test_data["tokens"], 1),
                              $this->test_data["dipls"],
                              $this->test_data["mods"]);
         $this->assertThrowsDVException();
@@ -233,7 +234,7 @@ class Cora_Tests_CoraDocument_test extends PHPUnit_Framework_TestCase {
         array_push($this->test_data["dipls"], array(
             "xml_id" => "t4_d1"
         ));
-        $this->cd->setTokens($this->test_data["tokens"],
+        $this->cd->setTokens(array_slice($this->test_data["tokens"], 1),
                              $this->test_data["dipls"],
                              $this->test_data["mods"]);
         $this->assertThrowsDVException();

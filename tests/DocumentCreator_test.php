@@ -63,7 +63,11 @@ class Cora_Tests_DocumentCreator_test extends Cora_Tests_DbTestCase {
     if (!$this->obj->importDocument($data, 3)) {
       $this->fail(implode("\n", $this->obj->getWarnings()));
     }
-    $this->assertEmpty($this->obj->getWarnings());
+    $warnings_expected = array(
+        "Skipping unknown annotation class 'comment' for mod 16.",
+        'Skipping illegal pos tag \'$_\'.'
+    );
+    $this->assertEquals($warnings_expected, $this->obj->getWarnings());
 
     $this->assertTablesEqual($expected->getTable("inserted_text"),
       $this->getConnection()->createQueryTable("inserted_text",

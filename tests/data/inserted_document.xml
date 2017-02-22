@@ -108,20 +108,26 @@
         <row>
             <value>7</value>
             <value>6</value>
-            <value>$ol|tu</value>
+            <value></value>
             <value>1</value>
         </row>
         <row>
             <value>8</value>
             <value>6</value>
-            <value>ge#e$$en</value>
+            <value>$ol|tu</value>
             <value>2</value>
         </row>
         <row>
             <value>9</value>
             <value>6</value>
-            <value>Anshelm/(.)</value>
+            <value>ge#e$$en</value>
             <value>3</value>
+        </row>
+        <row>
+            <value>10</value>
+            <value>6</value>
+            <value>Anshelm/(.)</value>
+            <value>4</value>
         </row>
     </table>
     <table name="inserted_dipl">
@@ -220,7 +226,7 @@
             <value>0.91</value>
             <value>0</value>
             <value>user</value>
-            <value>9</value>
+            <value>494</value>
             <value>15</value>
         </row>
         <row>
@@ -244,7 +250,7 @@
             <value>0.91</value>
             <value>0</value>
             <value>user</value>
-            <value>9</value>
+            <value>279</value>
             <value>16</value>
         </row>
         <row>
@@ -268,7 +274,7 @@
             <value>0.91</value>
             <value>0</value>
             <value>user</value>
-            <value>9</value>
+            <value>508</value>
             <value>17</value>
         </row>
         <row>
@@ -292,7 +298,7 @@
             <value>0.91</value>
             <value>0</value>
             <value>user</value>
-            <value>9</value>
+            <value>157</value>
             <value>18</value>
         </row>
         <row>
@@ -313,14 +319,6 @@
         </row>
         <row>
             <value>26</value>
-            <value>0.91</value>
-            <value>0</value>
-            <value>user</value>
-            <value>9</value>
-            <value>19</value>
-        </row>
-        <row>
-            <value>27</value>
             <value>1</value>
             <value>1</value>
             <value>user</value>
@@ -328,7 +326,7 @@
             <value>19</value>
         </row>
         <row>
-            <value>28</value>
+            <value>27</value>
             <null/>
             <value>0</value>
             <value>user</value>
@@ -336,15 +334,15 @@
             <value>19</value>
         </row>
         <row>
-            <value>29</value>
+            <value>28</value>
             <value>0.91</value>
             <value>0</value>
             <value>user</value>
-            <value>9</value>
+            <value>2</value>
             <value>20</value>
         </row>
         <row>
-            <value>30</value>
+            <value>29</value>
             <value>1</value>
             <value>1</value>
             <value>user</value>
@@ -352,7 +350,7 @@
             <value>20</value>
         </row>
         <row>
-            <value>31</value>
+            <value>30</value>
             <null/>
             <value>0</value>
             <value>user</value>
@@ -379,37 +377,37 @@
         </row>
         <row>
             <value>515</value>
-            <value>soll</value>
+            <value>sollst</value>
             <value>0</value>
             <value>2</value>
         </row>
         <row>
             <value>517</value>
-            <value>soll</value>
+            <value>du</value>
             <value>0</value>
             <value>2</value>
         </row>
         <row>
             <value>519</value>
-            <value>soll</value>
+            <value>gegessen</value>
             <value>0</value>
             <value>2</value>
         </row>
         <row>
             <value>521</value>
-            <value>soll</value>
+            <value>Anselm</value>
             <value>0</value>
             <value>2</value>
         </row>
         <row>
             <value>523</value>
-            <value>soll</value>
+            <value>/</value>
             <value>0</value>
             <value>2</value>
         </row>
         <row>
             <value>525</value>
-            <value>soll</value>
+            <value>.</value>
             <value>0</value>
             <value>2</value>
         </row>
@@ -433,31 +431,31 @@
         </row>
         <row>
             <value>518</value>
-            <value>sollen</value>
+            <value>du</value>
             <value>0</value>
             <value>3</value>
         </row>
         <row>
             <value>520</value>
-            <value>sollen</value>
+            <value>essen</value>
             <value>0</value>
             <value>3</value>
         </row>
         <row>
             <value>522</value>
-            <value>sollen</value>
+            <value>Anselm</value>
             <value>0</value>
             <value>3</value>
         </row>
         <row>
             <value>524</value>
-            <value>sollen</value>
+            <value>/</value>
             <value>0</value>
             <value>3</value>
         </row>
         <row>
             <value>526</value>
-            <value>sollen</value>
+            <value>.</value>
             <value>0</value>
             <value>3</value>
         </row>
