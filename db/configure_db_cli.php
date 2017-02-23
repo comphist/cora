@@ -48,7 +48,9 @@ Checks/installs/migrates the CorA database.
       -u, --user           DB user (default: cora)
       -p, --password       DB password (default: trustthetext)
       -U, --root-user      DB root user (default: root)
-      -P, --root-password  DB root password (default: [empty])
+      -P, --root-password  DB root password (by default, will try
+                           an empty password and then prompt for
+                           password entry)
       -b, --mysql-bin      Path to MySQL client (default: mysql)
       -a, --action         Choose an action (see below)
 
@@ -139,6 +141,26 @@ function recheck_and_save() {
     }
 }
 
+function try_or_prompt(&$settings, &$status, &$installer, $function) {
+    try {
+        $function($settings, $status, $installer);
+    }
+    catch(InstallException $ex) {
+        $msg = $ex->getMessage();
+        if (empty($settings["DBROOT"]["PASSWORD"])
+            && strpos($msg, "MySQL command returned code") !== false
+            && strpos($msg, "Access denied") !== false) {
+            printf("\n*** Password required for connecting as MySQL user '%s'\n\n", $settings["DBROOT"]["USER"]);
+            $settings['DBROOT']['PASSWORD'] = prompt_silent(
+                'Enter password for MySQL user "' . $settings["DBROOT"]["USER"] . '": '
+            );
+            $function($settings, $status, $installer);
+        } else {
+            throw $ex;
+        }
+    }
+}
+
 $settings = get_settings_from_options($options);
 $installer = make_installer($settings);
 $status = get_database_status($installer);
@@ -153,9 +175,15 @@ if ($action == "install") {
         printf("!!!\n");
         exit(STATUS_FORCE_REQUIRED);
     }
+    echo_db_root();
     printf("*** Trying to perform a fresh install...");
     try {
-        $installer->installDB(__DIR__, $settings['DBROOT']);
+        try_or_prompt(
+            $settings, $status, $installer,
+            function(&$settings, &$status, &$installer) {
+                $installer->installDB(__DIR__, $settings['DBROOT']);
+            }
+        );
     }
     catch(Exception $ex) {
         printf("\n*** ERROR: An error occured:\n%s\n", $ex->getMessage());
@@ -173,9 +201,15 @@ if ($action == "upgrade" && $status['need_migration']) {
     foreach ($status['migration_path'] as $path_entry) {
         printf("      %s\n", $path_entry);
     }
+    echo_db_root();
     printf("*** Trying to perform database migration...");
     try {
-        $installer->applyMigrationPath($status['migration_path'], $settings['DBROOT']);
+        try_or_prompt(
+            $settings, $status, $installer,
+            function(&$settings, &$status, &$installer) {
+                $installer->applyMigrationPath($status['migration_path'], $settings['DBROOT']);
+            }
+        );
     }
     catch(Exception $ex) {
         printf("\n*** ERROR: An error occured:\n%s\n", $ex->getMessage());
