@@ -20,12 +20,6 @@ configure_file(gui.php.in "${CORA_WEB_DIR}/gui.php" @ONLY)
 configure_file(error.php.in "${CORA_WEB_DIR}/error.php" @ONLY)
 add_sources(CORA_PHP_SOURCES gui.php)
 
-# TODO: legacy functionality --- this file is referenced on the "help" tab, so
-# needs to be copied over, but this should be changed at some point
-file(MAKE_DIRECTORY "${CORA_WEB_DIR}/doc")
-file(COPY "${CMAKE_SOURCE_DIR}/doc/cora-guide.pdf"
-     DESTINATION "${CORA_WEB_DIR}/doc")
-
 #########################################################
 ## Configuration files
 #########################################################
