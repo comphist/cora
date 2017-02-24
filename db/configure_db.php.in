@@ -33,35 +33,35 @@ $installer = make_installer($settings);
 $status = get_database_status($installer);
 
 function echo_errors($errors, $caption=null) {
-  global $errors_occured;
-  $errors_occured = true;
-  echo '<div class="error">';
-  if ($caption) {
-    echo "<strong>$caption</strong> ";
-  }
-  echo implode("<br/>", $errors);
-  echo '</div>';
+    global $errors_occured;
+    $errors_occured = true;
+    echo '<div class="error">';
+    if ($caption) {
+        echo "<strong>$caption</strong> ";
+    }
+    echo implode("<br/>", $errors);
+    echo '</div>';
 }
 
 function recheck_and_save() {
-  global $errors_occured;
-  global $installer;
-  global $settings;
-  global $status;
-  $installer->setDBInfo($settings['DBINFO']);
-  $status = get_database_status($installer);
-  if (!$errors_occured) {
-    try {
-      Cfg::set('dbinfo', $settings['DBINFO']);
-      Cfg::save_user_opts();
-    } catch (Exception $ex) {
-      echo_errors(
-        array("ATTENTION -- Database settings could not be saved:",
-              $ex->getMessage(),
-              "You might need to create and/or edit your config.php manually.")
-      );
+    global $errors_occured;
+    global $installer;
+    global $settings;
+    global $status;
+    $installer->setDBInfo($settings['DBINFO']);
+    $status = get_database_status($installer);
+    if (!$errors_occured) {
+        try {
+            Cfg::set('dbinfo', $settings['DBINFO']);
+            Cfg::save_user_opts();
+        } catch (Exception $ex) {
+            echo_errors(
+                array("ATTENTION -- Database settings could not be saved:",
+                      $ex->getMessage(),
+                      "You might need to create and/or edit your config.php manually.")
+            );
+        }
     }
-  }
 }
 
 // render page
@@ -106,49 +106,49 @@ function recheck_and_save() {
         <div class="panel">
 <?php
 if (isset($_POST['action_exec_install'])) {
-  if ($status['can_connect'] && !$force_reinstall) {
-    echo_errors(
-      array('You selected "Perform fresh database installation", '
-            . "but a CorA database already exists.",
-            "To perform a fresh installation anyway, please confirm "
-            . "by clicking the button again.  Keep in mind that doing so will "
-            . "<strong>DELETE ALL EXISTING DATA</strong> "
-            . "in the CorA database."),
-      "ATTENTION!"
-    );
-    $enable_force_reinstall = true;
-  } else {
-    if (empty($settings["DBINFO"]["PASSWORD"])) {
-        $settings["DBINFO"]["PASSWORD"] = random_str(20);
-        $installer->setDBInfo($settings["DBINFO"]);
+    if ($status['can_connect'] && !$force_reinstall) {
+        echo_errors(
+            array('You selected "Perform fresh database installation", '
+                  . "but a CorA database already exists.",
+                  "To perform a fresh installation anyway, please confirm "
+                  . "by clicking the button again.  Keep in mind that doing so will "
+                  . "<strong>DELETE ALL EXISTING DATA</strong> "
+                  . "in the CorA database."),
+            "ATTENTION!"
+        );
+        $enable_force_reinstall = true;
+    } else {
+        if (empty($settings["DBINFO"]["PASSWORD"])) {
+            $settings["DBINFO"]["PASSWORD"] = random_str(20);
+            $installer->setDBInfo($settings["DBINFO"]);
+        }
+        try {
+            $installer->installDB(__DIR__, $settings['DBROOT']);
+            recheck_and_save();
+        }
+        catch (Exception $ex) {
+            echo_errors(array("An error occured:", $ex->getMessage()), "ERROR:");
+        }
     }
-    try {
-      $installer->installDB(__DIR__, $settings['DBROOT']);
-      recheck_and_save();
-    }
-    catch (Exception $ex) {
-      echo_errors(array("An error occured:", $ex->getMessage()), "ERROR:");
-    }
-  }
 }
 
 if (isset($_POST['action_exec_upgrade']) && $status['need_migration']) {
-  if (empty($status['migration_path'])) {
-    echo_errors(
-      array("No automatic migration path found!",
-            "The database schema needs an update, but I don't know how to do it. "
-            . "Are you downgrading from a newer version of CorA?  In this case, "
-            . "the database migration cannot be done automatically yet."
-      ),
-      "ERROR:");
-  } else {
-    try {
-      $installer->applyMigrationPath($status['migration_path'],
-                                     $settings['DBROOT']);
-    } catch (Exception $ex) {
-      echo_errors(array("An error occured:", $ex->getMessage()), "ERROR:");
+    if (empty($status['migration_path'])) {
+        echo_errors(
+            array("No automatic migration path found!",
+                  "The database schema needs an update, but I don't know how to do it. "
+                  . "Are you downgrading from a newer version of CorA?  In this case, "
+                  . "the database migration cannot be done automatically yet."
+            ),
+            "ERROR:");
+    } else {
+        try {
+            $installer->applyMigrationPath($status['migration_path'],
+                                           $settings['DBROOT']);
+        } catch (Exception $ex) {
+            echo_errors(array("An error occured:", $ex->getMessage()), "ERROR:");
+        }
     }
-  }
 }
 ?>
 
@@ -259,16 +259,16 @@ endif;
                 <input type="submit" name="action_reset" value="Set these values and re-check" />
                 <input type="submit" name="action_exec_install" value="Perform fresh database installation" />
 <?php
-  if ($status['need_migration']):
+if ($status['need_migration']):
 ?>
                 <input type="submit" name="action_exec_upgrade" value="Perform database upgrade" />
 <?php
-  endif;
-  if ($enable_force_reinstall):
+endif;
+if ($enable_force_reinstall):
 ?>
                 <input type="hidden" name="action_force" value="1" />
 <?php
-  endif;
+endif;
 ?>
               </p>
             </form>
