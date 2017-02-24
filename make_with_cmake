@@ -10,11 +10,10 @@
 #     clean - Deletes the build directory before calling CMake; **but** keeps
 #             any existing `config.php` file so local settings do not get
 #             lost.
+#       zip - Creates a file "current_build.tar.gz" with the current build
 #
 # We also set the directory for external downloads to be outside of the build
 # directory, so external tools don't get re-downloaded for every clean build.
-
-set -o errexit
 
 DEBUGMODE=ON
 BUILDZIP=OFF
@@ -31,7 +30,8 @@ for var in "$@"; do
     if [ "$var" = "clean" ]; then
         if [ -d ./build ]; then
             if [ -f ./build/www/config.php ]; then
-                cp ./build/www/config.php /tmp/CORA_MAKE_WITH_CMAKE_config.php
+                CONFIGFILE=$(mktemp)
+                cp ./build/www/config.php "$CONFIGFILE"
             fi
             rm -rf ./build
         fi
@@ -50,21 +50,21 @@ fi
 
 cd build/
 cmake -DDEBUG_MODE=$DEBUGMODE -DWITH_EXPENSIVE_TESTS=NO -DEXTERNALS_DOWNLOAD_DIR=../cmake-downloads ../
-make
-make docs
+make && make docs
 
 if [ "$BUILDZIP" = "ON" ]; then
-    ZIPDIR=/tmp/CORA_MAKE_WITH_CMAKE/cora
-    mkdir -p "$ZIPDIR"
-    cp -r www "$ZIPDIR/www"
-    cp -r docs/user "$ZIPDIR/docs"
-    cp -r ../README* "$ZIPDIR"
-    tar czf current_build.tar.gz -C "$ZIPDIR/.." cora
+    ZIPDIR=$(mktemp -d)
+    mkdir "$ZIPDIR/cora"
+    cp -r www "$ZIPDIR/cora/www"
+    cp -r docs/user "$ZIPDIR/cora/docs"
+    cp -r ../README* "$ZIPDIR/cora"
+    tar czf current_build.tar.gz -C "$ZIPDIR" cora
     rm -rf "$ZIPDIR"
 fi
 
-if [ -f /tmp/CORA_MAKE_WITH_CMAKE_config.php ]; then
-    mv /tmp/CORA_MAKE_WITH_CMAKE_config.php www/config.php
+if [[ -n "$CONFIGFILE" && -f "$CONFIGFILE" ]]; then
+    mv "$CONFIGFILE" www/config.php
+    chmod 664 www/config.php
 fi
 
 if exists_in_path restorecon; then
