@@ -136,6 +136,7 @@ function recheck_and_save() {
     echo_status();
     if ($status_code == 0) {
         try {
+            Cfg::set('dbinfo', $settings['DBINFO']);
             Cfg::save_user_opts();
             printf("*** Saved database settings.\n");
         }

@@ -52,6 +52,7 @@ function recheck_and_save() {
   $status = get_database_status($installer);
   if (!$errors_occured) {
     try {
+      Cfg::set('dbinfo', $settings['DBINFO']);
       Cfg::save_user_opts();
     } catch (Exception $ex) {
       echo_errors(
