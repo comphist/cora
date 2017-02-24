@@ -28,5 +28,6 @@ set(LOCAL_PHP_SOURCES
 )
 
 configure_all_copyonly(${CORA_CURRENT_WEB_DIR} ${LOCAL_PHP_SOURCES})
-
 add_sources(CORA_PHP_SOURCES ${LOCAL_PHP_SOURCES})
+
+add_subdirectory(random_compat)
