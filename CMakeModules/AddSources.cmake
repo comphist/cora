@@ -1,5 +1,5 @@
 macro (add_sources _var)
-    file(RELATIVE_PATH _relPath "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
+    file(RELATIVE_PATH _relPath "${CMAKE_SOURCE_DIR}/src" "${CMAKE_CURRENT_SOURCE_DIR}")
     foreach(_src ${ARGN})
         if(_relPath)
             list (APPEND ${_var} "${_relPath}/${_src}")
