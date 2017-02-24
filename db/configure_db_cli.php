@@ -46,7 +46,7 @@ Checks/installs/migrates the CorA database.
       -o, --host           DB hostname (default: 127.0.0.1)
       -d, --database       DB name (default: cora)
       -u, --user           DB user (default: cora)
-      -p, --password       DB password (default: trustthetext)
+      -p, --password       DB password (prompts by default)
       -U, --root-user      DB root user (default: root)
       -P, --root-password  DB root password (by default, will try
                            an empty password and then prompt for
@@ -87,6 +87,7 @@ function echo_db_root() {
 }
 
 function echo_status() {
+    global $settings;
     global $status;
     global $status_code;
     if ($status['can_connect']) {
@@ -102,13 +103,17 @@ function echo_status() {
             $status_code = STATUS_MIGRATION_NEEDED;
         }
     } else {
-        echo_db_credentials();
-        printf("*** Could NOT connect to database.\n\n");
-        if ($status['pdo_exception']) {
-            printf($status['pdo_exception']);
-            printf("\n");
+        if (empty($settings["DBINFO"]["PASSWORD"])) {
+            printf("*** CorA is not installed or not properly configured (DB password empty).\n");
+        } else {
+            echo_db_credentials();
+            printf("*** Could NOT connect to database.\n\n");
+            if ($status['pdo_exception']) {
+                printf($status['pdo_exception']);
+                printf("\n");
+            }
+            $status_code = STATUS_CANNOT_CONNECT;
         }
-        $status_code = STATUS_CANNOT_CONNECT;
     }
 }
 
@@ -125,7 +130,7 @@ function recheck_and_save() {
     global $settings;
     global $status;
     global $status_code;
-    printf(" success.\n\n*** Rechecking database status...\n");
+    printf("*** Installation successful.\n*** Rechecking database status...\n");
     $installer->setDBInfo($settings['DBINFO']);
     $status = get_database_status($installer);
     echo_status();
@@ -136,7 +141,7 @@ function recheck_and_save() {
         }
         catch(Exception $ex) {
             printf("*** CAUTION: Database settings could not be saved:\n%s\n", $ex->getMessage());
-            printf("*** If you changed the defaults, you might need to edit your config.php manually.\n");
+            printf("*** You might need to create and/or edit your config.php manually.\n");
         }
     }
 }
@@ -150,7 +155,7 @@ function try_or_prompt(&$settings, &$status, &$installer, $function) {
         if (empty($settings["DBROOT"]["PASSWORD"])
             && strpos($msg, "MySQL command returned code") !== false
             && strpos($msg, "Access denied") !== false) {
-            printf("\n*** Password required for connecting as MySQL user '%s'\n\n", $settings["DBROOT"]["USER"]);
+            printf("*** Password required for connecting as MySQL user '%s'\n", $settings["DBROOT"]["USER"]);
             $settings['DBROOT']['PASSWORD'] = prompt_silent(
                 'Enter password for MySQL user "' . $settings["DBROOT"]["USER"] . '": '
             );
@@ -176,7 +181,19 @@ if ($action == "install") {
         exit(STATUS_FORCE_REQUIRED);
     }
     echo_db_root();
-    printf("*** Trying to perform a fresh install...");
+    printf("*** Trying to perform a fresh install...\n");
+    if (empty($settings["DBINFO"]["PASSWORD"])) {
+        $do_random = readline("Do you want to generate a random database password for CorA? (y/n) ");
+        if (strpos(strtolower($do_random), "y") === 0) {
+            $pw = random_str(20);
+        }
+        else {
+            $pw = readline("Please enter the desired database password: ");
+        }
+        $settings['DBINFO']['PASSWORD'] = $pw;
+        $installer->setDBInfo($settings['DBINFO']);
+        printf("\n");
+    }
     try {
         try_or_prompt(
             $settings, $status, $installer,
@@ -186,7 +203,7 @@ if ($action == "install") {
         );
     }
     catch(Exception $ex) {
-        printf("\n*** ERROR: An error occured:\n%s\n", $ex->getMessage());
+        printf("*** ERROR: An error occured:\n%s\n", $ex->getMessage());
         exit(STATUS_UNKNOWN_ERROR);
     }
     recheck_and_save();

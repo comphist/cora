@@ -48,7 +48,7 @@ return array(
     /** The username for database login. */
     "USER" => 'cora',
     /** The password for database login. */
-    "PASSWORD" => 'trustthetext',
+    "PASSWORD" => '',
     /** The name of the database. */
     "DBNAME" => 'cora'
   ),

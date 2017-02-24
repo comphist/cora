@@ -55,9 +55,9 @@ function recheck_and_save() {
       Cfg::save_user_opts();
     } catch (Exception $ex) {
       echo_errors(
-        array("Database settings could not be saved:",
+        array("ATTENTION -- Database settings could not be saved:",
               $ex->getMessage(),
-              "If you changed the defaults, you might need to edit your config.php manually.")
+              "You might need to create and/or edit your config.php manually.")
       );
     }
   }
@@ -117,6 +117,10 @@ if (isset($_POST['action_exec_install'])) {
     );
     $enable_force_reinstall = true;
   } else {
+    if (empty($settings["DBINFO"]["PASSWORD"])) {
+        $settings["DBINFO"]["PASSWORD"] = random_str(20);
+        $installer->setDBInfo($settings["DBINFO"]);
+    }
     try {
       $installer->installDB(__DIR__, $settings['DBROOT']);
       recheck_and_save();
@@ -238,7 +242,7 @@ endif;
               </p>
               <p>
                 <label for="db_password" class="ra">MySQL local password: </label>
-                <input type="text" name="db_password" id="db_password" value="<?= $settings['DBINFO']['PASSWORD'] ?>" />
+                <input type="text" name="db_password" id="db_password" value="<?= $settings['DBINFO']['PASSWORD'] ?>" placeholder="(generate randomly)" />
               </p>
               <p>
                 <label for="db_rootuser" class="ra">MySQL root user: </label>

@@ -25,10 +25,14 @@ require_once __DIR__ . "/../lib/cfg.php";
 require_once __DIR__ . "/../lib/install.php";
 require_once __DIR__ . "/../lib/localeHandler.php";
 
+if (version_compare(PHP_VERSION, "7.0.0", "<")) {
+    require_once __DIR__ . "/../lib/random_compat/random.php";
+}
+
 $migration_dir = __DIR__ . "/migration";
 $default_settings = array("DBINFO" => array("HOST" => "127.0.0.1",
                                             "USER" => "cora",
-                                            "PASSWORD" => "trustthetext",
+                                            "PASSWORD" => "",
                                             "DBNAME" => "cora"),
                           "DBROOT" => array("USER" => "root", "PASSWORD" => ""),
                           "MYSQL_BIN" => "mysql");
@@ -166,4 +170,24 @@ function prompt_silent($prompt = "Enter Password:") {
     return $password;
   }
 }
+
+/**
+ * Generate a random string, using a cryptographically secure
+ * pseudorandom number generator (random_int)
+ *
+ * For PHP 7, random_int is a PHP core function
+ * For PHP 5.x, depends on https://github.com/paragonie/random_compat
+ *
+ * Source: http://stackoverflow.com/a/31107425/5342927
+ */
+function random_str($length, $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+{
+    $str = '';
+    $max = mb_strlen($keyspace, '8bit') - 1;
+    for ($i = 0; $i < $length; ++$i) {
+        $str .= $keyspace[random_int(0, $max)];
+    }
+    return $str;
+}
+
 ?>

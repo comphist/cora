@@ -117,6 +117,26 @@ ExternalProject_Add(
 set_target_properties(NaturalDocs PROPERTIES EXCLUDE_FROM_ALL TRUE)
 set(NATURALDOCS_PL ${CMAKE_BINARY_DIR}/NaturalDocs-prefix/src/NaturalDocs/NaturalDocs)
 
+# for PHP5: random_compat library for password generation
+if (${PHP5_VERSION_MAJOR} EQUAL 5)
+  ExternalProject_Add(
+    random_compat
+    DOWNLOAD_DIR ${EXTERNALS_DOWNLOAD_DIR}
+    URL "https://github.com/paragonie/random_compat/archive/v2.0.4.tar.gz"
+    LOG_DOWNLOAD 1
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    BINARY_DIR "${CORA_WEB_DIR}/lib/random_compat"
+    )
+  set(RANDOM_COMPAT_DIR "${CORA_WEB_DIR}/lib/random_compat")
+  make_directory(${RANDOM_COMPAT_DIR})
+  file(GLOB_RECURSE RANDOM_COMPAT_FILES
+    "${CMAKE_BINARY_DIR}/random_compat-prefix/src/random_compat/lib/*"
+    )
+  file(COPY ${RANDOM_COMPAT_FILES} DESTINATION ${RANDOM_COMPAT_DIR})
+endif()
+
 #########################################################
 ## Files belonging in the web directory
 #########################################################
