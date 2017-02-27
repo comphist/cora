@@ -62,6 +62,7 @@ endif()
 # For API documentation
 find_package(Doxygen)
 find_package(Perl 5.8 COMPONENTS Runtime)
+find_package(NaturalDocs)
 
 # For user documentation
 find_package(mkdocs 0.14)
@@ -103,20 +104,6 @@ ExternalProject_Add(
 set_target_properties(YUICompressor PROPERTIES EXCLUDE_FROM_ALL TRUE)
 set(YUICOMP_JAR ${CMAKE_BINARY_DIR}/YUICompressor-prefix/src/YUICompressor/yuicompressor-2.4.8.jar)
 
-# NaturalDocs
-ExternalProject_Add(
-  NaturalDocs
-  DOWNLOAD_DIR ${EXTERNALS_DOWNLOAD_DIR}
-  URL "http://downloads.sourceforge.net/project/naturaldocs/Stable%20Releases/1.52/NaturalDocs-1.52.zip"
-  URL_MD5 68e3982acae57b6befdf9e75b420fd80
-  LOG_DOWNLOAD 1
-  CONFIGURE_COMMAND ""
-  BUILD_COMMAND ""
-  INSTALL_COMMAND ""
-)
-set_target_properties(NaturalDocs PROPERTIES EXCLUDE_FROM_ALL TRUE)
-set(NATURALDOCS_PL ${CMAKE_BINARY_DIR}/NaturalDocs-prefix/src/NaturalDocs/NaturalDocs)
-
 #########################################################
 ## Main source directory
 #########################################################
@@ -146,7 +133,7 @@ else()
   message(STATUS "SKIPPING generation of API documentation for PHP (Doxygen not found)")
 endif()
 
-if(PERL_FOUND)
+if(NATURALDOCS_FOUND)
   set(NATURALDOCS_FLAGS
     -i "${CMAKE_CURRENT_SOURCE_DIR}/src/gui/js"
     -xi "${CMAKE_CURRENT_SOURCE_DIR}/src/gui/js/mbox"
@@ -157,7 +144,7 @@ if(PERL_FOUND)
     list(APPEND NATURALDOCS_FLAGS --quiet)
   endif()
   add_custom_target(docs-js
-    ${PERL_EXECUTABLE} ${NATURALDOCS_PL} ${NATURALDOCS_FLAGS}
+    ${NATURALDOCS_EXECUTABLE} ${NATURALDOCS_FLAGS}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     DEPENDS NaturalDocs
     COMMENT "Generating API documentation (JavaScript)"
