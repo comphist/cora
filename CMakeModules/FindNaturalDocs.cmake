@@ -14,7 +14,7 @@ find_program(NATURALDOCS_EXECUTABLE naturaldocs)
 if(NOT NATURALDOCS_EXECUTABLE)
   include (ExternalProject)
 
-  message(STATUS "Couldn't find NaturalDocs, trying to download it automatically")
+  message(STATUS "Could NOT find NaturalDocs, but will try downloading it automatically")
   ExternalProject_Add(
     NaturalDocs
     DOWNLOAD_DIR ${EXTERNALS_DOWNLOAD_DIR}

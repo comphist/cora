@@ -146,7 +146,6 @@ if(NATURALDOCS_FOUND)
   add_custom_target(docs-js
     ${NATURALDOCS_EXECUTABLE} ${NATURALDOCS_FLAGS}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    DEPENDS NaturalDocs
     COMMENT "Generating API documentation (JavaScript)"
     )
   add_dependencies(docs docs-js)
