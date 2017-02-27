@@ -247,8 +247,10 @@ SQL;
     private function generateSQLforGrants_with($dbname, $dbuser, $dbpass, $thishost) {
         $test = Cfg::get('test_suffix');
         $sql = <<<SQL
-DROP USER IF EXISTS '{$dbuser}'@'{$thishost}';
-DROP USER IF EXISTS '{$dbuser}_{$test}'@'{$thishost}';
+GRANT USAGE ON *.* TO '{$dbuser}'@'{$thishost}' IDENTIFIED BY '{$dbpass}';
+DROP USER '{$dbuser}'@'{$thishost}';
+GRANT USAGE ON *.* TO '{$dbuser}_{$test}'@'{$thishost}' IDENTIFIED BY '{$dbpass}_{$test}';
+DROP USER '{$dbuser}_{$test}'@'{$thishost}';
 CREATE USER '{$dbuser}'@'{$thishost}' IDENTIFIED BY '{$dbpass}';
 CREATE USER '{$dbuser}_{$test}'@'{$thishost}' IDENTIFIED BY '{$dbpass}_{$test}';
 GRANT SELECT,DELETE,UPDATE,INSERT ON {$dbname}.* TO '{$dbuser}'@'{$thishost}' IDENTIFIED BY '{$dbpass}';
