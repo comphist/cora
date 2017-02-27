@@ -11,23 +11,33 @@
 
 find_program(NATURALDOCS_EXECUTABLE naturaldocs)
 
-if(NOT NATURALDOCS_EXECUTABLE)
-  include (ExternalProject)
+if(NATURALDOCS_EXECUTABLE)
+    execute_process(COMMAND ${NATURALDOCS_EXECUTABLE} --help
+      RESULT_VARIABLE res
+      OUTPUT_VARIABLE var
+      ERROR_VARIABLE var
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      ERROR_STRIP_TRAILING_WHITESPACE)
+    if(res)
+      if(${NaturalDocs_FIND_REQUIRED})
+        message(FATAL_ERROR "Error executing naturaldocs --help")
+      elseif(NOT NaturalDocs_FIND_QUIETLY)
+        message(WARNING "Warning, could not run naturaldocs --help")
+      endif()
+    else()
+      if(var MATCHES ".*Natural Docs, version [0-9]+\\.[0-9]+.*")
+        string(REGEX REPLACE ".*Natural Docs, version ([0-9]+\\.[0-9]+).*"
+               "\\1" NATURALDOCS_VERSION_STRING "${var}")
+      else()
+        if(NOT NaturalDocs_FIND_QUIETLY)
+          message(WARNING "regex not supported: {$var}.")
+        endif()
+      endif()
 
-  message(STATUS "Could NOT find NaturalDocs, but will try downloading it automatically")
-  ExternalProject_Add(
-    NaturalDocs
-    DOWNLOAD_DIR ${EXTERNALS_DOWNLOAD_DIR}
-    URL "http://downloads.sourceforge.net/project/naturaldocs/Stable%20Releases/1.52/NaturalDocs-1.52.zip"
-    URL_MD5 68e3982acae57b6befdf9e75b420fd80
-    LOG_DOWNLOAD 1
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND chmod a+x "${CMAKE_BINARY_DIR}/NaturalDocs-prefix/src/NaturalDocs/NaturalDocs"
-    )
-  set_target_properties(NaturalDocs PROPERTIES EXCLUDE_FROM_ALL TRUE)
-  set(NATURALDOCS_PL ${CMAKE_BINARY_DIR}/NaturalDocs-prefix/src/NaturalDocs/NaturalDocs)
-  set(NATURALDOCS_EXECUTABLE "${NATURALDOCS_PL}")
+      string( REGEX REPLACE "([0-9]+).*" "\\1" NATURALDOCS_VERSION_MAJOR "${NATURALDOCS_VERSION_STRING}" )
+      string( REGEX REPLACE "[0-9]+\\.([0-9]+)" "\\1" NATURALDOCS_VERSION_MINOR "${NATURALDOCS_VERSION_STRING}" )
+      set(NATURALDOCS_VERSION ${NATURALDOCS_VERSION_MAJOR}.${NATURALDOCS_VERSION_MINOR})
+    endif()
 endif()
 
 mark_as_advanced(
@@ -36,4 +46,5 @@ mark_as_advanced(
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(NaturalDocs
-  REQUIRED_VARS NATURALDOCS_EXECUTABLE)
+  REQUIRED_VARS NATURALDOCS_EXECUTABLE
+  VERSION_VAR NATURALDOCS_VERSION)
