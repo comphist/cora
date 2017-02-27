@@ -55,12 +55,9 @@ Usually, CorA can do this automatically for you: Just navigate to
 `www/db/configure_db.php` in your web browser and follow the instructions on the
 page.
 
-Alternatively, you can run the command-line script `bin/make_database.php`.
-If an update is required, you will find a script `make_coradb.sql` in your build
-directory, which has to be run against the MySQL server instance you're using,
-e.g. by calling:
-
-    mysql -uroot -p <make_coradb.sql
+Alternatively, you can run the command-line script `www/db/configure_db_cli.php`
+with parameter `-a install`.  If an update is required, the same script can be
+used with the option `-a upgrade` to perform the database migration.
 
 ## Generating Documentation ##
 
@@ -84,10 +81,10 @@ Run `make test` to perform unit tests.
 Currently, only PHPUnit tests will be executed, which requires that **PHPUnit**
 is installed.
 
-Some of these tests require access to a MySQL test database, which is granted in
-`<build-dir>/coradb-data.sql`.  If you run PHPUnit tests before creating the
-database according to the instructions above, some of the tests will inevitably
-fail.
+Some of these tests require access to a MySQL test database, which is also
+created by the database installer (see above).  You should have run the database
+installation at least once before calling the PHPUnit tests, otherwise a lot of
+them will fail.
 
 ## Configuration Options ##
 
