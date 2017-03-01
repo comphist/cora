@@ -23,6 +23,7 @@
 require_once"DB_fixture.php";
 
 require_once"{$GLOBALS['CORA_WEB_DIR']}/lib/connect.php";
+require_once"{$GLOBALS['CORA_WEB_DIR']}/lib/localeHandler.php";
 
 /** tests for DBInterface that need foreign keys.
  *
@@ -41,6 +42,7 @@ require_once"{$GLOBALS['CORA_WEB_DIR']}/lib/connect.php";
  */
 class Cora_Tests_DBInterface_FK_test extends Cora_Tests_DbTestCase_FKAware {
     protected $dbi;
+    protected $lh;
     protected $backupGlobalsBlacklist = array('_SESSION');
 
     protected function setUp() {
@@ -50,7 +52,8 @@ class Cora_Tests_DBInterface_FK_test extends Cora_Tests_DbTestCase_FKAware {
         'PASSWORD' => $GLOBALS["DB_PASSWD"],
         'DBNAME' => $GLOBALS["DB_DBNAME"]
       );
-      $this->dbi = new DBInterface($dbinfo);
+      $this->lh = new LocaleHandler(); // required by DBInterface
+      $this->dbi = new DBInterface($dbinfo, $this->lh);
       parent::setUp();
     }
 
