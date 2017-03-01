@@ -79,6 +79,9 @@ if(PHP5_EXECUTABLE)
       if(var MATCHES "PHP [0-9]+\\.[0-9]+\\.[0-9_.]+.*")
         string(REGEX REPLACE "PHP ([0-9]+\\.[0-9]+\\.[0-9_.]+).*"
                "\\1" PHP5_VERSION_STRING "${var}")
+      elseif(var MATCHES "HipHop VM [0-9]+\\.[0-9]+\\.[0-9.]+.*")
+        # HACK: report HHVM as PHP 7.0.99
+        set(PHP5_VERSION_STRING "7.0.99")
       else()
         if(NOT PHP5_FIND_QUIETLY)
           message(WARNING "regex not supported: {$var}.")

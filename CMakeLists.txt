@@ -204,6 +204,14 @@ endif()
 enable_testing()
 if(PHPUNIT_FOUND)
   add_subdirectory(tests)
+  if (CMAKE_CONFIGURATION_TYPES)
+    add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND}
+        --force-new-ctest-process --output-on-failure
+        --build-config "$<CONFIGURATION>")
+  else()
+    add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND}
+        --force-new-ctest-process --output-on-failure)
+  endif()
 else()
   message(STATUS "SKIPPING PHP-based tests (PHPUnit not found)")
 endif()
