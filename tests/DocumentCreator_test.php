@@ -29,7 +29,7 @@ require_once "{$GLOBALS['CORA_WEB_DIR']}/lib/connect/DocumentCreator.php";
 
 /** Tests for DocumentCreator class
  */
-class Cora_Tests_DocumentCreator_test extends Cora_Tests_DbTestCase {
+class Cora_Tests_DocumentCreator_test extends Cora_Tests_Old_DbTestCase {
   private $dbi;
   private $dbo;
   private $obj; /**< The object under test */
@@ -57,7 +57,7 @@ class Cora_Tests_DocumentCreator_test extends Cora_Tests_DbTestCase {
 		     "tagsets" => array("1","2","3")
     );
     $data = new Cora_Tests_CoraDocument_Mock();
-    $expected = $this->createXMLDataset("data/inserted_document.xml");
+    $expected = $this->createXMLDataset(__DIR__ . "/data/inserted_document.xml");
 
     $this->obj = new DocumentCreator($this->dbi, $this->dbo, $options);
     if (!$this->obj->importDocument($data, 3)) {

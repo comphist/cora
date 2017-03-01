@@ -40,7 +40,7 @@ require_once"{$GLOBALS['CORA_WEB_DIR']}/lib/localeHandler.php";
  * since apparently phpunit doesn't allow more than one test
  * class in a file.
  */
-class Cora_Tests_DBInterface_FK_test extends Cora_Tests_DbTestCase_FKAware {
+class Cora_Tests_DBInterface_FK_test extends Cora_Tests_Old_DbTestCase_FKAware {
     protected $dbi;
     protected $lh;
     protected $backupGlobalsBlacklist = array('_SESSION');

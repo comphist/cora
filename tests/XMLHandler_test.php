@@ -26,7 +26,7 @@ require_once"{$GLOBALS['CORA_WEB_DIR']}/lib/xmlHandler.php";
 
 /** A mock DBInterface to trick the XMLHandler with
  */
-class Cora_Tests_DBInterface_Mock {
+class Cora_Tests_DBInterface_for_XMLHandler_Mock {
     /// the imported document and options, we'll run asserts on these
     public $document;
     public $options;
@@ -87,7 +87,7 @@ class Cora_Tests_XMLHandler_test extends PHPUnit_Framework_TestCase {
 
     protected function setUp() {
         $this->test_data = get_XMLHandler_expected();
-        $this->dbi = new Cora_Tests_DBInterface_Mock();
+        $this->dbi = new Cora_Tests_DBInterface_for_XMLHandler_Mock();
         $this->xh = new XMLHandler($this->dbi, new MockLocaleHandler());
 
         $options = array('sigle' => 't1', 'name' => 'testdocument');
@@ -106,13 +106,15 @@ class Cora_Tests_XMLHandler_test extends PHPUnit_Framework_TestCase {
     public function testImport() {
         $options = array('ext_id' => '');
         $filename = array(
-            "tmp_name" => "data/cora-importtest.xml",
-            "name" => "cora-importtest.xml"
+            "tmp_name" => __DIR__ . "/data/cora-importtest.xml",
+            "name" => __DIR__ . "/cora-importtest.xml"
         );
         $this->xh->import($filename, $options, 1);
 
-        $this->assertEquals($this->test_data["options"],
-                            $this->dbi->options);
+        $this->assertEquals($this->test_data["options"]["ext_id"],
+                            $this->dbi->options["ext_id"]);
+        $this->assertStringEndsWith($this->test_data["options"]["name"],
+                                    $this->dbi->options["name"]);
 
         $this->assertEquals($this->test_data["tokens"],
                             $this->dbi->document->getTokens());
@@ -146,7 +148,7 @@ class Cora_Tests_XMLHandler_test extends PHPUnit_Framework_TestCase {
         $dom = $this->xh->serializeDocument($this->cd);
         $this->assertNotEmpty($dom);
         $xml = $dom->saveXML();
-        $this->assertXmlStringEqualsXmlFile('data/XMLHandler_test_expected.xml',
+        $this->assertXmlStringEqualsXmlFile(__DIR__ . '/data/XMLHandler_test_expected.xml',
                                             $xml);
     }
 }

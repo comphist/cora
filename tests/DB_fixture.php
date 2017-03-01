@@ -36,6 +36,10 @@ $GLOBALS['DB_ROOTUSER'] = "{$dbinfo['USER']}_{$testsuffix}";
 $GLOBALS['DB_ROOTPW'] = "{$dbinfo['PASSWORD']}_{$testsuffix}";
 $GLOBALS['DB_DSN'] = "mysql:dbname={$GLOBALS['DB_DBNAME']};host={$GLOBALS['DB_HOST']}";
 
+$GLOBALS['DB_OLD_SCHEMA_INNODB'] = __DIR__ . "/data/coratest-innodb.sql";
+$GLOBALS['DB_OLD_SCHEMA_MYISAM'] = __DIR__ . "/data/coratest-myisam.sql";
+$GLOBALS['DB_OLD_DATAFILE_XML']  = __DIR__ . "/data/coradb.xml";
+
 /** Base class for all Database Related Tests
  *
  * 02/2013 Florian Petran
@@ -48,7 +52,7 @@ $GLOBALS['DB_DSN'] = "mysql:dbname={$GLOBALS['DB_DBNAME']};host={$GLOBALS['DB_HO
  * speed up testing. As such, tests that require foreign keys
  * can't be done here.
  */
-abstract class Cora_Tests_DbTestCase
+abstract class Cora_Tests_Old_DbTestCase
     extends PHPUnit_Extensions_Database_TestCase {
     static private $pdo = null;
     private $conn = null;
@@ -68,7 +72,7 @@ abstract class Cora_Tests_DbTestCase
     }
 
     final public function getDataSet() {
-        return $this->createMySQLXMLDataSet('data/coradb.xml');
+        return $this->createMySQLXMLDataSet($GLOBALS['DB_OLD_DATAFILE_XML']);
     }
 
     /** Create the coratest db and fill it with structure.
@@ -76,7 +80,7 @@ abstract class Cora_Tests_DbTestCase
     public static function setUpBeforeClass() {
         $mysqlcall = "{$GLOBALS["MYSQL_EXEC"]} -u{$GLOBALS["DB_ROOTUSER"]} -p{$GLOBALS["DB_ROOTPW"]}";
         system("echo CREATE DATABASE IF NOT EXISTS {$GLOBALS["DB_DBNAME"]} | ".$mysqlcall);
-        system($mysqlcall." {$GLOBALS["DB_DBNAME"]} < data/coratest-myisam.sql" );
+        system($mysqlcall." {$GLOBALS["DB_DBNAME"]} < {$GLOBALS["DB_OLD_SCHEMA_MYISAM"]}" );
     }
 
     /** Drop the coratest db
@@ -91,7 +95,7 @@ abstract class Cora_Tests_DbTestCase
  * Disable foreign key checks temporarily
  * see http://stackoverflow.com/questions/10331445/phpunit-and-mysql-truncation-error
  */
-class TruncateOperation extends PHPUnit_Extensions_Database_Operation_Truncate {
+class TruncateOperation_Old extends PHPUnit_Extensions_Database_Operation_Truncate {
     public function execute(PHPUnit_Extensions_Database_DB_IDatabaseConnection $connection,
                             PHPUnit_Extensions_Database_DataSet_IDataSet $dataset) {
         $connection->getConnection()->query("SET foreign_key_checks = 0");
@@ -106,19 +110,19 @@ class TruncateOperation extends PHPUnit_Extensions_Database_Operation_Truncate {
  *
  * FK need special attention, because MySQL >=5.5 doesn't allow
  * truncate operations on InnoDB Tables with foreign keys, yet
- * setting the FK checks on and off for each setUp inflates 
+ * setting the FK checks on and off for each setUp inflates
  * test running time. So any tests that need FK should subclass this,
- * while others subclass just Cora_Tests_DbTestCase
+ * while others subclass just Cora_Tests_Old_DbTestCase
  */
-class Cora_Tests_DbTestCase_FKAware
-    extends Cora_Tests_DbTestCase {
+abstract class Cora_Tests_Old_DbTestCase_FKAware
+    extends Cora_Tests_Old_DbTestCase {
     private $db_skeleton = "data/coratest-innobdb.sql";
 
     public function getSetUpOperation() {
         $cascadeTruncates = false;
 
         return new PHPUnit_Extensions_Database_Operation_Composite(array(
-            new TruncateOperation($cascadeTruncates),
+            new TruncateOperation_Old($cascadeTruncates),
             PHPUnit_Extensions_Database_Operation_Factory::INSERT()
         ));
     }
@@ -128,7 +132,7 @@ class Cora_Tests_DbTestCase_FKAware
     public static function setUpBeforeClass() {
         $mysqlcall = "{$GLOBALS["MYSQL_EXEC"]} -u{$GLOBALS["DB_ROOTUSER"]} -p{$GLOBALS["DB_ROOTPW"]}";
         system("echo CREATE DATABASE {$GLOBALS["DB_DBNAME"]} | ".$mysqlcall);
-        system($mysqlcall." {$GLOBALS["DB_DBNAME"]} < data/coratest-innodb.sql" );
+        system($mysqlcall." {$GLOBALS["DB_DBNAME"]} < {$GLOBALS["DB_OLD_SCHEMA_INNODB"]}" );
     }
 
 }

@@ -13,7 +13,7 @@ set(CORA_TESTDB_ROOTPW "${CORA_DB_PASSWORD}_test"
 ## Configure PHPUnit
 #########################################################
 set(PHPUNIT_OPTIONS
-  --configuration phpunit.xml
+  --configuration "${CMAKE_BINARY_DIR}/phpunit.xml.dist"
 )
 if(DEBUG_MODE)
   list(APPEND PHPUNIT_OPTIONS --verbose)
@@ -48,7 +48,6 @@ set(PHP_TEST_ASSETS
   mocks/LocaleHandler_mock.php
 )
 
-configure_file(phpunit.xml.in "${CMAKE_CURRENT_BINARY_DIR}/phpunit.xml" @ONLY)
 configure_all_copyonly("${CMAKE_CURRENT_BINARY_DIR}" ${PHP_TESTS} ${PHP_TEST_ASSETS})
 file(COPY data DESTINATION .)
 
@@ -66,6 +65,8 @@ ENDFOREACH()
 
 foreach(TEST ${PHP_TESTS})
   add_test(phpunit-${TEST}
-    ${PHPUNIT_EXECUTABLE} ${PHPUNIT_OPTIONS} ${TEST}
+    ${PHPUNIT_EXECUTABLE} ${PHPUNIT_OPTIONS}
+    --coverage-php "${CMAKE_BINARY_DIR}/TestCoverage/${TEST}.cov"
+    ${TEST}
     )
 endforeach()

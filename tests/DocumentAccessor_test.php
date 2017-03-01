@@ -25,16 +25,14 @@ require_once 'mocks/DocumentAccessor_mocks.php';
 require_once "{$GLOBALS['CORA_WEB_DIR']}/lib/connect/DocumentAccessor.php";
 
 class Cora_Tests_DocumentAccessor_test extends Cora_Tests_DbTestCase {
-  private $dbo;
   private $obj; /**< The object under test */
   private $fileid = '2';
   protected $dbCleanInsertBeforeEveryTest = false;
+  static protected $fixtureSet = false;
 
   public function setUp() {
-      $this->dbo = new PDO($GLOBALS["DB_DSN"],
-                           $GLOBALS["DB_USER"],
-                           $GLOBALS["DB_PASSWD"]);
-      $this->obj = new DocumentAccessor(new Cora_Tests_DBInterface_Mock(), $this->dbo, $this->fileid);
+      $this->getConnection();
+      $this->obj = new DocumentAccessor(new Cora_Tests_DBInterface_Mock(), self::$pdo, $this->fileid);
       parent::setUp();
   }
 

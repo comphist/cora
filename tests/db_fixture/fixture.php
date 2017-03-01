@@ -84,7 +84,6 @@ abstract class Cora_Tests_DbTestCase
     extends PHPUnit_Extensions_Database_TestCase {
     static protected $pdo = null;
     static protected $dataset;
-    static protected $fixtureSet = false;
     protected $dbCleanInsertBeforeEveryTest = true;
     private $conn = null;
     private $lastquery = null;
@@ -159,7 +158,7 @@ class TruncateOperation extends PHPUnit_Extensions_Database_Operation_Truncate {
  * test running time. So any tests that need FK should subclass this,
  * while others subclass just Cora_Tests_DbTestCase
  */
-class Cora_Tests_DbTestCase_FKAware
+abstract class Cora_Tests_DbTestCase_FKAware
     extends Cora_Tests_DbTestCase {
 
     public function getSetUpOperation() {

@@ -25,8 +25,8 @@ if(PHPUNIT_EXECUTABLE)
         message(WARNING "Warning, could not run PHPUnit --version")
       endif()
     else()
-      if(var MATCHES "PHPUnit [0-9]+\\.[0-9]+\\.[0-9_.]+.*")
-        string(REGEX REPLACE "PHPUnit ([0-9]+\\.[0-9]+\\.[0-9_.]+).*"
+      if(var MATCHES ".*PHPUnit [0-9]+\\.[0-9]+\\.[0-9_.]+.*")
+        string(REGEX REPLACE ".*PHPUnit ([0-9]+\\.[0-9]+\\.[0-9_.]+).*"
                "\\1" PHPUNIT_VERSION_STRING "${var}")
       else()
         if(NOT PHPUnit_FIND_QUIETLY)
