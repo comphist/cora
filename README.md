@@ -9,7 +9,7 @@ The source code of CorA is provided under the
 [MIT license](https://opensource.org/licenses/MIT).  See `LICENSE` for details.
 
 If you have any questions about this project, please contact Marcel Bollmann
-<bollmann@linguistics.rub.de>.
+(<bollmann@linguistics.rub.de>).
 
 ## Dependencies ##
 
@@ -17,7 +17,7 @@ To host CorA on your own machine, you should have at least the following:
 
 * A web server, such as Apache
 
-* PHP 5.3+ or PHP 7+ with the following extensions:
+* PHP 5.5+ or PHP 7+ with the following extensions:
 
     * dom
     * json
@@ -66,9 +66,9 @@ That's it!
 The following people have directly contributed to the source code of this
 project:
 
-+ Marcel Bollmann <bollmann@linguistics.rub.de>
-+ Florian Petran <petran@linguistics.rub.de>
-+ Fabian Simonjetz <fabian.simonjetz@rub.de>
++ Marcel Bollmann (<bollmann@linguistics.rub.de>)
++ Florian Petran (<petran@linguistics.rub.de>)
++ Fabian Simonjetz (<fabian.simonjetz@rub.de>)
 
 Many thanks to all users who provided feedback on this software!
 
