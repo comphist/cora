@@ -43,7 +43,7 @@ require_once"{$GLOBALS['CORA_WEB_DIR']}/lib/connect.php";
  *      getLines($fid, $start, $lim);
  *      saveLines($fid, $lastedited, $lines);
  */
-class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
+class Cora_Tests_DBInterface_test extends Cora_Tests_Old_DbTestCase {
     protected $dbi;
     protected $backupGlobalsBlacklist = array('_SESSION');
     protected $expected;
@@ -98,7 +98,7 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
         $this->assertFalse($this->dbi->createUser("test", "blabla", "0"));
 
         $this->dbi->createUser("anselm", "blabla", "0");
-        $expected = $this->createXMLDataSet("data/created_user.xml");
+        $expected = $this->createXMLDataSet(__DIR__ . "/data/created_user.xml");
 
         // TODO password hash breaks table equality, idk why
         $this->assertTablesEqual($expected->getTable("users"),
@@ -314,7 +314,7 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
                             $this->dbi->getProjectsForUser("bollmann"));
 
         $this->dbi->createProject("testproject");
-        $expected = $this->createXMLDataSet("data/created_project.xml");
+        $expected = $this->createXMLDataSet(__DIR__ . "/data/created_project.xml");
 
         $this->assertTablesEqual($expected->getTable("project"),
             $this->getConnection()->createQueryTable("project",
@@ -373,7 +373,7 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
 
         $result = $this->dbi->saveLines("3", "9", $lines, "bollmann");
         $this->assertFalse($result);
-        $expected = $this->createXMLDataset("data/saved_lines.xml");
+        $expected = $this->createXMLDataset(__DIR__ . "/data/saved_lines.xml");
 	$this->assertTablesEqual($expected->getTable("tag_suggestion"),
             $this->getConnection()->createQueryTable("tag_suggestion",
              "SELECT id,selected,source,tag_id,mod_id "
@@ -486,7 +486,7 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
                                   "oldmodcount" => 1,
                                   "newmodcount" => 1),
                             $actual);
-        $expected = $this->createXMLDataset("data/token.xml");
+        $expected = $this->createXMLDataset(__DIR__ . "/data/token.xml");
         $this->assertTablesEqual($expected->getTable("edited_token"),
             $this->getConnection()->createQueryTable("edited_token",
             "SELECT * FROM token WHERE id=3"));
@@ -509,7 +509,7 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_DbTestCase {
                                        "mod_utf" => array("testadd")), "3"
         ));
 
-        $expected = $this->createXMLDataset("data/token.xml");
+        $expected = $this->createXMLDataset(__DIR__ . "/data/token.xml");
         $actual = $this->getConnection()->createQueryTable("added_token",
                   "SELECT * FROM token");
         $this->assertEquals("7", $actual->getRowCount());

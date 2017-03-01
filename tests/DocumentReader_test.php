@@ -29,6 +29,7 @@ class Cora_Tests_DocumentReader_test extends Cora_Tests_DbTestCase {
     private $obj; /**< The object under test */
     private $fileid = '2';
     protected $dbCleanInsertBeforeEveryTest = false;
+    static protected $fixtureSet = false;
 
     public function setUp() {
         $this->dbo = new PDO($GLOBALS["DB_DSN"],

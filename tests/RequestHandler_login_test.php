@@ -32,6 +32,7 @@ class Cora_Tests_RequestHandler_login_test extends Cora_Tests_DbTestCase {
     private $sh;
     private $rq;
     protected $dbCleanInsertBeforeEveryTest = false;
+    static protected $fixtureSet = false;
 
     public static function setUpBeforeClass() {
         parent::setUpBeforeClass();

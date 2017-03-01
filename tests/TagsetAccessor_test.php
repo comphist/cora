@@ -24,20 +24,18 @@ require_once 'db_fixture/fixture.php';
 require_once "{$GLOBALS['CORA_WEB_DIR']}/lib/connect/TagsetAccessor.php";
 
 class Cora_Tests_TagsetAccessor_test extends Cora_Tests_DbTestCase {
-  private $dbo;
   private $tagset;
   protected $dbCleanInsertBeforeEveryTest = false;
+  static protected $fixtureSet = false;
 
   public function setUp() {
-      $this->dbo = new PDO($GLOBALS["DB_DSN"],
-                           $GLOBALS["DB_USER"],
-                           $GLOBALS["DB_PASSWD"]);
-      $this->tagset = new TagsetAccessor($this->dbo, 6);
+      $this->getConnection();
+      $this->tagset = new TagsetAccessor(self::$pdo, 6);
       parent::setUp();
   }
 
   public function testWithoutID() {
-    $tagset = new TagsetAccessor($this->dbo, null);
+    $tagset = new TagsetAccessor(self::$pdo, null);
     $this->assertNull($tagset->getID(),
                       "Accessor without ID should have no ID");
     $this->assertNull($tagset->getName(),
