@@ -50,7 +50,7 @@ message(STATUS "External downloads will be stored/expected in: ${EXTERNALS_DOWNL
 ## Find installed dependencies
 #########################################################
 
-find_package(PHP5 5.3 COMPONENTS Runtime REQUIRED)
+find_package(PHP5 5.5 COMPONENTS Runtime REQUIRED)
 find_package(MySQL 5.5 REQUIRED)
 find_package(Sass 3.2 REQUIRED)
 
@@ -62,7 +62,7 @@ endif()
 # For API documentation
 find_package(Doxygen)
 find_package(Perl 5.8 COMPONENTS Runtime)
-find_package(NaturalDocs 1.52)
+find_package(NaturalDocs 1.51)
 
 # For user documentation
 find_package(mkdocs 0.14)
@@ -204,6 +204,14 @@ endif()
 enable_testing()
 if(PHPUNIT_FOUND)
   add_subdirectory(tests)
+  if (CMAKE_CONFIGURATION_TYPES)
+    add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND}
+        --force-new-ctest-process --output-on-failure
+        --build-config "$<CONFIGURATION>")
+  else()
+    add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND}
+        --force-new-ctest-process --output-on-failure)
+  endif()
 else()
   message(STATUS "SKIPPING PHP-based tests (PHPUnit not found)")
 endif()
