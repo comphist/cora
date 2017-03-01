@@ -21,19 +21,25 @@ before_install:
 
 install:
   - sudo apt-get install -y cmake doxygen naturaldocs
+  - composer require --dev phpunit/phpcov
   - gem install sass
   - sudo pip install mkdocs
 
 before_script:
   - mkdir build
   - cd build
-  - cmake .. -DWITH_EXPENSIVE_TESTS=YES
+  - cmake .. -DDEBUG_MODE=ON -DWITH_MINIFY_JS=YES -DWITH_MINIFY_CSS=YES -DWITH_EXPENSIVE_TESTS=YES
   - make && php www/db/configure_db_cli.php -p trustthetest -a install
   - make docs
 
 script:
   - make lint
   - make check
+
+after_script:
+  - ../vendor/bin/phpcov merge --clover=coverage.xml --no-interaction TestCoverage/
+  - sed -i 's;/build/www/;/src/;g' coverage.xml
+  - bash <(curl -s https://codecov.io/bash)
 
 matrix:
   include:
