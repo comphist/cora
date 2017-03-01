@@ -38,7 +38,6 @@ script:
 
 after_script:
   - ../vendor/bin/phpcov merge --clover=coverage.xml --no-interaction TestCoverage/
-  - sed -i 's;/build/www/;/src/;g' coverage.xml
   - bash <(curl -s https://codecov.io/bash)
 
 matrix:
