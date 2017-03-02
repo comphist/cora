@@ -76,7 +76,7 @@ $maintainer = Cfg::get('local_maintainer');
       <?php if ($_SESSION["admin"]): ?>
         <p data-trans-id="Help.paragraphUseTheIssueTracker"><?=$lh("Help.paragraphUseTheIssueTracker"); ?></p>
         <ul>
-          <li><a href="https://bitbucket.org/mbollmann/cora/issues" data-trans-id="Help.issueTracker">
+          <li><a href="https://github.com/comphist/cora/issues" data-trans-id="Help.issueTracker">
             <?=$lh("Help.issueTracker"); ?>
           </a></li>
         </ul>

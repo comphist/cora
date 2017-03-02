@@ -48,5 +48,5 @@ external tools for this purpose.  First, [clone the git repository][git_repo] on
 your local machine, then follow the instructions in the `INSTALL.md` file.
 
 
-[git_repo]: https://bitbucket.org/mbollmann/cora/
-[download_url]: https://bitbucket.org/mbollmann/cora/downloads
+[git_repo]: https://github.com/comphist/cora/
+[download_url]: https://github.com/comphist/cora/releases

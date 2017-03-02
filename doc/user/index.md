@@ -5,7 +5,7 @@ historical documents, social media texts, or learner data.
 It runs on any modern web browser (we recommend [Chrome][], though [Firefox][]
 and [Safari][] should work as well) as long as JavaScript is enabled and you
 have an active internet connection.  The
-[source code](https://bitbucket.org/mbollmann/cora/) is provided under the
+[source code](https://github.com/comphist/cora/) is provided under the
 [MIT license](https://opensource.org/licenses/MIT), which means you are free to
 use, copy, or modify it for any purpose, including commercially.
 
