@@ -174,18 +174,18 @@ else()
 endif()
 
 if(MKDOCS_FOUND)
-  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/doc/mkdocs/mkdocs.yml"
-                 "${CMAKE_CURRENT_BINARY_DIR}/mkdocs.yml" COPYONLY)
+  configure_file("${CMAKE_SOURCE_DIR}/doc/mkdocs.yml"
+                 "${CMAKE_BINARY_DIR}/mkdocs.yml" COPYONLY)
   set(MKDOCS_FLAGS
     --site-dir "${CMAKE_BINARY_DIR}/docs/user/"
-    --config-file "${CMAKE_SOURCE_DIR}/doc/mkdocs/mkdocs.yml"
+    --config-file "${CMAKE_BINARY_DIR}/mkdocs.yml"
     )
   if(DEBUG_MODE)
     list(APPEND MKDOCS_FLAGS --clean --verbose)
   endif()
   add_custom_target(docs-user
     ${MKDOCS_EXECUTABLE} build ${MKDOCS_FLAGS}
-    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/doc/mkdocs"
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/doc"
     COMMENT "Generating user documentation"
     )
   add_dependencies(docs docs-user)
@@ -194,7 +194,7 @@ else()
 endif()
 
 if(DOXYGEN_FOUND OR MKDOCS_FOUND)
-  file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/docs")
+  file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/docs")
 endif()
 
 #########################################################
