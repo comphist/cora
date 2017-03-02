@@ -174,11 +174,10 @@ else()
 endif()
 
 if(MKDOCS_FOUND)
-  configure_file("${CMAKE_SOURCE_DIR}/doc/mkdocs.yml"
-                 "${CMAKE_BINARY_DIR}/mkdocs.yml" COPYONLY)
+  configure_file(mkdocs.yml "${CMAKE_CURRENT_BINARY_DIR}/mkdocs.yml" COPYONLY)
   set(MKDOCS_FLAGS
-    --site-dir "${CMAKE_BINARY_DIR}/docs/user/"
-    --config-file "${CMAKE_BINARY_DIR}/mkdocs.yml"
+    --site-dir "${CMAKE_CURRENT_BINARY_DIR}/docs/user/"
+    --config-file "${CMAKE_CURRENT_BINARY_DIR}/mkdocs.yml"
     )
   if(DEBUG_MODE)
     list(APPEND MKDOCS_FLAGS --clean --verbose)
