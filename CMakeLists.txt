@@ -184,7 +184,7 @@ if(MKDOCS_FOUND)
   endif()
   add_custom_target(docs-user
     ${MKDOCS_EXECUTABLE} build ${MKDOCS_FLAGS}
-    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/doc"
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
     COMMENT "Generating user documentation"
     )
   add_dependencies(docs docs-user)
