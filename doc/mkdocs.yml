@@ -1,7 +1,7 @@
 site_name: CorA User Documentation
 site_author: Marcel Bollmann
 copyright: © 2015-2017 by Marcel Bollmann
-repo_url: https://bitbucket.org/mbollmann/cora/
+repo_url: https://github.com/comphist/cora/
 theme: readthedocs
 markdown_extensions:
   - abbr
