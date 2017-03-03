@@ -70,6 +70,8 @@ def flag_change(tag, a_str, b):
         comment = "#>MATCH: {}".format(a_str)
     elif tag == "delete":
         comment = "#>DEL: {}".format(a_str)
+    elif tag == "delete_after":
+        comment = "#>DEL_AFTER: {}".format(a_str)
     elif tag == "insert":
         comment = "#>INS"
     if b.find("cora-flag[@name='general error']") is None:
@@ -131,7 +133,10 @@ def perform_merge(modsA, modsB, opcodes, flag_changes=False):
                     flag_change("replace", modsA[i].get('ascii'), modsB[j])
         elif tag == "delete" and flag_changes:
             del_mods = ' '.join(m.get('ascii') for m in modsA[i1:i2])
-            flag_change("delete", del_mods, modsB[j1])
+            try:
+                flag_change("delete", del_mods, modsB[j1])
+            except IndexError:
+                flag_change("delete_after", del_mods, modsB[j1-1])
         elif tag == "insert" and flag_changes:
             for j in range(j1, j2):
                 flag_change("insert", None, modsB[j])
