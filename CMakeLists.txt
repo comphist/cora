@@ -202,7 +202,6 @@ endif()
 
 enable_testing()
 configure_file(phpunit.xml.dist.in "${CMAKE_CURRENT_BINARY_DIR}/phpunit.xml.dist" @ONLY)
-file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/TestCoverage")
 if(PHPUNIT_FOUND)
   add_subdirectory(tests)
   if (CMAKE_CONFIGURATION_TYPES)
