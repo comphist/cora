@@ -69,6 +69,7 @@ find_package(mkdocs 0.14)
 
 # For unit testing
 find_package(PHPUnit 3.7)
+find_package(NodeJS COMPONENTS mocha chai)
 
 #########################################################
 ## Download stuff that is not commonly installed/packaged
@@ -202,18 +203,14 @@ endif()
 
 enable_testing()
 configure_file(phpunit.xml.dist.in "${CMAKE_CURRENT_BINARY_DIR}/phpunit.xml.dist" @ONLY)
-if(PHPUNIT_FOUND)
-  add_subdirectory(tests)
-  if (CMAKE_CONFIGURATION_TYPES)
-    add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND}
-        --force-new-ctest-process --output-on-failure
-        --build-config "$<CONFIGURATION>")
-  else()
-    add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND}
-        --force-new-ctest-process --output-on-failure)
-  endif()
+add_subdirectory(tests)
+if (CMAKE_CONFIGURATION_TYPES)
+  add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND}
+      --force-new-ctest-process --output-on-failure
+      --build-config "$<CONFIGURATION>")
 else()
-  message(STATUS "SKIPPING PHP-based tests (PHPUnit not found)")
+  add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND}
+      --force-new-ctest-process --output-on-failure)
 endif()
 
 #########################################################

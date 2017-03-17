@@ -71,3 +71,18 @@ foreach(TEST ${PHP_TESTS})
     ${TEST}
     )
 endforeach()
+
+#########################################################
+## Add custom target for backend-only tests
+#########################################################
+
+if (CMAKE_CONFIGURATION_TYPES)
+  add_custom_target(check-backend COMMAND ${CMAKE_CTEST_COMMAND}
+      -R "^phpunit"
+      --force-new-ctest-process --output-on-failure
+      --build-config "$<CONFIGURATION>")
+else()
+  add_custom_target(check-backend COMMAND ${CMAKE_CTEST_COMMAND}
+      -R "^phpunit"
+      --force-new-ctest-process --output-on-failure)
+endif()

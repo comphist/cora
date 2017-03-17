@@ -1,1 +1,11 @@
-add_subdirectory(backend)
+if(PHPUNIT_FOUND)
+  add_subdirectory(backend)
+else()
+  message(STATUS "SKIPPING PHP-based tests (PHPUnit not found)")
+endif()
+
+if(NodeJS_FOUND)
+  add_subdirectory(frontend)
+else()
+  message(STATUS "SKIPPING JavaScript-based tests (npm not found)")
+endif()
