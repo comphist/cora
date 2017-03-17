@@ -34,11 +34,13 @@ before_script:
 
 script:
   - make lint
-  - make check
+  - make check-frontend
+  - make check-backend
 
 after_script:
   - ../vendor/bin/phpcov merge --clover=coverage.xml --no-interaction TestCoverage/
-  - bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash) -c -f coverage.xml -F backend
+  - bash <(curl -s https://codecov.io/bash) -c -f tests/frontend/coverage/lcov.info -F frontend
 
 matrix:
   include:
