@@ -72,6 +72,7 @@ find_package(PHPUnit 3.7)
 find_package(NodeJS COMPONENTS
   mocha mocha-phantomjs
   chai
+  istanbul mocha-phantomjs-istanbul
   )
 
 #########################################################
@@ -207,14 +208,6 @@ endif()
 enable_testing()
 configure_file(phpunit.xml.dist.in "${CMAKE_CURRENT_BINARY_DIR}/phpunit.xml.dist" @ONLY)
 add_subdirectory(tests)
-if (CMAKE_CONFIGURATION_TYPES)
-  add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND}
-      --force-new-ctest-process --output-on-failure
-      --build-config "$<CONFIGURATION>")
-else()
-  add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND}
-      --force-new-ctest-process --output-on-failure)
-endif()
 
 #########################################################
 ## Scripts/executables

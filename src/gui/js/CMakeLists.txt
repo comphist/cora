@@ -236,3 +236,13 @@ if(WITH_MINIFY_JS)
     )
   add_dependencies(web web-minify-js)
 endif()
+
+#########################################################
+## Variables for unit tests
+#########################################################
+
+set(
+  CORA_TESTABLE_JS_SOURCES
+  "${JS_SOURCES_MASTER};${JS_SOURCES_ADMIN}"
+  CACHE INTERNAL "List of testable JavaScript source files" FORCE
+  )

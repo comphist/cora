@@ -1,11 +1,17 @@
+if(PHPUNIT_FOUND OR NodeJS_FOUND)
+  add_custom_target(check)
+endif()
+
 if(PHPUNIT_FOUND)
   add_subdirectory(backend)
+  add_dependencies(check check-backend)
 else()
   message(STATUS "SKIPPING PHP-based tests (PHPUnit not found)")
 endif()
 
 if(NodeJS_FOUND)
   add_subdirectory(frontend)
+  add_dependencies(check check-frontend)
 else()
   message(STATUS "SKIPPING JavaScript-based tests (npm not found)")
 endif()

@@ -1,6 +1,6 @@
-<meta charset="utf-8" />
 <html>
     <head>
+        <meta charset="utf-8" />
         <title>CorA Frontend Tests</title>
         <link rel="stylesheet" href="../../node_modules/mocha/mocha.css" />
     </head>
@@ -24,8 +24,7 @@
         <script src="@CORA_TESTS_JS_DIR@/tagsets/Tagset.js"></script>
         <script src="./test_tagsets.js"></script>
         <script>
-            if (window.mochaPhantomJS) { mochaPhantomJS.run(); }
-            else { mocha.run(); }
+            mocha.run();
         </script>
     </body>
 </html>
