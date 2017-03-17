@@ -67,5 +67,6 @@ endif()
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(NodeJS
+  FOUND_VAR NodeJS_FOUND
   REQUIRED_VARS NODE_EXECUTABLE NPM_EXECUTABLE
   VERSION_VAR NODE_VERSION)
