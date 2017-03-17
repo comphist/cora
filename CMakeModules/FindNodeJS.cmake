@@ -44,17 +44,23 @@ mark_as_advanced(
   )
 
 if(NodeJS_FIND_COMPONENTS)
+  set(NODE_MODULES_DIR "${CMAKE_BINARY_DIR}/node_modules")
   if(NOT NPM_EXECUTABLE)
     message(FATAL_ERROR "Cannot install required components: npm not found")
   else()
     foreach(component ${NodeJS_FIND_COMPONENTS})
-      add_custom_command(OUTPUT "${CMAKE_BINARY_DIR}/node_modules/${component}"
+      if (component MATCHES ".*@.*")
+        string( REGEX REPLACE "(.*)@.*" "\\1" component_name "${component}" )
+      else()
+        set(component_name "${component}")
+      endif()
+      add_custom_command(OUTPUT "${NODE_MODULES_DIR}/${component_name}"
         COMMAND ${NPM_EXECUTABLE} install ${component}
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         COMMENT "Installing NodeJS component: ${component}"
         )
-      add_custom_target(npm_${component} ALL
-        DEPENDS "${CMAKE_BINARY_DIR}/node_modules/${component}")
+      add_custom_target(npm_${component_name} ALL
+        DEPENDS "${NODE_MODULES_DIR}/${component_name}")
     endif()
   endforeach()
 endif()

@@ -1,29 +1,32 @@
 #########################################################
-## Configure Mocha
+## Configure test files
 #########################################################
-set(MOCHA_OPTIONS
-  --sort
-  --require global.js
-)
-#if(DEBUG_MODE)
-#  list(APPEND MOCHA_OPTIONS --debug)
-#endif()
+file(RELATIVE_PATH CORA_TESTS_HREF_MOOTOOLS_CORE
+  "${CMAKE_CURRENT_BINARY_DIR}"
+  "${CMAKE_SOURCE_DIR}/src/${CORA_HREF_JS_MOOTOOLS_CORE}")
+file(RELATIVE_PATH CORA_TESTS_HREF_MOOTOOLS_MORE
+  "${CMAKE_CURRENT_BINARY_DIR}"
+  "${CMAKE_SOURCE_DIR}/src/${CORA_HREF_JS_MOOTOOLS_MORE}")
+file(RELATIVE_PATH CORA_TESTS_JS_DIR
+  "${CMAKE_CURRENT_BINARY_DIR}"
+  "${CMAKE_SOURCE_DIR}/src/gui/js")
 
 set(FRONTEND_TESTS
-  test.js
+  test_tagsets.html
   )
 set(FRONTEND_TEST_ASSETS
-  global.js
+  test_tagsets.js
   )
 
-configure_all_copyonly("${CMAKE_CURRENT_BINARY_DIR}" ${FRONTEND_TESTS} ${FRONTEND_TEST_ASSETS})
+configure_all("${CMAKE_CURRENT_BINARY_DIR}" ${FRONTEND_TESTS})
+configure_all_copyonly("${CMAKE_CURRENT_BINARY_DIR}" ${FRONTEND_TEST_ASSETS})
 
 #########################################################
 ## Add Mocha tests
 #########################################################
-
-# TODO: this needs to be replaced by proper package finding and installation
-set(MOCHA_EXECUTABLE "/usr/bin/mocha")
+set(MOCHA_OPTIONS
+)
+set(MOCHA_EXECUTABLE "${NODE_MODULES_DIR}/.bin/mocha-phantomjs")
 
 foreach(TEST ${FRONTEND_TESTS})
   add_test(mocha-${TEST}

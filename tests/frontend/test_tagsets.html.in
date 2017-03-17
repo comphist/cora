@@ -1,0 +1,31 @@
+<meta charset="utf-8" />
+<html>
+    <head>
+        <title>CorA Frontend Tests</title>
+        <link rel="stylesheet" href="../../node_modules/mocha/mocha.css" />
+    </head>
+    <body>
+        <div id="mocha"></div>
+        <script src="../../node_modules/mocha/mocha.js"></script>
+        <script src="../../node_modules/chai/chai.js"></script>
+        <script>
+            mocha.ui('bdd');
+            mocha.reporter('html');
+            var expect = chai.expect;
+
+            /* Global variables expected by CorA */
+            var cora = {
+                strings: {}
+            };
+        </script>
+        <script src="@CORA_TESTS_HREF_MOOTOOLS_CORE@"></script>
+        <script src="@CORA_TESTS_HREF_MOOTOOLS_MORE@"></script>
+        <script src="@CORA_TESTS_JS_DIR@/tagsets.js"></script>
+        <script src="@CORA_TESTS_JS_DIR@/tagsets/Tagset.js"></script>
+        <script src="./test_tagsets.js"></script>
+        <script>
+            if (window.mochaPhantomJS) { mochaPhantomJS.run(); }
+            else { mocha.run(); }
+        </script>
+    </body>
+</html>

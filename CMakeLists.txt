@@ -69,7 +69,10 @@ find_package(mkdocs 0.14)
 
 # For unit testing
 find_package(PHPUnit 3.7)
-find_package(NodeJS COMPONENTS mocha chai)
+find_package(NodeJS COMPONENTS
+  mocha mocha-phantomjs
+  chai
+  )
 
 #########################################################
 ## Download stuff that is not commonly installed/packaged
