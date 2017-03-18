@@ -38,8 +38,8 @@ configure_all_copyonly(
   main.js
   main.login.js
   )
-set(JS_SOURCES_MAIN       LAB.js main.js)
-set(JS_SOURCES_MAIN_LOGIN LAB.js main.login.js)
+set(JS_SOURCES_MAIN       vendor/LAB.js main.js)
+set(JS_SOURCES_MAIN_LOGIN vendor/LAB.js main.login.js)
 if(NOT WITH_MINIFY_JS)
   cat_multiple("${CORA_CURRENT_WEB_DIR}/main.js"       ${JS_SOURCES_MAIN})
   cat_multiple("${CORA_CURRENT_WEB_DIR}/main.login.js" ${JS_SOURCES_MAIN_LOGIN})
