@@ -6,22 +6,22 @@
     </php>
     <testsuites>
         <testsuite name="standard">
-            <file>tests/AutomaticAnnotator_test.php</file>
-            <file>tests/Cfg_test.php</file>
-            <file>tests/CoraDocument_test.php</file>
-            <file>tests/DBInterface_test.php</file>
-            <file>tests/DocumentAccessor_test.php</file>
-            <file>tests/DocumentCreator_test.php</file>
-            <file>tests/DocumentReader_test.php</file>
-            <file>tests/Exporter_test.php</file>
-            <file>tests/Locale_test.php</file>
-            <file>tests/Menu_test.php</file>
-            <file>tests/RequestHandler_login_test.php</file>
-            <file>tests/TagsetAccessor_test.php</file>
-            <file>tests/XMLHandler_test.php</file>
+            <file>tests/backend/AutomaticAnnotator_test.php</file>
+            <file>tests/backend/Cfg_test.php</file>
+            <file>tests/backend/CoraDocument_test.php</file>
+            <file>tests/backend/DBInterface_test.php</file>
+            <file>tests/backend/DocumentAccessor_test.php</file>
+            <file>tests/backend/DocumentCreator_test.php</file>
+            <file>tests/backend/DocumentReader_test.php</file>
+            <file>tests/backend/Exporter_test.php</file>
+            <file>tests/backend/Locale_test.php</file>
+            <file>tests/backend/Menu_test.php</file>
+            <file>tests/backend/RequestHandler_login_test.php</file>
+            <file>tests/backend/TagsetAccessor_test.php</file>
+            <file>tests/backend/XMLHandler_test.php</file>
         </testsuite>
         <testsuite name="expensive">
-            <file>tests/DBInterface_Expensive_test.php</file>
+            <file>tests/backend/DBInterface_Expensive_test.php</file>
         </testsuite>
     </testsuites>
     <filter>

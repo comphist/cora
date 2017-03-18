@@ -35,6 +35,7 @@ endif()
 option(WITH_MINIFY_CSS "Minification of CSS files" ${MINIFY_CSS_DEFAULT})
 option(WITH_MINIFY_JS "Minification of JavaScript files" ${MINIFY_JS_DEFAULT})
 option(WITH_EXPENSIVE_TESTS "Include potentially more time-consuming tests" ${EXPENSIVE_TESTS_DEFAULT})
+option(WITH_TESTS "Build tests and require test dependencies" YES)
 
 set(EXTERNALS_DOWNLOAD_DIR "${CMAKE_BINARY_DIR}/downloads"
     CACHE PATH "Directory where external downloads will be stored")
@@ -68,10 +69,19 @@ find_package(NaturalDocs 1.51)
 find_package(mkdocs 0.14)
 
 # For unit testing
-# Note: 4.8 is the oldest version currently tested by Travis, and even that one
-# is no longer officially supported, so it should be safe to specify as the
-# minimum
-find_package(PHPUnit 4.8)
+if (WITH_TESTS)
+  # Note: 4.8 is the oldest version currently tested by Travis, and even that one
+  # is no longer officially supported, so it should be safe to specify as the
+  # minimum
+  find_package(PHPUnit 4.8)
+  find_package(NodeJS COMPONENTS
+    mocha mocha-phantomjs
+    chai
+    istanbul mocha-phantomjs-istanbul
+    )
+else()
+  message(STATUS "SKIPPING all unit tests (WITH_TESTS=NO)")
+endif()
 
 #########################################################
 ## Download stuff that is not commonly installed/packaged
@@ -203,21 +213,10 @@ endif()
 ## Testing
 #########################################################
 
-enable_testing()
-configure_file(phpunit.xml.dist.in "${CMAKE_CURRENT_BINARY_DIR}/phpunit.xml.dist" @ONLY)
-file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/TestCoverage")
-if(PHPUNIT_FOUND)
+if (WITH_TESTS)
+  enable_testing()
+  configure_file(phpunit.xml.dist.in "${CMAKE_CURRENT_BINARY_DIR}/phpunit.xml.dist" @ONLY)
   add_subdirectory(tests)
-  if (CMAKE_CONFIGURATION_TYPES)
-    add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND}
-        --force-new-ctest-process --output-on-failure
-        --build-config "$<CONFIGURATION>")
-  else()
-    add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND}
-        --force-new-ctest-process --output-on-failure)
-  endif()
-else()
-  message(STATUS "SKIPPING PHP-based tests (PHPUnit not found)")
 endif()
 
 #########################################################
