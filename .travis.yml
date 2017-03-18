@@ -29,7 +29,7 @@ install:
 before_script:
   - mkdir build
   - cd build
-  - cmake .. -DDEBUG_MODE=ON -DWITH_MINIFY_JS=YES -DWITH_MINIFY_CSS=YES -DWITH_EXPENSIVE_TESTS=YES
+  - cmake .. -DDEBUG_MODE=ON -DWITH_MINIFY_JS=YES -DWITH_MINIFY_CSS=YES -DWITH_EXPENSIVE_TESTS=YES -DPHPUNIT_EXECUTABLE=../vendor/bin/phpunit
   - make && php www/db/configure_db_cli.php -p trustthetest -a install
   - make docs
 
