@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit>
+<phpunit bootstrap="tests/alias_phpunit.php">
     <php>
         <var name="CORA_WEB_DIR" value="@CORA_WEB_DIR@"/>
         <var name="MYSQL_EXEC" value="@MYSQL_EXECUTABLE@"/>

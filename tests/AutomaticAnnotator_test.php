@@ -24,8 +24,6 @@ require_once"data/test_data.php";
 
 require_once"{$GLOBALS['CORA_WEB_DIR']}/lib/automaticAnnotation.php";
 
-use PHPUnit\Framework\TestCase;
-
 /** A mock DBInterface
  */
 class Cora_Tests_DBInterface_AA_Mock {
@@ -75,7 +73,7 @@ class Cora_Tests_DBInterface_AA_Mock {
     public function unlockProjectForTagger($pid) { }
 }
 
-class Cora_Tests_AutomaticAnnotator_test extends TestCase {
+class Cora_Tests_AutomaticAnnotator_test extends PHPUnit_Framework_TestCase {
     protected $dbi;
     protected $exp;
     protected $aa;
