@@ -6,8 +6,7 @@ set(ISTANBUL_INSTRUMENT_OPTS
   instrument
   -i "${CMAKE_SOURCE_DIR}/src/gui/js"
   -o "${CMAKE_CURRENT_BINARY_DIR}/instrumented_js"
-  -x "**/mbox/**"
-  -x "**/mootools-*"
+  -x "**/vendor/**"
   --save-baseline
   )
 

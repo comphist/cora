@@ -13,8 +13,8 @@ endif()
 
 configure_all_copyonly(
   "${CORA_CURRENT_WEB_DIR}"
-  mootools-core-1.4.5-full-compat-yc.js
-  mootools-more-1.4.0.1-min.js
+  vendor/mootools-core-1.4.5-full-compat-yc.js
+  vendor/mootools-more-1.4.0.1-min.js
   )
 
 set(
@@ -34,7 +34,7 @@ set(
 
 configure_all_copyonly(
   "${CONFIGURE_TARGET_DIR}"
-  LAB.js
+  vendor/LAB.js
   main.js
   main.login.js
   )
@@ -51,9 +51,9 @@ set(JS_SOURCES_MASTER
   request/CoraRequestErrors.js
   request/CoraRequest.js
   settings.js
-  ProgressBar.js
-  iFrameFormRequest.js
-  Meio.Autocomplete.js
+  vendor/ProgressBar.js
+  vendor/iFrameFormRequest.js
+  vendor/Meio.Autocomplete.js
   FlexRowList.js
   gui.js
   tagsets.js
@@ -86,7 +86,7 @@ set(JS_SOURCES_MASTER
   edit/EditorModelUndo.js
   edit/EditorModel.js
   edit.js
-  MultiSelect.js
+  vendor/MultiSelect.js
 )
 
 if(WITH_MINIFY_JS)
@@ -109,7 +109,7 @@ configure_all_copyonly(${CONFIGURE_TARGET_DIR} ${JS_SOURCES_MASTER})
 
 # should compile to admin.min.js
 set(JS_SOURCES_ADMIN
-  datepicker.js
+  vendor/datepicker.js
   admin.js
 )
 
@@ -133,15 +133,15 @@ configure_all_copyonly(${CONFIGURE_TARGET_DIR} ${JS_SOURCES_ADMIN})
 
 # should compile to mbox.min.js
 set(JS_SOURCES_MBOX
-  mbox/mBox.Core.js
-  mbox/mBox.Modal.js
-  mbox/mBox.Notice.js
-  mbox/mBox.Modal.Confirm.js
-  mbox/mBox.Tooltip.js
-  mbox/mForm.Core.js
-  mbox/mForm.Submit.js
-  mbox/mForm.Element.js
-  mbox/mForm.Element.Select.js
+  vendor/mbox/mBox.Core.js
+  vendor/mbox/mBox.Modal.js
+  vendor/mbox/mBox.Notice.js
+  vendor/mbox/mBox.Modal.Confirm.js
+  vendor/mbox/mBox.Tooltip.js
+  vendor/mbox/mForm.Core.js
+  vendor/mbox/mForm.Submit.js
+  vendor/mbox/mForm.Element.js
+  vendor/mbox/mForm.Element.Select.js
 )
 
 if(WITH_MINIFY_JS)
