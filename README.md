@@ -1,9 +1,14 @@
 # CorA (Corpus Annotator) #
 
+[![Build Status](https://travis-ci.org/comphist/cora.svg?branch=master)](https://travis-ci.org/comphist/cora)
+[![codecov](https://codecov.io/gh/comphist/cora/branch/master/graph/badge.svg)](https://codecov.io/gh/comphist/cora)
+[![Documentation Status](https://readthedocs.org/projects/cora/badge/?version=latest)](http://cora.readthedocs.io/en/latest/?badge=latest)
+
 CorA is a web-based annotation tool for non-standard language data.
 
 * Current version: **1.2**
 * [CorA project website](http://www.linguistics.rub.de/comphist/resources/cora/)
+* [CorA user documentation](http://cora.readthedocs.io/)
 
 The source code of CorA is provided under the
 [MIT license](https://opensource.org/licenses/MIT).  See `LICENSE` for details.
