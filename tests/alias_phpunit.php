@@ -21,9 +21,15 @@
  */ ?>
 <?php
 
-if (class_exists('PHPUnit\\Framework\\TestCase')
-    && !class_exists('PHPUnit_Framework_TestCase')) {
-    class_alias('PHPUnit\\Framework\\TestCase', 'PHPUnit_Framework_TestCase');
+$aliases = array(
+    'PHPUnit_Framework_TestCase' => 'PHPUnit\\Framework\\TestCase',
+    'PHPUnit_Extensions_Database_TestCase' => 'PHPUnit\\DbUnit\\TestCase'
+);
+
+foreach($aliases as $oldclass => $newclass) {
+    if (!class_exists($oldclass) && class_exists($newclass)) {
+        class_alias($newclass, $oldclass);
+    }
 }
 
 ?>
