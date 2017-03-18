@@ -21,8 +21,9 @@ before_install:
 
 install:
   - sudo apt-get install -y cmake doxygen naturaldocs
+  - composer require --dev phpunit/phpunit "<6.0"
   - composer require --dev phpunit/phpcov
-  - composer require --dev phpunit/dbunit
+  - composer require --dev phpunit/dbunit "<3.0"
   - gem install sass
   - sudo pip install mkdocs
 
