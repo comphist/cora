@@ -12,19 +12,19 @@ endif()
 #########################################################
 
 configure_all_copyonly(
-  "${CORA_CURRENT_WEB_DIR}"
+  "${CORA_CURRENT_WEB_DIR}/vendor"
   vendor/mootools-core-1.4.5-full-compat-yc.js
   vendor/mootools-more-1.4.0.1-min.js
   )
 
 set(
   CORA_HREF_JS_MOOTOOLS_CORE
-  "${CORA_CURRENT_REL_PATH}/mootools-core-1.4.5-full-compat-yc.js"
+  "${CORA_CURRENT_REL_PATH}/vendor/mootools-core-1.4.5-full-compat-yc.js"
   CACHE INTERNAL "Relative path to MooTools core library" FORCE
   )
 set(
   CORA_HREF_JS_MOOTOOLS_MORE
-  "${CORA_CURRENT_REL_PATH}/mootools-more-1.4.0.1-min.js"
+  "${CORA_CURRENT_REL_PATH}/vendor/mootools-more-1.4.0.1-min.js"
   CACHE INTERNAL "Relative path to MooTools-More library" FORCE
   )
 
