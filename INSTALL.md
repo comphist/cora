@@ -19,7 +19,8 @@ installed.  Besides the runtime dependencies listed in README.md, you need:
 
 The following dependencies are **optional**:
 
-* PHPUnit 3.7+ with DBUnit extension (for PHP unit tests)
+* PHPUnit 4.8-5.7 with DBUnit (2.x) extension (for PHP unit tests); PHPUnit 6+
+  is explicitly **not** supported at this time
 
 * Doxygen (for API documentation of PHP files)
 

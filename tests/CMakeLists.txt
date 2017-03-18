@@ -39,7 +39,6 @@ if(WITH_EXPENSIVE_TESTS)
 endif()
 
 set(PHP_TEST_ASSETS
-  alias_phpunit.php
   DB_fixture.php
   db_fixture/coratest_data.sql
   db_fixture/coratest_data.xml
