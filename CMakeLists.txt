@@ -68,7 +68,10 @@ find_package(NaturalDocs 1.51)
 find_package(mkdocs 0.14)
 
 # For unit testing
-find_package(PHPUnit 3.7)
+# Note: 4.8 is the oldest version currently tested by Travis, and even that one
+# is no longer officially supported, so it should be safe to specify as the
+# minimum
+find_package(PHPUnit 4.8)
 
 #########################################################
 ## Download stuff that is not commonly installed/packaged
