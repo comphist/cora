@@ -12,7 +12,7 @@ endif()
 #########################################################
 
 configure_all_copyonly(
-  "${CORA_CURRENT_WEB_DIR}/vendor"
+  "${CORA_CURRENT_WEB_DIR}"
   vendor/mootools-core-1.4.5-full-compat-yc.js
   vendor/mootools-more-1.4.0.1-min.js
   )
