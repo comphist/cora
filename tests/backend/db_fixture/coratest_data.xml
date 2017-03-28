@@ -5338,15 +5338,11 @@
 	</row>
 	<row>
 		<field name="id">2</field>
-		<field name="name">inflection</field>
+		<field name="name">boundary</field>
 	</row>
 	<row>
 		<field name="id">3</field>
 		<field name="name">lemma verified</field>
-	</row>
-	<row>
-		<field name="id">4</field>
-		<field name="name">boundary</field>
 	</row>
 	</table_data>
 	<table_data name="line">

@@ -147,9 +147,16 @@ class Cora_Tests_XMLHandler_test extends PHPUnit_Framework_TestCase {
     public function testExport() {
         $dom = $this->xh->serializeDocument($this->cd);
         $this->assertNotEmpty($dom);
-        $xml = $dom->saveXML();
+        $xml_string = $dom->saveXML();
+        $this->assertEquals("<", substr($xml_string, 0, 1));
+        libxml_use_internal_errors(true);
+        $xml_dom = new DOMDocument();
+        $xml_dom->loadXML($xml_string);
+        $this->assertNotFalse($xml_dom);
+        $this->assertTrue($xml_dom->relaxNGValidate($GLOBALS["CORA_RELAXNG"]));
+        $this->assertEmpty(libxml_get_errors());
         $this->assertXmlStringEqualsXmlFile(__DIR__ . '/data/XMLHandler_test_expected.xml',
-                                            $xml);
+                                            $xml_string);
     }
 }
 ?>

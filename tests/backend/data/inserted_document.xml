@@ -162,7 +162,7 @@
             <value>9</value>
             <value>9</value>
             <value></value>
-            <value>Anshelm/</value>
+            <value>Anshelm/(.)</value>
         </row>
     </table>
     <table name="inserted_modern">
@@ -174,7 +174,7 @@
         <row>
             <value>15</value>
             <value>7</value>
-            <value>$ol</value>
+            <value>$ol|</value>
             <value></value>
             <value></value>
         </row>

@@ -187,7 +187,7 @@ function get_DBInterface_expected() {
 			     'col_name' => '',
 			     'line_name' => '2',
                             'flag_general_error' => 1,
-                            'flag_inflection' => 1
+                            'flag_boundary' => 1
                         ),
                         array('id'          => '4',
                             'trans'       => 's',
@@ -317,7 +317,7 @@ function get_XMLHandler_expected() {
                         )
                     ),
                     'xml_id' => 't1_m1',
-                    'trans' => '$ol',
+                    'trans' => '$ol|',
                     'ascii' => 'sol',
                     'utf' => 'ſol',
                     'parent_xml_id' => 't1',
@@ -512,8 +512,8 @@ function get_XMLHandler_expected() {
                 ),
                 array(
                     'xml_id' => 't3_d1',
-                    'trans' => 'Anshelm/',
-                    'utf' => 'Anshelm/',
+                    'trans' => 'Anshelm/(.)',
+                    'utf' => 'Anshelm/(.)',
                     'parent_tok_xml_id' => 't3',
                     'parent_line_xml_id' => 'l2'
                 )
@@ -709,7 +709,7 @@ function get_CoraDocument_data() {
                               'parent_tok_db_id' => '9',
                               'parent_line_db_id' => '9',
                               'utf' => '',
-                              'trans' => "Anshelm/")
+                              'trans' => "Anshelm/(.)")
                    ),
         "mods" => array( // mod
                         array("db_id" => "15",
@@ -744,7 +744,7 @@ function get_CoraDocument_data() {
                               'verified' => true,
                               'ascii' => '', // XXX
                               'utf' => '', // XXX
-                              'trans' => '$ol'),
+                              'trans' => '$ol|'),
                         array("db_id" => "16",
                               "xml_id" => "t1_m2",
                               "parent_xml_id" => "t1",
@@ -778,7 +778,7 @@ function get_CoraDocument_data() {
                                       'selected' => '1'
                                   )
                               ),
-                              'flags' => array("inflection"),
+                              'flags' => array("boundary"),
                               'parent_db_id' => '7',
                               'parent_tok_db_id' => '7',
                               'verified' => false,
@@ -910,7 +910,7 @@ function get_CoraDocument_data() {
                                       'selected' => '0'
                                   )
                               ),
-                              'flags' => array("general error", "inflection"),
+                              'flags' => array("general error", "boundary"),
                               'parent_db_id' => '9',
                               'parent_tok_db_id' => '9',
                               'verified' => false,
@@ -919,7 +919,7 @@ function get_CoraDocument_data() {
                               'trans' => '(.)')
                 ),
         "shifttags" => array(
-                           array("type_letter" => "Ü",
+                           array("type_letter" => "T",
                                  "db_range" => array(9, 9),
                                  "range" => array("t3", "t3")
                            )

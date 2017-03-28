@@ -2,6 +2,7 @@
 <phpunit>
     <php>
         <var name="CORA_WEB_DIR" value="@CORA_WEB_DIR@"/>
+        <var name="CORA_RELAXNG" value="@CORA_WEB_DIR@/cora-xml.rng"/>
         <var name="MYSQL_EXEC" value="@MYSQL_EXECUTABLE@"/>
     </php>
     <testsuites>

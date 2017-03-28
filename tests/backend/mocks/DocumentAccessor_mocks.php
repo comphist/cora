@@ -62,7 +62,7 @@ class Cora_Tests_DBInterface_Mock {
 
   public function getErrorTypes() {
     return array("general_error" => 1,
-                 "inflection" => 2);
+                 "boundary" => 2);
   }
 }
 

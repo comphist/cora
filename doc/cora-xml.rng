@@ -182,6 +182,7 @@
       <choice>
         <ref name="annotation_elements"/>
         <ref name="flag_elements"/>
+        <ref name="suggestions"/>
         <!-- DEPRECATED:
              cora-comment shouldn't be used anymore; use comment instead
         -->
@@ -201,13 +202,44 @@
   <define name="annotation_elements">
     <element>
       <anyName>
-	<except>
+        <except>
 	  <name>cora-comment</name>
 	  <name>cora-flag</name>
 	  <name>suggestions</name>
-	</except>
+        </except>
       </anyName>
       <attribute name="tag"/>
+    </element>
+  </define>
+
+  <!-- Annotation suggestions
+
+       Originally intended for annotations suggested by automatic annotators
+       (e.g. POS taggers), this feature is currently not well-maintained and
+       probably shouldn't be relied on.
+  -->
+  <define name="suggestions">
+    <element name="suggestions">
+      <zeroOrMore>
+        <element>
+          <anyName>
+            <except>
+	      <name>cora-comment</name>
+	      <name>cora-flag</name>
+	      <name>suggestions</name>
+            </except>
+          </anyName>
+          <attribute name="tag"/>
+          <optional>
+            <attribute name="source"/>
+          </optional>
+          <optional>
+            <attribute name="score">
+              <data type="double"/>
+            </attribute>
+          </optional>
+        </element>
+      </zeroOrMore>
     </element>
   </define>
 

@@ -141,6 +141,8 @@ add_subdirectory(src)
 # TODO: figure out installation step, could include sth. like
 # install(DIRECTORY ${CORA_WEB_DIR} DESTINATION ???)
 
+configure_file("doc/cora-xml.rng" "${CORA_WEB_DIR}/cora-xml.rng" COPYONLY)
+
 #########################################################
 ## Documentation
 #########################################################

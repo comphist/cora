@@ -50,7 +50,8 @@ UNLOCK TABLES;
 
 LOCK TABLES `error_types` WRITE;
 /*!40000 ALTER TABLE `error_types` DISABLE KEYS */;
-REPLACE INTO `error_types` (`id`, `name`) VALUES (1,'general error'),(2,'inflection'),(3,'lemma verified'),(4,'boundary');
+REPLACE INTO `error_types` (`id`, `name`) VALUES (1,'general error'),(2,'boundary'),(3,'lemma verified');
+
 /*!40000 ALTER TABLE `error_types` ENABLE KEYS */;
 UNLOCK TABLES;
 

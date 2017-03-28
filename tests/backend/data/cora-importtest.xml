@@ -39,7 +39,7 @@
 
     <token id="t1" trans="$ol|tu">
         <dipl id="t1_d1" utf="ſoltu" trans="$ol|tu" />
-        <mod id="t1_m1" ascii="sol" utf="ſol" trans="$ol">
+        <mod id="t1_m1" ascii="sol" utf="ſol" trans="$ol|">
             <lemma tag="sollen"/>
 	    <norm tag="sollst"/>
             <pos tag="VVFIN.2.Sg.Pres.Ind"/>
@@ -77,7 +77,7 @@
     <comment type="E">Beispielemendation</comment>
 
     <token id="t3" trans="Anshelm/(.)">
-        <dipl id="t3_d1" utf="Anshelm/" trans="Anshelm/"/>
+        <dipl id="t3_d1" utf="Anshelm/(.)" trans="Anshelm/(.)"/>
         <mod id="t3_m1" ascii="Anshelm" utf="Anshelm" trans="Anshelm">
 	   <lemma tag="Anselm"/>
 	   <norm tag="Anselm"/>
@@ -89,7 +89,7 @@
             <suggestions>
             </suggestions>
 	</mod>
-	<mod id="t3_m3" trans="(.)">
+	<mod id="t3_m3" ascii="" utf="" trans="(.)">
 	   <pos tag="$."/>
             <suggestions>
             </suggestions>

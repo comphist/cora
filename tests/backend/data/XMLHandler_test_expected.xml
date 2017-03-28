@@ -8,11 +8,11 @@
     <line id="l2" name="02" range="t2_d2..t3_d1"/>
   </layoutinfo>
   <shifttags>
-    <Ü range="t3..t3"/>
+    <title range="t3..t3"/>
   </shifttags>
   <token id="t1" trans="$ol|tu">
     <dipl id="t1_d1" trans="$ol|tu" utf=""/>
-    <mod ascii="" checked="y" id="t1_m1" trans="$ol" utf="">
+    <mod ascii="" checked="y" id="t1_m1" trans="$ol|" utf="">
       <norm tag="sollst"/>
       <suggestions>
         <pos score="0.91" source="user" tag="VVFIN.2.Sg.Pres.Ind"/>
@@ -26,7 +26,7 @@
         <pos score="0.91" source="user" tag="PPER.2.Sg.*.Nom"/>
         <lemma source="user" tag="du"/>
       </suggestions>
-      <cora-flag name="inflection"/>
+      <cora-flag name="boundary"/>
     </mod>
   </token>
   <token id="t2" trans="ge#e$$en">
@@ -42,7 +42,7 @@
   </token>
   <comment type="K">yay foo bar whoo</comment>
   <token id="t3" trans="Anshelm/(.)">
-    <dipl id="t3_d1" trans="Anshelm/" utf=""/>
+    <dipl id="t3_d1" trans="Anshelm/(.)" utf=""/>
     <mod ascii="" checked="n" id="t3_m1" trans="Anshelm" utf="">
       <norm tag="Anselm"/>
       <suggestions>
@@ -65,7 +65,7 @@
         <lemma source="user" tag="."/>
       </suggestions>
       <cora-flag name="general error"/>
-      <cora-flag name="inflection"/>
+      <cora-flag name="boundary"/>
     </mod>
   </token>
 </text>
