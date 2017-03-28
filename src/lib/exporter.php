@@ -20,7 +20,6 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 ?>
-
 <?php
 /** @file exporter.php
  * Export of files.  Implements all file formats except XML,
