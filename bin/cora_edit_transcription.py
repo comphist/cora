@@ -40,10 +40,10 @@ DEFAULT_VALID_SEPARATORS = ['=',
 
 CHECK_SCRIPT_OPTIONS = {
     "check": ["-C", "-L"],
-    "mod_trans": ["-L", "-T", "-c", "orig", "-t", "all", "-p", "leave", "-r", "leave", "-i", "original", "-d", "leave", "-s", "delete", "-e", "leave"],
+    "mod_trans": ["-L", "-T", "-c", "orig", "-t", "all", "-p", "leave", "-r", "leave", "-i", "original", "-d", "leave", "-s", "delete", "-e", "delete"],
     "mod_ascii": ["-L", "-T", "-c", "simple", "-t", "all", "-p", "leave", "-r", "delete", "-i", "leave", "-d", "delete", "-s", "delete", "-e", "delete"],
-    "mod_utf": ["-L", "-T", "-c", "utf", "-t", "all", "-p", "leave", "-r", "delete", "-i", "leave", "-d", "delete", "-s", "delete", "-e", "delete"],
-    "dipl_trans": ["-L", "-T", "-S", "-c", "orig", "-t", "historical", "-p", "leave", "-r", "leave", "-i", "original", "-d", "leave", "-s", "original", "-e", "leave"],
+    "mod_utf": ["-L", "-T", "-c", "utf", "-t", "all", "-p", "leave", "-r", "delete", "-i", "character", "-d", "delete", "-s", "delete", "-e", "delete"],
+    "dipl_trans": ["-L", "-T", "-S", "-c", "orig", "-t", "historical", "-p", "leave", "-r", "leave", "-i", "original", "-d", "leave", "-s", "original", "-e", "delete"],
     "dipl_utf": ["-L", "-T", "-S", "-c", "utf", "-t", "historical", "-p", "delete", "-r", "delete", "-i", "leave", "-d", "leave", "-s", "leave", "-e", "delete"]
     }
 
