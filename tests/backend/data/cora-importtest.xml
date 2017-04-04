@@ -91,6 +91,7 @@
 	</mod>
 	<mod id="t3_m3" ascii="" utf="" trans="(.)">
 	   <pos tag="$."/>
+           <comment tag="CorA-interner Kommentar"/>
             <suggestions>
             </suggestions>
 	</mod>

@@ -464,6 +464,13 @@ function get_XMLHandler_expected() {
                         'score' => null,
                         'type' => 'pos',
                         'tag' => '$.'
+                    ),
+                    array(
+                        'source' => 'user',
+                        'selected' => 1,
+                        'score' => null,
+                        'type' => 'comment',
+                        'tag' => 'CorA-interner Kommentar'
                     )),
                     'xml_id' => 't3_m3',
                     'trans' => '(.)',

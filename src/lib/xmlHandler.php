@@ -226,8 +226,8 @@ class XMLHandler {
         $tokcount = 1;
         $lasttokid = "t0";
         while ($reader->read()) {
-            // only handle opening tags
-            if ($reader->nodeType !== XMLReader::ELEMENT) {
+            // only handle opening tags that are direct children of the <text> element
+            if ($reader->nodeType !== XMLReader::ELEMENT || $reader->depth !== 1) {
                 continue;
             }
             $node = simplexml_import_dom($doc->importNode($reader->expand(), true));
