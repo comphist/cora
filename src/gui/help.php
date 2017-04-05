@@ -1,6 +1,6 @@
 <?php 
 /*
- * Copyright (C) 2015 Marcel Bollmann <bollmann@linguistics.rub.de>
+ * Copyright (C) 2015-2017 Marcel Bollmann <bollmann@linguistics.rub.de>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -36,7 +36,7 @@ $maintainer = Cfg::get('local_maintainer');
       </p>
       <ul>
         <li>
-          <a href="http://cora.readthedocs.org/" data-trans-id="Help.guideTitle"><?=$lh("Help.guideTitle"); ?></a>
+          <a href="http://cora.readthedocs.org/" data-trans-id="Help.guideTitle" target="_blank"><?=$lh("Help.guideTitle"); ?></a>
         </li>
       </ul>
 
@@ -54,12 +54,12 @@ $maintainer = Cfg::get('local_maintainer');
         <?=$lh("Help.paragraphAskAnAdmin"); ?>
       </p>
 
-      <?php if (isset($maintainer['name']) || isset($maintainer['email'])):
+      <?php if (!empty($maintainer['name']) || !empty($maintainer['email'])):
                 $contact_info = "";
-                if (isset($maintainer['name'])):
+                if (!empty($maintainer['name'])):
                     $contact_info = $maintainer['name'] . " ";
                 endif;
-                if (isset($maintainer['email'])):
+                if (!empty($maintainer['email'])):
                     $contact_info = "<a href=\"mailto:" . $maintainer['email'] .
                                     "\">" . $contact_info .
                                     "&lsaquo;" . $maintainer['email'] . "&rsaquo;</a>";
@@ -76,7 +76,7 @@ $maintainer = Cfg::get('local_maintainer');
       <?php if ($_SESSION["admin"]): ?>
         <p data-trans-id="Help.paragraphUseTheIssueTracker"><?=$lh("Help.paragraphUseTheIssueTracker"); ?></p>
         <ul>
-          <li><a href="https://github.com/comphist/cora/issues" data-trans-id="Help.issueTracker">
+          <li><a href="https://github.com/comphist/cora/issues" data-trans-id="Help.issueTracker" target="_blank">
             <?=$lh("Help.issueTracker"); ?>
           </a></li>
         </ul>
