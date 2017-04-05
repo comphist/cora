@@ -23,4 +23,8 @@
 
 LOCK TABLES `tagset` WRITE;
 ALTER TABLE `tagset` ADD COLUMN `settings` text DEFAULT NULL;
+
+-- preserve old default behaviour
+UPDATE `tagset` SET `settings`='{"url_with_id": "http://www.woerterbuchnetz.de/DWB?lemid={value}", "url_with_lemma": "http://www.woerterbuchnetz.de/DWB?lemma={value}"}' WHERE `class`="lemma_sugg";
+
 UNLOCK TABLES;

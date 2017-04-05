@@ -207,6 +207,7 @@
             "taggerDeleted": "Tagger gel\u00f6scht.",
             "taggerOptionsUpdated": "Tagger-Optionen ge\u00e4ndert.",
             "tagsetsChanged": "Tagset-Verkn\u00fcpfungen ge\u00e4ndert.",
+            "tagsetLemmaSuggNoURL": "Keine URL f\u00fcr den Lemma-Link eingestellt!",
             "transcriptionEmpty": "Transkription darf nicht leer sein!",
             "userAdded": "Benutzer hinzugef\u00fcgt.",
             "userDeleted": "Benutzer gel\u00f6scht.",

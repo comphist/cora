@@ -72,6 +72,7 @@ var Tagset = new Class({
     exportable: true,  /**< can user export this tagset in CSV format? */
     split_class: false,  /**< is this tagset displayed as two? */
     value_key: '',  /**< defaults to "anno_" + class */
+    settings: null,  /**< tagset-specific settings as defined in the database */
 
     tags: [],
     processed: false,
@@ -99,6 +100,9 @@ var Tagset = new Class({
         if(typeof(data.class) !== "undefined") {
             this.class = data.class;
             this.value_key = "anno_" + this.class;
+        }
+        if(typeof(data.settings) !== "undefined" && data.settings) {
+            this.settings = JSON.parse(data.settings);
         }
     },
 

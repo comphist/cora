@@ -207,6 +207,7 @@
             "taggerDeleted": "Tagger successfully deleted.",
             "taggerOptionsUpdated": "Tagger options updated successfully.",
             "tagsetsChanged": "Applied tagset settings.",
+            "tagsetLemmaSuggNoURL": "No URL defined for external lemma link!",
             "transcriptionEmpty": "Please enter a transcription!",
             "userAdded": "User added.",
             "userDeleted": "User successfully deleted.",

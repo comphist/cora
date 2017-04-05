@@ -32,7 +32,6 @@ var LemmaSuggTagset = new Class({
     eventString: 'click:relay(div.editTableLemmaLink)',
     searchable: false,
     exportable: false,
-    baseURL: "http://www.woerterbuchnetz.de/DWB",
     windowTarget: "coraExternalLemmaLink",
 
     /* Constructor: Tagset
@@ -98,14 +97,22 @@ var LemmaSuggTagset = new Class({
        Opens a link to an external website.
      */
     openExternalLemmaLink: function(value) {
-        var split, targetURL = this.baseURL;
-        if (typeof(value) !== "undefined" && value !== null) {
+        var split, targetURL = null;
+        if (this.settings && typeof(value) !== "undefined" && value !== null) {
             split = this._acSplitExternalId(value);
-            if(split[1].length > 0)
-                targetURL = targetURL + "?lemid=" + split[1];
-            else
-                targetURL = targetURL + "?lemma=" + split[0];
+            if(split[1].length > 0) {
+                if(this.settings['url_with_id'])
+                    targetURL = this.settings['url_with_id'].substitute({value: split[1]});
+            }
+            else {
+                if(this.settings['url_with_lemma'])
+                    targetURL = this.settings['url_with_lemma'].substitute({value: split[0]});
+            }
         }
-        window.open(targetURL, this.windowTarget);
+        if(targetURL) {
+            window.open(targetURL, this.windowTarget);
+        } else {
+            gui.showNotice('error', _("Banner.tagsetLemmaSuggNoURL"));
+        }
     }
 });
