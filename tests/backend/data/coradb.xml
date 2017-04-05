@@ -460,28 +460,32 @@
 	</table_data>
 	<table_data name="tagset">
 	<row>
-		<field name="id">1</field>
-		<field name="name">ImportTest</field>
-		<field name="set_type">closed</field>
-		<field name="class">POS</field>
+            <field name="id">1</field>
+            <field name="name">ImportTest</field>
+            <field name="set_type">closed</field>
+            <field name="class">POS</field>
+            <field name="settings"></field>
 	</row>
         <row>
             <field name="id">2</field>
             <field name="name">NormTest</field>
             <field name="set_type">open</field>
             <field name="class">norm</field>
+            <field name="settings"></field>
         </row>
         <row>
             <field name="id">3</field>
             <field name="name">LemmaTest</field>
             <field name="set_type">open</field>
             <field name="class">lemma</field>
+            <field name="settings"></field>
         </row>
         <row>
             <field name="id">4</field>
             <field name="name">Comment</field>
             <field name="set_type">open</field>
             <field name="class">comment</field>
+            <field name="settings"></field>
         </row>
 	</table_data>
 	<table_data name="text2tagset">

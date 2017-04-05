@@ -57,19 +57,27 @@ function get_DBInterface_expected() {
 			   "ts1" => array("id" => '1',
 					  "name" => "ImportTest",
 					  "class" => "pos",
-					  "set_type" => "closed"),
+                      "set_type" => "closed",
+                      "settings" => ""
+               ),
 			   "ts2" => array("id" => '2',
 					  "name" => "NormTest",
 					  "class" => "norm",
-					  "set_type" => "open"),
+                      "set_type" => "open",
+                      "settings" => ""
+               ),
 			   "ts3" => array("id" => '3',
 					  "name" => "LemmaTest",
 					  "class" => "lemma",
-					  "set_type" => "open"),
+                      "set_type" => "open",
+                      "settings" => ""
+               ),
 			   "ts4" => array("id" => '4',
 					  "name" => "Comment",
 					  "class" => "comment",
-					  "set_type" => "open"),
+                      "set_type" => "open",
+                      "settings" => ""
+               ),
 			   ),
         "texts" => array(
             "t1" => array("id" => "3",

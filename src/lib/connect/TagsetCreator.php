@@ -37,12 +37,14 @@ class TagsetCreator extends TagsetAccessor {
      * @param string $cls Class of the new tagset
      * @param string $settype Set type of the new tagset (open,closed)
      * @param string $name Name of the new tagset
+     * @param string $settings (optional) Tagset-specific settings
      */
-    function __construct($dbo, $cls, $settype, $name) {
+    function __construct($dbo, $cls, $settype, $name, $settings="") {
         parent::__construct($dbo, null);
         $this->tsclass = $cls;
         $this->settype = $settype;
         $this->name = $name;
+        $this->settings = $settings;
     }
 
     /** Add a list of tags.
@@ -67,9 +69,10 @@ class TagsetCreator extends TagsetAccessor {
     }
 
     protected function executeCommitChanges() {
-        $stmt = "INSERT INTO tagset (`name`, `set_type`, `class`) "
-              . "VALUES (:name, :settype, :class)";
-        $data = array(':name' => $this->name, ':settype' => $this->settype, ':class' => $this->tsclass);
+        $stmt = "INSERT INTO tagset (`name`, `set_type`, `class`, `settings`) "
+              . "VALUES (:name, :settype, :class, :settings)";
+        $data = array(':name' => $this->name, ':settype' => $this->settype,
+                      ':class' => $this->tsclass, ':settings' => $this->settings);
         $stmt_createTagset = $this->dbo->prepare($stmt);
         $stmt_createTagset->execute($data);
         $this->id = $this->dbo->lastInsertId();

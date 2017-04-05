@@ -286,6 +286,7 @@ CREATE TABLE `tagset` (
   `name` varchar(255) NOT NULL,
   `set_type` enum('open','closed') NOT NULL,
   `class` varchar(255) NOT NULL,
+  `settings` text DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;

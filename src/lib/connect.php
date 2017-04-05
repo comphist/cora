@@ -206,7 +206,7 @@ class DBInterface {
      */
     public function getTagsets($class = "pos", $orderby = "name") {
         $qs = "SELECT `id`, `id` AS `shortname`, `name` AS `longname`, `set_type`,"
-            . "         LOWER(class) AS `class`"
+            . "       LOWER(class) AS `class`, `settings`"
             . "    FROM tagset";
         if ($class) {
             $qs.= " WHERE `class`=:class";
@@ -556,7 +556,8 @@ class DBInterface {
      * given file.
      */
     public function getTagsetsForFile($fileid) {
-        $qs = "SELECT ts.id, ts.name, LOWER(ts.class) AS `class`, ts.set_type "
+        $qs = "SELECT ts.id, ts.name, LOWER(ts.class) AS `class`, "
+            . "       ts.set_type, ts.settings "
             . "     FROM text2tagset ttt "
             . "     LEFT JOIN tagset ts  ON ts.id=ttt.tagset_id "
             . "    WHERE ttt.text_id=:tid";
