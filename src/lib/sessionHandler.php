@@ -435,7 +435,7 @@ class CoraSessionHandler {
     }
 
     private function makeExportFilename($data, $format) {
-        $name = $data['fullname'];
+        $name = str_replace("\"", "'", $data['fullname']);
         if ($data['sigle']) $name = "[" . $data['sigle'] . "] " . $name;
         $name.= ExportType::mapToExtension($format);
         return $name;
@@ -456,7 +456,7 @@ class CoraSessionHandler {
         $this->wrapper->sendHeader("Content-Type: " . ExportType::mapToContentType($format));
         // $this->wrapper->sendHeader("Content-Transfer-Encoding: Binary");
         // $this->wrapper->sendHeader("Content-Length:".filesize($attachment_location));
-        $this->wrapper->sendHeader("Content-Disposition: attachment; filename=" . $filename);
+        $this->wrapper->sendHeader("Content-Disposition: attachment; filename=\"" . $filename . "\"");
         $exp->export($fileid, $format, $options, $output);
         return true;
     }
