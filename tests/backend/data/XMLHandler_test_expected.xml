@@ -15,16 +15,18 @@
     <mod ascii="" checked="y" id="t1_m1" trans="$ol|" utf="">
       <norm tag="sollst"/>
       <suggestions>
-        <pos score="0.91" source="user" tag="VVFIN.2.Sg.Pres.Ind"/>
+        <pos score="0.91" source="user" tag="VVFIN"/>
         <lemma source="user" tag="sollen"/>
+        <morph score="0.91" source="user" tag="2.Sg.Pres.Ind"/>
       </suggestions>
     </mod>
     <mod ascii="" checked="n" id="t1_m2" trans="tu" utf="">
       <norm tag="du"/>
       <comment tag="Interessantes Phänomen hier"/>
       <suggestions>
-        <pos score="0.91" source="user" tag="PPER.2.Sg.*.Nom"/>
+        <pos score="0.91" source="user" tag="PPER"/>
         <lemma source="user" tag="du"/>
+        <morph score="0.91" source="user" tag="2.Sg.*.Nom"/>
       </suggestions>
       <cora-flag name="boundary"/>
     </mod>
@@ -46,8 +48,9 @@
     <mod ascii="" checked="n" id="t3_m1" trans="Anshelm" utf="">
       <norm tag="Anselm"/>
       <suggestions>
-        <pos score="0.91" source="user" tag="NE.Masc.Nom.Sg"/>
+        <pos score="0.91" source="user" tag="NE"/>
         <lemma source="user" tag="Anselm"/>
+        <morph score="0.91" source="user" tag="Masc.Nom.Sg"/>
       </suggestions>
     </mod>
     <mod ascii="" checked="n" id="t3_m2" trans="/" utf="">

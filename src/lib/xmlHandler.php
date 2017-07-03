@@ -34,12 +34,14 @@ class XMLHandler {
     private $db; /**< A DBInterface object. */
     private $output_suggestions; /**< Boolean indicating whether to output tagger suggestions. */
     private $xml_header_options; /**< Valid attributes for the XML <header> tag. */
+    private $posMorphSeparator; /**< Glue between "pos" and "morph" attributes. */
 
     function __construct($db, $lh) {
         $this->db = $db;
         $this->lh = $lh;
         $this->output_suggestions = true;
         $this->xml_header_options = array('sigle', 'name', 'tagset', 'progress');
+        $this->posMorphSeparator = ".";
     }
 
     /****** FUNCTIONS RELATED TO DATA IMPORT ******/
@@ -78,6 +80,15 @@ class XMLHandler {
         $start = $x[0];
         $end = (isset($x[1]) ? $x[1] : $x[0]);
         return array($start, $end);
+    }
+
+    /** Splits a POS tag into "pos" and "morph". */
+    private function splitTag($tag) {
+        $pos = strpos($tag, ".");
+        if ($pos === false || $pos === (strlen($tag) - 1)) {
+            return array($tag, null);
+        }
+        return array(substr($tag, 0, $pos), substr($tag, $pos + 1));
     }
 
     /** Process layout information. */
@@ -207,6 +218,22 @@ class XMLHandler {
                     }
                 }
             }
+            // join "morph" tags with their corresponding "pos" tags
+            foreach ($modern['tags'] as $anno) {
+                if ($anno['type'] == "morph") {
+                    foreach ($modern['tags'] as &$posanno) {
+                        if ($posanno['type'] == "pos" &&
+                            $posanno['selected'] == $anno['selected'] &&
+                            $posanno['source'] == $anno['source'] &&
+                            $posanno['score'] == $anno['score']) {
+                            $posanno['tag'] = $posanno['tag'] . $this->posMorphSeparator . $anno['tag'];
+                            break;
+                        }
+                    }
+                    unset($posanno);
+                }
+            }
+            $modern['tags'] = array_filter($modern['tags'], function($e) { return $e['type'] != "morph"; });
             $m[] = $modern;
         }
         return $thistokid;
@@ -459,7 +486,29 @@ class XMLHandler {
             $elem->setAttribute('ascii', $mod['ascii']);
             $elem->setAttribute('checked', ($mod['verified'] ? 'y' : 'n'));
             $suggestions = $doc->createElement('suggestions');
-            foreach ($mod['tags'] as & $currenttag) {
+            // split POS into "pos" and "morph"
+            $newtags = array();
+            foreach ($mod['tags'] as &$currenttag) {
+                if (empty($currenttag['tag'])) {
+                    continue;
+                }
+                if (strtolower($currenttag['type']) == "pos") {
+                    list($pos, $morph) = $this->splitTag($currenttag['tag']);
+                    if ($morph !== null) {
+                        $newtag = $currenttag;
+                        $newtag['type'] = "morph";
+                        $newtag['tag'] = $morph;
+                        $currenttag['tag'] = $pos;
+                        $newtags[] = $newtag;
+                    }
+                }
+            }
+            unset($currenttag);
+            foreach ($newtags as $newtag) {
+                $mod['tags'][] = $newtag;
+            }
+            // serialize to XML elements
+            foreach ($mod['tags'] as &$currenttag) {
                 if (empty($currenttag['tag'])) {
                     continue;
                 }
