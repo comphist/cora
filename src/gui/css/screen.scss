@@ -1008,6 +1008,10 @@ table.editTable{
         &.editTable_tokenid {
             text-align: right;
         }
+        &.editTable_lemma_sugg {
+            padding-left: 0;
+            padding-right: 0;
+        }
     }
 
     td {
@@ -1054,6 +1058,10 @@ table.editTable{
         }
         &.editTable_lemma_sugg {
             padding-left: 0 !important;
+
+            &:empty {
+                padding: 0 !important;
+            }
         }
 
         &.data-table-clickable {

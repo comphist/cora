@@ -53,6 +53,11 @@ var LemmaSuggTagset = new Class({
          td - Table cell element to update
      */
     buildTemplate: function(td) {
+        if (!this.settings ||
+            !(this.settings["url_with_id"] || this.settings["url_with_lemma"])) {
+            // don't show link icon when no links are defined
+            td.empty();
+        }
     },
 
     /* Function: getEventData
