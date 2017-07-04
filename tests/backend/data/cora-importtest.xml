@@ -81,7 +81,8 @@
         <mod id="t3_m1" ascii="Anshelm" utf="Anshelm" trans="Anshelm">
 	   <lemma tag="Anselm"/>
 	   <norm tag="Anselm"/>
-	   <pos tag="NE._._._"/>
+	   <pos tag="NE"/>
+           <morph tag="_._._"/>
             <suggestions></suggestions>
 	</mod>
 	<mod id="t3_m2" ascii="/" utf="/" trans="/">

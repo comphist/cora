@@ -70,10 +70,13 @@ internally**, and actually represent a single annotation of the value
 In a tag value, everything preceding the first dot is considered to be the
 (base) "POS" tag, while everything following it is treated as belonging to
 "Morphology".  An exception is made for tags having a single dot at the end,
-because some tagsets use tags like "*$.*" for punctuation.  Note that you
-are *not required* to use morphological attributes in your tags --- it is
-perfectly fine to use tagsets with only plain POS tags; the "Morphology" column
-can be [conveniently hidden](doc-customize.md) in this case.
+because some tagsets use tags like "*$.*" for punctuation.
+When [exporting documents to XML](coraxml.md), POS tags are split up into "pos"
+and "morph" tags according to this rule.
+
+Note that you are *not required* to use morphological attributes in your tags
+--- it is perfectly fine to use tagsets with only plain POS tags; the
+"Morphology" column can be [conveniently hidden](doc-customize.md) in this case.
 
 ### Lemmatization
 
