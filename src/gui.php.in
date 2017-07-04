@@ -40,6 +40,10 @@ function _gui_make_title() {
     <meta name="description" content="<?php echo Cfg::get('description'); ?>" />
     <meta name="robots" content="noindex" />
 
+    <link rel="icon" type="image/png" href="gui/images/cora-icon-16.png" />
+    <link rel="icon" type="image/png" href="gui/images/cora-icon-32.png" />
+    <link rel="icon" type="image/png" href="gui/images/cora-icon-64.png" />
+
     <!-- **************** Cascading Style Sheets **************** -->
     <link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,700,400,600" rel="stylesheet" type="text/css">
     <link rel="stylesheet" type="text/css" href="@CORA_HREF_CSS_MASTER@" media="all" />
