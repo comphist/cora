@@ -102,7 +102,7 @@ var TokenSearcher = new Class({
                  event: function() { this.reset(); }.bind(this)
                 },
 		{title: _("Action.cancel"), addClass: 'mform'},
-		{title: _("Action.search"), addClass: 'mform button_green',
+		{title: _("Action.search"), addClass: 'mform button_green button_submit',
 		 event: function() {
                      var spinner = new Spinner(this.mbox.container);
                      spinner.show();
@@ -172,6 +172,14 @@ var TokenSearcher = new Class({
                     this._fillSearchMatcher(target);
                 } else if(target.hasClass('editSearchMatch')) {
                     this._setInputField(target);
+                }
+            }.bind(this)
+        );
+        this.flexrow.container.addEvent(
+            'keypress:relay(input)',
+            function(event, target) {
+                if (event.key == "enter") {
+                    this.mbox.buttonContainer.getChildren(".button_submit").fireEvent("mouseup");
                 }
             }.bind(this)
         );
