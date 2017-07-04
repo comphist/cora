@@ -855,7 +855,6 @@ table.fileList {
 
 tr.opened a.filenameOpenLink,
 tr.opened a.deleteFileLink,
-tr.opened a.exportFileLink,
 tr.opened a.editTagsetAssocLink,
 tr.opened .ftr-changed-at, tr.opened .ftr-changed-by,
 tr.opened .ftr-created-at, tr.opened .ftr-created-by,
@@ -868,7 +867,6 @@ tr.opened a.filenameOpenLink:hover {
 }
 
 tr.opened a.deleteFileLink,
-tr.opened a.exportFileLink,
 tr.opened a.editTagsetAssocLink {
     pointer-events: none;
 }
