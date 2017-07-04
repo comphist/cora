@@ -871,6 +871,11 @@ tr.opened a.editTagsetAssocLink {
     pointer-events: none;
 }
 
+div#tagsetAssociationTable, div#automaticAnnotationForm {
+    overflow-y: auto;
+    max-height: 70vh;
+}
+
 /* File export dialog */
 
 div#fileExportPopup {
