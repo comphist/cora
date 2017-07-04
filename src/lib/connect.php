@@ -1792,8 +1792,9 @@ class DBInterface {
         $olddipl = array();
         $oldmod = array();
         $lineids = array(); // all possible line IDs for this token
+        $dipl_break_values = array_count_values($converted['dipl_breaks']);
+        $newlinecount = (isset($dipl_break_values[1]) ? 1 + $dipl_break_values[1] : 1);
         // delete newlines in the token transcription
-        $newlinecount = substr_count($toktrans, "\n") + 1;
         $toktrans = str_replace("\n", "", $toktrans);
         // get current dipls
         $qs = "SELECT * FROM dipl WHERE `tok_id`=:tokid ORDER BY `id` ASC";

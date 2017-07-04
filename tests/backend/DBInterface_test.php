@@ -483,16 +483,22 @@ class Cora_Tests_DBInterface_test extends Cora_Tests_Old_DbTestCase {
     public function testEditToken() {
         // $this->editToken($textid, $tokenid, $toktrans, $converted);
         $this->assertEquals(array("success" => false,
-                                  "errors" => array("TranscriptionError.lineBreakDangling")),
-                            $this->dbi->editToken("4", "6", "neutest", "test neu", "3"));
-
-        $actual = $this->dbi->editToken("3", "3",
-                                  "neutest", array("dipl_trans" => array("testneu"),
-                                                   "dipl_utf" => array("testneu"),
-                                                   "mod_trans" => array("testneu"),
-                                                   "mod_ascii" => array("testneu"),
-                                                   "mod_utf" => array("testneu"),
-                                                   "dipl_breaks" => array("0")), "3"
+                                  "errors" => array("TranscriptionError.lineBreakMisplaced")),
+                            $this->dbi->editToken("3", "3", "neutest",
+                                                  array("dipl_trans" => array("test# neu"),
+                                                        "dipl_utf" => array("test neu"),
+                                                        "mod_trans" => array("test#", "neu"),
+                                                        "mod_ascii" => array("test", "neu"),
+                                                        "mod_utf" => array("test", "neu"),
+                                                        "dipl_breaks" => array("1", "0")), "3")
+        );
+        $actual = $this->dbi->editToken("3", "3", "neutest",
+                                        array("dipl_trans" => array("testneu"),
+                                              "dipl_utf" => array("testneu"),
+                                              "mod_trans" => array("testneu"),
+                                              "mod_ascii" => array("testneu"),
+                                              "mod_utf" => array("testneu"),
+                                              "dipl_breaks" => array("0")), "3"
         );
         $this->assertEquals(array("success" => true,
                                   "oldmodcount" => 1,
