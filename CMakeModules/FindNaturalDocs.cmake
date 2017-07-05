@@ -9,7 +9,7 @@
 #    <https://github.com/malaterre/GDCM/>
 #
 
-find_program(NATURALDOCS_EXECUTABLE naturaldocs)
+find_program(NATURALDOCS_EXECUTABLE NAMES naturaldocs NaturalDocs)
 
 if(NATURALDOCS_EXECUTABLE)
     execute_process(COMMAND ${NATURALDOCS_EXECUTABLE} --help
