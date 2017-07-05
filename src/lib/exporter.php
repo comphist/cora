@@ -107,7 +107,7 @@ class Exporter {
             return $this->exportCSV($fileid, $options, $handle);
         }
         // make a try..catch
-        $doc = CoraDocument::fromDB($fileid, $this->db);
+        $doc = CoraDocument::fromDB($fileid, $this->db, $this->lh);
         if ($format == ExportType::CoraXML) {
             return $this->exportCoraXML($doc, $handle);
         }

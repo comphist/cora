@@ -76,14 +76,14 @@ class CoraDocument {
      * @return A new @c CoraDocument object representing the file with
      * the supplied ID.
      */
-    public static function fromDB($fileid, $db) {
+    public static function fromDB($fileid, $db, $lh = null) {
         // File metadata
         $openfile = $db->openFile($fileid);
         if (!$openfile || !$openfile['success']) {
             throw new DocumentImportException("Couldn't open the file in the database."); //$LOCALE
         }
         $metadata = $openfile['data'];
-        $instance = new self($metadata);
+        $instance = new self($metadata, $lh);
         // Tokens
         $data = $db->getAllTokens($fileid);
         list($toks, $dipls, $mods) = $data;
