@@ -22,6 +22,14 @@ The following dependencies are **optional**:
 * PHPUnit 4.8-5.7 with DBUnit (2.x) extension (for PHP unit tests); PHPUnit 6+
   is explicitly **not** supported at this time
 
+* NodeJS (for JS unit tests) with the following components (can be installed
+  automatically if npm is available):
+    * chai
+    * istanbul
+    * mocha
+    * mocha-phantomjs
+    * mocha-phantomjs-istanbul
+
 * Doxygen (for API documentation of PHP files)
 
 * mkdocs 0.14+ (for user documentation)
