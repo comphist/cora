@@ -12,12 +12,12 @@ configure_all("${CMAKE_CURRENT_BINARY_DIR}"
 
 configure_all_copyonly("${CMAKE_CURRENT_BINARY_DIR}"
   cli_status_bar.php
-  clone_file.php
-  clone_project.php
-  cloning_tools.php
-  create_user.php
+  cora_clone_file.php
+  cora_clone_project.php
+  cora_create_user.php
+  cora_export_file.php
+  cora_update_taglist.php
+  cora_cloning_tools.php
   debug_memory_usage.php
   debug_get_lemma_sugg.php
-  export_file.php
-  update_taglist.php
 )

@@ -58,6 +58,10 @@ if [ "$BUILDZIP" = "ON" ]; then
     cp -r www "$ZIPDIR/cora/www"
     cp -r docs/user "$ZIPDIR/cora/docs"
     cp -r ../README* "$ZIPDIR/cora"
+    mkdir "$ZIPDIR/cora/bin"
+    cp bin/cli_status_bar.php "$ZIPDIR/cora/bin"
+    cp bin/cora_* "$ZIPDIR/cora/bin"
+    cp ../bin/*.py "$ZIPDIR/cora/bin"
     tar czf current_build.tar.gz -C "$ZIPDIR" cora
     rm -rf "$ZIPDIR"
 fi

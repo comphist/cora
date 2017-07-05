@@ -22,7 +22,7 @@
  */ ?>
 <?php
 ini_set('memory_limit', '-1');
-require_once "cloning_tools.php";
+require_once "cora_cloning_tools.php";
 $cloning = new CloningTools();
 
 $options = getopt("i:p:sh");
