@@ -28,7 +28,7 @@
  */
 
 return array(
-  "version" => "1.2",
+  "version" => "1.4",
   "db_version" => "6"
 );
 

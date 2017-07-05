@@ -6,7 +6,7 @@
 
 CorA is a web-based annotation tool for non-standard language data.
 
-* Current version: **1.2**
+* Current version: **1.4**
 * [CorA project website](http://www.linguistics.rub.de/comphist/resources/cora/)
 * [CorA user documentation](http://cora.readthedocs.io/)
 
