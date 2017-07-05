@@ -5,12 +5,7 @@ file(RELATIVE_PATH CORA_REL_DB_DIR "${CMAKE_CURRENT_BINARY_DIR}" "${CORA_DB_DIR}
 # ones should even be installed somewhere, and how should we configure their
 # CorA directory?
 configure_all("${CMAKE_CURRENT_BINARY_DIR}"
-  cloning_tools.php
-  create_user.php
-  debug_memory_usage.php
-  debug_get_lemma_sugg.php
-  export_file.php
-  update_taglist.php
+  cora_config_webdir.php
   repair_duplicate_mod2error.php
   repair_duplicate_tags.php
 )
@@ -19,4 +14,10 @@ configure_all_copyonly("${CMAKE_CURRENT_BINARY_DIR}"
   cli_status_bar.php
   clone_file.php
   clone_project.php
+  cloning_tools.php
+  create_user.php
+  debug_memory_usage.php
+  debug_get_lemma_sugg.php
+  export_file.php
+  update_taglist.php
 )
