@@ -36,7 +36,7 @@ If you plan to build CorA yourself, further dependencies are needed; see
 ## Installation ##
 
 The easy way to install CorA is to simply
-[download an archive containing a prepared build](https://bitbucket.org/mbollmann/cora/downloads).
+[download an archive containing a prepared build](https://github.com/comphist/cora/releases).
 If you want to modify parts of the source code, run unit tests, etc., you should
 follow the instructions in INSTALL.md instead.
 
