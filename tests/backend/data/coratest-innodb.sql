@@ -306,7 +306,7 @@ CREATE TABLE `text` (
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `creator_id` int(11) NOT NULL,
   `changed` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `changer_id` int(11) NOT NULL,
+  `changer_id` int(11) DEFAULT NULL,
   `currentmod_id` bigint(20) DEFAULT NULL,
   `header` text,
   `fullfile` text,

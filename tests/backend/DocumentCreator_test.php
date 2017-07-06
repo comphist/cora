@@ -46,6 +46,7 @@ class Cora_Tests_DocumentCreator_test extends Cora_Tests_Old_DbTestCase {
     $this->dbo = new PDO($GLOBALS["DB_DSN"],
                          $GLOBALS["DB_USER"],
                          $GLOBALS["DB_PASSWD"]);
+    $this->dbo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     parent::setUp();
   }
 

@@ -35,6 +35,7 @@ class Cora_Tests_DocumentReader_test extends Cora_Tests_DbTestCase {
         $this->dbo = new PDO($GLOBALS["DB_DSN"],
                              $GLOBALS["DB_USER"],
                              $GLOBALS["DB_PASSWD"]);
+        $this->dbo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->obj = new DocumentReader(new Cora_Tests_DBInterface_Mock(), $this->dbo, $this->fileid);
         parent::setUp();
     }

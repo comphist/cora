@@ -64,6 +64,7 @@ abstract class Cora_Tests_Old_DbTestCase
                 self::$pdo = new PDO($GLOBALS["DB_DSN"],
                                      $GLOBALS["DB_USER"],
                                      $GLOBALS["DB_PASSWD"]);
+                self::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             }
             $this->conn =
                 $this->createDefaultDBConnection(self::$pdo, ':memory:');
