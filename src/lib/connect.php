@@ -2060,9 +2060,9 @@ class DBInterface {
                       . "       LEFT JOIN text ON token.text_id=text.id "
                       . "       LEFT JOIN mod2error ON mod2error.mod_id=modern.id "
                       . "     WHERE  mod2error.error_id=:errid "
-                      . "        AND UPPER(modern.ascii)=UPPER(:ascii) "
+                      . "        AND modern.ascii=:ascii "
                       . "        AND text.project_id=:projectid "
-                      . "        AND LOWER(tagset.class)='lemma' "
+                      . "        AND tagset.class='lemma' "
                       . "        AND ts.selected=1 ";
                 $stmt = $this->dbo->prepare($qstr);
                 $stmt->execute(array(':errid' => $lemma_verified,
