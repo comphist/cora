@@ -446,8 +446,12 @@ var EditorModel = new Class({
             function(e) {  // onError
                 if (this.getRangeStart !== start || this.getRangeEnd !== end)
                     return;  // we're too late
-                gui.showNotice('error', e.message,
-                               (e.name === 'FailureToLoadLines'));
+                if(e instanceof CoraRequestError) {
+                    e.showAsNotice();
+                } else {
+                    gui.showNotice('error', e.message,
+                                   (e.name === 'FailureToLoadLines'));
+                }
                 this.getRangeRetryTimer = setTimeout(
                     function(){
                         this.getRangeRetryTimer = null;
@@ -725,7 +729,7 @@ var EditorModel = new Class({
 	    }.bind(this),
             onError: function(error) {
                 if(typeof(onerror) === "function")
-                    onerror({'name': error.name, 'message': error.message});
+                    onerror(error);
             },
             onComplete: function() { this.lineRequestInProgress = false; }.bind(this)
 	}).get({'start_id': range[0], 'end_id': range[1]});
