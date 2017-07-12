@@ -46,7 +46,7 @@ var LineJumper = new Class({
     _initializeDialog: function() {
         var ref = this;
         this.mbox = new mBox.Modal({
-	    content: 'jumpToLineForm',
+	    content: $('jumpToLineForm').clone(),
 	    title: _("EditorTab.topButton.goToLine"),
 	    buttons: [
 		{title: _("Action.cancel"), addClass: 'mform'},
