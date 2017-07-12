@@ -41,6 +41,7 @@ set(FRONTEND_TESTS
   test_LineJumper.html
   )
 set(FRONTEND_TEST_ASSETS
+  test_tagsets.js
   test_LineJumper.js
   )
 
