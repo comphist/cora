@@ -45,10 +45,6 @@ class Cora_Tests_LocaleHandler_Test extends PHPUnit_Framework_TestCase {
         $this->lh = new Cora_Tests_LocaleHandler_Mock();
     }
 
-    public function testDefaultLocale() {
-        $this->assertEquals("en-US", $this->lh->defaultLocale());
-    }
-
     public function testIsSupported() {
         $this->assertTrue($this->lh->isSupported("en-US"));
         $this->assertTrue($this->lh->isSupported("de-DE"));
@@ -73,8 +69,9 @@ class Cora_Tests_LocaleHandler_Test extends PHPUnit_Framework_TestCase {
         $this->assertEquals("de-DE",
                             $this->lh->extractBestLocale($accept));
 
+        // list contains no supported locale - expect default locale
         $accept = "zh-CN,zh;q=0.8";
-        $this->assertEquals("en-US",
+        $this->assertEquals($this->lh->defaultLocale(),
                             $this->lh->extractBestLocale($accept));
     }
 }
