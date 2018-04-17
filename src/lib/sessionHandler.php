@@ -322,10 +322,11 @@ class CoraSessionHandler {
         $errors = $ch->callImport($localname, $xmlname, $options['logfile']);
         $logfile = fopen($options['logfile'], 'a');
         if (!empty($errors)) {
-            fwrite($logfile, "~ERROR XML\n");
             fwrite($logfile, implode("\n", $errors) . "\n");
             fclose($logfile);
-            return false;
+            if (in_array("~ERROR CHECK", $errors) || in_array("~ERROR XML", $errors)) {
+                return false;
+            }
         }
         if (!isset($xmlname) || empty($xmlname)) {
             fwrite($logfile, "~ERROR XML\n");
