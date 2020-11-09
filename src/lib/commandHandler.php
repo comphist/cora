@@ -117,7 +117,7 @@ class CommandHandler {
         $xmlfile = tempnam(sys_get_temp_dir(), 'cora');
         $output = array();
         $retval = 0;
-        $command = $this->options['cmd_import'] . " {$infile} {$xmlfile} >>{$logfile} 2>&1";
+        $command = $this->options['cmd_import'] . " {$infile} {$xmlfile} 2>&1";
         exec($command, $output, $retval);
         return $output;
     }
