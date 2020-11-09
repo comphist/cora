@@ -11,7 +11,7 @@ installed.  Besides the runtime dependencies listed in README.md, you need:
 
 * CMake 2.8.12+
 
-* Sass 3.2+
+* Dart Sass 1.29+ (Ruby Sass 3.2+ for CorA 1.4)
 
 * Java runtime environment; for running:
     * YUICompressor (for compressing CSS; can be downloaded automatically during build)

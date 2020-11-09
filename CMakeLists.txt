@@ -53,7 +53,7 @@ message(STATUS "External downloads will be stored/expected in: ${EXTERNALS_DOWNL
 
 find_package(PHP5 5.5 COMPONENTS Runtime REQUIRED)
 find_package(MySQL 5.5 REQUIRED)
-find_package(Sass 3.2 REQUIRED)
+find_package(Sass 1.29 REQUIRED)
 
 if(WITH_MINIFY_CSS OR WITH_MINIFY_JS)
   # Needed for Closure Compiler / YUICompressor

@@ -64,14 +64,14 @@ configure_file(screen.scss "${CMAKE_CURRENT_BINARY_DIR}/screen.scss" COPYONLY)
 configure_file(install.scss "${CMAKE_CURRENT_BINARY_DIR}/install.scss" COPYONLY)
 add_custom_command(
   OUTPUT "${CONFIGURE_TARGET_DIR}/screen.css"
-  COMMAND ${SASS_EXECUTABLE} --scss screen.scss "${CONFIGURE_TARGET_DIR}/screen.css"
+  COMMAND ${SASS_EXECUTABLE} screen.scss "${CONFIGURE_TARGET_DIR}/screen.css"
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
   DEPENDS screen.scss
   COMMENT "Precompiling screen.scss"
 )
 add_custom_command(
   OUTPUT "${CORA_CURRENT_WEB_DIR}/install.css"
-  COMMAND ${SASS_EXECUTABLE} --scss install.scss "${CORA_CURRENT_WEB_DIR}/install.css"
+  COMMAND ${SASS_EXECUTABLE} install.scss "${CORA_CURRENT_WEB_DIR}/install.css"
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
   DEPENDS install.scss
   COMMENT "Precompiling install.scss"
