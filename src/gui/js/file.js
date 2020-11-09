@@ -519,6 +519,11 @@ cora.fileImporter = {
 		        if(status.done == "success") {
                             ref.resetImportForm(importform);
                             cora.projects.performUpdate();
+                            if (status.output) {
+                                gui.showTextDialog(_("FileTab.Forms.import.importSuccess"),
+                                                   _("FileTab.Forms.import.importSuccessInfo"),
+                                                   status.output);
+                            }
 			    gui.showNotice('ok', _("Banner.fileImportSuccess"));
 		        } else {
                             gui.showTextDialog(_("FileTab.Forms.import.importFailed"),
@@ -760,10 +765,10 @@ cora.fileImporter = {
 		status.done = 'success';
 	    } else {
 		status.done = 'error';
-		if(process.output != null) {
-		    status.message = _("FileTab.Forms.import.importError");
-                    status.output  = process.output;
-		}
+		status.message = _("FileTab.Forms.import.importError");
+           }
+	   if(process.output != null) {
+                status.output  = process.output;
 	    }
 	}
 	return status;
